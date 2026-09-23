@@ -311,6 +311,7 @@ function BigScreenMode() {
       data-step-id={step.id}
       data-running={running ? "true" : "false"}
       data-media-mode={media.mode}
+      data-motion-available={coachClip ? "true" : "false"}
       className="relative h-dvh w-full overflow-hidden bg-black text-white"
     >
       {engine.isLeader && (
