@@ -1501,6 +1501,14 @@ function CoachSession() {
             );
             if (!anyLogged) {
               const alt = altSessionPlan(kind, state, day);
+              if (!alt.exercises.length) {
+                speak(
+                  "I couldn't load that alternate session. Your scheduled workout is still here.",
+                  voiceOn,
+                  { tone: "reassuring" },
+                );
+                return;
+              }
               updateDay(day, (d) => ({
                 ...d,
                 sessionPlan: alt,
