@@ -1,0 +1,93 @@
+name: Export Approved Coach Media
+
+on:
+  push:
+    branches:
+      - migration/media-export
+    paths:
+      - media-export-manifest.json
+      - .github/workflows/export-coach-media.yml
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download and validate approved media
+        run: |
+          python - <<'PY'
+          import json, hashlib, os, pathlib, urllib.request
+
+          manifest = json.load(open("media-export-manifest.json"))
+          out = pathlib.Path("exported-coach-media")
+          out.mkdir(exist_ok=True)
+          checks = []
+
+          for asset in manifest["assets"]:
+              name = asset["name"]
+              url = asset["url"]
+              dest = out / name
+              print(f"Downloading {name}")
+              req = urllib.request.Request(url, headers={"User-Agent":"GitHub-Actions-M3-Coach-Media-Export/1.0"})
+              with urllib.request.urlopen(req, timeout=120) as r:
+                  data = r.read()
+                  content_type = r.headers.get("Content-Type", "")
+
+              if len(data) < 1024:
+                  raise RuntimeError(f"{name}: file too small ({len(data)} bytes)")
+
+              if asset["kind"] == "video":
+                  if len(data) < 12 or data[4:8] != b"ftyp":
+                      raise RuntimeError(f"{name}: invalid MP4 signature")
+              elif name.endswith(".png"):
+                  if data[:8] != b"\x89PNG\r\n\x1a\n":
+                      raise RuntimeError(f"{name}: invalid PNG signature")
+              elif name.endswith((".jpg",".jpeg")):
+                  if data[:2] != b"\xff\xd8":
+                      raise RuntimeError(f"{name}: invalid JPEG signature")
+
+              dest.write_bytes(data)
+              checks.append({
+                  "name": name,
+                  "kind": asset["kind"],
+                  "bytes": len(data),
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "source_url": url,
+                  "content_type": content_type,
+              })
+
+          json.dump({
+              "release": manifest["release"],
+              "count": len(checks),
+              "assets": checks,
+          }, open("media-export-checksums.json","w"), indent=2)
+          print(f"Validated {len(checks)} assets")
+          PY
+
+      - name: Create GitHub media release if needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view coach-media-v1 >/dev/null 2>&1 || \
+            gh release create coach-media-v1 \
+              --target main \
+              --title "Approved Coach Media v1" \
+              --notes "Exact approved coach identity assets and 29 verified-motion clips exported from the original Arm Growth Tracker asset store."
+
+      - name: Upload exact media binaries to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload coach-media-v1 exported-coach-media/* media-export-checksums.json --clobber
+
+      - name: Save checksum audit in repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add media-export-checksums.json
+          git commit -m "Record exported coach media checksums" || exit 0
+          git push
