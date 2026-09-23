@@ -1,0 +1,33 @@
+name: Refresh Bun Lockfile
+
+on:
+  push:
+    branches:
+      - fix/remove-lovable-build-config
+    paths:
+      - package.json
+      - vite.config.ts
+      - .github/workflows/refresh-bun-lock.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/remove-lovable-build-config
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Refresh lockfile
+        run: bun install
+      - name: Commit lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bun.lock
+          git commit -m "Refresh bun lockfile after removing Lovable config" || exit 0
+          git push
