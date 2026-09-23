@@ -6,7 +6,7 @@
  * SessionPlan, so logging, timers, substitutions and history behave
  * exactly as they do for the scheduled workout.
  */
-import { allLibraryExercises } from "@/lib/activities";
+import { THURSDAY } from "@/data/program";
 import { effectiveExercises, toSessionExercise } from "@/lib/activities";
 import type { AppState, SessionPlan } from "@/lib/store";
 
@@ -28,11 +28,7 @@ const plan = (title: string, focus: string, exercises: SessionPlan["exercises"])
   exercises,
 });
 
-const byCategory = (cats: string[], limit: number) =>
-  allLibraryExercises()
-    .filter((e) => cats.includes(String(e.category)))
-    .slice(0, limit)
-    .map(toSessionExercise);
+const recoveryExercises = () => [...THURSDAY.warmup, ...THURSDAY.main].map(toSessionExercise);
 
 /** Today's own session, trimmed to two working sets and longer rests. */
 export function lighterPlan(state: AppState, day: number): SessionPlan {
@@ -46,7 +42,7 @@ export function lighterPlan(state: AppState, day: number): SessionPlan {
 
 /** Easy movement and mobility only — nothing loaded. */
 export function recoveryPlan(): SessionPlan {
-  const exercises = [...byCategory(["cardio"], 1), ...byCategory(["mobility"], 4)].map((e) => ({
+  const exercises = recoveryExercises().map((e) => ({
     ...e,
     sets: 1,
     rest: 30,
@@ -56,7 +52,9 @@ export function recoveryPlan(): SessionPlan {
 
 /** Pure stretching / mobility flow. */
 export function stretchPlan(): SessionPlan {
-  const exercises = byCategory(["mobility"], 6).map((e) => ({ ...e, sets: 1, rest: 20 }));
+  const exercises = THURSDAY.main
+    .map(toSessionExercise)
+    .map((e) => ({ ...e, sets: 1, rest: 20 }));
   return plan("Stretching", "Mobility flow, no load", exercises);
 }
 
