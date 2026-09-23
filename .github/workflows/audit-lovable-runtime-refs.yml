@@ -1,0 +1,47 @@
+name: Audit Lovable Runtime References
+
+on:
+  push:
+    branches:
+      - audit/lovable-runtime-refs
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan source for Lovable asset dependencies
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          needles=("lovable.app","/__l5e/assets-v1/")
+          rows=[]
+          for root in ("src","public"):
+              p=Path(root)
+              if not p.exists():
+                  continue
+              for f in p.rglob("*"):
+                  if not f.is_file():
+                      continue
+                  if "src/data/recovery" in f.as_posix():
+                      continue
+                  try:
+                      text=f.read_text(errors="ignore")
+                  except Exception:
+                      continue
+                  for n,line in enumerate(text.splitlines(),1):
+                      if any(x in line for x in needles):
+                          rows.append(f"{f}:{n}:{line.strip()}")
+          Path("lovable-runtime-reference-audit.txt").write_text("\n".join(rows)+("\n" if rows else "NO_RUNTIME_LOVABLE_REFERENCES\n"))
+          print(f"Found {len(rows)} runtime reference lines")
+          PY
+      - name: Save audit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lovable-runtime-reference-audit.txt
+          git commit -m "Record Lovable runtime reference audit" || exit 0
+          git push
