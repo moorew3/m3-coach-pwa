@@ -1,0 +1,750 @@
+{
+  "release": "app-static-media-v1",
+  "count": 93,
+  "assets": [
+    {
+      "name": "4660db21-124b-49c3-8dec-195fcb828cc9-monday_guide.png",
+      "kind": "png",
+      "bytes": 2032228,
+      "sha256": "14d1024fee10d6462584338af721f8847f810d90f311f4dde1fb27268b01711b",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4660db21-124b-49c3-8dec-195fcb828cc9/monday_guide.png",
+      "content_type": "image/png"
+    },
+    {
+      "name": "1d98a3c2-229e-4c5b-924f-27983a50a075-tuesday_guide.png",
+      "kind": "png",
+      "bytes": 1897311,
+      "sha256": "c97f05b6e075774b5c554cde98b5627c0ab5007810051de02f61f64769b43ffd",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/1d98a3c2-229e-4c5b-924f-27983a50a075/tuesday_guide.png",
+      "content_type": "image/png"
+    },
+    {
+      "name": "3eb9d8c9-6932-466e-898c-65837fe9d4dc-wednesday_guide.png",
+      "kind": "png",
+      "bytes": 1992361,
+      "sha256": "9ee24584e28c25ec022c4036ef6a107dd35c90628476b251f1233afdab4c9d1d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/3eb9d8c9-6932-466e-898c-65837fe9d4dc/wednesday_guide.png",
+      "content_type": "image/png"
+    },
+    {
+      "name": "6323e69d-d7e9-4797-98bb-6bcd3ea3839f-thursday_guide.png",
+      "kind": "png",
+      "bytes": 1985424,
+      "sha256": "15418a67f027731847bf1fe245e614f737068e7a44151aad3e7c6be27995e64e",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/6323e69d-d7e9-4797-98bb-6bcd3ea3839f/thursday_guide.png",
+      "content_type": "image/png"
+    },
+    {
+      "name": "e19085b6-368f-4b58-92e5-1924c9e7f25f-friday_guide.png",
+      "kind": "png",
+      "bytes": 1991282,
+      "sha256": "f66db08060212823987911fbea2a44324ea928f9e92d3e0fbc13b1026b6bd5c4",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e19085b6-368f-4b58-92e5-1924c9e7f25f/friday_guide.png",
+      "content_type": "image/png"
+    },
+    {
+      "name": "41e46478-4abf-40c8-98d3-e9683e5be3b0-bandPullApart.jpg",
+      "kind": "jpeg",
+      "bytes": 114729,
+      "sha256": "47f9db728cecc11a04f53a821e702c9d81904302e9eb3952839593963b23f691",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/41e46478-4abf-40c8-98d3-e9683e5be3b0/bandPullApart.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "4f4597ad-da0e-4313-a078-ffd4681edd57-shoulderExternalRotation.jpg",
+      "kind": "jpeg",
+      "bytes": 131475,
+      "sha256": "0b04e1e0d7b543dce71eeedc56a4d01a7f7834043314a379d9d38d2104d2da16",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4f4597ad-da0e-4313-a078-ffd4681edd57/shoulderExternalRotation.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "45cef615-2f76-4ec1-8094-120fd4eb4f3b-chestPress.jpg",
+      "kind": "jpeg",
+      "bytes": 126166,
+      "sha256": "d330bb9f693b73e9b4dc79a2531252e8ca5b7879445f556e4bffe0048d1b4ce8",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/45cef615-2f76-4ec1-8094-120fd4eb4f3b/chestPress.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "2cf8f565-6693-49fb-bba2-19c84a613a21-inclineDumbbellPress.jpg",
+      "kind": "jpeg",
+      "bytes": 114432,
+      "sha256": "c0640dd2f2f7ee855a0e22293bfe3eb82837b4eec42d08a45f12178a821abe5c",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/2cf8f565-6693-49fb-bba2-19c84a613a21/inclineDumbbellPress.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "777293e9-1899-4285-a408-7177beee33fd-cableFly.jpg",
+      "kind": "jpeg",
+      "bytes": 135392,
+      "sha256": "902af8b199128cdcb3f3105082dcad15a8c0d683136fdb714252b4623e995f3c",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/777293e9-1899-4285-a408-7177beee33fd/cableFly.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "4672de1e-70fd-4bf4-a515-057da3d45944-lateralRaise.jpg",
+      "kind": "jpeg",
+      "bytes": 114741,
+      "sha256": "1ba6f12773ed3246fdcec8ccf1a7ad59c0257265e3ec8bf26e504f9f9d618a24",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4672de1e-70fd-4bf4-a515-057da3d45944/lateralRaise.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "36bda219-5015-490b-a6ca-14645e75ab1e-facePull.jpg",
+      "kind": "jpeg",
+      "bytes": 89650,
+      "sha256": "9ed8481ec2a3ce5edb145553aa85c1ffd232493b74c0c8b04fa21f51a756b86f",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/36bda219-5015-490b-a6ca-14645e75ab1e/facePull.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "fccc4b59-2c51-4709-ba22-36b602747f0c-inclineWaiterCurl.jpg",
+      "kind": "jpeg",
+      "bytes": 105453,
+      "sha256": "5f19544c83c3b0973787a6c59e9be80427c9936a83916af29e1b66c9c260c5e5",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/fccc4b59-2c51-4709-ba22-36b602747f0c/inclineWaiterCurl.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "a9e09791-cf70-4145-beb8-f02e7cd6d03d-inclineTreadmillWalk.jpg",
+      "kind": "jpeg",
+      "bytes": 89829,
+      "sha256": "22b1b320274e262a78129b3881d970d4ac3d8a2a60c1e6241fb24070f3da84b2",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a9e09791-cf70-4145-beb8-f02e7cd6d03d/inclineTreadmillWalk.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "77d2c47c-099e-4df5-ae3a-e907ec27468b-deadBug.jpg",
+      "kind": "jpeg",
+      "bytes": 112804,
+      "sha256": "ff8ffeb5c2e2eba134035639fbe0a90a5f453cc0bd1a5c40c52a05fdfed4f8dd",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/77d2c47c-099e-4df5-ae3a-e907ec27468b/deadBug.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "07e846c4-fded-4bb8-a36d-02ea165b998a-pallofPress.jpg",
+      "kind": "jpeg",
+      "bytes": 89147,
+      "sha256": "b6625799c085f37bd2dea6034ee9a6db161a9f39072d0d1a69ba72d501bb5007",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/07e846c4-fded-4bb8-a36d-02ea165b998a/pallofPress.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "c5da1950-83fe-4546-95dd-7a3608596d72-reverseCrunch.jpg",
+      "kind": "jpeg",
+      "bytes": 112708,
+      "sha256": "bc3af7e70581a126ecc4aaba3bb901df0430429578cf154f4a97e435a61b4032",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c5da1950-83fe-4546-95dd-7a3608596d72/reverseCrunch.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "38bfbc0c-3d79-48f0-98a5-3a31366544ce-closeGripPushup.jpg",
+      "kind": "jpeg",
+      "bytes": 112116,
+      "sha256": "2db11f64d3defc10e5ad220125473a2caa1d44b99a6a30f7387ee21e8c53a679",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/38bfbc0c-3d79-48f0-98a5-3a31366544ce/closeGripPushup.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "b7c89341-92d7-4833-a6a1-aaed572b2c7a-squatToBench.jpg",
+      "kind": "jpeg",
+      "bytes": 111250,
+      "sha256": "bb36c4fb01c862a823f0e396470097c9dcdf7bc89d85f7501fd8344398acb672",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/b7c89341-92d7-4833-a6a1-aaed572b2c7a/squatToBench.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "93069373-eb97-4979-8bee-572bd2d110a7-legPress.jpg",
+      "kind": "jpeg",
+      "bytes": 117296,
+      "sha256": "ad88d7355099ad2eb2b5c2cb15d8dbec752bcc69915b46c27284632042e322ac",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/93069373-eb97-4979-8bee-572bd2d110a7/legPress.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "cb312e14-5dbf-4e4b-b9fe-06192e740ecf-gobletSquatToBench.jpg",
+      "kind": "jpeg",
+      "bytes": 112480,
+      "sha256": "929e6d80f738536dc20150fb11678768ad4b8cf65a3d89c698ca6e0c8367dc5d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/cb312e14-5dbf-4e4b-b9fe-06192e740ecf/gobletSquatToBench.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "a288712e-992f-4e2f-814e-6b190c352af8-legCurl.jpg",
+      "kind": "jpeg",
+      "bytes": 113182,
+      "sha256": "ada00b06943cab92803a8b3c47aa4cd8ae60f9d79399cb79680966349e0ff9b8",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a288712e-992f-4e2f-814e-6b190c352af8/legCurl.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "25f5a609-65bc-44c8-92e0-426c5e6e31a4-calfRaise.jpg",
+      "kind": "jpeg",
+      "bytes": 100990,
+      "sha256": "4bbf8b9b91f4ba3e8ef0b7d9b73fc39bce7db15f96c04c241ca66b79c837dc3b",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/25f5a609-65bc-44c8-92e0-426c5e6e31a4/calfRaise.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "7d5d5b61-8490-4dc8-9001-076c711166b8-hipThrust.jpg",
+      "kind": "jpeg",
+      "bytes": 109047,
+      "sha256": "f5f4e24c90ea65ca1f0b6273ce3e3d38a898229417042f73e92554e87a2030cb",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/7d5d5b61-8490-4dc8-9001-076c711166b8/hipThrust.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "c9ce3bcb-014e-4511-959c-12610d3569cf-hammerCurl.jpg",
+      "kind": "jpeg",
+      "bytes": 127041,
+      "sha256": "7f44cb91a2fc976a1b58608b03610e4095bd9b65aa83d330f84edcedfe00abd7",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c9ce3bcb-014e-4511-959c-12610d3569cf/hammerCurl.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "855e2d4b-f5de-4c13-a1fa-74a73a5c272c-gluteBridge.jpg",
+      "kind": "jpeg",
+      "bytes": 101973,
+      "sha256": "1c8bfda526c97c178dc22ad27f35370f041bf4600bc9f6697bac6a9b085f1c0d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/855e2d4b-f5de-4c13-a1fa-74a73a5c272c/gluteBridge.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "e87230bc-863a-4ceb-b4e5-8e89b174c798-bandPulldown.jpg",
+      "kind": "jpeg",
+      "bytes": 120759,
+      "sha256": "87e95e635f1a52230f1370bd40b2ed81319c5e50b3ebb31169ea04235ec68ef0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e87230bc-863a-4ceb-b4e5-8e89b174c798/bandPulldown.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "0674db72-0919-4f5c-8c02-e75dce1d56b5-latPulldown.jpg",
+      "kind": "jpeg",
+      "bytes": 132901,
+      "sha256": "c76db2534711506da1089e277bf7ebcf256045a25bb98ed1949e1599b25f8c08",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/0674db72-0919-4f5c-8c02-e75dce1d56b5/latPulldown.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "cdbda9c2-3f26-4d80-a953-c55884629fab-seatedRow.jpg",
+      "kind": "jpeg",
+      "bytes": 99022,
+      "sha256": "9d2011788ae3655cee508c01e396f7146a5b28d9448653a82c089c98a4171ea0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/cdbda9c2-3f26-4d80-a953-c55884629fab/seatedRow.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "e609121a-097d-4e82-99e6-8c881b0152d7-chestSupportedRow.jpg",
+      "kind": "jpeg",
+      "bytes": 108215,
+      "sha256": "a0873421688244953763a7e7c7caaf17ecd60c72e7453ee2ea5777103be41fba",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e609121a-097d-4e82-99e6-8c881b0152d7/chestSupportedRow.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "283d14be-98da-4af4-9aef-81970a0756a2-oneArmRow.jpg",
+      "kind": "jpeg",
+      "bytes": 126150,
+      "sha256": "b209c8970979cb87addb810eebe5a2e712e959b8ee31d07ba9b19f93ae082309",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/283d14be-98da-4af4-9aef-81970a0756a2/oneArmRow.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "7346e0c4-3821-40c3-b755-51961b176c8b-rearDeltFly.jpg",
+      "kind": "jpeg",
+      "bytes": 124983,
+      "sha256": "dcb6aefd04fe030839f2f0a16ae1d915c3a2ba07d5bb0f9e942ab04ba4386add",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/7346e0c4-3821-40c3-b755-51961b176c8b/rearDeltFly.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "e3fa2640-396e-4995-ac22-4ab31c75bfe5-tricepPushdown.jpg",
+      "kind": "jpeg",
+      "bytes": 102068,
+      "sha256": "65275f99b8a7978a4286f3beb6ce8c5d42c7fd97f8e1b33e38348a0802e0c38f",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e3fa2640-396e-4995-ac22-4ab31c75bfe5/tricepPushdown.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "05a69afd-aef4-45fb-963f-a73ab15c4c54-overheadExtension.jpg",
+      "kind": "jpeg",
+      "bytes": 103791,
+      "sha256": "1e446c2a5d3b1e2ed68140fb4bdf382544b13f70b4a87c81a691b7a108ea4764",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/05a69afd-aef4-45fb-963f-a73ab15c4c54/overheadExtension.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "b3c5afea-371a-4e47-b70c-ae7db41a9de3-assistedEccentricCurl.jpg",
+      "kind": "jpeg",
+      "bytes": 128777,
+      "sha256": "87c96497ae743670e96d967a910d3c1c31fafdaf7b8513f96b5956511c6d0ecd",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/b3c5afea-371a-4e47-b70c-ae7db41a9de3/assistedEccentricCurl.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "5bc9e1bc-84b0-4cdd-a7fc-a3f9326b659a-pjrPullover.jpg",
+      "kind": "jpeg",
+      "bytes": 110626,
+      "sha256": "394ed3713b9ff9c8374b2df6e6ffe8e6200e922ea6c673e0b3e0269f0ccc4aab",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/5bc9e1bc-84b0-4cdd-a7fc-a3f9326b659a/pjrPullover.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "98b2fb61-a077-4530-a252-f6c835ebae52-bandPullApart.jpg",
+      "kind": "jpeg",
+      "bytes": 68576,
+      "sha256": "2fdadfa8216d9ee3fcffc04bcc7757e12983c3e2adda65b6094a8925492da55a",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/98b2fb61-a077-4530-a252-f6c835ebae52/bandPullApart.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "a1c85e3b-d2bf-4116-a75b-a1cb4036d003-battleRopeFinisher.jpg",
+      "kind": "jpeg",
+      "bytes": 52271,
+      "sha256": "a6ee753b7f549529c8dd801a47e7fe3b80ca58e40298efddb09a49ad0bb33cd9",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a1c85e3b-d2bf-4116-a75b-a1cb4036d003/battleRopeFinisher.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "d724785c-bd15-4d96-af92-fbeae1d72474-benchPress.png",
+      "kind": "png",
+      "bytes": 1406639,
+      "sha256": "452fa29ae824259abee464378dfb5222d6534f87adcc7a21a3e564aa99142f7a",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/d724785c-bd15-4d96-af92-fbeae1d72474/benchPress.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "8c833e6d-8035-47fd-814b-cf79226e8a39-boxingStance.png",
+      "kind": "png",
+      "bytes": 1413661,
+      "sha256": "273639366d3ee615769d5eba42762089c1d661615725e4fcc2053333de17b0ad",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/8c833e6d-8035-47fd-814b-cf79226e8a39/boxingStance.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "03eebf15-b135-4ed7-bac4-69caf1fb928f-bulgarianSplitSquat.png",
+      "kind": "png",
+      "bytes": 1421194,
+      "sha256": "3424e04ff752232cc2e83cf5aa0dd42cfab74b44f42d5024d6a13c3dd03eb5c0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/03eebf15-b135-4ed7-bac4-69caf1fb928f/bulgarianSplitSquat.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "89658984-1568-41e8-aa1b-946a0de63450-cablePunch.png",
+      "kind": "png",
+      "bytes": 1547468,
+      "sha256": "3f39b7a44a40b0a86d6f0eca2833459adc2c318d9f5d7c4f4c22fb7763f30bf5",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/89658984-1568-41e8-aa1b-946a0de63450/cablePunch.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "40136fd2-afa3-43c0-ab9a-8967240d9e1e-chestMobility.png",
+      "kind": "png",
+      "bytes": 1512657,
+      "sha256": "90520473741ceba07faf7fe721a58db37b766ef08d4bf7a9ab6d048e503f22fe",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/40136fd2-afa3-43c0-ab9a-8967240d9e1e/chestMobility.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "2679019a-9790-4ed1-be5e-b6d030ddc83e-chestPress.png",
+      "kind": "png",
+      "bytes": 1435586,
+      "sha256": "d1b90e5ee0cd0cb1d89935cbe8fb844f7776a1777dab09bd13fb610119ba8461",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/2679019a-9790-4ed1-be5e-b6d030ddc83e/chestPress.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "c3771c29-7765-4fc3-bb93-dc0a07a88381-chestSupportedRow.png",
+      "kind": "png",
+      "bytes": 1499684,
+      "sha256": "ba40fad2a7bdf9d3e3225ad8c8f31157c949df8616b08018843d9861614a3328",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c3771c29-7765-4fc3-bb93-dc0a07a88381/chestSupportedRow.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "78a2bab7-b39a-4169-a601-35910179d3d2-controlledShoulderWork.png",
+      "kind": "png",
+      "bytes": 1542949,
+      "sha256": "0e2c304beb8079e998c93237dc2b5e410f3a759ede42aa091fefef349a9bd8e0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/78a2bab7-b39a-4169-a601-35910179d3d2/controlledShoulderWork.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "0fc3c660-4956-45a1-8bf6-f58de15cfa13-cross.png",
+      "kind": "png",
+      "bytes": 1386222,
+      "sha256": "a8c116150a1611c29172fc8eca1bf60f90987aa63848624564d8fe05f93c437a",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/0fc3c660-4956-45a1-8bf6-f58de15cfa13/cross.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "c23c7ee2-4567-403d-aee5-46eef0006739-deadBug.jpg",
+      "kind": "jpeg",
+      "bytes": 70393,
+      "sha256": "72142771b6f5c72a143327647b553f8286bfbe0398b818ad67e5ff42d63e07b0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c23c7ee2-4567-403d-aee5-46eef0006739/deadBug.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "994eb5e3-4a50-4eb0-a21d-eb49356754e3-defensiveReset.png",
+      "kind": "png",
+      "bytes": 1385177,
+      "sha256": "265ee15a1c3b67fae768cb98d4f63442c6918c2455583af78a725d5e713577f2",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/994eb5e3-4a50-4eb0-a21d-eb49356754e3/defensiveReset.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "e3806308-91e9-413a-b123-288852ee5a93-dumbbellCurl.png",
+      "kind": "png",
+      "bytes": 1355383,
+      "sha256": "48c1488e4afff7f0729eb9a801fcb2d040b752e9ea98ef73a15ccaf75e2c5e0e",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e3806308-91e9-413a-b123-288852ee5a93/dumbbellCurl.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "f1b05112-ac00-4ee7-8d7d-13a6fcc3a2b9-easyWalk.jpg",
+      "kind": "jpeg",
+      "bytes": 61639,
+      "sha256": "7dfcba274a5e7b9273bbc908c342b33794c18e266801cc4621d41c11590c3e70",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/f1b05112-ac00-4ee7-8d7d-13a6fcc3a2b9/easyWalk.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "4eec646f-3f80-412b-8676-01ac958fdf8b-externalRotation.jpg",
+      "kind": "jpeg",
+      "bytes": 69783,
+      "sha256": "ec7c9c90afd6a67044193dba92cdf84cc8661a910ed4f4b24755c895ad2df04d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4eec646f-3f80-412b-8676-01ac958fdf8b/externalRotation.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "1e566bd1-4dd1-496a-a1e4-980d60c1bd22-farmerMarch.png",
+      "kind": "png",
+      "bytes": 1495500,
+      "sha256": "59c80591a4915bffc41450e0dabf7729790901865bab44b5a21032c5d64fa62e",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/1e566bd1-4dd1-496a-a1e4-980d60c1bd22/farmerMarch.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "a26ef7b0-0d29-4fc8-8f9f-42556357fb75-frontKick.png",
+      "kind": "png",
+      "bytes": 1385499,
+      "sha256": "bd48e1741818f34c8912d51f77fbeaf9b69cdb2a572b2d6d0b142125f67f6913",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a26ef7b0-0d29-4fc8-8f9f-42556357fb75/frontKick.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "f34d8255-2b01-4dba-9895-504f4184e998-guardReset.png",
+      "kind": "png",
+      "bytes": 1446801,
+      "sha256": "c554f9dfb9fa6c6b31ea83ae15df15f739de5be9487e2a41c6eda4b450738ea9",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/f34d8255-2b01-4dba-9895-504f4184e998/guardReset.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "c0339d07-c8ba-4b2a-8d7d-41786fd5eede-hammerCurl.png",
+      "kind": "png",
+      "bytes": 1500110,
+      "sha256": "49f6c7716bb225888439130a2917e4f0b34ad3a70b0d8cf2be403c500e3f7d6d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c0339d07-c8ba-4b2a-8d7d-41786fd5eede/hammerCurl.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "4e9c6923-9920-4b40-9db7-2035e8112a26-hamstringCurl.png",
+      "kind": "png",
+      "bytes": 1408035,
+      "sha256": "14e587f03438acfd7f9a59fc13ca28839bda22e953b75c256ec12d4930fe05ac",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4e9c6923-9920-4b40-9db7-2035e8112a26/hamstringCurl.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "5ffd7d78-dd9a-4471-be15-7b77c6a4e658-hamstringMobility.jpg",
+      "kind": "jpeg",
+      "bytes": 54506,
+      "sha256": "377230d32d11abe48d1f820f8a01c9a44ed0b89b5a68b597e6bb40456fa77525",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/5ffd7d78-dd9a-4471-be15-7b77c6a4e658/hamstringMobility.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "ffdc5b5f-d9d9-4e79-921d-7e94f063155f-hipFlexorStretch.png",
+      "kind": "png",
+      "bytes": 1451123,
+      "sha256": "cf0e224abc82568f8921168ad48f67cb6ef0af0314966174a2a0d7702fbe050c",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/ffdc5b5f-d9d9-4e79-921d-7e94f063155f/hipFlexorStretch.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "4f3ff8b2-2e29-47d2-9589-1448eba1ae90-inclineDumbbellPress.png",
+      "kind": "png",
+      "bytes": 1483004,
+      "sha256": "c4a0d53d87c17eca18920c2775546f9d1de5f545842936b6d437e92e07e33799",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4f3ff8b2-2e29-47d2-9589-1448eba1ae90/inclineDumbbellPress.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "f86e6386-a1b6-41f6-90b8-1b133fd227fb-jab.png",
+      "kind": "png",
+      "bytes": 1558232,
+      "sha256": "414319c7e8cccd3c38000ed5f3878cae0d00fe2560e1e924f062bf2c1f67f2b6",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/f86e6386-a1b6-41f6-90b8-1b133fd227fb/jab.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "54740817-40d2-44ec-bcdf-3e09ae6a21de-jabCross.png",
+      "kind": "png",
+      "bytes": 1365056,
+      "sha256": "60de35691dd5827044d2c3070443fd716014ec7c4e091057b69b45401af09155",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/54740817-40d2-44ec-bcdf-3e09ae6a21de/jabCross.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "5cf9a7aa-fbc3-4713-9b2a-5821585938c1-kneeChamber.png",
+      "kind": "png",
+      "bytes": 1437917,
+      "sha256": "2381fbaf69497ff7e56275d076f5cb43d45548ec14cb15d5d6e37e7b984ce97b",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/5cf9a7aa-fbc3-4713-9b2a-5821585938c1/kneeChamber.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "6a1d735e-3ce1-4f1a-b60f-027518bd56a6-latPulldown.png",
+      "kind": "png",
+      "bytes": 1479477,
+      "sha256": "4c10dc95adf86a741b7c814dea2801d040d885f9eba3fe67bf6ab3408851e21d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/6a1d735e-3ce1-4f1a-b60f-027518bd56a6/latPulldown.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "42b05747-5154-48cf-a997-08ab20eb4e7d-lateralRaise.png",
+      "kind": "png",
+      "bytes": 1518884,
+      "sha256": "fb6a8f32321fe525513ec701ede3e1927a85d8b32f64fbf6568b8e3604bec977",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/42b05747-5154-48cf-a997-08ab20eb4e7d/lateralRaise.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "316cf984-30e9-4ac6-9376-5b5ae5957d87-legPress.png",
+      "kind": "png",
+      "bytes": 1614027,
+      "sha256": "ce01bedbb1e7f18ed19c73ed9d1e5be4b493b13ffd638e2544cb5cf81295515d",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/316cf984-30e9-4ac6-9376-5b5ae5957d87/legPress.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "db3bbe68-de60-4a65-8e76-9ed6913d5055-lightPunches.png",
+      "kind": "png",
+      "bytes": 1500459,
+      "sha256": "ebfdb7ed9be300af43b8c68af8d9f26ec1de7e0b274f824210924e8b6ef6fe3c",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/db3bbe68-de60-4a65-8e76-9ed6913d5055/lightPunches.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "51c59c1d-db73-42ac-80ea-0dd1a5c55023-lowerBodyMobility.png",
+      "kind": "png",
+      "bytes": 1373692,
+      "sha256": "a54f3024a715a4f0732337329f11f4c7dd6e7e44709578668466e450ec6304bb",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/51c59c1d-db73-42ac-80ea-0dd1a5c55023/lowerBodyMobility.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "9c801c43-b869-4975-8205-102511a0d719-medBallChestPass.png",
+      "kind": "png",
+      "bytes": 1431437,
+      "sha256": "cee63cd1473b83fb2fd0d32daa7b277df881fe07044b2f53a94a56f28a6a2fe2",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/9c801c43-b869-4975-8205-102511a0d719/medBallChestPass.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "7de17e74-2654-4172-b13d-ea40cfb8dd73-rearDeltFly.png",
+      "kind": "png",
+      "bytes": 1539113,
+      "sha256": "27a14c771198cc35f10050e079f2a391d85e6f4d529b3b6ebddf973cd606d24f",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/7de17e74-2654-4172-b13d-ea40cfb8dd73/rearDeltFly.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "1bc4153f-484f-4fa2-85a3-37883d1f1d38-reverseStepRow.png",
+      "kind": "png",
+      "bytes": 1473867,
+      "sha256": "2694aa90e4566004ae0ea60c7e49a8c50a0e971ebb3407bce83a69719ecad577",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/1bc4153f-484f-4fa2-85a3-37883d1f1d38/reverseStepRow.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "e5b3b889-136c-424c-bc65-f124edab6d06-romanianDeadlift.png",
+      "kind": "png",
+      "bytes": 1416265,
+      "sha256": "c48144f43e4067145c6d40a79e351e76e995df7ccb5fba831c126dc3b34951c7",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e5b3b889-136c-424c-bc65-f124edab6d06/romanianDeadlift.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "b9f92ba4-09dd-431d-aded-2068d885449c-roundKick.png",
+      "kind": "png",
+      "bytes": 1566670,
+      "sha256": "8ccac626bed40b2c8a4e3869e4e93858fa48d1d6015933938807218c2d7c8187",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/b9f92ba4-09dd-431d-aded-2068d885449c/roundKick.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "a62f080d-7c0f-4849-b117-8b9f986bccfb-seatedRow.png",
+      "kind": "png",
+      "bytes": 1391696,
+      "sha256": "2d15d0439beb7305b33a499f7c831d19c32ed1e591878ee04e6d01ede3040bef",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a62f080d-7c0f-4849-b117-8b9f986bccfb/seatedRow.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "15895b9c-0b0c-42a9-9a12-ca54cfff0de7-shoulderMobility.png",
+      "kind": "png",
+      "bytes": 1524599,
+      "sha256": "d0d4700214bb3399c4012b0c02f9e0db842ee65c9c085e231776a00c5f8c793c",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/15895b9c-0b0c-42a9-9a12-ca54cfff0de7/shoulderMobility.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "5218b9e5-760c-4624-9f2b-4352aa155c4a-shoulderPress.png",
+      "kind": "png",
+      "bytes": 1587799,
+      "sha256": "8fa66189ce32bff62c7ab1204dc64861667089a2400eabf5f129db821221d6d9",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/5218b9e5-760c-4624-9f2b-4352aa155c4a/shoulderPress.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "4e0a564c-57de-43ad-ace0-3c3f666da202-squat.png",
+      "kind": "png",
+      "bytes": 1549341,
+      "sha256": "fad029ad6e710a912f01eb871c9e9c34b59a705599992a2df8624cf3d05f7d5c",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4e0a564c-57de-43ad-ace0-3c3f666da202/squat.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "d62a2338-5482-4a4c-bc3d-06683e02a26e-squatToCurl.png",
+      "kind": "png",
+      "bytes": 1450936,
+      "sha256": "db1d32c6e4b1f37c1758f19bff407c98ba5dd578d1841ca1a58be10c4094c0ae",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/d62a2338-5482-4a4c-bc3d-06683e02a26e/squatToCurl.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "723352d6-e4b6-48dd-b000-b0880409a6b6-suitcaseCarry.png",
+      "kind": "png",
+      "bytes": 1502121,
+      "sha256": "52505d269888b49512f1524d368d396814618e5581b566ca08bdbaa8f59e4572",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/723352d6-e4b6-48dd-b000-b0880409a6b6/suitcaseCarry.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "eed22289-0647-40bf-a19e-d04caa2fd9d8-trapBarDeadlift.png",
+      "kind": "png",
+      "bytes": 1422911,
+      "sha256": "2cdde1cb40c2294ef781e9410b5e5ba452c06f34480351c28fc5aeeaf22e3413",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/eed22289-0647-40bf-a19e-d04caa2fd9d8/trapBarDeadlift.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "4d487a6b-aceb-495e-9751-a360e45e2a25-tricepsPressdown.png",
+      "kind": "png",
+      "bytes": 1555368,
+      "sha256": "5a4ee5ac69fcf92727273599b6c545c360be0cc41e0ef2c48433e4d7db995e15",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4d487a6b-aceb-495e-9751-a360e45e2a25/tricepsPressdown.jpg",
+      "content_type": "image/png"
+    },
+    {
+      "name": "cbb887cb-6393-4424-b6b1-785faf93adae-ref-boxingBasics.jpg",
+      "kind": "jpeg",
+      "bytes": 83557,
+      "sha256": "85238468ba6feec4963c1eba9fbdb553c672c1b4f17a0f0f35bf16af986ae728",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/cbb887cb-6393-4424-b6b1-785faf93adae/ref-boxingBasics.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "c10b3c1f-af72-4466-b2ba-8ae2e6b3d337-ref-kickboxingBasics.jpg",
+      "kind": "jpeg",
+      "bytes": 173137,
+      "sha256": "2ab03312afa35453a1f3b205f6ac49b42ffc255bf63b8c0c4cd35578cca27d55",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c10b3c1f-af72-4466-b2ba-8ae2e6b3d337/ref-kickboxingBasics.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "fdbbfb42-5a89-4992-bec3-e2a2e3e42600-ref-cablePunch.jpg",
+      "kind": "jpeg",
+      "bytes": 87563,
+      "sha256": "342929d677a97fb01eaba844ce08ab71f879ddbe764072c108b3e986b6d6684a",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/fdbbfb42-5a89-4992-bec3-e2a2e3e42600/ref-cablePunch.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "f582be07-b7f3-4521-a500-d8100335b6a2-ref-seatedRow.jpg",
+      "kind": "jpeg",
+      "bytes": 94380,
+      "sha256": "9fd46c364e38e0d06838cc022afe91cdbffa9cb13efac78f28b10a7a02a46e29",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/f582be07-b7f3-4521-a500-d8100335b6a2/ref-seatedRow.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "933876cb-e2d1-4422-992c-db71a53703a1-ref-latPulldown.jpg",
+      "kind": "jpeg",
+      "bytes": 95019,
+      "sha256": "c02c031d79581a96b6103f7d3185a56c3dd75339b57326fbed4e26fc427726c0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/933876cb-e2d1-4422-992c-db71a53703a1/ref-latPulldown.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "6c060655-13de-46f0-a5f4-eddea54e086c-ref-squat.jpg",
+      "kind": "jpeg",
+      "bytes": 84207,
+      "sha256": "c19a51047febe28e4371d7c39852cc83f0bbec7a3d02d7fad276f4dcdf723cb1",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/6c060655-13de-46f0-a5f4-eddea54e086c/ref-squat.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "9ce6e580-5095-4a31-816e-1eee01ed9630-ref-legPress.jpg",
+      "kind": "jpeg",
+      "bytes": 83259,
+      "sha256": "52d7bc8ad03b59de6cf8bc648d086b4dbd696072ba7c65d2a792a2dfd8646868",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/9ce6e580-5095-4a31-816e-1eee01ed9630/ref-legPress.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "868a9148-b843-488b-afda-6474c75933e5-ref-bulgarianSplitSquat.jpg",
+      "kind": "jpeg",
+      "bytes": 87770,
+      "sha256": "6e8172ecf220e2d06bcdc42d2ff383d9e4736607930fec67672f7340608b5c38",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/868a9148-b843-488b-afda-6474c75933e5/ref-bulgarianSplitSquat.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "be25c3b8-68a7-4c0a-a534-5517b2b58320-ref-hipFlexorStretch.jpg",
+      "kind": "jpeg",
+      "bytes": 88494,
+      "sha256": "5ab918adb534af8198f9260fb03adb126fd48b98e554160f1db4e9dd3f0632f8",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/be25c3b8-68a7-4c0a-a534-5517b2b58320/ref-hipFlexorStretch.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "6b5212d1-5803-4e2e-9d4b-63d31dce11c5-ref-hamstringCurl.jpg",
+      "kind": "jpeg",
+      "bytes": 78633,
+      "sha256": "3443a5564498b27cd7536de090c0f9e92c7683868f43c592e0f1011455c892e0",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/6b5212d1-5803-4e2e-9d4b-63d31dce11c5/ref-hamstringCurl.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "41aa8abf-b178-445a-83eb-083f4ed6fd4d-ref-suitcaseCarry.jpg",
+      "kind": "jpeg",
+      "bytes": 91636,
+      "sha256": "b3db1125e5bc75ee3bb4582c2a9acf31aaba37ff2413a595b686fcd72ee74b93",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/41aa8abf-b178-445a-83eb-083f4ed6fd4d/ref-suitcaseCarry.jpg",
+      "content_type": "image/jpeg"
+    },
+    {
+      "name": "e7082823-c78e-4ca9-b2eb-e11dc9e8eb64-ref-benchPress.jpg",
+      "kind": "jpeg",
+      "bytes": 169416,
+      "sha256": "9cfa8fe3fd4c42201546612f78b499fb6925723ba96905e0ffe38b18ac82c499",
+      "source_url": "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e7082823-c78e-4ca9-b2eb-e11dc9e8eb64/ref-benchPress.jpg",
+      "content_type": "image/jpeg"
+    }
+  ]
+}
