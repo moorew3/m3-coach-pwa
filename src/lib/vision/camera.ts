@@ -17,8 +17,8 @@ import { GestureReader, type GestureId } from "./gestures";
 import type { PatternId } from "./patterns";
 
 const WASM_BASE = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm";
-const POSE_MODEL = "/models/pose_landmarker_lite.task";
-const GESTURE_MODEL = "/models/gesture_recognizer.task";
+const POSE_MODEL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task";
+const GESTURE_MODEL = "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task";
 
 export type CamStatus =
   | "off"
