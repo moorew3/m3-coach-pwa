@@ -17,13 +17,13 @@
  */
 
 /** Primary full-body identity source used across every coach surface. */
-export const COACH_REFERENCE = "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/6a53cff1-5d75-4b90-8330-731a899c9c05/coach-primary-standing.png";
+export const COACH_REFERENCE = "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/coach-primary-standing.png";
 
 /**
  * Secondary identity evidence for future media review/generation only.
  * Never use this cropped portrait as the primary or full-body stage image.
  */
-export const COACH_IDENTITY_SUPPORT_REFERENCE = "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c7e3dbbf-486c-4e06-9d8e-c00a53e866c7/coach-face-tattoo-support.jpg";
+export const COACH_IDENTITY_SUPPORT_REFERENCE = "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/coach-face-tattoo-support.jpg";
 
 /** Every moving asset must be explicitly attested to this identity. */
 export const CANONICAL_COACH_ID = "approved-original-coach" as const;
@@ -33,38 +33,35 @@ export const COACH_DESCRIPTION =
 
 /** Verified coach-performed motion clips, keyed by MirrorMove id. */
 export const COACH_MOTION: Record<string, string> = {
-  boxingStance: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/ba2daa61-d337-44ea-9fe0-12f6698cc43f/boxingStanceV2.mp4",
-  cross: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/767f7369-4a91-4f1e-bbe3-ad429dc80d15/crossV2.mp4",
-  defensiveReset: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/39d355b3-eb12-4628-98d6-107ebbd966c4/defensiveResetV2.mp4",
-  gluteBridge: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a72a39b6-d28b-44e4-8d69-20d7dedadbe4/gluteBridgeV3.mp4",
-  guardReset: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/de47b48c-3ce6-4ebc-9ee8-56ac2acb0161/guardResetV2.mp4",
-  jab: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/fea6c3ab-2ad2-4c0a-8380-432cc8496e49/jabV2.mp4",
-  shadowboxPunches: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/882b696d-7323-4bdb-ae0f-cf6d081995b2/shadowboxPunchesV2.mp4",
-  bandPullApart: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
-  benchPress: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4",
-  chestMobility: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4",
-  controlledShoulderWork:
-    "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/bd8c08f2-f0f7-41a6-8286-0714fb017645/controlledShoulderWork.mp4",
-  deadBug: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/2c12477d-f5f5-48e8-9528-73ca1275cfb9/deadBugV3.mp4",
-  frontKick: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/ef4b2839-4898-4f96-bdc6-4c112be5142c/frontKick.mp4",
-  hamstringCurl: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/dc585bcc-7aa8-445b-93b4-2f7a088ce975/hamstringCurlV2.mp4",
-  hamstringMobility:
-    "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/afa99947-ec33-4d47-976d-7788ad4b845d/hamstringMobilityV3.mp4",
-  hipFlexorStretch: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/63cdf4b4-32a8-493b-ba65-399172405412/hipFlexorStretchV3.mp4",
-  inclineDumbbellPress:
-    "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/2d0cad85-aedc-4326-bbc6-2c3db57ea42e/inclineDumbbellPressV3.mp4",
-  jabCross: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4a42a4f8-dc38-44ee-93fa-b62815263ebd/jabCrossV2.mp4",
-  kneeChamber: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/9458679e-92e5-49ea-aa70-f369aed89dc1/kneeChamberV2.mp4",
-  latPulldown: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
-  lateralRaise: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4",
-  lowerBodyMobility: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/a2b9f071-159d-4362-8943-e95dcaf79a23/lowerBodyMobility.mp4",
-  romanianDeadlift: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/c406059f-cfce-4344-8d5d-ccc9d8c303e0/romanianDeadliftV2.mp4",
-  roundKick: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/9e7a71c5-c696-4d1d-beca-2d83963a6d11/roundKick.mp4",
-  seatedRow: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/fb904bbb-9853-486a-997f-cae8fd811e93/seatedRowV3.mp4",
-  shoulderMobility: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/ac623364-1584-4306-acef-c8460c3e2cdb/shoulderMobility.mp4",
-  squat: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/86ca5509-96be-4531-85ea-bc241319f293/squatV2.mp4",
-  suitcaseCarry: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/4670b0c7-7068-40bd-8d9a-1ecde974b0ae/suitcaseCarry.mp4",
-  tricepsPressdown: "https://id-preview--2226e1e4-f626-48b3-8091-e80f59ffb46c.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
+  boxingStance: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/boxingStance.mp4",
+  cross: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/cross.mp4",
+  defensiveReset: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/defensiveReset.mp4",
+  gluteBridge: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/gluteBridge.mp4",
+  guardReset: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/guardReset.mp4",
+  jab: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/jab.mp4",
+  shadowboxPunches: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/shadowboxPunches.mp4",
+  bandPullApart: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/bandPullApart.mp4",
+  benchPress: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/benchPress.mp4",
+  chestMobility: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/chestMobility.mp4",
+  controlledShoulderWork: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/controlledShoulderWork.mp4",
+  deadBug: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/deadBug.mp4",
+  frontKick: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/frontKick.mp4",
+  hamstringCurl: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hamstringCurl.mp4",
+  hamstringMobility: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hamstringMobility.mp4",
+  hipFlexorStretch: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hipFlexorStretch.mp4",
+  inclineDumbbellPress: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/inclineDumbbellPress.mp4",
+  jabCross: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/jabCross.mp4",
+  kneeChamber: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/kneeChamber.mp4",
+  latPulldown: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/latPulldown.mp4",
+  lateralRaise: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/lateralRaise.mp4",
+  lowerBodyMobility: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/lowerBodyMobility.mp4",
+  romanianDeadlift: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/romanianDeadlift.mp4",
+  roundKick: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/roundKick.mp4",
+  seatedRow: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/seatedRow.mp4",
+  shoulderMobility: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/shoulderMobility.mp4",
+  squat: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/squat.mp4",
+  suitcaseCarry: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/suitcaseCarry.mp4",
+  tricepsPressdown: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/tricepsPressdown.mp4",
 };
 
 /** Coach stills used as posters for the verified clips. */
