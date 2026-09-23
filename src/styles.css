@@ -1,0 +1,221 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * 22-Day Arm Growth Tracker design system.
+ * Dark charcoal surfaces, white text, muted gold + cyan accents.
+ * All colors are oklch tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-elevated: var(--elevated);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-cyan: var(--cyan);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-display: "Barlow Condensed", "Oswald", system-ui, sans-serif;
+  --font-sans: "Inter Tight", system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.9rem;
+  --background: oklch(0.19 0.006 264);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.235 0.007 264);
+  --card-foreground: oklch(0.985 0 0);
+  --elevated: oklch(0.28 0.008 264);
+  --popover: oklch(0.225 0.007 264);
+  --popover-foreground: oklch(0.985 0 0);
+  --gold: oklch(0.79 0.105 84);
+  --cyan: oklch(0.79 0.09 205);
+  --primary: var(--gold);
+  --primary-foreground: oklch(0.18 0.01 80);
+  --secondary: oklch(0.3 0.008 264);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.28 0.008 264);
+  --muted-foreground: oklch(0.73 0.008 264);
+  --accent: var(--cyan);
+  --accent-foreground: oklch(0.18 0.01 220);
+  --destructive: oklch(0.63 0.19 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.72 0.14 155);
+  --border: oklch(0.34 0.008 264);
+  --input: oklch(0.32 0.008 264);
+  --ring: var(--gold);
+  --chart-1: var(--gold);
+  --chart-2: var(--cyan);
+  --chart-3: oklch(0.72 0.14 155);
+  --chart-4: oklch(0.7 0.12 300);
+  --chart-5: oklch(0.75 0.13 40);
+  --sidebar: oklch(0.21 0.006 264);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: var(--gold);
+  --sidebar-primary-foreground: oklch(0.18 0.01 80);
+  --sidebar-accent: oklch(0.28 0.008 264);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.34 0.008 264);
+  --sidebar-ring: var(--gold);
+
+  --gradient-accent: linear-gradient(135deg, var(--gold), var(--cyan));
+  --gradient-surface: linear-gradient(160deg, oklch(0.26 0.008 264), oklch(0.215 0.006 264));
+  --shadow-card: 0 12px 30px -18px oklch(0 0 0 / 0.9);
+  --shadow-glow: 0 0 0 1px color-mix(in oklab, var(--primary) 35%, transparent);
+}
+
+/* Light mode (Settings → Theme → light/system) */
+[data-theme="light"] {
+  --background: oklch(0.98 0.003 264);
+  --foreground: oklch(0.2 0.006 264);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.006 264);
+  --elevated: oklch(0.955 0.004 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.006 264);
+  --gold: oklch(0.62 0.12 78);
+  --cyan: oklch(0.58 0.1 210);
+  --primary-foreground: oklch(0.99 0 0);
+  --accent-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.93 0.004 264);
+  --secondary-foreground: oklch(0.2 0.006 264);
+  --muted: oklch(0.93 0.004 264);
+  --muted-foreground: oklch(0.45 0.008 264);
+  --border: oklch(0.87 0.005 264);
+  --input: oklch(0.87 0.005 264);
+  --gradient-surface: linear-gradient(160deg, oklch(1 0 0), oklch(0.96 0.004 264));
+  --shadow-card: 0 12px 30px -20px oklch(0 0 0 / 0.35);
+  color-scheme: light;
+}
+
+/* Accent theme variants (Settings) */
+[data-accent="cyan"] {
+  --primary: var(--cyan);
+  --primary-foreground: oklch(0.18 0.01 220);
+  --accent: var(--gold);
+  --accent-foreground: oklch(0.18 0.01 80);
+  --ring: var(--cyan);
+}
+
+[data-contrast="high"] {
+  --muted-foreground: oklch(0.88 0.005 264);
+  --border: oklch(0.48 0.01 264);
+}
+
+[data-surface="black"] {
+  --background: oklch(0.13 0.004 264);
+  --card: oklch(0.18 0.006 264);
+  --elevated: oklch(0.22 0.006 264);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    overscroll-behavior-y: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+}
+
+@utility surface-card {
+  background-image: var(--gradient-surface);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+}
+
+@utility text-gradient-accent {
+  background-image: var(--gradient-accent);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility tap-target {
+  min-height: 3.25rem;
+}
+
+@utility safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
+}
+
+/* Coach image is intentionally static during all front-facing speaking /
+   eye-contact / rest / transition states. No breath, bob, parallax, scale or
+   filter motion is applied to the approved coach photograph. */
+
+/* Opening scene atmosphere: drifting smoke only. The coach never moves. */
+@keyframes coach-smoke-drift {
+  0% { transform: translate3d(-4%, 0, 0) scale(1.2); }
+  50% { transform: translate3d(4%, -2%, 0) scale(1.28); }
+  100% { transform: translate3d(-4%, 0, 0) scale(1.2); }
+}
+
+.coach-smoke {
+  background:
+    radial-gradient(60% 40% at 25% 70%, rgba(255, 255, 255, 0.16), transparent 70%),
+    radial-gradient(50% 35% at 75% 55%, rgba(255, 255, 255, 0.12), transparent 70%),
+    radial-gradient(70% 50% at 50% 95%, rgba(255, 255, 255, 0.14), transparent 75%);
+  filter: blur(14px);
+  animation: coach-smoke-drift 18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach-smoke { animation: none; }
+}
