@@ -40,17 +40,23 @@ jobs:
               if len(data) < 512:
                   raise RuntimeError(f"{name}: file too small ({len(data)} bytes)")
 
-              if asset["kind"] == "png":
-                  if data[:8] != b"\x89PNG\r\n\x1a\n":
-                      raise RuntimeError(f"{name}: invalid PNG signature")
+              if data[:8] == b"\x89PNG\r\n\x1a\n":
+                  actual_kind = "png"
+                  if not name.lower().endswith(".png"):
+                      name = name.rsplit(".", 1)[0] + ".png"
+                      dest = out / name
+              elif data[:2] == b"\xff\xd8":
+                  actual_kind = "jpeg"
+                  if not name.lower().endswith((".jpg", ".jpeg")):
+                      name = name.rsplit(".", 1)[0] + ".jpg"
+                      dest = out / name
               else:
-                  if data[:2] != b"\xff\xd8":
-                      raise RuntimeError(f"{name}: invalid JPEG signature")
+                  raise RuntimeError(f"{name}: unsupported image signature")
 
               dest.write_bytes(data)
               checks.append({
                   "name": name,
-                  "kind": asset["kind"],
+                  "kind": actual_kind,
                   "bytes": len(data),
                   "sha256": hashlib.sha256(data).hexdigest(),
                   "source_url": url,
