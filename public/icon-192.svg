@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-label="M3 Coach">
+  <rect width="192" height="192" rx="36" fill="#1c1d20"/>
+  <circle cx="96" cy="96" r="66" fill="#2a2c31"/>
+  <path d="M52 126V66h20l24 31 24-31h20v60h-20V96l-24 30-24-30v30H52z" fill="#ffffff"/>
+</svg>
