@@ -1,0 +1,40 @@
+name: Stage Approved Coach Source
+
+on:
+  push:
+    branches:
+      - work/motion-gap-production
+    paths:
+      - .github/workflows/stage-approved-coach-source.yml
+
+permissions:
+  contents: write
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/motion-gap-production
+      - name: Download exact approved coach source
+        run: |
+          mkdir -p public/coach-source
+          curl -L --fail --silent --show-error \
+            "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/coach-primary-standing.png" \
+            -o public/coach-source/coach-primary-standing.png
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("public/coach-source/coach-primary-standing.png")
+          b=p.read_bytes()
+          assert b[:8] == b"\x89PNG\r\n\x1a\n", "not PNG"
+          assert len(b) > 1024, "too small"
+          print(len(b))
+          PY
+      - name: Commit approved source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/coach-source/coach-primary-standing.png
+          git commit -m "Stage approved coach source for motion generation" || exit 0
+          git push
