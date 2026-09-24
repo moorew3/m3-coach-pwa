@@ -249,9 +249,12 @@ export function MirrorMeDemo({
             style={mirrored ? { transform: "scaleX(-1)" } : undefined}
           />
         ) : (
-          <div className="grid h-full w-full place-items-center bg-elevated px-6 text-center text-sm font-bold text-muted-foreground">
-            Exercise media unavailable
-          </div>
+          <img
+            src={still}
+            alt={`${move.name} — your coach; full motion demo in production`}
+            className="h-full w-full object-cover object-top"
+            style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+          />
         )}
       </div>
 
@@ -318,6 +321,7 @@ function PhaseBoardDetail({
   onClose: () => void;
 }) {
   const board = boardFor(move.id);
+  const still = coachStillFor(move.id);
   const motion = coachMotionFor(move.id);
   const panels = panelCount(move);
   const panelAspect = boardMetaFor(move.id)?.panelAspect ?? 1;
@@ -376,7 +380,7 @@ function PhaseBoardDetail({
               className="relative w-full overflow-hidden"
               style={{ aspectRatio: `${viewerAspect(panelAspect)}` }}
             >
-              {board && (
+              {board ? (
                 <div
                   role="img"
                   aria-label={`${move.name} phase ${i + 1}`}
@@ -385,6 +389,13 @@ function PhaseBoardDetail({
                     ...panelStyle(board, panels, panelAspect, i),
                     transform: mirrored ? "translateX(-50%) scaleX(-1)" : undefined,
                   }}
+                />
+              ) : (
+                <img
+                  src={still}
+                  alt={`${move.name} — your coach; full motion demo in production`}
+                  className="h-full w-full object-cover object-top"
+                  style={mirrored ? { transform: "scaleX(-1)" } : undefined}
                 />
               )}
 

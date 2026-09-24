@@ -105,9 +105,9 @@ const CATEGORIES: Category[] = [
   "Carry & combo",
 ];
 
-function thumbFor(move: MirrorMove): string | undefined {
-  // Every library row uses the verified frame for this exact movement.
-  // There is deliberately no universal avatar or generic-image fallback.
+function thumbFor(move: MirrorMove): string {
+  // Prefer the verified exact-movement frame. If one is unavailable, keep
+  // the canonical approved coach visible as a presence-only fallback.
   return coachStillFor(move.id);
 }
 
