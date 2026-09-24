@@ -137,3 +137,11 @@ dumbbell curls, left then right. Preserve clear stepping and clear alternating c
 ### stepShoulderPress
 Step plus shoulder press. Coach performs a controlled step while pressing dumbbells overhead,
 returns/lower under control, then repeats. Both stepping and overhead press must be clearly visible.
+
+
+## Active generation
+
+- `dumbbellCurl` — HeyGen Cinematic Avatar proof
+  - Video id: `06b722092ead445599ac46c4f53b55d9`
+  - Status: processing
+  - Not approved; remains quarantined until visual QA passes
