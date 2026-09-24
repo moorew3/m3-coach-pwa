@@ -158,3 +158,21 @@ returns/lower under control, then repeats. Both stepping and overhead press must
   - No promotion occurred
   - `dumbbellCurl` remains quarantined
 - Resume after generative/plan credits are available again.
+
+
+## Chest Press proof status
+
+- Cinematic proof video: `bfffb4dfc816474fb8106548441eb986`
+- Exercise mechanics: PASS
+  - correct machine chest press
+  - seated with back support
+  - handles at chest height
+  - at least one full press-and-return rep
+- Identity continuity: FAIL
+  - hairstyle drifted to braids/dreads
+  - right-pec portrait tattoo not clearly preserved
+- Visual integrity: PASS
+  - no equipment substitution
+  - no cuts/zoom tricks
+  - no morphing or missing limbs
+- Result: NOT APPROVED; `chestPress` remains quarantined.
