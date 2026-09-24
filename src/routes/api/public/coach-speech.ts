@@ -2,7 +2,7 @@
  * COACH SPEECH — server-side text-to-speech proxy
  * ------------------------------------------------------------------
  * The coached session's PRIMARY audio path. The browser never talks to
- * the AI gateway directly (the key must stay server-side); it posts a
+ * OpenAI directly (the API key must stay server-side); it posts a
  * line of coaching plus an emotional tone and receives a raw PCM audio
  * stream it can play through Web Audio.
  *
@@ -95,11 +95,11 @@ export const Route = createFileRoute("/api/public/coach-speech")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = process.env["LOVABLE_API_KEY"];
+        const key = process.env["OPENAI_API_KEY"];
         if (!key) {
           return new Response(
             JSON.stringify({ message: "Coach voice is not configured on this server." }),
-            { status: 500, headers: { "content-type": "application/json" } },
+            { status: 503, headers: { "content-type": "application/json" } },
           );
         }
 
@@ -116,16 +116,16 @@ export const Route = createFileRoute("/api/public/coach-speech")({
         const style = TONE_STYLE[parsed.tone ?? "assertive"] ?? TONE_STYLE.assertive;
         const mp3 = parsed.format === "mp3";
 
-        const upstream = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
+        const upstream = await fetch("https://api.openai.com/v1/audio/speech", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "openai/gpt-4o-mini-tts",
+            model: process.env["OPENAI_TTS_MODEL"]?.trim() || "gpt-4o-mini-tts",
             input: parsed.text,
-            voice: style.voice,
+            voice: process.env["OPENAI_TTS_VOICE"]?.trim() || style.voice,
             speed: style.speed,
             instructions: style.instructions,
             ...(mp3
