@@ -216,14 +216,15 @@ export function coachMotionFor(id: string): { url: string; poster?: string } | u
 }
 
 /**
- * The exercise-specific still for a movement: the verified frame of the
- * approved coach performing that exact movement, or nothing. Exercise viewers
- * must not replace a missing frame with one universal person/image.
+ * The exercise-specific still for a movement when one exists.
+ * When the exact exercise frame is missing, keep the canonical approved coach
+ * visible as presence-only fallback rather than rendering a blank/no-coach
+ * state. This fallback must never be described as the exact movement demo.
  */
-export function coachStillFor(id?: string): string | undefined {
-  if (!id) return undefined;
+export function coachStillFor(id?: string): string {
+  if (!id) return COACH_REFERENCE;
   const key = resolve(id);
-  return key ? COACH_FRAMES[key] : undefined;
+  return (key ? COACH_FRAMES[key] : undefined) ?? COACH_REFERENCE;
 }
 
 /** true when the person shown for this movement is verified as the coach. */
