@@ -145,3 +145,16 @@ returns/lower under control, then repeats. Both stepping and overhead press must
   - Video id: `06b722092ead445599ac46c4f53b55d9`
   - Status: processing
   - Not approved; remains quarantined until visual QA passes
+
+
+## Dumbbell Curl retry status
+
+- First Cinematic proof: FAILED QA
+  - grip drifted toward hammer curl
+  - hairstyle drift detected
+  - full bottom-to-top-to-bottom curl cycle not verified
+- Strict retry blocked before rendering: HeyGen returned `402 insufficient_credit`
+  - No retry video was created
+  - No promotion occurred
+  - `dumbbellCurl` remains quarantined
+- Resume after generative/plan credits are available again.
