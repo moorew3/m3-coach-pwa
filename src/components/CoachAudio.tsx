@@ -58,7 +58,7 @@ export function CoachAudioGate({
             ? "This device isn't letting any app play audio right now. Every cue is still shown on screen and the countdown beeps still play. Check that the phone isn't on silent, then tap to try again."
             : blocked
               ? "The coach's voice didn't come through — we tried the streamed coach and your browser's built-in voice. Tap again to retry, and check the device isn't on silent and that this site is allowed to play sound."
-              : "Tap once to start. The coach confirms out loud, then talks you through the whole session — warm-up, cues, countdowns, rest and cooldown."}
+              : "Tap once to start. The AI-generated coach voice confirms out loud, then talks you through the whole session — warm-up, cues, countdowns, rest and cooldown."}
         </p>
 
         <button
