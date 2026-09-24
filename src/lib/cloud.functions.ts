@@ -1,32 +1,57 @@
 /**
  * CLOUD SYNC — server functions
  * ------------------------------------------------------------------
- * The app has no login. Each install generates a long random "sync key"
- * that lives in localStorage. The server only ever stores a SHA-256 hash
- * of that key, and all reads/writes go through these server functions
- * using the service role. The tables themselves are unreachable from the
- * browser (RLS on, no policies, no anon/authenticated grants).
- *
- * A second device joins by redeeming a short-lived pairing code, which
- * hands it the same sync key — so both devices share one personal space.
+ * Uses locked SECURITY DEFINER RPCs in Supabase so Railway only needs the
+ * project's publishable key. The sync tables remain RLS-protected and are
+ * never directly exposed to the browser.
  */
 import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
 
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const PAIR_TTL_MS = 10 * 60 * 1000;
-
-async function hashKey(key: string): Promise<string> {
-  const bytes = new TextEncoder().encode(`agt:${key}`);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+function isNewSupabaseApiKey(value: string): boolean {
+  return value.startsWith("sb_publishable_") || value.startsWith("sb_secret_");
 }
 
-function makeCode(): string {
-  const bytes = new Uint8Array(6);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join("");
+function createSupabaseFetch(supabaseKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
+    );
+    if (init?.headers) new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+    if (
+      isNewSupabaseApiKey(supabaseKey) &&
+      headers.get("Authorization") === `Bearer ${supabaseKey}`
+    ) {
+      headers.delete("Authorization");
+    }
+    headers.set("apikey", supabaseKey);
+    return fetch(input, { ...init, headers });
+  };
+}
+
+function db() {
+  const url = process.env["SUPABASE_URL"];
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) {
+    const missing = [
+      ...(!url ? ["SUPABASE_URL"] : []),
+      ...(!key ? ["SUPABASE_PUBLISHABLE_KEY"] : []),
+    ];
+    throw new Error(`Missing Supabase environment variable(s): ${missing.join(", ")}.`);
+  }
+  return createClient<any>(url, key, {
+    global: { fetch: createSupabaseFetch(key) },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+function one<T>(data: T[] | T | null): T {
+  if (Array.isArray(data)) {
+    if (!data[0]) throw new Error("Sync backend returned no data.");
+    return data[0];
+  }
+  if (!data) throw new Error("Sync backend returned no data.");
+  return data;
 }
 
 function assertKey(key: unknown): string {
@@ -36,60 +61,17 @@ function assertKey(key: unknown): string {
   return key;
 }
 
-type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
-
-async function admin(): Promise<Admin> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin;
-}
-
-/** Find (or create) the account behind a sync key. */
-async function accountFor(db: Admin, key: string) {
-  const key_hash = await hashKey(key);
-  const existing = await db
-    .from("sync_accounts")
-    .select("id, channel_id")
-    .eq("key_hash", key_hash)
-    .maybeSingle();
-  if (existing.error) throw existing.error;
-  if (existing.data) return existing.data;
-
-  const created = await db
-    .from("sync_accounts")
-    .insert({ key_hash })
-    .select("id, channel_id")
-    .single();
-  if (created.error) {
-    // Race: another request created it first.
-    const retry = await db
-      .from("sync_accounts")
-      .select("id, channel_id")
-      .eq("key_hash", key_hash)
-      .maybeSingle();
-    if (retry.data) return retry.data;
-    throw created.error;
-  }
-  return created.data;
-}
-
-/* ------------------------------ app state ------------------------------ */
-
 export const cloudPull = createServerFn({ method: "POST" })
   .inputValidator((d: { key: string }) => ({ key: assertKey(d?.key) }))
   .handler(async ({ data }) => {
-    const db = await admin();
-    const account = await accountFor(db, data.key);
-    const snap = await db
-      .from("app_snapshots")
-      .select("data, rev, updated_at")
-      .eq("account_id", account.id)
-      .maybeSingle();
-    if (snap.error) throw snap.error;
+    const { data: rows, error } = await db().rpc("agt_sync_pull", { p_key: data.key });
+    if (error) throw error;
+    const row = one<any>(rows);
     return {
-      channelId: account.channel_id as string,
-      rev: (snap.data?.rev as number) ?? 0,
-      updatedAt: (snap.data?.updated_at as string) ?? null,
-      state: snap.data?.data ? JSON.stringify(snap.data.data) : null,
+      channelId: row.channel_id as string,
+      rev: Number(row.rev ?? 0),
+      updatedAt: (row.updated_at as string | null) ?? null,
+      state: row.state ? JSON.stringify(row.state) : null,
     };
   });
 
@@ -100,50 +82,26 @@ export const cloudPush = createServerFn({ method: "POST" })
     baseRev: Number(d?.baseRev ?? 0),
   }))
   .handler(async ({ data }) => {
-    const db = await admin();
-    const account = await accountFor(db, data.key);
-
-    const current = await db
-      .from("app_snapshots")
-      .select("rev")
-      .eq("account_id", account.id)
-      .maybeSingle();
-    if (current.error) throw current.error;
-
-    const serverRev = (current.data?.rev as number) ?? 0;
-    const nextRev = Math.max(serverRev, data.baseRev) + 1;
-
-    // Upsert on the primary key makes retries idempotent: a replayed write
-    // lands on the same row instead of creating a duplicate log.
-    const saved = await db
-      .from("app_snapshots")
-      .upsert(
-        { account_id: account.id, data: data.state as never, rev: nextRev },
-        { onConflict: "account_id" },
-      )
-      .select("rev")
-      .single();
-    if (saved.error) throw saved.error;
-    return { rev: saved.data.rev as number, channelId: account.channel_id as string };
+    const { data: rows, error } = await db().rpc("agt_sync_push", {
+      p_key: data.key,
+      p_state: data.state,
+      p_base_rev: data.baseRev,
+    });
+    if (error) throw error;
+    const row = one<any>(rows);
+    return { rev: Number(row.rev ?? 0), channelId: row.channel_id as string };
   });
-
-/* ---------------------------- live session ----------------------------- */
 
 export const sessionPull = createServerFn({ method: "POST" })
   .inputValidator((d: { key: string }) => ({ key: assertKey(d?.key) }))
   .handler(async ({ data }) => {
-    const db = await admin();
-    const account = await accountFor(db, data.key);
-    const row = await db
-      .from("live_sessions")
-      .select("state, rev")
-      .eq("account_id", account.id)
-      .maybeSingle();
-    if (row.error) throw row.error;
+    const { data: rows, error } = await db().rpc("agt_session_pull", { p_key: data.key });
+    if (error) throw error;
+    const row = one<any>(rows);
     return {
-      channelId: account.channel_id as string,
-      rev: (row.data?.rev as number) ?? 0,
-      state: row.data?.state ? JSON.stringify(row.data.state) : null,
+      channelId: row.channel_id as string,
+      rev: Number(row.rev ?? 0),
+      state: row.state ? JSON.stringify(row.state) : null,
     };
   });
 
@@ -154,61 +112,33 @@ export const sessionPush = createServerFn({ method: "POST" })
     rev: Number(d?.rev ?? 0),
   }))
   .handler(async ({ data }) => {
-    const db = await admin();
-    const account = await accountFor(db, data.key);
-    const saved = await db
-      .from("live_sessions")
-      .upsert(
-        { account_id: account.id, state: data.state as never, rev: data.rev },
-        { onConflict: "account_id" },
-      )
-      .select("rev")
-      .single();
-    if (saved.error) throw saved.error;
-    return { rev: saved.data.rev as number };
+    const { data: rows, error } = await db().rpc("agt_session_push", {
+      p_key: data.key,
+      p_state: data.state,
+      p_rev: data.rev,
+    });
+    if (error) throw error;
+    const row = one<any>(rows);
+    return { rev: Number(row.rev ?? 0) };
   });
-
-/* ------------------------------- pairing -------------------------------- */
 
 export const createPairCode = createServerFn({ method: "POST" })
   .inputValidator((d: { key: string }) => ({ key: assertKey(d?.key) }))
   .handler(async ({ data }) => {
-    const db = await admin();
-    const account = await accountFor(db, data.key);
-    const code = makeCode();
-    const expires = new Date(Date.now() + PAIR_TTL_MS).toISOString();
-    const upd = await db
-      .from("sync_accounts")
-      .update({ pair_code: code, pair_secret: data.key, pair_expires_at: expires })
-      .eq("id", account.id);
-    if (upd.error) throw upd.error;
-    return { code, expiresAt: expires };
+    const { data: rows, error } = await db().rpc("agt_create_pair_code", { p_key: data.key });
+    if (error) throw error;
+    const row = one<any>(rows);
+    return { code: row.code as string, expiresAt: row.expires_at as string };
   });
 
 export const redeemPairCode = createServerFn({ method: "POST" })
   .inputValidator((d: { code: string }) => ({
-    code: String(d?.code ?? "")
-      .trim()
-      .toUpperCase(),
+    code: String(d?.code ?? "").trim().toUpperCase(),
   }))
   .handler(async ({ data }) => {
     if (data.code.length < 4) throw new Error("Enter the full pairing code.");
-    const db = await admin();
-    const row = await db
-      .from("sync_accounts")
-      .select("id, pair_secret, pair_expires_at, channel_id")
-      .eq("pair_code", data.code)
-      .maybeSingle();
-    if (row.error) throw row.error;
-    if (!row.data?.pair_secret) throw new Error("That code is not valid.");
-    if (Date.parse(row.data.pair_expires_at as string) < Date.now()) {
-      throw new Error("That code has expired — create a new one.");
-    }
-    const key = row.data.pair_secret as string;
-    // Single-use: burn the code immediately after a successful redemption.
-    await db
-      .from("sync_accounts")
-      .update({ pair_code: null, pair_secret: null, pair_expires_at: null })
-      .eq("id", row.data.id);
-    return { key, channelId: row.data.channel_id as string };
+    const { data: rows, error } = await db().rpc("agt_redeem_pair_code", { p_code: data.code });
+    if (error) throw error;
+    const row = one<any>(rows);
+    return { key: row.key as string, channelId: row.channel_id as string };
   });
