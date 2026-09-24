@@ -22,13 +22,15 @@ A generated clip stays quarantined until it passes ALL checks:
 
 ## Active proof
 
-- [x] `hammerCurl` proof attempt 1 — HeyGen video id `66c3c4a1b251bbbae713fb7d94745758`
-  - Source: exact approved coach PNG
-  - Required movement: standing dumbbell hammer curl, neutral palms throughout
-  - Result: FAILED
-  - Defect: 4.1-second static/still presentation; no visible up/down curl motion
-  - Identity notes: beard, black shorts, tattoos/right-pec portrait visible; hair continuity uncertain
-  - Status: NOT approved; remains quarantined
+- [x] `hammerCurl` proof attempt 1 — FAILED
+  - HeyGen video id `66c3c4a1b251bbbae713fb7d94745758`
+  - Defect: static/still presentation; no real curl motion
+- [x] `hammerCurl` proof attempt 2 — APPROVED
+  - HeyGen Cinematic Avatar video id `e93ad0f98ebf4a0e953b842813df288e`
+  - Exact approved coach identity preserved
+  - Real standing neutral-grip hammer curl motion verified
+  - Exported as `coach-media-v1/hammerCurl.mp4`
+  - Promoted from quarantine to verified motion
 
 ## Remaining gaps — do not batch until Hammer Curl passes
 
@@ -51,8 +53,8 @@ A generated clip stays quarantined until it passes ALL checks:
 - [ ] `stepShoulderPress`
 - [ ] `trapBarDeadlift`
 
-Total gaps: 19.
-Verified motion baseline remains 29/48 until individual clips pass review.
+Total gaps: 18.
+Verified motion baseline is now 30/48 after Hammer Curl approval.
 
 
 ## Generation-method finding
