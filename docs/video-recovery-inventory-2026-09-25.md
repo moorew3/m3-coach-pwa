@@ -7,7 +7,7 @@
 - Keep wrong-avatar clips as motion/reference candidates for identity-correct regeneration where the generation method supports video references.
 - Preserve already-verified clips unchanged unless a new visual audit finds a concrete defect.
 
-## Current runtime status
+## Current Lovable runtime status before recovery sync
 
 - Verified/active coach motion keys: **29**
 - Quarantined runtime motion keys: **19**
@@ -251,12 +251,13 @@ chestSupportedRow c4c963bf, easyWalk fd4a30b9, externalRotation 85899dac, legPre
 medBallChestPass 72c0f247.
 
 
-## Hammer Curl reconciliation
+## Hammer Curl recovery correction
 
-- Hammer Curl remains **quarantined** in the certified Lovable runtime.
-- The September 19 proof failed identity/tattoo/continuous-equipment QA and was not promoted.
-- A later GitHub copy had accidentally drifted to 30 active / 18 quarantined; on 2026-09-25 it was restored to the certified **29 active / 19 quarantined** split.
-- Preserve existing Hammer Curl media as recovery/reference material, but do not render it in Coach Mode until it individually passes the identity + biomechanics gate.
+- The **September 19** Hammer Curl proof failed and remains rejected.
+- A **different later proof**, HeyGen `e93ad0f98ebf4a0e953b842813df288e` (“M3 Coach Hammer Curl Cinematic Proof”), passed visual QA on **2026-09-24**: same approved coach, tattoos/identity preserved, real neutral-grip hammer-curl motion.
+- That passed proof was exported as GitHub release asset `coach-media-v1/hammerCurl.mp4` on 2026-09-24. Release asset SHA-256: `6ac539093f7883ff2fc6d6a725471f8fbba0350477ebfb965d84a44b76deed67`.
+- Recovery status: **verified and restored in GitHub source**. Lovable still has the earlier rollback state until a sync/edit is performed there.
+- Do not regenerate Hammer Curl.
 
 
 ## Easy Walk / Treadmill recovery proof
@@ -266,3 +267,12 @@ medBallChestPass 72c0f247.
 - Recovery proof video: `841f466bf6cb4f1f8f48783fbac039af`.
 - Status: **rendered, NOT promoted**. The runtime remains on the stationary approved-coach fallback for Easy Walk until the proof passes visual identity + biomechanics review.
 - No other recovery render should be started from this method until this proof is accepted.
+
+
+## Free HeyGen history recovery sweep
+
+- Older generic HeyGen videos were decoded by scene metadata instead of discarded.
+- `2abe5c67cd0641858bc5e27c98e3679a` and `d4c5e6ebbb9248d8aeab4b54a1b9a4c9` are talking-avatar Goblet Squat instruction videos, not true exercise-motion demos.
+- `bda7adea397249f789322b3b406f0224` (“BIG FLEX DOGG: Workout B”) contains embedded workout footage for a treadmill burst, Bench Press, Cable Row, and Standing Cable Curl. Preserve those embedded clips as motion-reference candidates.
+- `7e39848984c64c018116ba58f599a3fc`, `552f3782c7d445df8d7c00b4d88a1544`, `eafe7c223a0e44e0be9bfcab5085aed7`, and `ef91efb38fd34f60be4afe0a4925627c` are workout transition/voice clips, not exercise demonstrations.
+- Newer prior outcomes recovered from chat history: Rear-Delt Fly `9e0324837f144bd3b8c5c09ceabfdf58` failed identity + movement QA; Rear-Delt Fly retry `0dc12680dff14fa38eee3ca1466db406` also failed; Dumbbell Curl strict retry `a8c8e558a235451293f748195e1eef2e` rendered as a hammer curl and failed; Chest Press cinematic proof `bfffb4dfc816474fb8106548441eb986` had correct mechanics but failed identity QA; Chest Press motion proof `d759910db7ffefd9c6220c8a82b048b8` was rendered with the approved private avatar and correct machine-press prompt but remained QA-pending.
