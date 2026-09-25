@@ -57,3 +57,24 @@ Result:
 - No HeyGen generation credits were spent.
 - Do not retry Cinematic Avatar until plan/generative credit is available.
 - Chest Press remains quarantined and chestPressV3 remains the preferred motion source.
+
+
+## Shoulder External Rotation historical recovery result
+
+The original correct-motion candidate was positively traced to Lovable commit `5270db78c74fb076c6cb7e89cedc76fc4dabd486` ("Completed coach-locked 47", 2026-09-01).
+
+Original manifest metadata:
+- asset id: `85899dac-4f59-4993-abff-980cf010792d`
+- filename: `externalRotation.mp4`
+- size: `2,608,174` bytes
+- created: `2026-09-01T12:13:18Z`
+- original route: `/__l5e/assets-v1/85899dac-4f59-4993-abff-980cf010792d/externalRotation.mp4`
+
+Recovery sweep performed:
+- searched all six fitness-related Lovable projects in the workspace;
+- no duplicate asset or manifest was found outside Arm Growth Tracker;
+- current Arm Growth Tracker manifests contain only the later replacement assets;
+- the historical 85899dac route is already known to return 404;
+- GitHub mirror search found no copy by asset id or original byte size.
+
+Conclusion: treat the original binary as unrecoverable unless Lovable restores deleted asset storage externally. Do not repeat repository/project searches for this asset. If External Rotation must be completed, new correct-motion footage is required.
