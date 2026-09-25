@@ -257,3 +257,12 @@ medBallChestPass 72c0f247.
 - The September 19 proof failed identity/tattoo/continuous-equipment QA and was not promoted.
 - A later GitHub copy had accidentally drifted to 30 active / 18 quarantined; on 2026-09-25 it was restored to the certified **29 active / 19 quarantined** split.
 - Preserve existing Hammer Curl media as recovery/reference material, but do not render it in Coach Mode until it individually passes the identity + biomechanics gate.
+
+
+## Easy Walk / Treadmill recovery proof
+
+- Recovery source motion: `easyWalkV3.mp4` (`21e0072b-b44f-4e33-b732-1fda2790cb7b`).
+- Locked identity source: private HeyGen avatar `M3 Approved Coach Motion Source`.
+- Recovery proof video: `841f466bf6cb4f1f8f48783fbac039af`.
+- Status: **rendered, NOT promoted**. The runtime remains on the stationary approved-coach fallback for Easy Walk until the proof passes visual identity + biomechanics review.
+- No other recovery render should be started from this method until this proof is accepted.
