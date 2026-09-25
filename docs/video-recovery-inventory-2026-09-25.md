@@ -285,3 +285,21 @@ medBallChestPass 72c0f247.
 - Do **not** promote, reuse, or wire this clip into any workout surface.
 - Preserve it only as a failed-generation record so it is not accidentally retried or mistaken for approved media.
 - Chest Press remains a recovery gap. Continue from existing true-motion candidates (especially `chestPressV3.mp4`) before any new generation.
+
+
+## Historical quarantine reconstruction — 2026-09-25
+
+- **2026-09-14** commit `21e5699c`: all 48 movement keys were present in `COACH_MOTION`, all 48 were in the canonical allowlist, and `INVALID_COACH_MOTION` was empty after the then-current media replacement pass.
+- **2026-09-15** commit `0b55b0d0`: exactly **17** movements were quarantined: battleRopeFinisher, bulgarianSplitSquat, cablePunch, chestPress, chestSupportedRow, dumbbellCurl, externalRotation, farmerMarch, hammerCurl, legPress, medBallChestPass, rearDeltFly, reverseStepRow, shoulderPress, squatToCurl, stepAltCurl, stepShoulderPress.
+- **2026-09-18** commit `4372d3e9`: Easy Walk and Trap-Bar Deadlift were added later, increasing quarantine from 17 to 19.
+- Hammer Curl was later independently recovered and approved on 2026-09-24, so the unresolved remainder of the original September 15 batch is now **16**.
+- Therefore do not treat the later 19-gap snapshot as proof that 19 original clips were bad or missing. Easy Walk and Trap-Bar Deadlift are separate late-quarantine review items.
+
+### Shoulder External Rotation history
+
+- Original motion asset: `85899dac-4f59-4993-abff-980cf010792d / externalRotation.mp4`, created 2026-09-01, size 2,608,174 bytes.
+- On the earlier September 14 audit it was recognized as the External Rotation movement but was quarantined for wrong avatar markers (braided hair / different chest tattoos), making it a **motion-reference recovery candidate**, not evidence that the movement itself was unusable.
+- A later replacement `b565013d-eaf9-4266-bc69-7162b31e3ac0 / externalRotationV2.mp4` was rejected on September 15 because it did not show the specified band/cable resistance.
+- A still later `b59570b5-be01-487a-9900-c2c188750391 / externalRotation.mp4` was also rejected; later frame review showed band-pull-apart behavior rather than true external rotation.
+- Recovery priority is the original `85899dac...` motion if its binary can be recovered. Do not use the later band-pull-apart variants as the movement source.
+- Current published Lovable deployment returns 404 for the old `85899dac...` URL. ChatGPT Library and connected Google Drive searches did not find a saved copy under the filename, movement name, or asset ID.
