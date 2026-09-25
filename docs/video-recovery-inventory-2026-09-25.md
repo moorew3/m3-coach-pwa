@@ -276,3 +276,12 @@ medBallChestPass 72c0f247.
 - `bda7adea397249f789322b3b406f0224` (“BIG FLEX DOGG: Workout B”) contains embedded workout footage for a treadmill burst, Bench Press, Cable Row, and Standing Cable Curl. Preserve those embedded clips as motion-reference candidates.
 - `7e39848984c64c018116ba58f599a3fc`, `552f3782c7d445df8d7c00b4d88a1544`, `eafe7c223a0e44e0be9bfcab5085aed7`, and `ef91efb38fd34f60be4afe0a4925627c` are workout transition/voice clips, not exercise demonstrations.
 - Newer prior outcomes recovered from chat history: Rear-Delt Fly `9e0324837f144bd3b8c5c09ceabfdf58` failed identity + movement QA; Rear-Delt Fly retry `0dc12680dff14fa38eee3ca1466db406` also failed; Dumbbell Curl strict retry `a8c8e558a235451293f748195e1eef2e` rendered as a hammer curl and failed; Chest Press cinematic proof `bfffb4dfc816474fb8106548441eb986` had correct mechanics but failed identity QA; Chest Press motion proof `d759910db7ffefd9c6220c8a82b048b8` was rendered with the approved private avatar and correct machine-press prompt but remained QA-pending.
+
+
+## Chest Press user review — 2026-09-25
+
+- HeyGen `d759910db7ffefd9c6220c8a82b048b8` (“M3 Coach Chest Press Motion Proof”) is **REJECTED**.
+- User visual review: the coach is not actually working out / performing a chest press; the clip looks like an intro or talking-avatar mistake rather than an exercise demonstration.
+- Do **not** promote, reuse, or wire this clip into any workout surface.
+- Preserve it only as a failed-generation record so it is not accidentally retried or mistaken for approved media.
+- Chest Press remains a recovery gap. Continue from existing true-motion candidates (especially `chestPressV3.mp4`) before any new generation.
