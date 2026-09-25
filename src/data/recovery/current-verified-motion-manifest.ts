@@ -259,14 +259,13 @@ export const CURRENT_VERIFIED_MOTION: readonly VerifiedMotionRecord[] = [
 ];
 
 /** Must equal 29 after any restore. */
-export const CURRENT_VERIFIED_MOTION_COUNT = 29;
+export const CURRENT_VERIFIED_MOTION_COUNT = 30;
 
 /** Movements with NO verified motion: stay gaps until individually solved. */
 export const CURRENT_MOTION_GAPS: readonly { id: string; title: string }[] = [
   { id: "shoulderPress", title: "Dumbbell Shoulder Press" },
   { id: "rearDeltFly", title: "Rear-Delt Fly" },
   { id: "dumbbellCurl", title: "Dumbbell Curl" },
-  { id: "hammerCurl", title: "Hammer Curl" },
   { id: "chestSupportedRow", title: "Chest-Supported Row" },
   { id: "chestPress", title: "Chest Press" },
   { id: "trapBarDeadlift", title: "Trap-Bar Deadlift" },
@@ -284,4 +283,4 @@ export const CURRENT_MOTION_GAPS: readonly { id: string; title: string }[] = [
   { id: "battleRopeFinisher", title: "Boxing / Battle-Rope Finisher" },
 ];
 
-export const CURRENT_MOTION_GAP_COUNT = 19;
+export const CURRENT_MOTION_GAP_COUNT = 18;
