@@ -78,3 +78,24 @@ Recovery sweep performed:
 - GitHub mirror search found no copy by asset id or original byte size.
 
 Conclusion: treat the original binary as unrecoverable unless Lovable restores deleted asset storage externally. Do not repeat repository/project searches for this asset. If External Rotation must be completed, new correct-motion footage is required.
+
+
+## Avatar IV low-cost recovery path — 2026-09-25
+
+A cheaper non-Cinematic HeyGen route was validated at the API level using the existing private photo avatar `M3 Approved Coach Motion Source`.
+
+Chest Press test:
+- HeyGen video id: `58426c250683175a8de7a3037388172c`
+- method: regular Avatar IV + `motionPrompt`
+- audio: muted via voice volume 0; script used only to create clip duration
+- requested motion: continuous seated machine chest press, no intro/talking gestures
+- status at creation: accepted/rendering
+- account add-on credits before: 54
+- account add-on credits after: 51
+- observed cost: 3 add-on credits
+
+Important:
+- This path does **not** use the existing wrong-identity motion video as a direct motion reference.
+- It relies on Avatar IV motion prompting from the approved coach photo avatar.
+- Do not batch-generate the other gaps until the Chest Press test is visually confirmed to be real exercise motion with acceptable identity continuity.
+- If quality passes and the cost remains 3 credits each, the remaining 51 add-on credits would cover 17 additional renders, matching the 17 gaps remaining after Chest Press.
