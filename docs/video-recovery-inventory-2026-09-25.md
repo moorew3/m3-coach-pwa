@@ -9,8 +9,8 @@
 
 ## Current runtime status
 
-- Verified/active coach motion keys: **30**
-- Quarantined runtime motion keys: **18**
+- Verified/active coach motion keys: **29**
+- Quarantined runtime motion keys: **19**
 - Lovable coach-motion asset manifests still present: **57**
 - Lovable legacy motion asset manifests still present: **42**
 - Completed videos currently visible in connected HeyGen history: **23**
@@ -30,7 +30,6 @@
 - deadBug
 - frontKick
 - hamstringCurl
-- hammerCurl
 - hamstringMobility
 - hipFlexorStretch
 - inclineDumbbellPress
@@ -57,6 +56,7 @@
 - easyWalk
 - externalRotation
 - farmerMarch
+- hammerCurl
 - legPress
 - medBallChestPass
 - rearDeltFly
@@ -249,3 +249,11 @@ BROKEN = phase-board slideshow, overlay graphics, or unreachable.
 Unreachable historical URLs (404, recorded only): bulgarianSplitSquat be6bb35f, chestPress 71ec41bd,
 chestSupportedRow c4c963bf, easyWalk fd4a30b9, externalRotation 85899dac, legPress 296b1e5f,
 medBallChestPass 72c0f247.
+
+
+## Hammer Curl reconciliation
+
+- Hammer Curl remains **quarantined** in the certified Lovable runtime.
+- The September 19 proof failed identity/tattoo/continuous-equipment QA and was not promoted.
+- A later GitHub copy had accidentally drifted to 30 active / 18 quarantined; on 2026-09-25 it was restored to the certified **29 active / 19 quarantined** split.
+- Preserve existing Hammer Curl media as recovery/reference material, but do not render it in Coach Mode until it individually passes the identity + biomechanics gate.
