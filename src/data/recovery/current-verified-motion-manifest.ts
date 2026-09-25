@@ -97,6 +97,14 @@ export const CURRENT_VERIFIED_MOTION: readonly VerifiedMotionRecord[] = [
     status: "verified-motion",
   },
   {
+    id: "hammerCurl",
+    title: "Hammer Curl",
+    motionUrl: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hammerCurl.mp4",
+    posterAsset: "@/assets/coach/frames/hammerCurl.jpg",
+    actorId: SNAPSHOT_ACTOR_ID,
+    status: "verified-motion",
+  },
+  {
     id: "suitcaseCarry",
     title: "Suitcase Carry",
     motionUrl: "/__l5e/assets-v1/4670b0c7-7068-40bd-8d9a-1ecde974b0ae/suitcaseCarry.mp4",
@@ -258,7 +266,7 @@ export const CURRENT_VERIFIED_MOTION: readonly VerifiedMotionRecord[] = [
   },
 ];
 
-/** Must equal 29 after any restore. */
+/** Must equal 30 after the approved Hammer Curl recovery. */
 export const CURRENT_VERIFIED_MOTION_COUNT = 30;
 
 /** Movements with NO verified motion: stay gaps until individually solved. */
