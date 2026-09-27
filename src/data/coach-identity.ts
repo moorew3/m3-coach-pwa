@@ -65,6 +65,7 @@ export const COACH_DESCRIPTION =
 /** Verified coach-performed motion clips, keyed by MirrorMove id. */
 export const COACH_MOTION: Record<string, string> = {
   boxingStance: "/__l5e/assets-v1/ba2daa61-d337-44ea-9fe0-12f6698cc43f/boxingStanceV2.mp4",
+  boxingCombo1: "/media/boxingCombo1.mp4",
   cross: "/__l5e/assets-v1/767f7369-4a91-4f1e-bbe3-ad429dc80d15/crossV2.mp4",
   defensiveReset: "/__l5e/assets-v1/39d355b3-eb12-4628-98d6-107ebbd966c4/defensiveResetV2.mp4",
   gluteBridge: "/__l5e/assets-v1/a72a39b6-d28b-44e4-8d69-20d7dedadbe4/gluteBridgeV3.mp4",
@@ -102,6 +103,7 @@ export const COACH_MOTION: Record<string, string> = {
 /** Coach stills used as posters for the verified clips. */
 export const COACH_FRAMES: Record<string, string> = {
   boxingStance: fBoxingStance,
+  boxingCombo1: fJabCross,
   cross: fCross,
   defensiveReset: fDefensiveReset,
   gluteBridge: fGluteBridge,
@@ -142,6 +144,7 @@ export const COACH_ALIASES: Record<string, string> = {
   treadmillWalk: "easyWalk",
   inclineWalk: "easyWalk",
   hipFlexorMobility: "hipFlexorStretch",
+  battleRopeFinisher: "boxingCombo1",
   jabCrossCombo: "jabCross",
   lightPunches: "shadowboxPunches",
   shoulderExternalRotation: "externalRotation",
@@ -170,6 +173,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "bandPullApart",
   "benchPress",
   "boxingStance",
+  "boxingCombo1",
   "chestMobility",
   "controlledShoulderWork",
   "cross",
@@ -205,7 +209,6 @@ const CANONICAL_IDENTITY_MOTION = new Set([
  * person or movement cannot be verified against the locked reference.
  */
 export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
-  battleRopeFinisher: "Coach identity continuity is not verified for this clip.",
   bulgarianSplitSquat: "Coach identity continuity is not verified for this clip.",
   cablePunch: "Coach identity continuity is not verified for this clip.",
   chestPress: "Coach identity continuity is not verified for this clip.",
