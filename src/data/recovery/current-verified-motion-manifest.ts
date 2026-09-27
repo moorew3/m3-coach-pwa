@@ -25,6 +25,14 @@ export interface VerifiedMotionRecord {
 
 export const CURRENT_VERIFIED_MOTION: readonly VerifiedMotionRecord[] = [
   {
+    id: "battleRopeFinisher",
+    title: "Boxing / Battle-Rope Finisher",
+    motionUrl: "/media/boxingCombo1.mp4",
+    posterAsset: "@/assets/coach/frames/jabCross.jpg",
+    actorId: SNAPSHOT_ACTOR_ID,
+    status: "verified-motion",
+  },
+  {
     id: "lateralRaise",
     title: "Dumbbell Lateral Raise",
     motionUrl: "/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4",
@@ -266,8 +274,8 @@ export const CURRENT_VERIFIED_MOTION: readonly VerifiedMotionRecord[] = [
   },
 ];
 
-/** Must equal 30 after the approved Hammer Curl recovery. */
-export const CURRENT_VERIFIED_MOTION_COUNT = 30;
+/** Must equal 31 after Boxing Combo 1 promotion. */
+export const CURRENT_VERIFIED_MOTION_COUNT = 31;
 
 /** Movements with NO verified motion: stay gaps until individually solved. */
 export const CURRENT_MOTION_GAPS: readonly { id: string; title: string }[] = [
@@ -288,7 +296,6 @@ export const CURRENT_MOTION_GAPS: readonly { id: string; title: string }[] = [
   { id: "medBallChestPass", title: "Medicine-Ball Chest Pass" },
   { id: "easyWalk", title: "Easy Walk / Treadmill" },
   { id: "externalRotation", title: "Shoulder External Rotation" },
-  { id: "battleRopeFinisher", title: "Boxing / Battle-Rope Finisher" },
 ];
 
-export const CURRENT_MOTION_GAP_COUNT = 18;
+export const CURRENT_MOTION_GAP_COUNT = 17;
