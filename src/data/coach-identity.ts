@@ -15,46 +15,14 @@
  * playable. A URL alone never makes a clip trusted. Movements without an
  * approved clip are reported honestly as "coach clip pending".
  */
-import coachPrimaryReference from "@/assets/coach/identity/coach-primary-standing.png.asset.json";
-import coachIdentitySupportReference from "@/assets/coach/identity/coach-face-tattoo-support.jpg.asset.json";
-import fBoxingStance from "@/assets/coach/frames/boxingStance.jpg";
-import fCross from "@/assets/coach/frames/cross.jpg";
-import fDefensiveReset from "@/assets/coach/frames/defensiveReset.jpg";
-import fGluteBridge from "@/assets/coach/frames/gluteBridge.jpg";
-import fGuardReset from "@/assets/coach/frames/guardReset.jpg";
-import fJab from "@/assets/coach/frames/jab.jpg";
-import fShadowboxPunches from "@/assets/coach/frames/shadowboxPunches.jpg";
-import fBandPullApart from "@/assets/coach/frames/bandPullApart.jpg";
-import fBenchPress from "@/assets/coach/frames/benchPress.jpg";
-import fChestMobility from "@/assets/coach/frames/chestMobility.jpg";
-import fControlledShoulderWork from "@/assets/coach/frames/controlledShoulderWork.jpg";
-import fDeadBug from "@/assets/coach/frames/deadBug.jpg";
-import fFrontKick from "@/assets/coach/frames/frontKick.jpg";
-import fHamstringCurl from "@/assets/coach/frames/hamstringCurl.jpg";
-import fHamstringMobility from "@/assets/coach/frames/hamstringMobility.jpg";
-import fHipFlexorStretch from "@/assets/coach/frames/hipFlexorStretch.jpg";
-import fInclineDumbbellPress from "@/assets/coach/frames/inclineDumbbellPress.jpg";
-import fJabCross from "@/assets/coach/frames/jabCross.jpg";
-import fKneeChamber from "@/assets/coach/frames/kneeChamber.jpg";
-import fLatPulldown from "@/assets/coach/frames/latPulldown.jpg";
-import fLateralRaise from "@/assets/coach/frames/lateralRaise.jpg";
-import fLowerBodyMobility from "@/assets/coach/frames/lowerBodyMobility.jpg";
-import fRomanianDeadlift from "@/assets/coach/frames/romanianDeadlift.jpg";
-import fRoundKick from "@/assets/coach/frames/roundKick.jpg";
-import fSeatedRow from "@/assets/coach/frames/seatedRow.jpg";
-import fShoulderMobility from "@/assets/coach/frames/shoulderMobility.jpg";
-import fSquat from "@/assets/coach/frames/squat.jpg";
-import fSuitcaseCarry from "@/assets/coach/frames/suitcaseCarry.jpg";
-import fTricepsPressdown from "@/assets/coach/frames/tricepsPressdown.jpg";
-
 /** Primary full-body identity source used across every coach surface. */
-export const COACH_REFERENCE = coachPrimaryReference.url;
+export const COACH_REFERENCE = "/coach-source/coach-primary-standing.png";
 
 /**
  * Secondary identity evidence for future media review/generation only.
  * Never use this cropped portrait as the primary or full-body stage image.
  */
-export const COACH_IDENTITY_SUPPORT_REFERENCE = coachIdentitySupportReference.url;
+export const COACH_IDENTITY_SUPPORT_REFERENCE = COACH_REFERENCE;
 
 /** Every moving asset must be explicitly attested to this identity. */
 export const CANONICAL_COACH_ID = "approved-original-coach" as const;
