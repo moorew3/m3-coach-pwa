@@ -68,40 +68,13 @@ export const COACH_MOTION: Record<string, string> = {
   tricepsPressdown: "/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
 };
 
-/** Coach stills used as posters for the verified clips. */
-export const COACH_FRAMES: Record<string, string> = {
-  boxingStance: fBoxingStance,
-  boxingCombo1: fJabCross,
-  cross: fCross,
-  defensiveReset: fDefensiveReset,
-  gluteBridge: fGluteBridge,
-  guardReset: fGuardReset,
-  jab: fJab,
-  shadowboxPunches: fShadowboxPunches,
-  bandPullApart: fBandPullApart,
-  benchPress: fBenchPress,
-  chestMobility: fChestMobility,
-  controlledShoulderWork: fControlledShoulderWork,
-  deadBug: fDeadBug,
-  frontKick: fFrontKick,
-  hamstringCurl: fHamstringCurl,
-  hammerCurl: COACH_REFERENCE,
-  hamstringMobility: fHamstringMobility,
-  hipFlexorStretch: fHipFlexorStretch,
-  inclineDumbbellPress: fInclineDumbbellPress,
-  jabCross: fJabCross,
-  kneeChamber: fKneeChamber,
-  latPulldown: fLatPulldown,
-  lateralRaise: fLateralRaise,
-  lowerBodyMobility: fLowerBodyMobility,
-  romanianDeadlift: fRomanianDeadlift,
-  roundKick: fRoundKick,
-  seatedRow: fSeatedRow,
-  shoulderMobility: fShoulderMobility,
-  squat: fSquat,
-  suitcaseCarry: fSuitcaseCarry,
-  tricepsPressdown: fTricepsPressdown,
-};
+/** Coach stills used as posters for the verified clips.
+ * The GitHub/Railway build uses the locked canonical coach still as a safe
+ * fallback until exercise-specific poster files are migrated locally.
+ */
+export const COACH_FRAMES: Record<string, string> = Object.fromEntries(
+  Object.keys(COACH_MOTION).map((key) => [key, COACH_REFERENCE]),
+);
 
 /**
  * Movements that reuse an identical coach demonstration. Only true
