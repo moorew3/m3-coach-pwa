@@ -18,6 +18,7 @@ export function CoachDock({
   detailsOpen,
   onToggleDetails,
   hud,
+  next,
 }: {
   /** Current movement (or "Rest"). */
   exercise: string;
@@ -30,6 +31,8 @@ export function CoachDock({
   onToggleDetails: () => void;
   /** Full read-out, revealed only when the client asks for it. */
   hud: HudProps;
+  /** Next scheduled movement so the session never feels empty. */
+  next?: string;
 }) {
   return (
     <div data-testid="coach-dock" className="pointer-events-auto">
@@ -47,6 +50,11 @@ export function CoachDock({
           {line && (
             <p className="truncate text-[11px] font-semibold uppercase tracking-widest text-white/60">
               {line}
+            </p>
+          )}
+          {next && next !== exercise && (
+            <p className="truncate text-[10px] font-bold uppercase tracking-wider text-primary/90">
+              Next · {next}
             </p>
           )}
         </div>
