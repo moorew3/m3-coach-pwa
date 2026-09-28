@@ -125,5 +125,17 @@ export function resolveTrainerMedia(
   const decision = decideTrainerMedia(args);
   if (decision.mode === "motion") return decision;
   if (args.ambient === false) return decision;
+
+  /* Never show a different movement as "presence" while the athlete is
+     actively performing a movement whose exact demo is unavailable. During
+     active work, fail closed to the approved still + coaching cues. */
+  if (
+    decision.state === "WARMUP_ACTIVE" ||
+    decision.state === "ACTIVE_SET" ||
+    decision.state === "COOLDOWN_ACTIVE"
+  ) {
+    return decision;
+  }
+
   return { ...decision, ambient: ambientClipFor(decision.state) };
 }
