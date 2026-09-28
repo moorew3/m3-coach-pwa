@@ -13,7 +13,6 @@
  * full-width detail view. No stick figures anywhere.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CoachMotion } from "@/components/CoachMotion";
 import {
   Activity,
   ChevronLeft,
@@ -60,17 +59,69 @@ function MotionPlayer({
   coach?: boolean;
   onOpen?: () => void;
 }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    setVideoFailed(false);
+    if (!playing) {
+      video.pause();
+      return;
+    }
+    const startPlayback = () => {
+      video.muted = true;
+      void video.play().catch(() => undefined);
+    };
+    startPlayback();
+    video.addEventListener("canplay", startPlayback);
+    video.addEventListener("loadeddata", startPlayback);
+    return () => {
+      video.removeEventListener("canplay", startPlayback);
+      video.removeEventListener("loadeddata", startPlayback);
+    };
+  }, [playing, url]);
+
   const body = (
     <>
-      {/* seamless two-layer player: no remount per set, crossfaded loops */}
-      <CoachMotion
-        url={url}
-        poster={poster}
-        mirrored={mirrored}
-        playing={playing}
-        className={`w-full ${height}`}
-        label={`${move.name} — moving demonstration`}
-      />
+      <div
+        className={`relative w-full overflow-hidden bg-black ${height}`}
+        data-testid="mirror-motion"
+        data-url={url}
+        data-playing={videoPlaying ? "true" : "false"}
+        data-failed={videoFailed ? "true" : "false"}
+      >
+        {poster && (
+          <img
+            src={poster}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-top"
+            style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+            draggable={false}
+          />
+        )}
+        <video
+          ref={videoRef}
+          src={url}
+          poster={poster}
+          muted
+          autoPlay
+          loop
+          playsInline
+          preload="auto"
+          onPlaying={() => setVideoPlaying(true)}
+          onPause={() => setVideoPlaying(false)}
+          onError={() => {
+            setVideoPlaying(false);
+            setVideoFailed(true);
+          }}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ${videoFailed ? "opacity-0" : "opacity-100"}`}
+          style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+          aria-label={`${move.name} — moving demonstration`}
+        />
+      </div>
       <span
         className={`absolute left-2 top-2 rounded-full bg-background/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
           coach ? "text-accent" : "text-muted-foreground"
