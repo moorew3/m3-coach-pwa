@@ -1103,7 +1103,8 @@ function CoachSession() {
     left,
     speaking: engine.speaking,
     exactMotion: coachClip,
-    ambient: false,
+    nextMotion: upcoming?.clip,
+    ambient: true,
   });
   const stageVideoVisible = trainerMedia.mode === "motion";
   const previewing = false;
@@ -1453,7 +1454,7 @@ function CoachSession() {
             decision={trainerMedia}
             preloadMotion={preloadClip}
             mirrored={mirrored}
-            playing={running && stageVideoVisible}
+            playing={running}
             rate={previewing ? 1 : coachRate(tempo)}
             label={
               previewing
@@ -1461,16 +1462,6 @@ function CoachSession() {
                 : `${move?.name ?? "Coach"} — moving demonstration`
             }
           />
-          {motionMissing && (
-            <div
-              data-testid="coach-motion-production"
-              className="pointer-events-none absolute inset-x-4 top-[18%] z-10 text-center"
-            >
-              <span className="inline-flex max-w-full rounded-md border border-primary/60 bg-background/85 px-3 py-2 text-xs font-black uppercase text-foreground backdrop-blur-sm">
-                FULL MOTION DEMO IN PRODUCTION
-              </span>
-            </div>
-          )}
         </div>
         {/* DEPTH — a soft studio vignette and restrained top/bottom falloff.
             The coach sits inside a lit room, not on a flat page. */}
@@ -1599,7 +1590,7 @@ function CoachSession() {
           {step.kind === "work" && setKind !== "work" && chip(`${setKind} set`, "primary")}
           {sideMatch && chip(`${sideMatch[1]} side`)}
           {substituted && chip(`Swapped → ${substituted}`, "accent")}
-          {motionMissing && chip("FULL MOTION DEMO IN PRODUCTION")}
+          {motionMissing && chip("Use audio + form cues", "primary")}
           {previewing &&
             chip(
               upcoming?.sameExercise ? "Preview · next set" : `Preview · ${upcoming?.name}`,
@@ -1609,7 +1600,7 @@ function CoachSession() {
             !previewing &&
             upcoming &&
             !upcoming.clip &&
-            chip(`Next: ${upcoming.name} · motion pending`)}
+            chip(`Next: ${upcoming.name}`)}
           {stepPattern &&
             phaseInfo.phase === "EXERCISE_PREP" &&
             cam.status === "live" &&
@@ -1780,6 +1771,7 @@ function CoachSession() {
             detailsOpen={statsOpen}
             onToggleDetails={() => setStatsOpen((v) => !v)}
             hud={hudProps}
+            next={upcoming?.name}
           />
         </div>
 
