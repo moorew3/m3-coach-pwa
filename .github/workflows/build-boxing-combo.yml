@@ -40,39 +40,36 @@ jobs:
             ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$f"
           done
 
-      - name: Normalize and trim sequence
+      - name: Build smooth Boxing Combo 2
         shell: bash
         run: |
           set -euo pipefail
-          FILTER="scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:black,fps=30,format=yuv420p"
-          ffmpeg -y -i .tmp/boxing/boxingStance.mp4   -t 1.5 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/01.mp4
-          ffmpeg -y -i .tmp/boxing/jab.mp4            -t 1.8 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/02.mp4
-          ffmpeg -y -i .tmp/boxing/cross.mp4          -t 1.8 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/03.mp4
-          ffmpeg -y -i .tmp/boxing/jabCross.mp4       -t 2.2 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/04.mp4
-          ffmpeg -y -i .tmp/boxing/defensiveReset.mp4 -t 1.8 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/05.mp4
-          ffmpeg -y -i .tmp/boxing/jabCross.mp4       -ss 0.4 -t 2.0 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/06.mp4
-          ffmpeg -y -i .tmp/boxing/guardReset.mp4     -t 1.5 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/07.mp4
+          FILTER="scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:black,fps=30,format=yuv420p,setpts=PTS/1.08"
 
-          cat > .tmp/boxing/concat.txt <<'EOF'
-          file '01.mp4'
-          file '02.mp4'
-          file '03.mp4'
-          file '04.mp4'
-          file '05.mp4'
-          file '06.mp4'
-          file '07.mp4'
-          EOF
+          # Cut the long setup/hold frames out of the source demonstrations.
+          # The first version concatenated whole clips, which created the
+          # stop-start pauses the user saw after a couple of punches.
+          ffmpeg -y -i .tmp/boxing/boxingStance.mp4   -ss 0.20 -t 0.70 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/01.mp4
+          ffmpeg -y -i .tmp/boxing/jab.mp4            -ss 0.25 -t 1.10 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/02.mp4
+          ffmpeg -y -i .tmp/boxing/cross.mp4          -ss 0.25 -t 1.10 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/03.mp4
+          ffmpeg -y -i .tmp/boxing/jabCross.mp4       -ss 0.25 -t 1.45 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/04.mp4
+          ffmpeg -y -i .tmp/boxing/defensiveReset.mp4 -ss 0.25 -t 1.00 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/05.mp4
+          ffmpeg -y -i .tmp/boxing/jabCross.mp4       -ss 0.35 -t 1.35 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/06.mp4
+          ffmpeg -y -i .tmp/boxing/guardReset.mp4     -ss 0.20 -t 0.90 -vf "$FILTER" -an -c:v libx264 -preset medium -crf 20 .tmp/boxing/07.mp4
 
-          ffmpeg -y -f concat -safe 0 -i .tmp/boxing/concat.txt -c copy -movflags +faststart public/media/boxingCombo1.mp4
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json public/media/boxingCombo1.mp4
-          sha256sum public/media/boxingCombo1.mp4 > public/media/boxingCombo1.sha256
+          # Short crossfades hide the hard edit points without adding visible
+          # pauses. Final clip is roughly 6.5 seconds and loops back to guard.
+          ffmpeg -y             -i .tmp/boxing/01.mp4             -i .tmp/boxing/02.mp4             -i .tmp/boxing/03.mp4             -i .tmp/boxing/04.mp4             -i .tmp/boxing/05.mp4             -i .tmp/boxing/06.mp4             -i .tmp/boxing/07.mp4             -filter_complex "              [0:v][1:v]xfade=transition=fade:duration=0.08:offset=0.57[v1];              [v1][2:v]xfade=transition=fade:duration=0.08:offset=1.51[v2];              [v2][3:v]xfade=transition=fade:duration=0.08:offset=2.45[v3];              [v3][4:v]xfade=transition=fade:duration=0.08:offset=3.71[v4];              [v4][5:v]xfade=transition=fade:duration=0.08:offset=4.56[v5];              [v5][6:v]xfade=transition=fade:duration=0.08:offset=5.73[vout]"             -map "[vout]" -an -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -movflags +faststart             public/media/boxingCombo2.mp4
 
-      - name: Commit Boxing Combo 1
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json public/media/boxingCombo2.mp4
+          sha256sum public/media/boxingCombo2.mp4 > public/media/boxingCombo2.sha256
+
+      - name: Commit Boxing Combo 2
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/media/boxingCombo1.mp4 public/media/boxingCombo1.sha256
-          git commit -m "Add approved Boxing Combo 1 coach motion" || exit 0
+          git add public/media/boxingCombo2.mp4 public/media/boxingCombo2.sha256
+          git commit -m "Add smooth Boxing Combo 2 coach motion" || exit 0
           git push
