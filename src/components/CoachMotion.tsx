@@ -228,12 +228,18 @@ export function CoachMotion({
       ref={vids[idx]}
       muted
       playsInline
-      autoPlay={false}
+      autoPlay={playing && active === idx}
       loop
       preload="auto"
       data-layer={idx}
       data-active={active === idx ? "true" : "false"}
       data-playing={playingLayers[idx] ? "true" : "false"}
+      onCanPlay={(event) => {
+        if (playingRef.current && activeRef.current === idx) safePlay(event.currentTarget);
+      }}
+      onLoadedData={(event) => {
+        if (playingRef.current && activeRef.current === idx) safePlay(event.currentTarget);
+      }}
       onPlaying={() => markPlaying(idx, true)}
       onPause={() => markPlaying(idx, false)}
       onEnded={() => markPlaying(idx, false)}
