@@ -27,6 +27,11 @@ import {
   weightValue,
 } from "@/lib/progression";
 import type { AppState, IntervalOutcome, SetEntry, SetFeel } from "@/lib/store";
+import {
+  exerciseMemoryFor,
+  memoryProgressionOverride,
+  type ExerciseCoachMemory,
+} from "@/lib/coach-memory";
 
 /* ------------------------------- helpers -------------------------------- */
 
@@ -497,6 +502,8 @@ export function progressionCall(
 
 /** History-aware line for the exercise setup (main work only). */
 export function setupLine(s: AppState, e: Exercise, day: number): string {
+  const memory = memoryProgressionOverride(s, e, day);
+  if (memory) return memory.line;
   const last = lastPerformance(s, e, day);
   const call = progressionCall(s, e, last);
   return call ? call.line : "";
@@ -562,6 +569,8 @@ export function afterSetLine(s: AppState, e: Exercise, day: number, r: number): 
 
 /** What the coach recommends for NEXT time, judged from today's log. */
 export function nextTimeCall(s: AppState, e: Exercise, day: number): ProgressionCall | null {
+  const memory = memoryProgressionOverride(s, e);
+  if (memory) return memory;
   const perf = sessionPerformance(s, e, day);
   return progressionCall(s, e, perf);
 }
@@ -614,6 +623,7 @@ export function prefillFor(
     .reverse()
     .find((x) => x.done && !x.warmup);
   const liveCall = prevToday ? liveSetDecision(s, e, prevToday) : null;
+  const memoryCall = memoryProgressionOverride(s, e, day);
   const last = lastPerformance(s, e, day);
   const call = progressionCall(s, e, last);
   const range = repRange(e.reps);
@@ -621,6 +631,7 @@ export function prefillFor(
   const weight =
     liveCall?.weight ||
     prevToday?.weight ||
+    memoryCall?.weight ||
     (call && (call.kind === "up" || call.kind === "reduce")
       ? call.weight
       : lastSet?.weight || last?.weight || "");
@@ -628,7 +639,11 @@ export function prefillFor(
   const historyHint = last
     ? `Last: ${last.weight} × ${last.reps.join(", ") || "–"}${last.rpeMax ? ` · RPE ${last.rpeMax}` : ""}`
     : "";
-  const hint = liveCall ? `Coach: ${liveCall.short}` : historyHint;
+  const hint = liveCall
+    ? `Coach: ${liveCall.short}`
+    : memoryCall
+      ? `Coach memory: ${memoryCall.short}`
+      : historyHint;
   return { weight: weight === "BW" ? "" : weight, reps, hint };
 }
 
@@ -660,6 +675,7 @@ export interface ExerciseSummary {
   best: { weight: string; reps: number; e1rm: number; day: number } | null;
   trend: "up" | "flat" | "down" | "new";
   next: ProgressionCall | null;
+  memory: ExerciseCoachMemory;
 }
 
 const e1rmOf = (w: number, reps: number) => (reps > 0 ? Math.round(w * (1 + reps / 30)) : 0);
@@ -716,8 +732,11 @@ export function exerciseSummaries(s: AppState): ExerciseSummary[] {
       trend = ka > kb * 1.01 ? "up" : ka < kb * 0.99 ? "down" : "flat";
     }
     const latestDay = sessions[0].day;
-    const next = progressionCall(s, exercise, summarise(latestDay, sessions[0].sets));
-    out.push({ exercise, timed, sessions, latest: sessions[0], best, trend, next });
+    const memory = exerciseMemoryFor(s, exercise);
+    const next =
+      memoryProgressionOverride(s, exercise) ??
+      progressionCall(s, exercise, summarise(latestDay, sessions[0].sets));
+    out.push({ exercise, timed, sessions, latest: sessions[0], best, trend, next, memory });
   }
   return out.sort((a, b) => b.latest.day - a.latest.day);
 }
