@@ -506,6 +506,11 @@ export function setupLine(s: AppState, e: Exercise, day: number): string {
   if (memory) return memory.line;
   const last = lastPerformance(s, e, day);
   const call = progressionCall(s, e, last);
+  const readiness = s.days[day]?.readiness;
+  const lowReadiness = !!readiness && (readiness.energy <= 2 || !readiness.slept6);
+  if (lowReadiness && call?.kind === "up" && last) {
+    return `You earned a progression last time, but today's readiness is lower. Hold ${spokenWeight(last.weight)} for the first set and take the extra recovery; we'll judge the next set from how you actually move.`;
+  }
   return call ? call.line : "";
 }
 
