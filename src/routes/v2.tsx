@@ -10,7 +10,8 @@ import {
   SkipForward,
   UserRound,
 } from "lucide-react";
-import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";\nimport { M3GymRenderer } from "@/v2/renderer";
+import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
+import { M3GymRenderer } from "@/v2/renderer";
 import { sceneContractFor } from "@/v2/scene";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
 import type { V2Mode } from "@/v2/types";
