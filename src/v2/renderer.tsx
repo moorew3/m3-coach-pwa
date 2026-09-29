@@ -37,50 +37,133 @@ function PlaceholderHuman({
   facing = 0,
   visible = true,
   athlete = false,
+  motionKey = "idle",
+  running = false,
 }: {
   position: [number, number, number];
   facing?: number;
   visible?: boolean;
   athlete?: boolean;
+  motionKey?: string;
+  running?: boolean;
 }) {
-  const group = useRef<THREE.Group>(null);
+  const root = useRef<THREE.Group>(null);
+  const leftArm = useRef<THREE.Group>(null);
+  const rightArm = useRef<THREE.Group>(null);
+  const leftLeg = useRef<THREE.Group>(null);
+  const rightLeg = useRef<THREE.Group>(null);
 
-  useFrame(({ clock }) => {
-    if (!group.current) return;
-    group.current.position.y = Math.sin(clock.elapsedTime * 1.2) * 0.008;
+  useFrame(({ clock }, delta) => {
+    const t = running ? clock.elapsedTime : 0;
+    const ease = 1 - Math.exp(-10 * delta);
+    const set = (ref: React.RefObject<THREE.Group | null>, x: number, y: number, z: number) => {
+      if (!ref.current) return;
+      ref.current.rotation.x = THREE.MathUtils.lerp(ref.current.rotation.x, x, ease);
+      ref.current.rotation.y = THREE.MathUtils.lerp(ref.current.rotation.y, y, ease);
+      ref.current.rotation.z = THREE.MathUtils.lerp(ref.current.rotation.z, z, ease);
+    };
+
+    let la: [number, number, number] = [0, 0, -0.08];
+    let ra: [number, number, number] = [0, 0, 0.08];
+    let ll: [number, number, number] = [0, 0, 0];
+    let rl: [number, number, number] = [0, 0, 0];
+    let yaw = 0;
+
+    if (motionKey === "boxingCombination") {
+      const jab = Math.max(0, Math.sin(t * 3.4));
+      const cross = Math.max(0, Math.sin(t * 3.4 + Math.PI));
+      la = [-1.15 * jab - 0.35, 0.15, -0.3];
+      ra = [-1.15 * cross - 0.35, -0.15, 0.3];
+      yaw = 0.16 * (cross - jab);
+      ll = [0, 0.05, -0.03];
+      rl = [0, -0.05, 0.03];
+    } else if (motionKey === "frontKick") {
+      const kick = Math.max(0, Math.sin(t * 2.4));
+      rl = [-1.25 * kick, 0, 0];
+      la = [-0.5, 0, -0.2];
+      ra = [-0.5, 0, 0.2];
+    } else if (motionKey === "roundKick") {
+      const kick = Math.max(0, Math.sin(t * 2.2));
+      rl = [-0.7 * kick, 0.55 * kick, 0.15];
+      yaw = -0.45 * kick;
+      la = [-0.45, 0, -0.25];
+      ra = [-0.45, 0, 0.25];
+    } else if (motionKey === "lateralRaise") {
+      const lift = 0.5 + 0.5 * Math.sin(t * 2.2);
+      la = [0, 0, -0.08 - 1.2 * lift];
+      ra = [0, 0, 0.08 + 1.2 * lift];
+    } else if (motionKey === "inclinePress" || motionKey === "chestPress") {
+      const press = 0.5 + 0.5 * Math.sin(t * 2.0);
+      la = [-0.8 - 0.65 * press, 0, -0.45];
+      ra = [-0.8 - 0.65 * press, 0, 0.45];
+    } else if (motionKey === "tricepsPressdown") {
+      const press = 0.5 + 0.5 * Math.sin(t * 2.4);
+      la = [-0.35 + 0.45 * press, 0, -0.12];
+      ra = [-0.35 + 0.45 * press, 0, 0.12];
+    } else {
+      const breathe = Math.sin(t * 1.2) * 0.035;
+      la = [breathe, 0, -0.08];
+      ra = [-breathe, 0, 0.08];
+    }
+
+    set(leftArm, ...la);
+    set(rightArm, ...ra);
+    set(leftLeg, ...ll);
+    set(rightLeg, ...rl);
+
+    if (root.current) {
+      root.current.rotation.y = facing + yaw;
+      root.current.position.y = Math.sin(t * 1.2) * 0.006;
+    }
   });
 
   if (!visible) return null;
 
-  const body = athlete ? "#7dd3fc" : "#d1d5db";
-  const dark = athlete ? "#155e75" : "#4b5563";
+  const skin = athlete ? "#7dd3fc" : "#d1d5db";
+  const shirt = athlete ? "#155e75" : "#1f2937";
+  const shorts = "#0f172a";
 
   return (
-    <group ref={group} position={position} rotation={[0, facing, 0]}>
-      <mesh position={[0, 1.72, 0]} castShadow>
+    <group ref={root} position={position} rotation={[0, facing, 0]}>
+      <mesh position={[0, 1.76, 0]} castShadow>
         <sphereGeometry args={[0.16, 24, 24]} />
-        <meshStandardMaterial color={body} roughness={0.8} />
+        <meshStandardMaterial color={skin} roughness={0.8} />
       </mesh>
-      <mesh position={[0, 1.25, 0]} castShadow>
-        <capsuleGeometry args={[0.24, 0.58, 8, 18]} />
-        <meshStandardMaterial color={dark} roughness={0.85} />
+      <mesh position={[0, 1.3, 0]} castShadow>
+        <capsuleGeometry args={[0.25, 0.56, 8, 18]} />
+        <meshStandardMaterial color={shirt} roughness={0.85} />
       </mesh>
-      <mesh position={[-0.33, 1.3, 0]} rotation={[0, 0, -0.08]} castShadow>
-        <capsuleGeometry args={[0.07, 0.58, 6, 12]} />
-        <meshStandardMaterial color={body} />
+
+      <group ref={leftArm} position={[-0.29, 1.5, 0]}>
+        <mesh position={[0, -0.28, 0]} castShadow>
+          <capsuleGeometry args={[0.07, 0.48, 6, 12]} />
+          <meshStandardMaterial color={skin} />
+        </mesh>
+      </group>
+      <group ref={rightArm} position={[0.29, 1.5, 0]}>
+        <mesh position={[0, -0.28, 0]} castShadow>
+          <capsuleGeometry args={[0.07, 0.48, 6, 12]} />
+          <meshStandardMaterial color={skin} />
+        </mesh>
+      </group>
+
+      <mesh position={[0, 0.92, 0]} castShadow>
+        <boxGeometry args={[0.48, 0.22, 0.28]} />
+        <meshStandardMaterial color={shorts} roughness={0.9} />
       </mesh>
-      <mesh position={[0.33, 1.3, 0]} rotation={[0, 0, 0.08]} castShadow>
-        <capsuleGeometry args={[0.07, 0.58, 6, 12]} />
-        <meshStandardMaterial color={body} />
-      </mesh>
-      <mesh position={[-0.13, 0.57, 0]} castShadow>
-        <capsuleGeometry args={[0.09, 0.72, 6, 12]} />
-        <meshStandardMaterial color={dark} />
-      </mesh>
-      <mesh position={[0.13, 0.57, 0]} castShadow>
-        <capsuleGeometry args={[0.09, 0.72, 6, 12]} />
-        <meshStandardMaterial color={dark} />
-      </mesh>
+
+      <group ref={leftLeg} position={[-0.13, 0.9, 0]}>
+        <mesh position={[0, -0.43, 0]} castShadow>
+          <capsuleGeometry args={[0.09, 0.68, 6, 12]} />
+          <meshStandardMaterial color={shorts} />
+        </mesh>
+      </group>
+      <group ref={rightLeg} position={[0.13, 0.9, 0]}>
+        <mesh position={[0, -0.43, 0]} castShadow>
+          <capsuleGeometry args={[0.09, 0.68, 6, 12]} />
+          <meshStandardMaterial color={shorts} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -205,6 +288,8 @@ function GymScene({ session }: { session: V2Session }) {
               position={scene.coachAnchor}
               facing={0}
               visible
+              motionKey={scene.motionKey}
+              running={session.running && session.phase === "work"}
             />
           }
         />
@@ -214,6 +299,8 @@ function GymScene({ session }: { session: V2Session }) {
         facing={Math.PI}
         visible={manual}
         athlete
+        motionKey={scene.motionKey}
+        running={session.running && session.phase === "work"}
       />
 
       <mesh position={[0, 2.65, -3.7]} receiveShadow>
