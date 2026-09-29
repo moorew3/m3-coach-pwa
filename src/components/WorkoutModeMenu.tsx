@@ -1,7 +1,7 @@
 /**
  * WORKOUT MODE MENU — one control, same place, every workout view.
  * ------------------------------------------------------------------
- * Coach, Manual log, Glasses and Presentation are states of ONE workout,
+ * Coach, Manual log, Shadow, Glasses and Presentation are states of ONE workout,
  * not separate apps. This single button (always top-right of the active
  * workout shell) opens a compact sheet that switches the central view,
  * opens the exercise library in-context, hands the voice to this screen
@@ -14,11 +14,11 @@
 import { Suspense, lazy, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
-import { Eye, Glasses, Maximize2, Monitor, Smartphone, Volume2, X, ListChecks } from "lucide-react";
+import { Dumbbell, Eye, Glasses, Maximize2, Monitor, Smartphone, Volume2, X, ListChecks } from "lucide-react";
 
 const ExerciseLibraryModal = lazy(() => import("@/components/ExerciseLibraryModal"));
 
-export type WorkoutMode = "coach" | "manual" | "glasses" | "presentation";
+export type WorkoutMode = "coach" | "manual" | "shadow" | "glasses" | "presentation";
 
 export function toggleFullScreen() {
   if (typeof document === "undefined") return;
@@ -29,7 +29,8 @@ export function toggleFullScreen() {
 
 const MODES: { id: WorkoutMode; label: string; hint: string; icon: typeof Smartphone }[] = [
   { id: "coach", label: "Coach", hint: "Guided 1-on-1 session", icon: Smartphone },
-  { id: "manual", label: "Manual log", hint: "Type every set yourself", icon: ListChecks },
+  { id: "manual", label: "Manual log", hint: "Coach-eye view + hand logging", icon: ListChecks },
+  { id: "shadow", label: "Shadow", hint: "Move with the coach", icon: Dumbbell },
   { id: "glasses", label: "Glasses", hint: "Heads-up display", icon: Glasses },
   { id: "presentation", label: "Big screen", hint: "TV / presentation", icon: Monitor },
 ];
@@ -143,6 +144,20 @@ export function WorkoutModeButton({
                         data-testid="mode-manual"
                         to="/workout/$day"
                         params={{ day: String(day) }}
+                        onClick={close}
+                        className={cls}
+                      >
+                        {body}
+                      </Link>
+                    );
+                  }
+                  if (id === "shadow") {
+                    return (
+                      <Link
+                        key={id}
+                        data-testid="mode-shadow"
+                        to="/shadow"
+                        search={{ day }}
                         onClick={close}
                         className={cls}
                       >
