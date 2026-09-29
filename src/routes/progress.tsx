@@ -10,6 +10,7 @@ import {
   planForDay,
 } from "@/data/program";
 import { exerciseSummaries } from "@/lib/performance";
+import { coachMemoryOverview } from "@/lib/coach-memory";
 import {
   completedCount,
   dayDateLabel,
@@ -129,6 +130,7 @@ function Progress() {
   const [form, setForm] = useState<Record<string, string>>(blank);
 
   const summaries = useMemo(() => exerciseSummaries(state), [state]);
+  const coachMemory = useMemo(() => coachMemoryOverview(state), [state]);
   const [openId, setOpenId] = useState<string | null>(null);
 
   const history = workoutHistory(state);
@@ -165,6 +167,38 @@ function Progress() {
       <p className="mt-1 text-sm text-muted-foreground">
         {completedCount(state)} of {TOTAL_DAYS} days complete
       </p>
+
+      <section
+        data-testid="coach-memory-overview"
+        className="mt-5 rounded-2xl border border-primary/30 bg-primary/5 p-4"
+      >
+        <p className="text-[11px] font-black uppercase tracking-widest text-primary">
+          Coach memory
+        </p>
+        <h2 className="mt-1 text-lg font-bold">{coachMemory.headline}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{coachMemory.detail}</p>
+        {coachMemory.signals.length > 0 && (
+          <ul className="mt-3 space-y-2">
+            {coachMemory.signals.slice(0, 3).map((signal) => {
+              const name =
+                summaries.find((x) => x.exercise.id === signal.exerciseId)?.exercise.name ??
+                signal.exerciseId;
+              return (
+                <li key={signal.exerciseId} className="rounded-xl bg-elevated p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-bold">{name}</p>
+                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-accent">
+                      {signal.confidence} confidence
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-sm font-semibold">{signal.headline}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{signal.action}</p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
       <section className="surface-card mt-5 rounded-2xl p-4">
         <h2 className="text-lg font-bold uppercase">New measurement</h2>
@@ -384,6 +418,19 @@ function Progress() {
                     {trendLabel}
                   </span>
                 </button>
+
+                {!["new", "building"].includes(sm.memory.kind) && (
+                  <div
+                    data-testid={`memory-${sm.exercise.id}`}
+                    className="mt-3 rounded-xl border border-accent/30 bg-accent/5 p-3"
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                      Coach memory · {sm.memory.confidence}
+                    </p>
+                    <p className="mt-1 text-sm font-bold">{sm.memory.headline}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{sm.memory.action}</p>
+                  </div>
+                )}
 
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                   <div className="rounded-xl bg-elevated p-2">

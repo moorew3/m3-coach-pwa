@@ -47,8 +47,16 @@ import { CoachAudioBadge, CoachAudioGate } from "@/components/CoachAudio";
 import { CoachAudioPanel } from "@/components/CoachAudioPanel";
 import { SessionAudio } from "@/components/SessionAudio";
 import { nudgeCoach, nudgeMusic, pauseMusic, playMusic, toggleMusicMute } from "@/lib/audio-mix";
-import { repsIn, secondsIn, setCommandHandler, weightIn } from "@/lib/voice-commands";
+import {
+  repsIn,
+  secondsIn,
+  setCommandHandler,
+  setConversationHandler,
+  weightIn,
+} from "@/lib/voice-commands";
 import { speak } from "@/lib/coach-voice";
+import { askLiveCoach } from "@/lib/coach-talk";
+import { exerciseMemoryFor } from "@/lib/coach-memory";
 
 import { recordWorkStep, resetCoachSession, useCoachEngine } from "@/lib/coach-session";
 import { CameraCoach } from "@/components/CameraCoach";
@@ -313,6 +321,7 @@ function CoachSession() {
   });
   const voiceRef = useRef(true);
   voiceRef.current = voiceOn;
+  const coachTalkBusy = useRef(false);
 
   /* live rep count from the phone camera — a suggestion the user can accept or ignore */
   useEffect(() => {
@@ -362,7 +371,9 @@ function CoachSession() {
       // that follows already names the logged set, so the coach never doubles up.
       const camPart =
         m && m.confidence >= 0.55 && m.reps > 0
-          ? `I counted ${m.reps} clean reps. ${m.cues[0] ?? `Average range ${m.romAvg} degrees.`}`
+          ? m.cues[0]
+            ? `I counted ${m.reps} reps. ${m.cues[0]}`
+            : `I counted ${m.reps} clean reps. Average range ${m.romAvg} degrees.`
           : "";
       if (camPart) {
         speak(`${setPart}${targetPart}${camPart}`, voiceOn, {
@@ -617,6 +628,90 @@ function CoachSession() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [engine, running, step, voiceOn]);
+
+  /* NATURAL COACH TALK — fixed commands remain deterministic, while a
+     trainer-directed phrase that isn't a command gets a short contextual
+     answer from the server. The model never mutates workout state; it talks,
+     and the existing session engine stays authoritative. */
+  useEffect(() => {
+    setConversationHandler((phrase) => {
+      if (coachTalkBusy.current) return;
+      const ex = step?.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
+      const m = metricsSnapshot();
+      const memory = ex ? exerciseMemoryFor(state, ex, day) : null;
+      const recentSets = ex
+        ? (getDay(state, day).exercises[ex.id]?.sets ?? [])
+            .filter((x) => x.done || x.outcome)
+            .slice(-3)
+            .map((x, n) => {
+              const parts = [
+                x.weight ? `${x.weight} ${state.settings.units}` : "bodyweight",
+                x.reps ? `${x.reps} reps` : "",
+                x.rpe ? `RPE ${x.rpe}` : "",
+                x.feel ? `felt ${x.feel}` : "",
+                x.vision?.cues?.[0] ?? "",
+              ].filter(Boolean);
+              return `Recent set ${n + 1}: ${parts.join(" · ")}`;
+            })
+        : [];
+      const recent =
+        memory && !["new", "building"].includes(memory.kind)
+          ? [
+              `Long-term coach memory: ${memory.headline}. ${memory.detail} ${memory.action}`,
+              ...recentSets,
+            ]
+          : recentSets;
+
+      coachTalkBusy.current = true;
+      void askLiveCoach(phrase, {
+        athlete: state.userAvatar.displayName?.trim() || undefined,
+        workout: `${plan.title} · ${plan.focus}`,
+        exercise: ex?.name ?? step?.title,
+        phase: step?.kind,
+        setNumber: step?.setIndex !== undefined ? step.setIndex + 1 : undefined,
+        totalSets: step?.totalSets,
+        target: step?.reps,
+        weight: weight || undefined,
+        reps: reps || undefined,
+        rpe,
+        feel,
+        next: step?.next,
+        camera: {
+          active: Boolean(m),
+          confidence: m?.confidence,
+          reps: m?.reps,
+          romAvg: m?.romAvg,
+          symmetry: m?.symmetry,
+          cue: m?.cue ?? m?.cues?.[0] ?? null,
+        },
+        recent,
+      })
+        .then((reply) => {
+          if (!reply) {
+            speak("I heard you, but I couldn't get a reliable answer. Keep the set where it is for now.", voiceRef.current, {
+              tone: "attentive",
+              interrupt: false,
+            });
+            return;
+          }
+          speak(reply, voiceRef.current, { tone: "attentive", interrupt: false });
+        })
+        .finally(() => {
+          coachTalkBusy.current = false;
+        });
+    });
+    return () => setConversationHandler(null);
+  }, [
+    day,
+    feel,
+    plan.focus,
+    plan.title,
+    reps,
+    rpe,
+    state,
+    step,
+    weight,
+  ]);
 
   /* HANDS-FREE — every spoken command maps to the same action a button
      performs, so voice and taps can be mixed freely mid-set. */

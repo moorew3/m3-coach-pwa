@@ -105,7 +105,7 @@ const CATEGORIES: Category[] = [
   "Carry & combo",
 ];
 
-function thumbFor(move: MirrorMove): string {
+function thumbFor(move: MirrorMove): string | undefined {
   // Prefer the verified exact-movement frame. If one is unavailable, keep
   // the canonical approved coach visible as a presence-only fallback.
   return coachStillFor(move.id);

@@ -1,4 +1,5 @@
 import { exercisesForDay, planForDay, WEEK, type DayPlan, type Exercise } from "@/data/program";
+import { exerciseMemoryFor } from "@/lib/coach-memory";
 import type {
   ActivityFields,
   ActivityType,
@@ -133,9 +134,22 @@ export function savedWorkoutPlan(workout: SavedWorkout): SessionPlan {
 export function effectiveExercises(state: AppState, day: number): Exercise[] {
   const selected = state.days[day]?.sessionPlan;
   // Fail closed: an invalid/empty alternate plan must never erase the scheduled day.
-  return selected?.exercises?.length
+  const base = selected?.exercises?.length
     ? selected.exercises.map((e) => ({ ...e }))
     : exercisesForDay(day);
+
+  return base.map((e) => {
+    const logged = state.days[day]?.exercises[e.id];
+    const memory = exerciseMemoryFor(state, e, day);
+    const adaptiveRest =
+      memory.restSecondsDelta && e.rest > 0 ? e.rest + memory.restSecondsDelta : e.rest;
+    return {
+      ...e,
+      // Explicit athlete edits always beat the coach's derived adjustment.
+      rest: logged?.restOverride ?? adaptiveRest,
+      reps: logged?.repTarget || e.reps,
+    };
+  });
 }
 
 export function effectivePlan(state: AppState, day: number): DayPlan {

@@ -27,6 +27,11 @@ import {
   weightValue,
 } from "@/lib/progression";
 import type { AppState, IntervalOutcome, SetEntry, SetFeel } from "@/lib/store";
+import {
+  exerciseMemoryFor,
+  memoryProgressionOverride,
+  type ExerciseCoachMemory,
+} from "@/lib/coach-memory";
 
 /* ------------------------------- helpers -------------------------------- */
 
@@ -193,6 +198,198 @@ export interface ProgressionCall {
   short: string;
 }
 
+/* -------------------------- live set decisions -------------------------- */
+
+/**
+ * A human-style decision made from the set that JUST happened.
+ *
+ * This is intentionally different from progressionCall(), which looks back
+ * across sessions. A real coach also changes the next set in the room:
+ *   - form breaks or the camera sees a repeated fault -> hold the load
+ *   - reps fall below the floor at very high effort -> reduce the load
+ *   - the top of the range is easy and clean -> take the smallest increase
+ *   - otherwise keep the load and chase a cleaner / stronger set
+ *
+ * The output is used by both spoken coaching and the next set's prefill so
+ * what the coach SAYS and what the app PRESCRIBES cannot disagree.
+ */
+export type LiveSetDecisionKind = "increase" | "hold" | "reduce" | "technique" | "timed";
+
+export interface LiveSetDecision {
+  kind: LiveSetDecisionKind;
+  /** Weight to prefill for the next set. Empty means bodyweight / unchanged load. */
+  weight: string;
+  /** Natural spoken reaction for the athlete. */
+  line: string;
+  /** Compact UI hint beside the next set. */
+  short: string;
+  /** Concrete facts that caused the decision; useful for future coach memory/UI. */
+  reasons: string[];
+}
+
+const cameraFormIssue = (x: SetEntry) => {
+  const v = x.vision;
+  if (!v || v.confidence < 0.55) return null;
+  // The analyser also remembers positive recovery cues. Only persistent
+  // correction cues should block a load increase.
+  const fault = v.cues?.find((cue) => !/^(good reps|that rep was cleaner)/i.test(cue.trim()));
+  if (fault) return fault;
+  if (v.symmetry !== null && v.symmetry < 0.75) return "One side drifted during the set.";
+  return null;
+};
+
+export function liveSetDecision(
+  s: AppState,
+  e: Exercise,
+  x: SetEntry,
+): LiveSetDecision | null {
+  if (!x.done || x.warmup) return null;
+
+  if (isTimed(e)) {
+    if (x.outcome === "shortened" && x.doneSec !== undefined) {
+      return {
+        kind: "timed",
+        weight: x.weight || "",
+        line: `${x.doneSec} seconds banked. Keep the same interval next round and finish it smooth.`,
+        short: "Same interval — finish the round",
+        reasons: ["The timed interval was shortened."],
+      };
+    }
+    if (x.outcome === "skipped") {
+      return {
+        kind: "timed",
+        weight: x.weight || "",
+        line: "That round was skipped. We keep the prescription the same and take the next one clean.",
+        short: "Repeat the prescribed round",
+        reasons: ["The timed interval was skipped."],
+      };
+    }
+    if (x.outcome === "completed") {
+      return {
+        kind: "timed",
+        weight: x.weight || "",
+        line: "Full interval. Same duration next round — keep the quality high.",
+        short: "Full interval — repeat quality",
+        reasons: ["The timed interval was completed."],
+      };
+    }
+    return null;
+  }
+
+  const reps = num(x.reps);
+  if (!reps) return null;
+
+  const range = repRange(e.reps);
+  const difficulty = difficultyOf(x);
+  const w = weightValue(x.weight);
+  const replaced = Object.values(s.days)
+    .map((d) => d.exercises[e.id])
+    .find((el) => el?.sets.includes(x))?.replacedWith;
+  const step = incrementFor(e, s.settings, replaced);
+  const current = x.weight || "";
+  const formIssue = x.feel === "form" ? "You marked the set as a form breakdown." : cameraFormIssue(x);
+  const pain = x.feel === "pain";
+  const underFloor = !!range && reps < range.min;
+  const atTop = !!range && reps >= range.max;
+  const veryHard = difficulty === "very-hard" || (x.rpe ?? 0) >= 9.5;
+  const easy = difficulty === "easy" || (x.rpe !== undefined && x.rpe <= 6);
+  const loaded = w !== null && kindOf(e) !== "band" && kindOf(e) !== "bodyweight" && kindOf(e) !== "rep-core";
+  const reasons: string[] = [];
+
+  if (pain) {
+    const next = loaded ? formatWeight(roundTo(w! * 0.9, step), s.settings.units) : current;
+    reasons.push("Pain was reported on the set.");
+    return {
+      kind: "reduce",
+      weight: next,
+      line: loaded
+        ? `Pain changes the plan. Drop to ${spokenWeight(next)} next set, keep it controlled, and stop the movement if the pain repeats.`
+        : "Pain changes the plan. Do not force another hard set; use the listed substitute if the pain repeats.",
+      short: loaded ? `Pain flag — reduce to ${next}` : "Pain flag — back off / substitute",
+      reasons,
+    };
+  }
+
+  if (formIssue) {
+    reasons.push(formIssue);
+    return {
+      kind: "technique",
+      weight: current,
+      line: `${formIssue} Keep the same weight next set and make the correction before we add anything.`,
+      short: current ? `Hold ${current} — fix form` : "Hold load — fix form",
+      reasons,
+    };
+  }
+
+  if (underFloor && veryHard && loaded) {
+    const next = formatWeight(roundTo(w! * 0.92, step), s.settings.units);
+    reasons.push(`Completed ${reps} reps, below the programmed ${range!.min}–${range!.max} range.`);
+    reasons.push("The set was rated very hard.");
+    return {
+      kind: "reduce",
+      weight: next,
+      line: `${reps} reps and that was near your limit. Drop to ${spokenWeight(next)} next set and get back inside ${range!.min} to ${range!.max} with clean reps.`,
+      short: `Reduce to ${next} — rebuild clean`,
+      reasons,
+    };
+  }
+
+  if (atTop && easy) {
+    reasons.push(`Reached the top of the programmed rep range (${range!.max}).`);
+    reasons.push("The set was rated easy.");
+    if (loaded) {
+      const next = formatWeight(roundTo(w! + step, step), s.settings.units);
+      return {
+        kind: "increase",
+        weight: next,
+        line: `${reps} clean and you called it easy. Good — take the smallest jump to ${spokenWeight(next)} next set and keep the same form.`,
+        short: `Earned the jump — ${next}`,
+        reasons,
+      };
+    }
+    return {
+      kind: "hold",
+      weight: current,
+      line: `${reps} clean and easy. Keep the load where it is and make the next set just as sharp.`,
+      short: "Top reps — repeat clean",
+      reasons,
+    };
+  }
+
+  if (underFloor) {
+    reasons.push(`Completed ${reps} reps, below the programmed ${range!.min}–${range!.max} range.`);
+    return {
+      kind: "hold",
+      weight: current,
+      line: `${reps} reps. That's under the range, so we don't add weight. Take the full rest and repeat this load with better execution.`,
+      short: current ? `Hold ${current} — regain the range` : "Hold load — regain the range",
+      reasons,
+    };
+  }
+
+  if (veryHard) {
+    reasons.push("The set was rated very hard.");
+    return {
+      kind: "hold",
+      weight: current,
+      line: `${reps} reps, but that was close to the limit. Same weight next set — stop one rep before form breaks.`,
+      short: current ? `Hold ${current} — near limit` : "Hold load — near limit",
+      reasons,
+    };
+  }
+
+  reasons.push("The set landed inside the target without a form or pain flag.");
+  return {
+    kind: "hold",
+    weight: current,
+    line: atTop
+      ? `${reps} reps — top of the range. Hold this weight and prove it again before we move it.`
+      : `${reps} reps logged. Same weight next set; let's add quality before load.`,
+    short: current ? `Stay at ${current}` : "Same load — cleaner set",
+    reasons,
+  };
+}
+
 /**
  * Double-progression rules, decided from one performance record:
  *   • every working set at the top of the range and not very hard → smallest increase
@@ -305,6 +502,8 @@ export function progressionCall(
 
 /** History-aware line for the exercise setup (main work only). */
 export function setupLine(s: AppState, e: Exercise, day: number): string {
+  const memory = memoryProgressionOverride(s, e, day);
+  if (memory) return memory.line;
   const last = lastPerformance(s, e, day);
   const call = progressionCall(s, e, last);
   return call ? call.line : "";
@@ -365,32 +564,13 @@ export function setOpenerLine(
 /** Short reaction to the set just logged, for the start of the rest. */
 export function afterSetLine(s: AppState, e: Exercise, day: number, r: number): string {
   const x = s.days[day]?.exercises[e.id]?.sets[r];
-  if (!x?.done) return "";
-  const reps = num(x.reps);
-  if (isTimed(e)) {
-    if (x.outcome === "shortened" && x.doneSec !== undefined)
-      return `${x.doneSec} seconds of that banked — we'll take the full round next time.`;
-    return "";
-  }
-  if (!reps) return "";
-  const range = repRange(e.reps);
-  const w = x.weight ? ` at ${spokenWeight(x.weight)}` : "";
-  const d = difficultyOf(x);
-  if (d === "very-hard" || x.feel === "form")
-    return `${reps}${w}, and it was a grind. Take the full rest — next set stays at the same weight, cleaner tempo.`;
-  if (d === "hard")
-    return `${reps}${w} — that one was hard. Take the full rest; same weight next set, stop one short of failure.`;
-  if (range && reps >= range.max && d === "easy")
-    return `${reps}${w}, and easy. That's the top of the range — next set can go up one increment.`;
-  if (range && reps >= range.max)
-    return `${reps}${w} — top of the range. Hold that weight, keep the reps there.`;
-  if (range && reps < range.min)
-    return `${reps}${w}. Under the range — that's fine, same weight, full rest, and we tidy the tempo.`;
-  return `${reps}${w} logged. Good work.`;
+  return x ? liveSetDecision(s, e, x)?.line ?? "" : "";
 }
 
 /** What the coach recommends for NEXT time, judged from today's log. */
 export function nextTimeCall(s: AppState, e: Exercise, day: number): ProgressionCall | null {
+  const memory = memoryProgressionOverride(s, e);
+  if (memory) return memory;
   const perf = sessionPerformance(s, e, day);
   return progressionCall(s, e, perf);
 }
@@ -441,20 +621,29 @@ export function prefillFor(
   const prevToday = todayEl?.sets
     .slice(0, r)
     .reverse()
-    .find((x) => x.done && x.weight);
+    .find((x) => x.done && !x.warmup);
+  const liveCall = prevToday ? liveSetDecision(s, e, prevToday) : null;
+  const memoryCall = memoryProgressionOverride(s, e, day);
   const last = lastPerformance(s, e, day);
   const call = progressionCall(s, e, last);
   const range = repRange(e.reps);
   const lastSet = last?.sets.filter((x) => x.done)[r];
   const weight =
+    liveCall?.weight ||
     prevToday?.weight ||
+    memoryCall?.weight ||
     (call && (call.kind === "up" || call.kind === "reduce")
       ? call.weight
       : lastSet?.weight || last?.weight || "");
   const reps = lastSet?.reps && num(lastSet.reps) ? lastSet.reps : range ? String(range.min) : "";
-  const hint = last
+  const historyHint = last
     ? `Last: ${last.weight} × ${last.reps.join(", ") || "–"}${last.rpeMax ? ` · RPE ${last.rpeMax}` : ""}`
     : "";
+  const hint = liveCall
+    ? `Coach: ${liveCall.short}`
+    : memoryCall
+      ? `Coach memory: ${memoryCall.short}`
+      : historyHint;
   return { weight: weight === "BW" ? "" : weight, reps, hint };
 }
 
@@ -486,6 +675,7 @@ export interface ExerciseSummary {
   best: { weight: string; reps: number; e1rm: number; day: number } | null;
   trend: "up" | "flat" | "down" | "new";
   next: ProgressionCall | null;
+  memory: ExerciseCoachMemory;
 }
 
 const e1rmOf = (w: number, reps: number) => (reps > 0 ? Math.round(w * (1 + reps / 30)) : 0);
@@ -542,8 +732,11 @@ export function exerciseSummaries(s: AppState): ExerciseSummary[] {
       trend = ka > kb * 1.01 ? "up" : ka < kb * 0.99 ? "down" : "flat";
     }
     const latestDay = sessions[0].day;
-    const next = progressionCall(s, exercise, summarise(latestDay, sessions[0].sets));
-    out.push({ exercise, timed, sessions, latest: sessions[0], best, trend, next });
+    const memory = exerciseMemoryFor(s, exercise);
+    const next =
+      memoryProgressionOverride(s, exercise) ??
+      progressionCall(s, exercise, summarise(latestDay, sessions[0].sets));
+    out.push({ exercise, timed, sessions, latest: sessions[0], best, trend, next, memory });
   }
   return out.sort((a, b) => b.latest.day - a.latest.day);
 }
