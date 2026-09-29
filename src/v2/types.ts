@@ -41,6 +41,11 @@ export type V2Workout = {
   exercises: V2Exercise[];
 };
 
+export type V2SetEntry = {
+  reps: number | null;
+  cleanForm: boolean | null;
+};
+
 export type V2Session = {
   workout: V2Workout;
   mode: V2Mode;
@@ -51,6 +56,8 @@ export type V2Session = {
   phaseSecondsLeft: number | null;
   running: boolean;
   completedSetIds: string[];
+  targetWeights: Record<string, number>;
+  setResults: Record<string, V2SetEntry[]>;
 };
 
 export type V2SceneState = {
