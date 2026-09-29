@@ -203,10 +203,29 @@ const set = (patch: Partial<VoiceControlState>) => {
 
 let rec: Recognition | null = null;
 let handler: ((cmd: VoiceCommand, phrase: string) => void) | null = null;
+let conversationHandler: ((phrase: string) => void) | null = null;
 let wanted = false;
 
 export function setCommandHandler(fn: ((cmd: VoiceCommand, phrase: string) => void) | null) {
   handler = fn;
+}
+
+/**
+ * Natural coach conversation is deliberately separate from deterministic
+ * commands. Only phrases that sound directed at the trainer are forwarded,
+ * so background room talk does not become an API request.
+ */
+export function setConversationHandler(fn: ((phrase: string) => void) | null) {
+  conversationHandler = fn;
+}
+
+function soundsDirectedAtCoach(phrase: string): boolean {
+  const p = phrase.toLowerCase().trim();
+  if (!p) return false;
+  if (/\bcoach\b/.test(p)) return true;
+  if (/^(why|how|what|should|can|could|do i|am i|is this|are we|when)\b/.test(p)) return true;
+  if (/\b(feels?|felt|hurts?|pain|tight|heavy|light|tired|fatigued|easy|hard)\b/.test(p)) return true;
+  return false;
 }
 
 export function startListening() {
@@ -232,6 +251,8 @@ export function startListening() {
       const cmd = matchCommand(phrase);
       set({ heard: phrase, lastCommand: cmd, error: null });
       if (cmd && handler) handler(cmd, phrase.toLowerCase());
+      else if (!cmd && conversationHandler && soundsDirectedAtCoach(phrase))
+        conversationHandler(phrase);
     }
   };
   r.onerror = (e) => {
