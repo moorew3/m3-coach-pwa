@@ -38,7 +38,7 @@ export const COACH_MOTION: Record<string, string> = {
   gluteBridge: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a72a39b6-d28b-44e4-8d69-20d7dedadbe4/gluteBridgeV3.mp4",
   guardReset: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/de47b48c-3ce6-4ebc-9ee8-56ac2acb0161/guardResetV2.mp4",
   jab: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fea6c3ab-2ad2-4c0a-8380-432cc8496e49/jabV2.mp4",
-  shadowboxPunches: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/882b696d-7323-4bdb-ae0f-cf6d081995b2/shadowboxPunchesV2.mp4",
+  // Smooth follow-along flow assembled from the already-approved stance, jab, cross,\n  // jab-cross, defensive-reset and guard-reset coach clips. This is the canonical\n  // Shadow Boxing loop; the individual Saturday technique drills keep their own clips.\n  shadowboxPunches: "/media/boxingCombo2.mp4",
   bandPullApart: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
   benchPress: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4",
   chestMobility: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4",
