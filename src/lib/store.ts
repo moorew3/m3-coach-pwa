@@ -56,6 +56,14 @@ export interface SetEntry {
   outcome?: IntervalOutcome;
   /** Optional one-line note for this set. */
   note?: string;
+  /** A meaningful two-way coach question answered during the following rest. */
+  coachChoice?: {
+    kind: "rest" | "load" | "technique";
+    question: string;
+    answer: "yes" | "no";
+    action: string;
+    at: string;
+  };
   /** Camera tracking for this set, when the camera could actually see it. */
   vision?: VisionSet;
   /** When the set was logged (ISO). */

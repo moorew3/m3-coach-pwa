@@ -39,6 +39,8 @@ export type VoiceCommand =
   | "useProgram"
   | "setWeight"
   | "setReps"
+  | "choiceYes"
+  | "choiceNo"
   | "end";
 
 /** Spoken small numbers, so "I got nine reps" works like "I got 9 reps". */
@@ -98,6 +100,8 @@ const RULES: [VoiceCommand, RegExp][] = [
   // mistaken for a navigation word inside the same sentence.
   ["setWeight", WEIGHT_RE],
   ["setReps", REPS_RE],
+  ["choiceYes", /^\s*(yes|yeah|yep|do it|go with that|sounds good|coach yes)\s*[.!]?$/],
+  ["choiceNo", /^\s*(no|nope|not this time|keep it|stay here|coach no)\s*[.!]?$/],
   [
     "cameraOn",
     /\b(camera|form coaching) on\b|\bwatch my form\b|\byes(,)? (use|turn on) (the )?camera\b/,

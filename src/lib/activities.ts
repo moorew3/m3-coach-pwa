@@ -143,10 +143,13 @@ export function effectiveExercises(state: AppState, day: number): Exercise[] {
     const memory = exerciseMemoryFor(state, e, day);
     const adaptiveRest =
       memory.restSecondsDelta && e.rest > 0 ? e.rest + memory.restSecondsDelta : e.rest;
+    const readiness = state.days[day]?.readiness;
+    const lowReadiness = !!readiness && (readiness.energy <= 2 || !readiness.slept6);
+    const readinessRest = lowReadiness && adaptiveRest > 0 ? adaptiveRest + 15 : adaptiveRest;
     return {
       ...e,
       // Explicit athlete edits always beat the coach's derived adjustment.
-      rest: logged?.restOverride ?? adaptiveRest,
+      rest: logged?.restOverride ?? readinessRest,
       reps: logged?.repTarget || e.reps,
     };
   });
