@@ -57,6 +57,7 @@ import {
 import { speak } from "@/lib/coach-voice";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { exerciseMemoryFor } from "@/lib/coach-memory";
+import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 
 import { recordWorkStep, resetCoachSession, useCoachEngine } from "@/lib/coach-session";
 import { CameraCoach } from "@/components/CameraCoach";
@@ -743,6 +744,7 @@ function CoachSession() {
       const ex = step?.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
       const m = metricsSnapshot();
       const memory = ex ? exerciseMemoryFor(state, ex, day) : null;
+      const nutrition = nutritionCoachSnapshot(state);
       const recentSets = ex
         ? (getDay(state, day).exercises[ex.id]?.sets ?? [])
             .filter((x) => x.done || x.outcome)
@@ -783,6 +785,7 @@ function CoachSession() {
         rpe,
         feel,
         next: step?.next,
+        nutrition: nutrition.contextLine,
         camera: {
           active: Boolean(m),
           confidence: m?.confidence,
