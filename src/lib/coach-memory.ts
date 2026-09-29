@@ -290,8 +290,14 @@ export function exerciseMemoryFor(
     const lo = Math.min(...metrics);
     const spread = hi > 0 ? (hi - lo) / hi : 1;
     const hardEnough = recent3.some((r) => r.hard);
-    if (spread <= 0.025 && !recent3.some((r) => r.pain || r.formFault)) {
-      const range = repRange(e.reps);
+    const range = repRange(e.reps);
+    const latestAlreadyOwnsTop =
+      !!range && last.reps.length > 0 && last.reps.every((r) => r >= range.max);
+    if (
+      spread <= 0.025 &&
+      !latestAlreadyOwnsTop &&
+      !recent3.some((r) => r.pain || r.formFault)
+    ) {
       const target =
         range && last.reps.length
           ? Math.min(range.max * last.reps.length, last.repTotal + 1)
