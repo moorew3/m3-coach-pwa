@@ -11,8 +11,9 @@
  * "move with coach" view.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Camera,
   ChevronLeft,
   FlipHorizontal2,
   Pause,
@@ -22,6 +23,8 @@ import {
   X,
 } from "lucide-react";
 import { CoachAudioGate } from "@/components/CoachAudio";
+import { CameraCoach } from "@/components/CameraCoach";
+import { SheetPanel } from "@/components/Sheet";
 import { CoachMotion } from "@/components/CoachMotion";
 import { CoachPresence } from "@/components/CoachPresence";
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
@@ -30,6 +33,7 @@ import { effectiveExercise, effectiveExercises, effectivePlan } from "@/lib/acti
 import { buildCoachScript, currentCue } from "@/lib/coach-script";
 import { recordWorkStep, useCoachEngine } from "@/lib/coach-session";
 import { prefillFor } from "@/lib/performance";
+import { patternFor } from "@/lib/vision/patterns";
 import {
   currentDayNumber,
   ensureSession,
@@ -67,6 +71,7 @@ function ShadowMode() {
   const plan = effectivePlan(state, day);
   const sessionExercises = effectiveExercises(state, day);
   const log = getDay(state, day);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   const doneSetsNow = Object.values(log.exercises).reduce(
     (n, el) => n + el.sets.filter((s) => s.done).length,
@@ -299,7 +304,7 @@ function ShadowMode() {
             {finishLabel}
           </button>
 
-          <div className="mt-2 grid grid-cols-4 gap-2">
+          <div className="mt-2 grid grid-cols-5 gap-2">
             <button
               type="button"
               onClick={engine.back}
@@ -326,6 +331,14 @@ function ShadowMode() {
             </button>
             <button
               type="button"
+              onClick={() => setCameraOpen(true)}
+              className="grid min-h-11 place-items-center rounded-xl bg-white/10"
+              aria-label="Open watch-me camera"
+            >
+              <Camera className="size-5" />
+            </button>
+            <button
+              type="button"
               onClick={engine.advance}
               className="grid min-h-11 place-items-center rounded-xl bg-white/10"
               aria-label="Next step"
@@ -345,6 +358,23 @@ function ShadowMode() {
           )}
         </div>
       </section>
+
+      {cameraOpen && (
+        <SheetPanel
+          title="Watch me"
+          subtitle={
+            patternFor(stepExercise?.id)
+              ? "Live form tracking is available for this movement."
+              : "Camera view is available; this movement is not scored yet."
+          }
+          onClose={() => setCameraOpen(false)}
+        >
+          <CameraCoach
+            pattern={patternFor(stepExercise?.id)}
+            exerciseName={stepExercise?.name ?? step.title}
+          />
+        </SheetPanel>
+      )}
     </main>
   );
 }
