@@ -79,7 +79,8 @@ function V2Preview() {
 
         <div className="mt-3 grid flex-1 gap-3 lg:grid-cols-[1fr_320px]">
           <section className="relative min-h-[64dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#10151a]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(34,211,238,0.12),transparent_36%),linear-gradient(to_bottom,rgba(255,255,255,0.03),transparent_35%)]" />
+            <M3GymRenderer session={session} />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/65" />
 
             <div className="relative z-10 flex items-center justify-between gap-2 p-3">
               <div className="rounded-xl bg-black/35 px-3 py-2 backdrop-blur">
@@ -142,8 +143,8 @@ function V2Preview() {
                     </div>
                   </dl>
                   <p className="mt-3 text-[11px] leading-relaxed text-white/45">
-                    This is intentionally not pretending to be 3D yet. A real rigged coach and
-                    renderer will consume this exact scene contract.
+                    The gym and camera system are real WebGL. The temporary trainer is one reusable
+                    articulated rig driven by the same motion keys the final coach GLB will use.
                   </p>
                 </div>
               </div>
