@@ -146,6 +146,44 @@ export function attachVideo(el: HTMLVideoElement | null) {
 }
 
 const fallbackCameraLabel = (i: number) => `Camera ${i + 1}`;
+const CAMERA_PREF_KEY = "m3-coach-camera-device";
+
+function savedCameraId(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(CAMERA_PREF_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function rememberCameraId(deviceId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (deviceId) window.localStorage.setItem(CAMERA_PREF_KEY, deviceId);
+    else window.localStorage.removeItem(CAMERA_PREF_KEY);
+  } catch {
+    // Storage can be blocked in privacy modes; camera selection still works for this session.
+  }
+}
+
+export function isPlayStationCamera(source: CameraSource): boolean {
+  return /playstation|ps[2345].*camera|ps3 eye|eyetoy/i.test(source.label);
+}
+
+/** Friendly source name without tying tracking logic to a specific camera brand. */
+export function cameraSourceDisplayName(source: CameraSource): string {
+  const label = source.label || "Camera";
+  const lower = label.toLowerCase();
+  if (isPlayStationCamera(source)) return `PlayStation camera — ${label}`;
+  if (/droidcam|iriun|epoccam|camo|phone|virtual camera|obs virtual/i.test(lower))
+    return `Phone / virtual camera — ${label}`;
+  if (/integrated|built.?in|facetime|internal|front camera/i.test(lower))
+    return `Computer camera — ${label}`;
+  if (/usb|webcam|logitech|brio|life.?cam|web camera/i.test(lower))
+    return `USB / webcam — ${label}`;
+  return label;
+}
 
 export async function refreshCameraDevices(): Promise<CameraSource[]> {
   if (typeof navigator === "undefined" || !navigator.mediaDevices?.enumerateDevices) return [];
@@ -160,7 +198,18 @@ export async function refreshCameraDevices(): Promise<CameraSource[]> {
     const cameras = all
       .filter((d) => d.kind === "videoinput" && d.deviceId)
       .map((d, i) => ({ deviceId: d.deviceId, label: d.label || fallbackCameraLabel(i) }));
-    set({ devices: cameras });
+
+    let selectedDeviceId = cam.selectedDeviceId;
+    const remembered = savedCameraId();
+    if (!selectedDeviceId && remembered && cameras.some((d) => d.deviceId === remembered)) {
+      selectedDeviceId = remembered;
+    }
+    if (selectedDeviceId && !cameras.some((d) => d.deviceId === selectedDeviceId)) {
+      selectedDeviceId = "";
+      rememberCameraId("");
+    }
+
+    set({ devices: cameras, selectedDeviceId });
     return cameras;
   } catch {
     return cam.devices;
@@ -172,6 +221,7 @@ export async function refreshCameraDevices(): Promise<CameraSource[]> {
  * built-in webcams, USB webcams and virtual-camera drivers all use the same path.
  */
 export async function selectCamera(deviceId: string, pattern: PatternId | null = cam.pattern) {
+  rememberCameraId(deviceId);
   set({ selectedDeviceId: deviceId });
   if (cam.status !== "live" && cam.status !== "loading" && cam.status !== "starting") return;
   stopCamera();
@@ -268,10 +318,11 @@ export async function startCamera(
     return;
   }
   set({ status: "starting", error: null, calibrating: true });
-  try {
-    const videoConstraints: MediaTrackConstraints = requestedDeviceId
+  let selectedDeviceId = requestedDeviceId;
+  const openStream = (deviceId: string) => {
+    const videoConstraints: MediaTrackConstraints = deviceId
       ? {
-          deviceId: { exact: requestedDeviceId },
+          deviceId: { exact: deviceId },
           width: { ideal: 1280 },
           height: { ideal: 720 },
           frameRate: { ideal: 30 },
@@ -282,24 +333,38 @@ export async function startCamera(
           height: { ideal: 720 },
           frameRate: { ideal: 30 },
         };
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
-      audio: false,
-    });
+    return navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: false });
+  };
+
+  try {
+    try {
+      stream = await openStream(selectedDeviceId);
+    } catch (e) {
+      const name = (e as DOMException)?.name;
+      const selectedCameraUnavailable =
+        !!selectedDeviceId && (name === "NotFoundError" || name === "OverconstrainedError");
+      if (!selectedCameraUnavailable) throw e;
+
+      // A remembered USB / PlayStation camera may be unplugged. Fall back instead of killing the workout.
+      selectedDeviceId = "";
+      rememberCameraId("");
+      set({ selectedDeviceId: "" });
+      stream = await openStream("");
+    }
   } catch (e) {
     const denied = (e as DOMException)?.name === "NotAllowedError";
     set({
       status: denied ? "denied" : "error",
       error: denied
         ? "Camera permission was declined — voice and buttons still run the whole session."
-        : "That camera couldn't be opened. Carry on with voice and buttons.",
+        : "That camera couldn't be opened. Check that it is connected and not being used by another app.",
     });
     return;
   }
   const activeTrack = stream.getVideoTracks()[0];
-  const activeDeviceId = activeTrack?.getSettings().deviceId || requestedDeviceId || "";
+  const activeDeviceId = activeTrack?.getSettings().deviceId || selectedDeviceId || "";
   set({
-    selectedDeviceId: requestedDeviceId || activeDeviceId,
+    selectedDeviceId: selectedDeviceId || activeDeviceId,
     activeDeviceId,
   });
   await refreshCameraDevices();

@@ -23,7 +23,9 @@ import {
 } from "lucide-react";
 import {
   attachVideo,
+  cameraSourceDisplayName,
   cameraSupported,
+  isPlayStationCamera,
   refreshCameraDevices,
   selectCamera,
   setCalibrating,
@@ -291,30 +293,40 @@ export function CameraCoach({
             <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">
               Camera source
             </span>
-            <select
-              value={cam.selectedDeviceId}
-              onFocus={() => void refreshCameraDevices()}
-              onChange={(e) => void selectCamera(e.target.value, pattern)}
-              className="tap-target mt-1 w-full rounded-xl border border-border bg-elevated px-3 text-sm font-semibold"
-            >
-              <option value="">Automatic / default camera</option>
-              {cam.devices.map((d) => (
-                <option key={d.deviceId} value={d.deviceId}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
+            <div className="mt-1 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+              <select
+                value={cam.selectedDeviceId}
+                onFocus={() => void refreshCameraDevices()}
+                onChange={(e) => void selectCamera(e.target.value, pattern)}
+                className="tap-target min-w-0 rounded-xl border border-border bg-elevated px-3 text-sm font-semibold"
+              >
+                <option value="">Automatic / default camera</option>
+                {cam.devices.map((d) => (
+                  <option key={d.deviceId} value={d.deviceId}>
+                    {cameraSourceDisplayName(d)}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => void refreshCameraDevices()}
+                className="tap-target flex items-center justify-center gap-1 rounded-xl bg-elevated px-3 text-[11px] font-bold uppercase"
+                aria-label="Rescan connected cameras"
+              >
+                <RefreshCw className="size-4" /> Rescan
+              </button>
+            </div>
             <p className="mt-1 text-[10px] text-muted-foreground">
-              Built-in webcams, USB webcams and virtual-camera drivers appear here automatically
-              when your browser exposes them.
+              Works with the computer camera, USB/webcam, browser-visible phone/virtual cameras,
+              and a PlayStation camera when Windows exposes it as a video device.
             </p>
             {cam.devices.some(
               (d) =>
                 d.deviceId === (cam.activeDeviceId || cam.selectedDeviceId) &&
-                /playstation|ps[2345].*camera|ps3 eye|eyetoy/i.test(d.label),
+                isPlayStationCamera(d),
             ) && (
               <p className="mt-1 text-[11px] font-semibold text-primary">
-                PlayStation camera detected as a computer camera — Coach tracking can use it.
+                PlayStation camera detected — Coach tracking can use this camera.
               </p>
             )}
           </label>
