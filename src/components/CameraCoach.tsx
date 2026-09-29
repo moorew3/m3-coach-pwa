@@ -6,7 +6,7 @@
  * the app can and cannot see right now.
  *
  * Nothing here records or uploads anything — the picture never leaves
- * the phone.
+ * the device running the coach.
  */
 import { useEffect, useRef, useState } from "react";
 import {
@@ -24,6 +24,8 @@ import {
 import {
   attachVideo,
   cameraSupported,
+  refreshCameraDevices,
+  selectCamera,
   setCalibrating,
   setGesturesOn,
   setOverlayOn,
@@ -81,7 +83,10 @@ export function CameraCoach({
   const [ready, setReady] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => setReady(true), []);
+  useEffect(() => {
+    setReady(true);
+    void refreshCameraDevices();
+  }, []);
   useEffect(() => {
     attachVideo(videoRef.current);
     return () => attachVideo(null);
@@ -172,8 +177,8 @@ export function CameraCoach({
         </p>
         {setupPending && (
           <p className="mt-1 text-sm font-bold">
-            Want me to watch your form? Want hands-free gestures? Following today’s workout, or
-            changing it?
+            Want me to watch your form? Use your phone camera, computer webcam, USB camera, or any
+            compatible camera your browser can see.
           </p>
         )}
       </div>
@@ -281,6 +286,40 @@ export function CameraCoach({
           <p className="mt-2 text-xs text-muted-foreground">Loading the movement model…</p>
         )}
 
+        {supported && (
+          <label className="mt-3 block">
+            <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+              Camera source
+            </span>
+            <select
+              value={cam.selectedDeviceId}
+              onFocus={() => void refreshCameraDevices()}
+              onChange={(e) => void selectCamera(e.target.value, pattern)}
+              className="tap-target mt-1 w-full rounded-xl border border-border bg-elevated px-3 text-sm font-semibold"
+            >
+              <option value="">Automatic / default camera</option>
+              {cam.devices.map((d) => (
+                <option key={d.deviceId} value={d.deviceId}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Built-in webcams, USB webcams and virtual-camera drivers appear here automatically
+              when your browser exposes them.
+            </p>
+            {cam.devices.some(
+              (d) =>
+                d.deviceId === (cam.activeDeviceId || cam.selectedDeviceId) &&
+                /playstation|ps[2345].*camera|ps3 eye|eyetoy/i.test(d.label),
+            ) && (
+              <p className="mt-1 text-[11px] font-semibold text-primary">
+                PlayStation camera detected as a computer camera — Coach tracking can use it.
+              </p>
+            )}
+          </label>
+        )}
+
         <div className={`relative mt-3 overflow-hidden rounded-xl bg-black ${on ? "" : "hidden"}`}>
           <video
             ref={videoRef}
@@ -304,7 +343,7 @@ export function CameraCoach({
                     ["Head & torso", cam.calibration.bodyVisible],
                     ["Knees & ankles", cam.calibration.lowerVisible],
                     ["Distance", cam.calibration.farEnough],
-                    ["Phone upright", cam.calibration.upright],
+                    ["Camera level", cam.calibration.upright],
                     ["Lighting", cam.calibration.bright],
                   ] as [string, boolean][]
                 ).map(([label, ok]) => (
@@ -408,7 +447,7 @@ export function CameraCoach({
           </ul>
         </details>
         <p className="mt-2 text-[10px] text-muted-foreground">
-          The picture is processed on this phone and never saved or sent anywhere.
+          The picture is processed on this device and never saved or sent anywhere.
         </p>
       </div>
     </section>
