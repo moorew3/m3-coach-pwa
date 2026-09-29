@@ -62,6 +62,7 @@ import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 import { recordWorkStep, resetCoachSession, useCoachEngine } from "@/lib/coach-session";
 import { CameraCoach } from "@/components/CameraCoach";
 import { HealthPanel } from "@/components/HealthPanel";
+import { ReadinessCheck } from "@/components/ReadinessCheck";
 import { ActivityChooser } from "@/components/ActivityChooser";
 import { effectiveExercise, effectiveExercises, effectivePlan } from "@/lib/activities";
 import { patternFor } from "@/lib/vision/patterns";
@@ -305,6 +306,8 @@ function CoachSession() {
   const [statsOpen, setStatsOpen] = useState(false);
   /* the magic-mirror opening: plays once, skippable after a second */
   const [portalSeen, setPortalSeen] = useState(false);
+  const [readinessOpen, setReadinessOpen] = useState(false);
+  const [pendingStart, setPendingStart] = useState<"program" | "lighter" | "recovery" | "stretch" | null>(null);
 
   const cam = useCamera();
   /* reps handed straight to the logger when the camera count is confirmed
@@ -390,6 +393,53 @@ function CoachSession() {
   const { step, i, left, lead, running, mirrored, progress } = engine;
   const move = mirrorFor(step?.mirror);
   const pattern = patternFor(step?.exerciseId);
+
+  const hasLoggedWork = Object.values(log.exercises).some((el) => el.sets.some((s) => s.done));
+
+  const startChosenSession = useCallback(
+    (kind: "program" | "lighter" | "recovery" | "stretch") => {
+      const readiness = getDay(state, day).readiness;
+      if (readiness?.sharpPain || readiness?.numbness) {
+        speak(
+          "Sharp pain or numbness is a stop sign. We are not starting a workout through that. Stop here and get appropriate medical guidance if it persists or is concerning.",
+          voiceRef.current,
+          { tone: "urgent", interrupt: true },
+        );
+        return;
+      }
+
+      if (!readiness && !hasLoggedWork) {
+        setPendingStart(kind);
+        setReadinessOpen(true);
+        engine.setRunning(false);
+        return;
+      }
+
+      if (kind !== "program" && !hasLoggedWork) {
+        const alt = altSessionPlan(kind, state, day);
+        if (!alt.exercises.length) {
+          speak(
+            "I couldn't load that alternate session. Your scheduled workout is still here.",
+            voiceRef.current,
+            { tone: "reassuring" },
+          );
+          return;
+        }
+        updateDay(day, (d) => ({
+          ...d,
+          sessionPlan: alt,
+          exercises: {},
+          cursor: 0,
+          completed: false,
+          completedAt: undefined,
+        }));
+      }
+
+      setPortalSeen(true);
+      engine.setRunning(true);
+    },
+    [day, engine, hasLoggedWork, state],
+  );
 
   /** Apply a coach question to the SAME workout state the user can edit by hand. */
   const resolveCoachChoice = useCallback(
@@ -745,6 +795,7 @@ function CoachSession() {
       const m = metricsSnapshot();
       const memory = ex ? exerciseMemoryFor(state, ex, day) : null;
       const nutrition = nutritionCoachSnapshot(state);
+      const readiness = getDay(state, day).readiness;
       const recentSets = ex
         ? (getDay(state, day).exercises[ex.id]?.sets ?? [])
             .filter((x) => x.done || x.outcome)
@@ -763,13 +814,27 @@ function CoachSession() {
               return `Recent set ${n + 1}: ${parts.join(" · ")}`;
             })
         : [];
-      const recent =
-        memory && !["new", "building"].includes(memory.kind)
-          ? [
-              `Long-term coach memory: ${memory.headline}. ${memory.detail} ${memory.action}`,
-              ...recentSets,
-            ]
-          : recentSets;
+      const readinessLine = readiness
+        ? [
+            `Readiness: energy ${readiness.energy}/5`,
+            `slept at least 6 hours: ${readiness.slept6 ? "yes" : "no"}`,
+            readiness.shoulder ? "shoulder pain flagged" : "",
+            readiness.elbow ? "elbow pain flagged" : "",
+            readiness.knee ? "knee pain flagged" : "",
+            readiness.back ? "back pain flagged" : "",
+            readiness.sharpPain ? "sharp pain flagged" : "",
+            readiness.numbness ? "numbness flagged" : "",
+          ]
+            .filter(Boolean)
+            .join("; ")
+        : "Readiness check has not been completed.";
+      const recent = [
+        ...(memory && !["new", "building"].includes(memory.kind)
+          ? [`Long-term coach memory: ${memory.headline}. ${memory.detail} ${memory.action}`]
+          : []),
+        readinessLine,
+        ...recentSets,
+      ].slice(0, 6);
 
       coachTalkBusy.current = true;
       void askLiveCoach(phrase, {
@@ -1655,6 +1720,41 @@ function CoachSession() {
         onSkip={() => setState((p) => ({ ...p, settings: { ...p.settings, coachVoice: false } }))}
       />
 
+      {readinessOpen && (
+        <div className="absolute inset-0 z-[80] overflow-y-auto bg-black/90 px-4 py-8 backdrop-blur-md">
+          <div className="mx-auto max-w-md">
+            <p className="text-[11px] font-black uppercase tracking-widest text-primary">
+              Coach check-in
+            </p>
+            <h2 className="mt-1 text-2xl font-black">Before we train</h2>
+            <p className="mt-1 text-sm text-white/65">
+              Give me the same information you would give a trainer standing in front of you.
+            </p>
+            <ReadinessCheck
+              onCancel={() => {
+                setReadinessOpen(false);
+                setPendingStart(null);
+              }}
+              onSave={(r) => {
+                updateDay(day, (d) => ({ ...d, readiness: r }));
+                setReadinessOpen(false);
+                const chosen = pendingStart ?? "program";
+                setPendingStart(null);
+                if (r.sharpPain || r.numbness) {
+                  speak(
+                    "Sharp pain or numbness means we stop here. I am not starting the workout through that.",
+                    voiceRef.current,
+                    { tone: "urgent", interrupt: true },
+                  );
+                  return;
+                }
+                startChosenSession(chosen);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* ============================ THE STAGE ============================
           One resolver owns every handoff: speaking/setup/countdown/rest states
           use the pixel-stable approved still; only an active exact movement
@@ -1697,36 +1797,8 @@ function CoachSession() {
           /* this tap IS the gesture that turns his voice on — nothing else
              in the session asks the user to press play */
           onEnter={() => voiceOn && void engine.enableAudio()}
-          onYes={() => {
-            setPortalSeen(true);
-            engine.setRunning(true);
-          }}
-          onAlt={(kind) => {
-            const anyLogged = Object.values(log.exercises).some((el) =>
-              el.sets.some((s) => s.done),
-            );
-            if (!anyLogged) {
-              const alt = altSessionPlan(kind, state, day);
-              if (!alt.exercises.length) {
-                speak(
-                  "I couldn't load that alternate session. Your scheduled workout is still here.",
-                  voiceOn,
-                  { tone: "reassuring" },
-                );
-                return;
-              }
-              updateDay(day, (d) => ({
-                ...d,
-                sessionPlan: alt,
-                exercises: {},
-                cursor: 0,
-                completed: false,
-                completedAt: undefined,
-              }));
-            }
-            setPortalSeen(true);
-            engine.setRunning(true);
-          }}
+          onYes={() => startChosenSession("program")}
+          onAlt={(kind) => startChosenSession(kind)}
           onNotToday={() => void navigate({ to: "/" })}
         />
       )}
