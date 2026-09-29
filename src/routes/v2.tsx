@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { M3GymRenderer } from "@/v2/renderer";
+import { warmupPlanFor } from "@/v2/progression";
 import { sceneContractFor } from "@/v2/scene";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
 import type { V2Mode } from "@/v2/types";
@@ -42,6 +43,7 @@ const mmss = (seconds: number) =>
 
 function V2Preview() {
   const [workoutId, setWorkoutId] = useState(V2_WORKOUTS[0].id);
+  const [targetWeights, setTargetWeights] = useState<Record<string, number>>({});
   const workout = useMemo(
     () => V2_WORKOUTS.find((w) => w.id === workoutId) ?? V2_WORKOUTS[0],
     [workoutId],
@@ -61,6 +63,8 @@ function V2Preview() {
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
   const scene = sceneContractFor(session);
+  const targetWeight = exercise ? (targetWeights[exercise.id] ?? 0) : 0;
+  const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
 
   return (
     <main className="min-h-dvh bg-[#080a0d] text-white">
@@ -247,6 +251,55 @@ function V2Preview() {
               </label>
               <p className="mt-3 text-xs leading-relaxed text-white/45">{workout.focus}</p>
             </section>
+
+            {exercise?.category === "strength" && (
+              <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/45">
+                  Working weight + warm-up
+                </p>
+                <label className="mt-3 block text-xs font-bold text-white/70">
+                  Target working weight
+                  <div className="mt-2 flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      inputMode="decimal"
+                      value={targetWeight || ""}
+                      onChange={(e) =>
+                        setTargetWeights((prev) => ({
+                          ...prev,
+                          [exercise.id]: Math.max(0, Number(e.target.value) || 0),
+                        }))
+                      }
+                      className="min-h-12 w-full rounded-xl border border-white/10 bg-[#12171c] px-3 text-base font-black text-white"
+                      placeholder="Enter weight"
+                    />
+                    <span className="text-sm font-black text-white/45">lb</span>
+                  </div>
+                </label>
+
+                {warmups.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {warmups.map((step) => (
+                      <div
+                        key={step.label}
+                        className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-black/20 px-3 py-2"
+                      >
+                        <div>
+                          <p className="text-xs font-black">{step.label}</p>
+                          <p className="text-[10px] text-white/45">
+                            {step.percent === null ? "Easy prep set" : `${step.percent}%`} · {step.reps} reps
+                          </p>
+                        </div>
+                        <p className="text-sm font-black text-cyan-300">
+                          {step.weight === null ? "Light" : `${step.weight} lb`}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
 
             <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/45">
