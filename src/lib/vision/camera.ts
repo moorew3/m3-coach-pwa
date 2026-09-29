@@ -122,6 +122,7 @@ let analyzer: MoveAnalyzer | null = null;
 const reader = new GestureReader();
 let onGesture: ((g: GestureId) => void) | null = null;
 let onCue: ((cue: string, m: MoveMetrics) => void) | null = null;
+let deviceListenerInstalled = false;
 
 export function setGestureHandler(fn: ((g: GestureId) => void) | null) {
   onGesture = fn;
@@ -148,6 +149,12 @@ const fallbackCameraLabel = (i: number) => `Camera ${i + 1}`;
 
 export async function refreshCameraDevices(): Promise<CameraSource[]> {
   if (typeof navigator === "undefined" || !navigator.mediaDevices?.enumerateDevices) return [];
+  if (!deviceListenerInstalled && navigator.mediaDevices.addEventListener) {
+    deviceListenerInstalled = true;
+    navigator.mediaDevices.addEventListener("devicechange", () => {
+      void refreshCameraDevices();
+    });
+  }
   try {
     const all = await navigator.mediaDevices.enumerateDevices();
     const cameras = all
@@ -198,7 +205,7 @@ function calibrate(lm: LM[] | null): Calibration {
           ? "Step back a bit — you're filling the whole frame."
           : "Come closer, you're too far away."
         : !upright
-          ? "Stand the phone upright and square to you."
+          ? "Keep the camera level and square to you."
           : !bright
             ? "It's a bit dark — add some light in front of you."
             : "Perfect. I can see you.";
