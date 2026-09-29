@@ -41,6 +41,7 @@ import {
 } from "@/lib/store";
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
 import { MirrorMeButton } from "@/components/MirrorMe";
+import { CameraCoach } from "@/components/CameraCoach";
 import { ShareWorkout } from "@/components/ShareWorkout";
 import { SheetPanel, SheetButton } from "@/components/Sheet";
 import { SetRowCompact, columnsFor } from "@/components/SetRowCompact";
@@ -73,6 +74,8 @@ import {
   type DisplaySnapshot,
 } from "@/lib/display-link";
 import { sendSnapshot, setCastCommandHandler } from "@/lib/cast-link";
+import { effectiveExercises, effectivePlan } from "@/lib/activities";
+import { patternFor } from "@/lib/vision/patterns";
 
 export const Route = createFileRoute("/workout/$day")({
   head: () => ({
@@ -114,11 +117,12 @@ function Workout() {
   const day = Number(dayParam);
   const state = useApp();
   const navigate = useNavigate();
-  const plan = planForDay(day);
+  const plan = effectivePlan(state, day);
   const useSS = supersetsOn(state, day);
   const log = getDay(state, day);
   const customPairs = log.customPairs ?? [];
-  const base = orderedExercises(day, useSS);
+  const hasSelectedSession = Boolean(log.sessionPlan?.exercises?.length);
+  const base = hasSelectedSession ? effectiveExercises(state, day) : orderedExercises(day, useSS);
   const list = useSS
     ? base.map((e) => {
         const pi = customPairs.findIndex((p) => p.a === e.id || p.b === e.id);
@@ -1037,7 +1041,8 @@ function Workout() {
         </div>
       </div>
 
-      {/* the headline way in: a 1-on-1 session with the coach */}
+      {/* Same workout, different point of view: Coach Mode shows the trainer;
+          Manual Mode can show the athlete from the coach's-eye camera. */}
       <Link
         to="/coach/$day"
         params={{ day: String(day) }}
@@ -1046,14 +1051,31 @@ function Workout() {
       >
         <span className="min-w-0">
           <span className="block text-sm font-black uppercase tracking-widest text-primary">
-            Train with coach
+            Switch to coach view
           </span>
           <span className="block truncate text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-            1-on-1 immersive session
+            Same workout · watch the coach demonstrate
           </span>
         </span>
         <ChevronRight className="size-5 shrink-0 text-primary" />
       </Link>
+
+      <div
+        className="mt-3 rounded-2xl border border-accent/35 bg-gradient-to-br from-accent/10 to-transparent p-3"
+        data-testid="manual-coach-eye-intro"
+      >
+        <p className="text-[11px] font-black uppercase tracking-[0.24em] text-accent">
+          Coach-eye manual view
+        </p>
+        <p className="mt-1 text-sm font-semibold">
+          Put the phone where a trainer would stand. You stay on camera while you enter the set
+          yourself — the workout, exercise and log stay exactly the same.
+        </p>
+      </div>
+      <CameraCoach
+        pattern={patternFor(exercise.id)}
+        exerciseName={nameOf(exercise)}
+      />
 
       {toast && (
         <div
