@@ -68,6 +68,9 @@ function PlaceholderHuman({
     let ll: [number, number, number] = [0, 0, 0];
     let rl: [number, number, number] = [0, 0, 0];
     let yaw = 0;
+    let pitch = 0;
+    let roll = 0;
+    let rootLift = 0;
 
     if (motionKey === "boxingCombination") {
       const jab = Math.max(0, Math.sin(t * 3.4));
@@ -88,6 +91,10 @@ function PlaceholderHuman({
       yaw = -0.45 * kick;
       la = [-0.45, 0, -0.25];
       ra = [-0.45, 0, 0.25];
+    } else if (motionKey === "shoulderPress") {
+      const press = 0.5 + 0.5 * Math.sin(t * 2.0);
+      la = [-0.7 - 0.9 * press, 0, -0.32];
+      ra = [-0.7 - 0.9 * press, 0, 0.32];
     } else if (motionKey === "lateralRaise") {
       const lift = 0.5 + 0.5 * Math.sin(t * 2.2);
       la = [0, 0, -0.08 - 1.2 * lift];
@@ -96,10 +103,74 @@ function PlaceholderHuman({
       const press = 0.5 + 0.5 * Math.sin(t * 2.0);
       la = [-0.8 - 0.65 * press, 0, -0.45];
       ra = [-0.8 - 0.65 * press, 0, 0.45];
+      pitch = motionKey === "inclinePress" ? -0.12 : 0;
     } else if (motionKey === "tricepsPressdown") {
       const press = 0.5 + 0.5 * Math.sin(t * 2.4);
       la = [-0.35 + 0.45 * press, 0, -0.12];
       ra = [-0.35 + 0.45 * press, 0, 0.12];
+    } else if (motionKey === "latPulldown") {
+      const pull = 0.5 + 0.5 * Math.sin(t * 2.0);
+      la = [-1.55 + 1.05 * pull, 0, -0.35];
+      ra = [-1.55 + 1.05 * pull, 0, 0.35];
+    } else if (motionKey === "seatedRow" || motionKey === "bentOverRow") {
+      const row = 0.5 + 0.5 * Math.sin(t * 2.0);
+      la = [-0.35 + 0.75 * row, 0, -0.2];
+      ra = [-0.35 + 0.75 * row, 0, 0.2];
+      pitch = motionKey === "bentOverRow" ? 0.42 : 0;
+    } else if (motionKey === "facePull") {
+      const pull = 0.5 + 0.5 * Math.sin(t * 2.2);
+      la = [-0.85 + 0.55 * pull, 0, -0.7];
+      ra = [-0.85 + 0.55 * pull, 0, 0.7];
+    } else if (motionKey === "dumbbellCurl") {
+      const curl = 0.5 + 0.5 * Math.sin(t * 2.4);
+      la = [-0.15 - 0.9 * curl, 0, -0.08];
+      ra = [-0.15 - 0.9 * curl, 0, 0.08];
+    } else if (motionKey === "backSquat") {
+      const squat = 0.5 + 0.5 * Math.sin(t * 1.8);
+      ll = [0.55 * squat, 0, -0.08];
+      rl = [0.55 * squat, 0, 0.08];
+      pitch = 0.12 * squat;
+      rootLift = -0.42 * squat;
+    } else if (motionKey === "reverseLunge") {
+      const lunge = 0.5 + 0.5 * Math.sin(t * 1.8);
+      rl = [0.65 * lunge, 0, 0.14];
+      ll = [-0.18 * lunge, 0, -0.05];
+      rootLift = -0.24 * lunge;
+    } else if (motionKey === "legPress") {
+      const press = 0.5 + 0.5 * Math.sin(t * 1.8);
+      ll = [-0.9 + 0.75 * press, 0, 0];
+      rl = [-0.9 + 0.75 * press, 0, 0];
+      pitch = -0.3;
+    } else if (motionKey === "legExtension") {
+      const extend = 0.5 + 0.5 * Math.sin(t * 2.0);
+      ll = [-0.25 - 0.85 * extend, 0, 0];
+      rl = [-0.25 - 0.85 * extend, 0, 0];
+    } else if (motionKey === "calfRaise") {
+      rootLift = 0.08 * (0.5 + 0.5 * Math.sin(t * 2.4));
+    } else if (motionKey === "hangingKneeRaise") {
+      const raise = 0.5 + 0.5 * Math.sin(t * 2.0);
+      ll = [-1.0 * raise, 0, 0];
+      rl = [-1.0 * raise, 0, 0];
+      la = [-1.4, 0, -0.18];
+      ra = [-1.4, 0, 0.18];
+    } else if (motionKey === "vSitCrunch") {
+      const crunch = 0.5 + 0.5 * Math.sin(t * 2.0);
+      ll = [-0.8 * crunch, 0, 0];
+      rl = [-0.8 * crunch, 0, 0];
+      pitch = 0.45 * crunch;
+      rootLift = -0.28;
+    } else if (motionKey === "sidePlank") {
+      roll = 1.25;
+      la = [-1.2, 0, -0.2];
+      ra = [0.2, 0, 0.15];
+      rootLift = -0.35;
+    } else if (motionKey === "treadmillWalk") {
+      const stride = Math.sin(t * 3.0);
+      ll = [0.38 * stride, 0, 0];
+      rl = [-0.38 * stride, 0, 0];
+      la = [-0.18 * stride, 0, -0.08];
+      ra = [0.18 * stride, 0, 0.08];
+      rootLift = Math.abs(Math.sin(t * 3.0)) * 0.018;
     } else {
       const breathe = Math.sin(t * 1.2) * 0.035;
       la = [breathe, 0, -0.08];
@@ -112,8 +183,14 @@ function PlaceholderHuman({
     set(rightLeg, ...rl);
 
     if (root.current) {
-      root.current.rotation.y = facing + yaw;
-      root.current.position.y = Math.sin(t * 1.2) * 0.006;
+      root.current.rotation.x = THREE.MathUtils.lerp(root.current.rotation.x, pitch, ease);
+      root.current.rotation.y = THREE.MathUtils.lerp(root.current.rotation.y, facing + yaw, ease);
+      root.current.rotation.z = THREE.MathUtils.lerp(root.current.rotation.z, roll, ease);
+      root.current.position.y = THREE.MathUtils.lerp(
+        root.current.position.y,
+        rootLift + Math.sin(t * 1.2) * 0.006,
+        ease,
+      );
     }
   });
 
