@@ -20,14 +20,18 @@ export type V2Viewpoint = {
 export type V2Exercise = {
   id: string;
   name: string;
-  category: "strength" | "boxing" | "kickboxing" | "cardio" | "mobility";
+  category: "strength" | "boxing" | "kickboxing" | "cardio" | "core" | "mobility";
   sets: number;
   reps?: string;
+  repRange?: [number, number];
   seconds?: number;
   restSeconds: number;
   equipment?: string[];
   motionKey: string;
   cues: string[];
+  warmupStyle?: "compound" | "small" | "none";
+  loadClass?: "upper" | "lower" | "machine" | "bodyweight";
+  optional?: boolean;
 };
 
 export type V2Workout = {
