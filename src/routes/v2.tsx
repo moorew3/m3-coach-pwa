@@ -13,7 +13,7 @@ import {
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { V2AthleteCamera } from "@/v2/athlete-camera";
 import { M3GymRenderer } from "@/v2/renderer";
-import { warmupPlanFor } from "@/v2/progression";
+import { recommendProgression, warmupPlanFor } from "@/v2/progression";
 import { sceneContractFor } from "@/v2/scene";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
 import type { V2Mode } from "@/v2/types";
@@ -44,7 +44,6 @@ const mmss = (seconds: number) =>
 
 function V2Preview() {
   const [workoutId, setWorkoutId] = useState(V2_WORKOUTS[0].id);
-  const [targetWeights, setTargetWeights] = useState<Record<string, number>>({});
   const workout = useMemo(
     () => V2_WORKOUTS.find((w) => w.id === workoutId) ?? V2_WORKOUTS[0],
     [workoutId],
@@ -64,8 +63,29 @@ function V2Preview() {
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
   const scene = sceneContractFor(session);
-  const targetWeight = exercise ? (targetWeights[exercise.id] ?? 0) : 0;
+  const targetWeight = exercise ? (session.targetWeights[exercise.id] ?? 0) : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
+  const setEntries = exercise ? (session.setResults[exercise.id] ?? []) : [];
+  const completedResults =
+    exercise?.category === "strength"
+      ? setEntries
+          .slice(0, exercise.sets)
+          .filter(
+            (entry): entry is { reps: number; cleanForm: boolean } =>
+              typeof entry?.reps === "number" && typeof entry?.cleanForm === "boolean",
+          )
+      : [];
+  const progression =
+    exercise?.category === "strength" &&
+    completedResults.length === exercise.sets &&
+    targetWeight > 0
+      ? recommendProgression({
+          exercise,
+          currentWeight: targetWeight,
+          results: completedResults,
+          previousTopRangeStreak: 0,
+        })
+      : null;
 
   return (
     <main className="min-h-dvh bg-[#080a0d] text-white">
@@ -268,10 +288,11 @@ function V2Preview() {
                       inputMode="decimal"
                       value={targetWeight || ""}
                       onChange={(e) =>
-                        setTargetWeights((prev) => ({
-                          ...prev,
-                          [exercise.id]: Math.max(0, Number(e.target.value) || 0),
-                        }))
+                        dispatch({
+                          type: "set-target-weight",
+                          exerciseId: exercise.id,
+                          weight: Math.max(0, Number(e.target.value) || 0),
+                        })
                       }
                       className="min-h-12 w-full rounded-xl border border-white/10 bg-[#12171c] px-3 text-base font-black text-white"
                       placeholder="Enter weight"
@@ -298,6 +319,83 @@ function V2Preview() {
                         </p>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {session.mode === "manual" && (
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/45">
+                      Working sets
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      {Array.from({ length: exercise.sets }, (_, index) => {
+                        const entry = setEntries[index];
+                        return (
+                          <div
+                            key={index}
+                            className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-xl border border-white/8 bg-black/20 p-2"
+                          >
+                            <span className="grid size-8 place-items-center rounded-lg bg-white/8 text-xs font-black">
+                              {index + 1}
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              inputMode="numeric"
+                              value={entry?.reps ?? ""}
+                              onChange={(e) =>
+                                dispatch({
+                                  type: "set-reps",
+                                  exerciseId: exercise.id,
+                                  setIndex: index,
+                                  reps: e.target.value === "" ? null : Math.max(0, Number(e.target.value)),
+                                })
+                              }
+                              className="min-h-10 rounded-lg border border-white/10 bg-[#12171c] px-3 text-sm font-black text-white"
+                              placeholder="Actual reps"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                dispatch({
+                                  type: "set-form",
+                                  exerciseId: exercise.id,
+                                  setIndex: index,
+                                  cleanForm: entry?.cleanForm === true ? false : true,
+                                })
+                              }
+                              className={`min-h-10 rounded-lg px-3 text-[10px] font-black uppercase tracking-wider ${
+                                entry?.cleanForm === true
+                                  ? "bg-emerald-400 text-black"
+                                  : entry?.cleanForm === false
+                                    ? "bg-amber-300 text-black"
+                                    : "bg-white/10 text-white/60"
+                              }`}
+                            >
+                              {entry?.cleanForm === true
+                                ? "Clean"
+                                : entry?.cleanForm === false
+                                  ? "Form broke"
+                                  : "Form?"}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {progression && (
+                      <div className="mt-3 rounded-xl border border-cyan-300/25 bg-cyan-300/10 p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">
+                          Next workout
+                        </p>
+                        <p className="mt-1 text-lg font-black uppercase">
+                          {progression.action} · {progression.nextWeight} lb
+                        </p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-white/60">
+                          {progression.reason}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </section>
