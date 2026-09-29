@@ -74,6 +74,7 @@ import {
   useCamera,
 } from "@/lib/vision/camera";
 import { prefillFor, recapLines } from "@/lib/performance";
+import { coachCheckInForSet, type CoachCheckIn } from "@/lib/coach-checkins";
 import type { HudProps } from "@/components/GameHud";
 import { CoachDock } from "@/components/CoachDock";
 import { CoachWake } from "@/components/CoachWake";
@@ -322,6 +323,8 @@ function CoachSession() {
   const voiceRef = useRef(true);
   voiceRef.current = voiceOn;
   const coachTalkBusy = useRef(false);
+  const [coachChoice, setCoachChoice] = useState<CoachCheckIn | null>(null);
+  const askedChoiceFor = useRef("");
 
   /* live rep count from the phone camera — a suggestion the user can accept or ignore */
   useEffect(() => {
@@ -386,6 +389,67 @@ function CoachSession() {
   const { step, i, left, lead, running, mirrored, progress } = engine;
   const move = mirrorFor(step?.mirror);
   const pattern = patternFor(step?.exerciseId);
+
+  /** Apply a coach question to the SAME workout state the user can edit by hand. */
+  const resolveCoachChoice = useCallback(
+    (yes: boolean) => {
+      const choice = coachChoice;
+      if (!choice) return;
+
+      const prevWork = [...script.slice(0, i)]
+        .reverse()
+        .find((s) => s.kind === "work" && s.exerciseId && s.setIndex !== undefined);
+      const nextWork = script
+        .slice(i + 1)
+        .find((s) => s.kind === "work" && s.exerciseId && s.setIndex !== undefined);
+
+      if (!prevWork?.exerciseId || prevWork.setIndex === undefined) {
+        setCoachChoice(null);
+        return;
+      }
+
+      let action = yes ? choice.yesLabel : choice.noLabel;
+
+      if (choice.kind === "rest" && yes && choice.extraRestSeconds) {
+        engine.bumpRest(choice.extraRestSeconds);
+        action = `Added ${choice.extraRestSeconds} seconds of rest`;
+      }
+
+      if (
+        choice.kind === "load" &&
+        nextWork?.exerciseId === prevWork.exerciseId &&
+        nextWork.setIndex !== undefined
+      ) {
+        const nextWeight = yes ? choice.suggestedWeight : choice.currentWeight;
+        if (nextWeight !== undefined) {
+          upsertSetValues(day, nextWork.exerciseId, nextWork.setIndex, { weight: nextWeight });
+          action = `Next set weight: ${nextWeight || "current load"}`;
+        }
+      }
+
+      if (choice.kind === "technique" && yes) {
+        setDemoOpen(true);
+        action = "Opened technique demonstration";
+      }
+
+      upsertSetValues(day, prevWork.exerciseId, prevWork.setIndex, {
+        coachChoice: {
+          kind: choice.kind,
+          question: choice.question,
+          answer: yes ? "yes" : "no",
+          action,
+          at: new Date().toISOString(),
+        },
+      });
+
+      speak(yes ? choice.yesSpoken : choice.noSpoken, voiceRef.current, {
+        tone: choice.kind === "technique" ? "instructional" : "attentive",
+        interrupt: false,
+      });
+      setCoachChoice(null);
+    },
+    [coachChoice, day, engine, i, script],
+  );
 
   /* ONE PAUSE STATE. Pausing on the coached stage pauses the workout itself,
      so the manual log shows the same frozen clock — and vice versa. */
@@ -629,6 +693,46 @@ function CoachSession() {
     return () => window.removeEventListener("keydown", onKey);
   }, [engine, running, step, voiceOn]);
 
+  /* ACTIVE CHECK-IN — only during a real rest and only when the just-finished
+     set creates a meaningful fork in the plan. Silence is the default. */
+  useEffect(() => {
+    if (step?.kind !== "rest") {
+      setCoachChoice(null);
+      return;
+    }
+
+    const prevWork = [...script.slice(0, i)]
+      .reverse()
+      .find((s) => s.kind === "work" && s.exerciseId && s.setIndex !== undefined);
+    if (!prevWork?.exerciseId || prevWork.setIndex === undefined) return;
+
+    const ex = effectiveExercise(state, day, prevWork.exerciseId);
+    const entry = getDay(state, day).exercises[prevWork.exerciseId]?.sets[prevWork.setIndex];
+    if (!ex || !entry?.done || entry.coachChoice) return;
+
+    const nextWork = script
+      .slice(i + 1)
+      .find((s) => s.kind === "work" && s.exerciseId && s.setIndex !== undefined);
+    const prompt = coachCheckInForSet(
+      state,
+      ex,
+      entry,
+      prevWork.setIndex,
+      nextWork?.exerciseId === prevWork.exerciseId,
+    );
+    if (!prompt || askedChoiceFor.current === prompt.id) return;
+
+    askedChoiceFor.current = prompt.id;
+    setCoachChoice(prompt);
+    const t = window.setTimeout(() => {
+      speak(`${prompt.question} Say yes or no.`, voiceRef.current, {
+        tone: "attentive",
+        interrupt: false,
+      });
+    }, 900);
+    return () => window.clearTimeout(t);
+  }, [day, i, logSig, script, state, step?.id, step?.kind]);
+
   /* NATURAL COACH TALK — fixed commands remain deterministic, while a
      trainer-directed phrase that isn't a command gets a short contextual
      answer from the server. The model never mutates workout state; it talks,
@@ -650,6 +754,9 @@ function CoachSession() {
                 x.rpe ? `RPE ${x.rpe}` : "",
                 x.feel ? `felt ${x.feel}` : "",
                 x.vision?.cues?.[0] ?? "",
+                x.coachChoice
+                  ? `Coach asked: ${x.coachChoice.question} Athlete answered ${x.coachChoice.answer}; ${x.coachChoice.action}.`
+                  : "",
               ].filter(Boolean);
               return `Recent set ${n + 1}: ${parts.join(" · ")}`;
             })
@@ -743,9 +850,18 @@ function CoachSession() {
           }
           break;
         }
+        case "choiceYes":
+          if (coachChoice) resolveCoachChoice(true);
+          break;
+        case "choiceNo":
+          if (coachChoice) resolveCoachChoice(false);
+          break;
         case "start":
-        case "resume":
           setSessionRunning(true);
+          break;
+        case "resume":
+          if (coachChoice?.kind === "rest") resolveCoachChoice(false);
+          else setSessionRunning(true);
           break;
         case "pause":
           setSessionRunning(false);
@@ -763,7 +879,8 @@ function CoachSession() {
           engine.skipStep();
           break;
         case "addTime":
-          engine.bumpRest(secondsIn(phrase));
+          if (coachChoice?.kind === "rest") resolveCoachChoice(true);
+          else engine.bumpRest(secondsIn(phrase));
           break;
         case "lessTime":
           engine.bumpRest(-secondsIn(phrase));
@@ -835,7 +952,7 @@ function CoachSession() {
       }
     });
     return () => setCommandHandler(null);
-  }, [engine, day, navigate, step?.next, voiceOn]);
+  }, [coachChoice, day, engine, navigate, resolveCoachChoice, step?.next, voiceOn]);
 
   /* CAMERA — gestures drive the same actions as taps and speech, and the
      coach only speaks a form cue when the analyser is confident. */
@@ -1704,6 +1821,40 @@ function CoachSession() {
           {step.kind === "work" && !pattern && chip("Log by hand or voice")}
           {step.kind === "work" && pattern && !camActive && chip("Camera off")}
         </div>
+
+        {coachChoice && step.kind === "rest" && (
+          <section
+            data-testid="coach-choice"
+            className="mb-2 rounded-2xl border border-primary/50 bg-black/80 p-3 backdrop-blur-md"
+            aria-live="polite"
+          >
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+              Coach is asking
+            </p>
+            <p className="mt-1 text-sm font-bold leading-snug">{coachChoice.question}</p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                data-testid="coach-choice-yes"
+                onClick={() => resolveCoachChoice(true)}
+                className="tap-target rounded-xl bg-primary px-3 text-sm font-black text-primary-foreground"
+              >
+                {coachChoice.yesLabel}
+              </button>
+              <button
+                type="button"
+                data-testid="coach-choice-no"
+                onClick={() => resolveCoachChoice(false)}
+                className="tap-target rounded-xl bg-white/10 px-3 text-sm font-bold text-white"
+              >
+                {coachChoice.noLabel}
+              </button>
+            </div>
+            <p className="mt-1.5 text-center text-[10px] uppercase tracking-wide text-white/50">
+              Tap an answer or say yes / no
+            </p>
+          </section>
+        )}
 
         <CaptionStrip text={liveLine} speaking={engine.speaking} />
 
