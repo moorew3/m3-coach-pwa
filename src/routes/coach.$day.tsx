@@ -362,7 +362,9 @@ function CoachSession() {
       // that follows already names the logged set, so the coach never doubles up.
       const camPart =
         m && m.confidence >= 0.55 && m.reps > 0
-          ? `I counted ${m.reps} clean reps. ${m.cues[0] ?? `Average range ${m.romAvg} degrees.`}`
+          ? m.cues[0]
+            ? `I counted ${m.reps} reps. ${m.cues[0]}`
+            : `I counted ${m.reps} clean reps. Average range ${m.romAvg} degrees.`
           : "";
       if (camPart) {
         speak(`${setPart}${targetPart}${camPart}`, voiceOn, {
