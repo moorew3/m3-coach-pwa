@@ -116,6 +116,7 @@ import {
   useApp,
   type SetEntry,
   type SetFeel,
+  type Readiness,
 } from "@/lib/store";
 
 export const Route = createFileRoute("/coach/$day")({
@@ -397,8 +398,11 @@ function CoachSession() {
   const hasLoggedWork = Object.values(log.exercises).some((el) => el.sets.some((s) => s.done));
 
   const startChosenSession = useCallback(
-    (kind: "program" | "lighter" | "recovery" | "stretch") => {
-      const readiness = getDay(state, day).readiness;
+    (
+      kind: "program" | "lighter" | "recovery" | "stretch",
+      readinessOverride?: Readiness,
+    ) => {
+      const readiness = readinessOverride ?? getDay(state, day).readiness;
       if (readiness?.sharpPain || readiness?.numbness) {
         speak(
           "Sharp pain or numbness is a stop sign. We are not starting a workout through that. Stop here and get appropriate medical guidance if it persists or is concerning.",
@@ -1748,7 +1752,7 @@ function CoachSession() {
                   );
                   return;
                 }
-                startChosenSession(chosen);
+                startChosenSession(chosen, r);
               }}
             />
           </div>
