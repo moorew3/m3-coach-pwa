@@ -12,6 +12,7 @@ import {
   useApp,
   type FoodEntry,
 } from "@/lib/store";
+import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 
 export const Route = createFileRoute("/nutrition")({
   head: () => ({
@@ -59,6 +60,7 @@ function Nutrition() {
   const calTarget = day.trainingDay ? t.trainingCal : t.restCal;
   const [form, setForm] = useState(emptyForm);
   const [showTargets, setShowTargets] = useState(false);
+  const coach = nutritionCoachSnapshot(state, date);
 
   const addEntry = (entry: FoodEntry, alsoFavorite = false) => {
     updateNutrition(date, (n) => ({
@@ -91,6 +93,20 @@ function Nutrition() {
     <main className="px-4 pt-6">
       <h1 className="text-3xl font-bold">Nutrition</h1>
       <p className="mt-1 text-sm text-muted-foreground">Today · {date}</p>
+
+      <section
+        data-testid="nutrition-coach"
+        className={`mt-5 rounded-2xl border p-4 ${coach.concern ? "border-accent/50 bg-accent/5" : "border-primary/30 bg-primary/5"}`}
+      >
+        <p className="text-[11px] font-black uppercase tracking-widest text-primary">
+          Coach view
+        </p>
+        <h2 className="mt-1 text-lg font-bold">{coach.headline}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{coach.detail}</p>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Based only on what you logged. Today&apos;s totals are treated as incomplete until the day is over.
+        </p>
+      </section>
 
       <section className="surface-card mt-5 space-y-3 rounded-2xl p-4">
         <button
