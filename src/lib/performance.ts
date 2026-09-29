@@ -225,7 +225,10 @@ export interface LiveSetDecision {
 const cameraFormIssue = (x: SetEntry) => {
   const v = x.vision;
   if (!v || v.confidence < 0.55) return null;
-  if (v.cues?.length) return v.cues[0];
+  // The analyser also remembers positive recovery cues. Only persistent
+  // correction cues should block a load increase.
+  const fault = v.cues?.find((cue) => !/^(good reps|that rep was cleaner)/i.test(cue.trim()));
+  if (fault) return fault;
   if (v.symmetry !== null && v.symmetry < 0.75) return "One side drifted during the set.";
   return null;
 };
