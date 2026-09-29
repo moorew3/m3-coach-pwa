@@ -56,6 +56,7 @@ import {
 } from "@/lib/voice-commands";
 import { speak } from "@/lib/coach-voice";
 import { askLiveCoach } from "@/lib/coach-talk";
+import { exerciseMemoryFor } from "@/lib/coach-memory";
 
 import { recordWorkStep, resetCoachSession, useCoachEngine } from "@/lib/coach-session";
 import { CameraCoach } from "@/components/CameraCoach";
@@ -637,7 +638,8 @@ function CoachSession() {
       if (coachTalkBusy.current) return;
       const ex = step?.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
       const m = metricsSnapshot();
-      const recent = ex
+      const memory = ex ? exerciseMemoryFor(state, ex, day) : null;
+      const recentSets = ex
         ? (getDay(state, day).exercises[ex.id]?.sets ?? [])
             .filter((x) => x.done || x.outcome)
             .slice(-3)
@@ -652,6 +654,13 @@ function CoachSession() {
               return `Recent set ${n + 1}: ${parts.join(" · ")}`;
             })
         : [];
+      const recent =
+        memory && !["new", "building"].includes(memory.kind)
+          ? [
+              `Long-term coach memory: ${memory.headline}. ${memory.detail} ${memory.action}`,
+              ...recentSets,
+            ]
+          : recentSets;
 
       coachTalkBusy.current = true;
       void askLiveCoach(phrase, {
