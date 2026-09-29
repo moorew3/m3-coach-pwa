@@ -40,9 +40,20 @@ export interface Calibration {
   prompt: string;
 }
 
+export interface CameraSource {
+  deviceId: string;
+  label: string;
+}
+
 export interface CamState {
   status: CamStatus;
   error: string | null;
+  /** Browser-visible cameras: phone lenses, laptop webcams, USB cameras, virtual cameras, etc. */
+  devices: CameraSource[];
+  /** Camera selected by the athlete. Empty means "let the browser choose". */
+  selectedDeviceId: string;
+  /** Device ID actually delivering the current stream. */
+  activeDeviceId: string;
   /** Live landmark set for the overlay (normalised 0–1). */
   landmarks: LM[] | null;
   metrics: MoveMetrics | null;
@@ -72,6 +83,9 @@ const blankCal: Calibration = {
 const initial: CamState = {
   status: "off",
   error: null,
+  devices: [],
+  selectedDeviceId: "",
+  activeDeviceId: "",
   landmarks: null,
   metrics: null,
   pattern: null,
@@ -128,6 +142,33 @@ export function cameraSupported(): boolean {
 export function attachVideo(el: HTMLVideoElement | null) {
   video = el;
   if (el && stream) el.srcObject = stream;
+}
+
+const fallbackCameraLabel = (i: number) => `Camera ${i + 1}`;
+
+export async function refreshCameraDevices(): Promise<CameraSource[]> {
+  if (typeof navigator === "undefined" || !navigator.mediaDevices?.enumerateDevices) return [];
+  try {
+    const all = await navigator.mediaDevices.enumerateDevices();
+    const cameras = all
+      .filter((d) => d.kind === "videoinput" && d.deviceId)
+      .map((d, i) => ({ deviceId: d.deviceId, label: d.label || fallbackCameraLabel(i) }));
+    set({ devices: cameras });
+    return cameras;
+  } catch {
+    return cam.devices;
+  }
+}
+
+/**
+ * Select any camera the browser exposes. This is intentionally device-agnostic:
+ * built-in webcams, USB webcams and virtual-camera drivers all use the same path.
+ */
+export async function selectCamera(deviceId: string, pattern: PatternId | null = cam.pattern) {
+  set({ selectedDeviceId: deviceId });
+  if (cam.status !== "live" && cam.status !== "loading" && cam.status !== "starting") return;
+  stopCamera();
+  await startCamera(pattern, deviceId);
 }
 
 /* ------------------------------ calibration ----------------------------- */
@@ -210,7 +251,10 @@ interface HandOut {
   landmarks?: LM[][];
 }
 
-export async function startCamera(pattern: PatternId | null) {
+export async function startCamera(
+  pattern: PatternId | null,
+  requestedDeviceId: string = cam.selectedDeviceId,
+) {
   if (cam.status === "live" || cam.status === "starting" || cam.status === "loading") return;
   if (!cameraSupported()) {
     set({ status: "unsupported", error: "This browser can't use the camera for tracking." });
@@ -218,8 +262,21 @@ export async function startCamera(pattern: PatternId | null) {
   }
   set({ status: "starting", error: null, calibrating: true });
   try {
+    const videoConstraints: MediaTrackConstraints = requestedDeviceId
+      ? {
+          deviceId: { exact: requestedDeviceId },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 },
+        }
+      : {
+          facingMode: "user",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 },
+        };
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+      video: videoConstraints,
       audio: false,
     });
   } catch (e) {
@@ -232,6 +289,14 @@ export async function startCamera(pattern: PatternId | null) {
     });
     return;
   }
+  const activeTrack = stream.getVideoTracks()[0];
+  const activeDeviceId = activeTrack?.getSettings().deviceId || requestedDeviceId || "";
+  set({
+    selectedDeviceId: requestedDeviceId || activeDeviceId,
+    activeDeviceId,
+  });
+  await refreshCameraDevices();
+
   if (video) {
     video.srcObject = stream;
     try {
@@ -270,6 +335,7 @@ export function stopCamera() {
   reader.reset();
   set({
     status: "off",
+    activeDeviceId: "",
     landmarks: null,
     metrics: null,
     calibration: blankCal,
