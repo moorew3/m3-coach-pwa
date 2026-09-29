@@ -11,6 +11,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
+import { V2AthleteCamera } from "@/v2/athlete-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { warmupPlanFor } from "@/v2/progression";
 import { sceneContractFor } from "@/v2/scene";
@@ -84,9 +85,10 @@ function V2Preview() {
         <div className="mt-3 grid flex-1 gap-3 lg:grid-cols-[1fr_320px]">
           <section className="relative min-h-[64dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#10151a]">
             <M3GymRenderer session={session} />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/65" />
+            <V2AthleteCamera active={session.mode === "manual"} />
+            <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/30 via-transparent to-black/65" />
 
-            <div className="relative z-10 flex items-center justify-between gap-2 p-3">
+            <div className="relative z-[4] flex items-center justify-between gap-2 p-3">
               <div className="rounded-xl bg-black/35 px-3 py-2 backdrop-blur">
                 <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">
                   {viewpoint.label} view
@@ -101,7 +103,7 @@ function V2Preview() {
               </div>
             </div>
 
-            <div className="relative z-10 grid min-h-[50dvh] place-items-center px-4 pb-32 text-center">
+            <div className="relative z-[4] grid min-h-[50dvh] place-items-center px-4 pb-32 text-center">
               <div className="max-w-xl">
                 <p className="text-xs font-black uppercase tracking-[0.32em] text-white/45">
                   {session.phase}
@@ -154,7 +156,7 @@ function V2Preview() {
               </div>
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 z-10 p-3">
+            <div className="absolute inset-x-0 bottom-0 z-[4] p-3">
               <div className="rounded-2xl border border-white/10 bg-black/70 p-3 backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-3">
                   <div>
