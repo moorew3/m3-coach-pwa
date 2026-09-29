@@ -2,7 +2,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { sceneContractFor } from "./scene";
+import { sceneContractFor } from "./scene";\nimport { CoachRigSlot } from "./coach-rig";
 import type { V2Session } from "./types";
 
 function CameraController({
@@ -195,11 +195,19 @@ function GymScene({ session }: { session: V2Session }) {
       <CableStation />
       <DumbbellRack />
 
-      <PlaceholderHuman
-        position={scene.coachAnchor}
-        facing={0}
-        visible={scene.showCoach}
-      />
+      {scene.showCoach && (
+        <CoachRigSlot
+          motionKey={scene.motionKey}
+          position={scene.coachAnchor}
+          fallback={
+            <PlaceholderHuman
+              position={scene.coachAnchor}
+              facing={0}
+              visible
+            />
+          }
+        />
+      )}
       <PlaceholderHuman
         position={scene.athleteAnchor}
         facing={Math.PI}
