@@ -626,15 +626,19 @@ export function prefillFor(
   const memoryCall = memoryProgressionOverride(s, e, day);
   const last = lastPerformance(s, e, day);
   const call = progressionCall(s, e, last);
+  const readiness = s.days[day]?.readiness;
+  const lowReadiness = !!readiness && (readiness.energy <= 2 || !readiness.slept6);
   const range = repRange(e.reps);
   const lastSet = last?.sets.filter((x) => x.done)[r];
   const weight =
     liveCall?.weight ||
     prevToday?.weight ||
     memoryCall?.weight ||
-    (call && (call.kind === "up" || call.kind === "reduce")
-      ? call.weight
-      : lastSet?.weight || last?.weight || "");
+    (lowReadiness && call?.kind === "up"
+      ? lastSet?.weight || last?.weight || ""
+      : call && (call.kind === "up" || call.kind === "reduce")
+        ? call.weight
+        : lastSet?.weight || last?.weight || "");
   const reps = lastSet?.reps && num(lastSet.reps) ? lastSet.reps : range ? String(range.min) : "";
   const historyHint = last
     ? `Last: ${last.weight} × ${last.reps.join(", ") || "–"}${last.rpeMax ? ` · RPE ${last.rpeMax}` : ""}`
@@ -643,7 +647,9 @@ export function prefillFor(
     ? `Coach: ${liveCall.short}`
     : memoryCall
       ? `Coach memory: ${memoryCall.short}`
-      : historyHint;
+      : lowReadiness && call?.kind === "up"
+        ? `Readiness: hold ${last?.weight || "the last load"} today · +15 sec rest`
+        : historyHint;
   return { weight: weight === "BW" ? "" : weight, reps, hint };
 }
 
