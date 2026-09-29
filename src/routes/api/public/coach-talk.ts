@@ -132,8 +132,9 @@ export const Route = createFileRoute("/api/public/coach-talk")({
             model:
               process.env["OPENAI_COACH_MODEL"]?.trim() ||
               process.env["OPENAI_MODEL"]?.trim() ||
-              "gpt-5-mini",
+              "gpt-5.6-luna",
             store: false,
+            reasoning: { effort: "none" },
             instructions: SYSTEM,
             input: `CONTEXT\n${JSON.stringify(parsed.context)}\n\nATHLETE\n${parsed.message}`,
             max_output_tokens: 160,
