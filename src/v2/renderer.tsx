@@ -2,7 +2,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { sceneContractFor } from "./scene";\nimport { CoachRigSlot } from "./coach-rig";
+import { sceneContractFor } from "./scene";
+import { CoachRigSlot } from "./coach-rig";
 import type { V2Session } from "./types";
 
 function CameraController({
