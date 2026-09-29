@@ -19,6 +19,7 @@ export interface LiveCoachContext {
   rpe?: number;
   feel?: string;
   next?: string;
+  nutrition?: string;
   camera?: {
     active: boolean;
     confidence?: number;
