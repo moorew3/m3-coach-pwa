@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
 import { coachMotionFor } from "@/data/coach-identity";
-import { getVoiceStatus, useVoiceStatus } from "@/lib/coach-voice";
+import { getVoiceStatus } from "@/lib/coach-voice";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
@@ -77,7 +77,6 @@ function V2Coach() {
     catch { /* session-only; do not block training */ }
   }, []);
   const [voiceOn, setVoiceOn] = useState(false);
-  const voiceStatus = useVoiceStatus();
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
@@ -405,8 +404,8 @@ function V2Coach() {
           clearV2CoachSpeech();
           return;
         case "unmuteCoach":
-          if (getVoiceStatus() === "ready") setVoiceOn(true);
-          else setLiveCue("Tap Enable coach voice once to unlock audio.");
+          setVoiceOn(false);
+          setLiveCue("Marcus — Warm & Friendly is selected. Live Marcus speech is still being connected; no substitute voice will play.");
           return;
         case "end":
           dispatch({ type: "pause" });
