@@ -72,7 +72,10 @@ export class KickTracker {
     const guardR =
       visibility(lm[IDX.wrR]) > 0.6 &&
       lm[IDX.wrR].y < lm[IDX.shR].y + scale * 0.35;
-    this.unguardedFrames = !guardL && !guardR
+    const wristsVisible =
+      visibility(lm[IDX.wrL]) > 0.6 && visibility(lm[IDX.wrR]) > 0.6;
+    // A hidden wrist is "cannot judge", not evidence that guard was dropped.
+    this.unguardedFrames = wristsVisible && !guardL && !guardR
       ? this.unguardedFrames + 1
       : 0;
     let cue: string | null = null;
