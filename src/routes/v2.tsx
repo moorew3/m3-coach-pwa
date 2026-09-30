@@ -16,6 +16,8 @@ import {
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { V2TrainingCamera } from "@/v2/training-camera";
+import { M3GymRenderer } from "@/v2/renderer";
+import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
 import type { V2Mode, V2Session } from "@/v2/types";
@@ -339,6 +341,7 @@ function V2Coach() {
   const showCoach = session.mode === "coach" || session.mode === "shadow";
   const glasses = session.mode === "glasses";
   const videoPlaying = session.running && session.phase === "work";
+  const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
 
   return (
     <main className="min-h-dvh bg-[#080b0f] text-white">
@@ -357,7 +360,8 @@ function V2Coach() {
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="relative min-h-[67dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:min-h-[720px]">
-            {showCoach && media && (
+            {realTimeRigReady && <M3GymRenderer session={session} />}
+            {showCoach && !realTimeRigReady && media && (
               <CoachMotion
                 key={media.url}
                 url={media.url}
@@ -368,7 +372,7 @@ function V2Coach() {
                 label={`Approved coach demonstrating ${exercise?.name ?? "movement"}`}
               />
             )}
-            {showCoach && !media && (
+            {showCoach && !realTimeRigReady && !media && (
               <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-8 text-center">
                 <div className="max-w-md">
                   <Dumbbell className="mx-auto size-12 text-white/25" />
@@ -380,7 +384,7 @@ function V2Coach() {
                 </div>
               </div>
             )}
-            {glasses && (
+            {glasses && !realTimeRigReady && (
               <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#142630,#05090d_65%)]">
                 <div className="w-[85%] max-w-lg rounded-2xl border border-cyan-300/35 bg-cyan-300/5 p-6">
                   <p className="text-xs font-black uppercase tracking-[.25em] text-cyan-300">
@@ -399,6 +403,13 @@ function V2Coach() {
               </div>
             )}
 
+            {glasses && realTimeRigReady && (
+              <div className="pointer-events-none absolute bottom-[104px] left-3 z-[4] rounded-xl border border-cyan-300/35 bg-black/70 px-3 py-2 text-xs font-black text-cyan-200">
+                FIRST-PERSON · {session.phaseSecondsLeft !== null
+                  ? `${session.phaseSecondsLeft}s remaining`
+                  : exercise?.reps}
+              </div>
+            )}
             <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/70 via-transparent to-black/75" />
 
             <div className="pointer-events-none absolute inset-x-0 top-0 z-[4] p-3">
