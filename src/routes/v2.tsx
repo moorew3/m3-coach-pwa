@@ -5,6 +5,7 @@ import {
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
+import { coachMotionFor } from "@/data/coach-identity";
 import { getVoiceStatus, selectedBrowserVoice, speak, stopSpeech, unlockVoice, useVoiceStatus, voicePath } from "@/lib/coach-voice";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
@@ -410,7 +411,19 @@ function V2Coach() {
   const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
   const showCoach = session.mode === "coach" || session.mode === "shadow";
   const glasses = session.mode === "glasses";
-  const videoPlaying = session.running && session.phase === "work";
+  const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
+  const guardClip = isFighterMovement ? coachMotionFor("guardReset") : undefined;
+  const stageMedia = session.phase === "rest" && guardClip ? guardClip : media;
+  const stagePreloadUrl = isFighterMovement
+    ? session.phase === "rest" ? media?.url : guardClip?.url
+    : preload?.url;
+  const videoPlaying = session.running && (session.phase === "work" ||
+    (session.phase === "rest" && isFighterMovement && Boolean(guardClip)));
+  // Full 6s technique demonstrations play seven complete guard-to-guard
+  // cycles within the 40s bell. The full-length combo is nearly 1:1.
+  const videoRate = session.phase === "work" && isFighterMovement && exercise?.seconds === 40
+    ? exercise.motionKey === "boxingCombination" ? 1.017 : 1.05
+    : 1;
   const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
 
   return (
@@ -441,18 +454,20 @@ function V2Coach() {
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="relative min-h-[67dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:min-h-[720px]">
             {realTimeRigReady && <M3GymRenderer session={session} />}
-            {showCoach && !realTimeRigReady && media && (
+            {showCoach && !realTimeRigReady && stageMedia && (
               <CoachMotion
-                key={media.url}
-                url={media.url}
-                poster={media.poster}
+                key={stageMedia.url}
+                url={stageMedia.url}
+                poster={stageMedia.poster}
                 playing={videoPlaying}
-                preloadUrl={preload?.url}
+                rate={videoRate}
+                cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
+                preloadUrl={stagePreloadUrl}
                 className="absolute inset-0 h-full w-full"
                 label={`Approved coach demonstrating ${exercise?.name ?? "movement"}`}
               />
             )}
-            {showCoach && !realTimeRigReady && !media && (
+            {showCoach && !realTimeRigReady && !stageMedia && (
               <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-8 text-center">
                 <div className="max-w-md">
                   <Dumbbell className="mx-auto size-12 text-white/25" />
