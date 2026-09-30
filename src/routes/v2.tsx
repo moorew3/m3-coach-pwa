@@ -18,6 +18,7 @@ import {
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
+import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -195,6 +196,7 @@ function V2Coach() {
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
   const media = approvedCoachMedia(exercise);
+  const avatarGuide = media ? undefined : approvedAvatarGuide(exercise);
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   const targetWeight = exercise ? session.targetWeights[exercise.id] ?? 0 : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
@@ -569,7 +571,24 @@ function V2Coach() {
                 label={`Approved coach demonstrating ${exercise?.name ?? "movement"}`}
               />
             )}
-            {showCoach && !realTimeRigReady && !stageMedia && (
+            {showCoach && !realTimeRigReady && !stageMedia && avatarGuide && (
+              <div className="absolute inset-0 bg-black">
+                <img
+                  src={avatarGuide.src}
+                  alt={avatarGuide.title + " original avatar guide"}
+                  className="absolute inset-0 h-full w-full object-contain"
+                  draggable={false}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/80" />
+                <div className="absolute inset-x-3 bottom-[104px] z-[5] rounded-2xl border border-cyan-300/35 bg-black/80 p-3 text-left backdrop-blur">
+                  <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Original avatar guide</p>
+                  <p className="mt-1 text-sm font-black">{avatarGuide.title}</p>
+                  <p className="mt-1 text-xs text-white/75">{avatarGuide.cues.join(" · ")}</p>
+                  <p className="mt-1 text-[10px] text-white/45">Static START/FINISH guide recovered from the earlier app. Moving demo still pending.</p>
+                </div>
+              </div>
+            )}
+            {showCoach && !realTimeRigReady && !stageMedia && !avatarGuide && (
               <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-5 py-24 text-center">
                 <div className="max-w-md rounded-2xl border border-white/10 bg-black/45 p-5">
                   {treadmillWithoutClip
@@ -587,7 +606,7 @@ function V2Coach() {
                       : exercise?.cues[0] ?? "Complete the prescribed movement with controlled form."}
                   </p>
                   <p className="mt-3 text-xs leading-relaxed text-amber-100/80">
-                    Correct moving demonstration pending. An unverified video or a stationary coach is not an exercise demonstration.
+                    No exact earlier avatar guide or approved moving clip is available for this exercise yet.
                   </p>
                 </div>
               </div>
@@ -864,6 +883,7 @@ function V2Coach() {
               <div className="mt-3 space-y-1">
                 {session.workout.exercises.map((item, index) => {
                   const approved = Boolean(approvedCoachMedia(item));
+                  const guide = !approved ? approvedAvatarGuide(item) : undefined;
                   const selected = index === session.exerciseIndex;
                   return (
                     <button
@@ -877,6 +897,8 @@ function V2Coach() {
                       <span>{index + 1}. {item.name}</span>
                       {approved ? (
                         <Check className="size-4 shrink-0 text-emerald-300" />
+                      ) : guide ? (
+                        <span className="shrink-0 rounded-full bg-cyan-300/10 px-2 py-1 text-[9px] font-black text-cyan-200">Avatar guide</span>
                       ) : (
                         <span className="shrink-0 text-[9px] text-white/35">Clip pending</span>
                       )}
