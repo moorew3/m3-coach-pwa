@@ -2,6 +2,7 @@ import type { V2Mode, V2Session, V2Workout } from "./types";
 
 export type V2Action =
   | { type: "set-mode"; mode: V2Mode }
+  | { type: "select-exercise"; exerciseIndex: number }
   | { type: "set-target-weight"; exerciseId: string; weight: number }
   | { type: "set-reps"; exerciseId: string; setIndex: number; reps: number | null }
   | { type: "set-form"; exerciseId: string; setIndex: number; cleanForm: boolean | null }
@@ -93,6 +94,10 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
   switch (action.type) {
     case "set-mode":
       return { ...session, mode: action.mode };
+    case "select-exercise":
+      return action.exerciseIndex >= 0 && action.exerciseIndex < session.workout.exercises.length
+        ? { ...session, exerciseIndex: action.exerciseIndex, setIndex: 0, phase: "ready", phaseSecondsLeft: null, running: false }
+        : session;
     case "set-target-weight":
       return {
         ...session,
