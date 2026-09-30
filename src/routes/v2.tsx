@@ -593,7 +593,7 @@ function V2Coach() {
               <CoachMotion
                 key={stageMedia.url}
                 url={stageMedia.url}
-                poster={stageMedia.poster}
+                poster={"poster" in stageMedia ? stageMedia.poster : undefined}
                 playing={videoPlaying}
                 rate={videoRate}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
