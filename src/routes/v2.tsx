@@ -387,9 +387,19 @@ function V2Coach() {
             </p>
             <h1 className="mt-1 text-lg font-black">Interactive training</h1>
           </div>
-          <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-cyan-200">
-            Private rebuild
-          </span>
+          <button
+            type="button"
+            onClick={() => {
+              const boxing = V2_WORKOUTS.find((item) => item.id === "boxing-kickboxing");
+              if (!boxing) return;
+              setWorkoutId(boxing.id);
+              dispatch({ type: "reset", workout: boxing });
+              dispatch({ type: "set-mode", mode: "shadow" });
+            }}
+            className="min-h-11 max-w-[48%] rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
+          >
+            Boxing + Kickboxing
+          </button>
         </header>
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
