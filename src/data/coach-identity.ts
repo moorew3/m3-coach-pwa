@@ -42,6 +42,7 @@ export const COACH_MOTION: Record<string, string> = {
   // Unlike Combo 2, source punches are NOT cut before extension/retraction.
   // This is a preview motion; athlete must still visually QA the transitions.
   shadowboxPunches: "/media/boxingFlow3.mp4",
+  shadowboxPunches60: "/media/boxingFlow60.mp4",
   bandPullApart: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
   benchPress: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4",
   chestMobility: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4",
@@ -138,6 +139,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "roundKick",
   "seatedRow",
   "shadowboxPunches",
+  "shadowboxPunches60",
   "shoulderMobility",
   "squat",
   "suitcaseCarry",
