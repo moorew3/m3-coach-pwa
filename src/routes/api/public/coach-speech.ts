@@ -95,13 +95,12 @@ export const Route = createFileRoute("/api/public/coach-speech")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = process.env["OPENAI_API_KEY"];
+        const isV2Preview =
+          process.env["RAILWAY_PROJECT_ID"] === "96ebe467-a371-4000-ba37-d82ff5b17761";
         // V2's selected coach voice is Marcus — Warm & Friendly (HeyGen
-        // voice 0fadce1e82af494a93873aa38ea8d106). The preview previously
-        // proxied missing speech configuration to production Onyx. That made
-        // the coach audibly become a different person. Never substitute a
-        // provider/browser voice when Marcus runtime speech is not connected.
-        if (!key) {
+        // voice 0fadce1e82af494a93873aa38ea8d106). Never let a future OpenAI
+        // key silently turn this preview back into Onyx or another speaker.
+        if (isV2Preview) {
           return new Response(
             JSON.stringify({
               message:
@@ -116,6 +115,14 @@ export const Route = createFileRoute("/api/public/coach-speech")({
                 "x-m3-voice": "marcus-runtime-pending",
               },
             },
+          );
+        }
+
+        const key = process.env["OPENAI_API_KEY"];
+        if (!key) {
+          return new Response(
+            JSON.stringify({ message: "Coach voice is not configured on this server." }),
+            { status: 503, headers: { "content-type": "application/json" } },
           );
         }
 
