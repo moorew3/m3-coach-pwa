@@ -20,6 +20,9 @@ import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
+import { COACH_REFERENCE } from "@/data/coach-identity";
+import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
+import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
 import type { V2Mode, V2Session } from "@/v2/types";
@@ -57,6 +60,15 @@ function V2Coach() {
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [hydrated, setHydrated] = useState(false);
+  const [showOpening, setShowOpening] = useState(false);
+  const [athletePortrait, setAthletePortrait] = useState<string | null>(null);
+  const [athleteError, setAthleteError] = useState<string | null>(null);
+  const athletePicker = useRef<HTMLInputElement>(null);
+  const dismissOpening = useCallback(() => {
+    setShowOpening(false);
+    try { window.sessionStorage.setItem("m3-v2-entrance-seen", "1"); }
+    catch { /* session-only; do not block training */ }
+  }, []);
   const [voiceOn, setVoiceOn] = useState(false);
   const voiceStatus = useVoiceStatus();
   const voiceControl = useVoiceControl();
@@ -68,6 +80,16 @@ function V2Coach() {
   const lastDirectedCue = useRef("");
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
   const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    setAthletePortrait(readAthletePortrait());
+    try {
+      if (session.phase === "ready" &&
+          !window.sessionStorage.getItem("m3-v2-entrance-seen"))
+        setShowOpening(true);
+    } catch { /* still allow a skippable entrance without storage */ }
+  }, [hydrated]);
 
   useEffect(() => {
     try {
@@ -448,13 +470,39 @@ function V2Coach() {
   return (
     <main className="min-h-dvh bg-[#080b0f] text-white">
       <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5">
-        <header className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#111820] px-4 py-3">
+        <input
+          ref={athletePicker}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="sr-only"
+          aria-label="Select your approved athlete avatar image"
+          onChange={(event) => {
+            const chosen = event.currentTarget.files?.[0];
+            event.currentTarget.value = "";
+            if (!chosen) return;
+            setAthleteError(null);
+            void saveAthletePortrait(chosen)
+              .then((source) => setAthletePortrait(source))
+              .catch((error: unknown) => setAthleteError(
+                error instanceof Error ? error.message : "Could not save your avatar.",
+              ));
+          }}
+        />
+        <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#111820] px-4 py-3">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[.32em] text-cyan-300">
               M3 Coach V2
             </p>
             <h1 className="mt-1 text-lg font-black">Interactive training</h1>
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowOpening(true)}
+              className="min-h-11 rounded-xl border border-white/20 bg-white/5 px-3 text-xs font-black text-white/85"
+            >
+              Opening scene
+            </button>
           <button
             type="button"
             onClick={() => {
@@ -468,7 +516,13 @@ function V2Coach() {
           >
             Boxing + Kickboxing
           </button>
+          </div>
         </header>
+        {athleteError && (
+          <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
+            {athleteError}
+          </p>
+        )}
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="relative min-h-[67dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:min-h-[720px]">
@@ -606,6 +660,24 @@ function V2Coach() {
 
           <aside className="space-y-3">
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
+              <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 p-2">
+                <div className="flex items-center gap-2">
+                  <img src={COACH_REFERENCE} alt="Approved M3 coach" className="size-11 rounded-xl border border-cyan-300/25 object-cover object-top" />
+                  {athletePortrait && (
+                    <img src={athletePortrait} alt="Your approved athlete avatar" className="size-11 rounded-xl border border-white/20 object-cover object-top" />
+                  )}
+                  <p className="max-w-28 text-[10px] font-black leading-tight text-white/75">
+                    {athletePortrait ? "Your coach + your athlete" : "Original M3 coach"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => athletePicker.current?.click()}
+                  className="min-h-10 rounded-lg bg-white/10 px-3 text-[10px] font-black text-cyan-200"
+                >
+                  {athletePortrait ? "Change my avatar" : "Add my avatar"}
+                </button>
+              </div>
               <p className="px-1 text-[10px] font-black uppercase tracking-[.24em] text-white/50">
                 One workout · four viewpoints
               </p>
@@ -877,6 +949,13 @@ function V2Coach() {
           </aside>
         </div>
       </div>
+      {showOpening && (
+        <WorkoutOpeningScene
+          athletePortrait={athletePortrait}
+          onChooseAthlete={() => athletePicker.current?.click()}
+          onDone={dismissOpening}
+        />
+      )}
     </main>
   );
 }
