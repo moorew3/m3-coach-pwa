@@ -6,6 +6,13 @@ import {
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
 import { getVoiceStatus, speak, stopSpeech, unlockVoice, useVoiceStatus } from "@/lib/coach-voice";
+import { askLiveCoach } from "@/lib/coach-talk";
+import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
+import { patternFor } from "@/lib/vision/patterns";
+import {
+  repsIn, setCommandHandler, setConversationHandler, startListening,
+  stopListening, useVoiceControl, voiceControlAvailable, weightIn,
+} from "@/lib/voice-commands";
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { V2TrainingCamera } from "@/v2/training-camera";
@@ -45,6 +52,7 @@ function V2Coach() {
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [voiceOn, setVoiceOn] = useState(false);
   const voiceStatus = useVoiceStatus();
+  const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
 
@@ -63,7 +71,10 @@ function V2Coach() {
     setLiveCue(null);
   }, [session.exerciseIndex, session.workout.id]);
 
-  useEffect(() => () => stopSpeech(), []);
+  useEffect(() => () => {
+    stopSpeech();
+    stopListening();
+  }, []);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
@@ -112,6 +123,125 @@ function V2Coach() {
     },
     [session.exerciseIndex, session.setIndex, session.workout],
   );
+
+  // The existing speech recognizer manages Android microphone restarts and
+  // ignores the coach's own spoken responses. Workout state remains authoritative.
+  useEffect(() => {
+    setCommandHandler((command, phrase) => {
+      switch (command) {
+        case "start":
+        case "resume":
+          dispatch({ type: "start" });
+          setLiveCue("Workout resumed.");
+          return;
+        case "pause":
+          dispatch({ type: "pause" });
+          setLiveCue("Workout paused.");
+          return;
+        case "next":
+        case "skip":
+          dispatch({ type: "complete-set" });
+          return;
+        case "previous":
+          dispatch({
+            type: "select-exercise",
+            exerciseIndex: Math.max(0, session.exerciseIndex - 1),
+          });
+          return;
+        case "repeat":
+          dispatch({ type: "select-exercise", exerciseIndex: session.exerciseIndex });
+          return;
+        case "showDemo":
+          dispatch({ type: "set-mode", mode: "coach" });
+          return;
+        case "cameraOn":
+          void startCamera(patternFor(exercise?.motionKey) ?? patternFor(exercise?.id));
+          return;
+        case "cameraOff":
+          stopCamera();
+          return;
+        case "setReps": {
+          const reps = repsIn(phrase);
+          if (reps !== null && exercise?.category === "strength") {
+            dispatch({
+              type: "set-reps", exerciseId: exercise.id,
+              setIndex: session.setIndex, reps,
+            });
+            setLiveCue(`Logged ${reps} reps. Confirm your form before completing this set.`);
+          }
+          return;
+        }
+        case "setWeight": {
+          const weight = weightIn(phrase);
+          if (weight !== null && exercise?.category === "strength") {
+            dispatch({
+              type: "set-target-weight", exerciseId: exercise.id, weight,
+            });
+            setLiveCue(`Set target weight to ${weight} pounds.`);
+          }
+          return;
+        }
+        case "whatsNext": {
+          const next = session.workout.exercises[session.exerciseIndex + 1];
+          const line = next ? `Next is ${next.name}.` : "That is the final movement.";
+          setLiveCue(line);
+          if (voiceOn) speak(line, true, { tone: "calm" });
+          return;
+        }
+        case "muteCoach":
+          setVoiceOn(false);
+          stopSpeech();
+          return;
+        case "unmuteCoach":
+          if (getVoiceStatus() === "ready") setVoiceOn(true);
+          else setLiveCue("Tap Enable coach voice once to unlock audio.");
+          return;
+        case "end":
+          dispatch({ type: "pause" });
+          stopListening();
+          setLiveCue("Workout paused. Your session stays here.");
+          return;
+        default:
+          setLiveCue("Command heard. Use the workout controls for that action.");
+      }
+    });
+    setConversationHandler((phrase) => {
+      const metrics = metricsSnapshot();
+      const context = {
+        workout: session.workout.title,
+        exercise: exercise?.name,
+        phase: session.phase,
+        setNumber: session.setIndex + 1,
+        totalSets: exercise?.sets,
+        target: exercise?.reps,
+        weight: targetWeight ? String(targetWeight) : undefined,
+        camera: {
+          active: Boolean(metrics && metrics.confidence >= 0.55),
+          confidence: metrics?.confidence,
+          reps: metrics?.reps,
+          romAvg: metrics?.romAvg,
+          symmetry: metrics?.symmetry,
+          cue: metrics?.cue,
+        },
+      };
+      setLiveCue("Coach is considering your question…");
+      void askLiveCoach(phrase, context).then((reply) => {
+        const line = reply ||
+          "Live questions are not configured in this preview yet. Workout commands and visual movement feedback remain available.";
+        setLiveCue(line);
+        if (reply && voiceOn && getVoiceStatus() === "ready")
+          speak(reply, true, { tone: "attentive" });
+      });
+    });
+    return () => {
+      setCommandHandler(null);
+      setConversationHandler(null);
+    };
+  }, [
+    session.exerciseIndex, session.workout, session.phase,
+    session.setIndex, exercise?.id, exercise?.motionKey,
+    exercise?.name, exercise?.sets, exercise?.reps, targetWeight, voiceOn,
+  ]);
 
   const toggleVoice = async () => {
     if (voiceOn) {
@@ -323,6 +453,40 @@ function V2Coach() {
                 Voice status: {voiceStatus}. Coach speaks when a real tracking cue is available.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
+              {voiceControlAvailable() ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (voiceControl.listening) stopListening();
+                      else startListening();
+                    }}
+                    className={`mt-2 min-h-11 w-full rounded-xl border px-3 text-xs font-black uppercase ${
+                      voiceControl.listening
+                        ? "border-cyan-300/50 bg-cyan-300/15 text-cyan-200"
+                        : "border-white/10 bg-white/10 text-white/80"
+                    }`}
+                  >
+                    {voiceControl.listening ? "Stop hands-free listening" : "Enable hands-free commands"}
+                  </button>
+                  <p className="mt-2 text-[11px] leading-relaxed text-white/45">
+                    Say start, pause, next, 12 reps, 50 pounds, or ask Coach a question.
+                  </p>
+                  {voiceControl.heard && (
+                    <p className="mt-1 text-[11px] text-cyan-200">
+                      Heard: {voiceControl.heard}
+                    </p>
+                  )}
+                  {voiceControl.error && (
+                    <p className="mt-1 text-xs text-amber-200">{voiceControl.error}</p>
+                  )}
+                </>
+              ) : (
+                <p className="mt-2 text-[11px] text-white/45">
+                  Hands-free speech commands are not available in this browser;
+                  the on-screen buttons work normally.
+                </p>
+              )}
             </section>
 
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
