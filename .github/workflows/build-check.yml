@@ -29,5 +29,8 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      - name: Boxing camera feedback regression
+        run: node scripts/test-boxing-form.mjs
+
       - name: 3D asset builder syntax
         run: python3 -m py_compile scripts/assemble-coach-glb.py
