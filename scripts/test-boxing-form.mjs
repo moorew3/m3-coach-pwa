@@ -8,20 +8,28 @@
  */
 import assert from "node:assert/strict";
 import { pathToFileURL } from "node:url";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
-import { build } from "esbuild";
+import ts from "typescript";
 
-const outfile = path.join(os.tmpdir(), "m3-v2-boxing-form.test.mjs");
-await build({
-  entryPoints: ["src/v2/boxing-form.ts"],
-  outfile,
-  bundle: true,
-  format: "esm",
-  platform: "node",
-  target: "node22",
-  alias: { "@": path.resolve("src") },
-});
+// TypeScript is a DIRECT installed dev dependency. Do not rely on
+// uninstalled esbuild or add another testing subscription/framework.
+const tmp = os.tmpdir();
+const analysis = path.join(tmp, "m3-v2-analysis.test.mjs");
+const outfile = path.join(tmp, "m3-v2-boxing-form.test.mjs");
+const options = {
+  compilerOptions: {
+    target: ts.ScriptTarget.ES2022,
+    module: ts.ModuleKind.ESNext,
+  },
+};
+const analysisText = await readFile("src/lib/vision/analysis.ts", "utf8");
+const boxingText = await readFile("src/v2/boxing-form.ts", "utf8");
+await writeFile(analysis, ts.transpileModule(analysisText, options).outputText);
+const boxed = ts.transpileModule(boxingText, options).outputText
+  .replace(/["']@\\/lib\\/vision\\/analysis["']/g, '"./m3-v2-analysis.test.mjs"');
+await writeFile(outfile, boxed);
 const { BoxingFormTracker } = await import(pathToFileURL(outfile).href);
 
 const IDX = {
