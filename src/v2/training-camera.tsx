@@ -6,6 +6,7 @@ import {
 } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
 import { KickTracker, type KickKind, type KickSnapshot } from "./kick-tracker";
+import { BoxingFormTracker, type BoxingDrill, type BoxingSnapshot, type BoxingStance } from "./boxing-form";
 import type { V2Mode, V2Session } from "./types";
 
 const BONES: [number, number][] = [
@@ -17,26 +18,34 @@ type Props = {
   session: V2Session;
   onCue: (cue: string) => void;
   onRepCapture: (reps: number) => void;
+  stance: BoxingStance;
 };
 
-export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
+export function V2TrainingCamera({ session, onCue, onRepCapture, stance }: Props) {
   const cam = useCamera();
   const video = useRef<HTMLVideoElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const kickTracker = useRef<KickTracker | null>(null);
+  const boxTracker = useRef<BoxingFormTracker | null>(null);
   const [kick, setKick] = useState<KickSnapshot | null>(null);
+  const [box, setBox] = useState<BoxingSnapshot | null>(null);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const motionKey = exercise?.motionKey ?? "";
   const kickKind: KickKind | null =
     motionKey === "frontKick" || motionKey === "roundKick" ? motionKey : null;
-  // Stationary stance, defensive movement, knee-chamber practice and guard
-  // resets cannot be honestly evaluated by the straight-punch rep analyzer.
+  const boxingKeys: BoxingDrill[] = [
+    "boxingStance", "jab", "cross", "jabCross",
+    "boxingCombination", "defensiveReset", "guardReset",
+  ];
+  const boxingDrill = boxingKeys.find((key) => key === motionKey) ?? null;
+  // Stationary knee-chamber work needs its own dedicated tracking; do not
+  // manufacture punch reps during it.
   const nonRepTechnique = new Set([
-    "boxingStance", "defensiveReset", "kneeChamber", "guardReset",
+    "kneeChamber",
   ]);
   const pattern =
-    kickKind || nonRepTechnique.has(motionKey)
+    kickKind || boxingDrill || nonRepTechnique.has(motionKey)
       ? null
       : patternFor(motionKey) ?? patternFor(exercise?.id);
   const supported = typeof window !== "undefined" && cameraSupported();
@@ -56,14 +65,21 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
 
   useEffect(() => {
     kickTracker.current = kickKind ? new KickTracker(kickKind) : null;
+    boxTracker.current = boxingDrill ? new BoxingFormTracker(boxingDrill, stance) : null;
     setKick(null);
+    setBox(null);
     if (cam.status === "live") setPattern(pattern);
-  }, [kickKind, motionKey, pattern, cam.status]);
+  }, [kickKind, boxingDrill, stance, motionKey, pattern, cam.status, session.setIndex]);
 
   useEffect(() => {
     const c = canvas.current;
     const ctx = c?.getContext("2d");
     if (!c || !ctx) return;
+    if (video.current?.videoWidth && video.current.videoHeight &&
+        (c.width !== video.current.videoWidth || c.height !== video.current.videoHeight)) {
+      c.width = video.current.videoWidth;
+      c.height = video.current.videoHeight;
+    }
     ctx.clearRect(0, 0, c.width, c.height);
     if (!cam.landmarks || !live) return;
     ctx.lineWidth = 3;
@@ -87,13 +103,24 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
   }, [cam.landmarks, judge, session.running, session.phase, onCue]);
 
   useEffect(() => {
-    if (!judge || !session.running || session.phase !== "work" || kickKind) return;
-    if (cam.metrics?.cue) onCue(cam.metrics.cue);
-  }, [cam.metrics?.cue, judge, session.running, session.phase, kickKind, onCue]);
+    if (!boxTracker.current || !judge || !session.running || session.phase !== "work") return;
+    const result = boxTracker.current.update(cam.landmarks);
+    setBox(result);
+    if (result.cue) onCue(result.cue);
+  }, [cam.landmarks, judge, session.running, session.phase, onCue]);
 
-  const reps = kickKind ? kick?.reps ?? 0 : cam.metrics?.reps ?? 0;
-  const confidence = kickKind ? kick?.confidence ?? 0 : cam.metrics?.confidence ?? 0;
-  const canReport = judge && (kickKind ? kick !== null : pattern !== null) && confidence >= 0.55;
+  useEffect(() => {
+    if (!judge || !session.running || session.phase !== "work" || kickKind || boxingDrill) return;
+    if (cam.metrics?.cue) onCue(cam.metrics.cue);
+  }, [cam.metrics?.cue, judge, session.running, session.phase, kickKind, boxingDrill, onCue]);
+
+  const reps = boxingDrill ? (box?.leadPunches ?? 0) + (box?.rearPunches ?? 0) :
+    kickKind ? kick?.reps ?? 0 : cam.metrics?.reps ?? 0;
+  const confidence = boxingDrill ? box?.confidence ?? 0 :
+    kickKind ? kick?.confidence ?? 0 : cam.metrics?.confidence ?? 0;
+  const canReport = judge && (boxingDrill ? box !== null :
+    kickKind ? kick !== null : pattern !== null) &&
+    confidence >= (boxingDrill ? 0.65 : 0.55);
 
   return (
     <div
@@ -101,7 +128,7 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
         manual
           ? "absolute inset-0 z-[2] overflow-hidden bg-[#060b10]"
           : visible && isOn
-            ? "absolute bottom-[94px] right-3 z-[6] h-[172px] w-[40%] max-w-[225px] overflow-hidden rounded-2xl border-2 border-cyan-300/60 bg-black shadow-2xl sm:h-[220px]"
+            ? "absolute bottom-[94px] right-3 z-[6] h-[198px] w-[47%] max-w-[270px] overflow-hidden rounded-2xl border-2 border-cyan-300/60 bg-black shadow-2xl sm:h-[220px]"
             : "absolute bottom-[94px] right-3 z-[6]"
       }
       data-testid="v2-camera-tracker"
@@ -115,7 +142,7 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
         autoPlay
         className={
           visible && isOn
-            ? "absolute inset-0 h-full w-full -scale-x-100 object-cover"
+            ? "absolute inset-0 h-full w-full -scale-x-100 object-contain"
             : "pointer-events-none absolute size-px opacity-0"
         }
       />
@@ -125,7 +152,7 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
         height={480}
         className={
           visible && isOn
-            ? "pointer-events-none absolute inset-0 h-full w-full -scale-x-100"
+            ? "pointer-events-none absolute inset-0 h-full w-full -scale-x-100 object-contain"
             : "pointer-events-none absolute size-px opacity-0"
         }
       />
@@ -167,8 +194,12 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
                 {cam.calibrating || !cam.calibration.ready
                   ? cam.calibration.prompt
                   : canReport
-                    ? `${reps} reps · ${Math.round(confidence * 100)}% visibility`
-                    : kickKind
+                    ? boxingDrill && box
+                      ? `${box.leadPunches} lead · ${box.rearPunches} rear · ${box.combinations} 1–2 combos · ${box.stance}`
+                      : `${reps} reps · ${Math.round(confidence * 100)}% visibility`
+                    : boxingDrill
+                      ? "Show both hands and face to track your stance and complete punch returns"
+                      : kickKind
                       ? "Kicks: full body required"
                       : pattern
                         ? "Move into frame"
@@ -193,7 +224,7 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
               Start tracking
             </button>
           )}
-          {manual && canReport && (
+          {manual && canReport && exercise?.category === "strength" && (
             <button
               type="button"
               onClick={() => onRepCapture(reps)}
@@ -204,6 +235,12 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
           )}
           {kickKind && kick?.note && manual && (
             <p className="mt-2 text-[10px] text-amber-200">{kick.note}</p>
+          )}
+          {boxingDrill && box?.lastCorrection && (
+            <p className="mt-1 text-[10px] leading-snug text-amber-200">{box.lastCorrection}</p>
+          )}
+          {boxingDrill && manual && box?.note && (
+            <p className="mt-1 text-[10px] leading-snug text-white/60">{box.note}</p>
           )}
         </div>
       )}
