@@ -19,9 +19,11 @@ type Props = {
   onCue: (cue: string) => void;
   onRepCapture: (reps: number) => void;
   stance: BoxingStance;
+  onRoundSummary?: (summary: string) => void;
+  onBoxingSnapshot?: (snapshot: BoxingSnapshot) => void;
 };
 
-export function V2TrainingCamera({ session, onCue, onRepCapture, stance }: Props) {
+export function V2TrainingCamera({ session, onCue, onRepCapture, stance, onRoundSummary, onBoxingSnapshot }: Props) {
   const cam = useCamera();
   const video = useRef<HTMLVideoElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -29,6 +31,7 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance }: Props
   const boxTracker = useRef<BoxingFormTracker | null>(null);
   const [kick, setKick] = useState<KickSnapshot | null>(null);
   const [box, setBox] = useState<BoxingSnapshot | null>(null);
+  const previousPhase = useRef(session.phase);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const motionKey = exercise?.motionKey ?? "";
@@ -62,6 +65,16 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance }: Props
       stopCamera();
     };
   }, []);
+
+  // Capture the finished round BEFORE the set-index change resets its tracker.
+  useEffect(() => {
+    if (previousPhase.current === "work" &&
+        (session.phase === "rest" || session.phase === "complete") &&
+        boxTracker.current) {
+      onRoundSummary?.(boxTracker.current.summary());
+    }
+    previousPhase.current = session.phase;
+  }, [session.phase, session.setIndex, session.exerciseIndex, onRoundSummary]);
 
   useEffect(() => {
     kickTracker.current = kickKind ? new KickTracker(kickKind) : null;
@@ -106,8 +119,9 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance }: Props
     if (!boxTracker.current || !judge || !session.running || session.phase !== "work") return;
     const result = boxTracker.current.update(cam.landmarks);
     setBox(result);
+    onBoxingSnapshot?.(result);
     if (result.cue) onCue(result.cue);
-  }, [cam.landmarks, judge, session.running, session.phase, onCue]);
+  }, [cam.landmarks, judge, session.running, session.phase, onCue, onBoxingSnapshot]);
 
   useEffect(() => {
     if (!judge || !session.running || session.phase !== "work" || kickKind || boxingDrill) return;
