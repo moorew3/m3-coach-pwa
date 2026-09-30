@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   Check, Dumbbell, Eye, Glasses, Hand, Pause, Play,
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
@@ -60,6 +60,7 @@ function V2Coach() {
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  const lastDirectedCue = useRef("");
 
   useEffect(() => {
     // A paused local snapshot protects the current workout during a refresh.
@@ -193,6 +194,44 @@ function V2Coach() {
     },
     [session.exerciseIndex, session.setIndex, session.workout],
   );
+
+  // This runs only when the session enters a new phase or set, never per camera
+  // frame. Observed form feedback remains separate and confidence-gated.
+  useEffect(() => {
+    if ((!session.running && session.phase !== "complete") ||
+        !exercise || session.phase === "ready") return;
+    const eventKey = [
+      session.workout.id, session.exerciseIndex, session.setIndex, session.phase,
+    ].join(":");
+    if (lastDirectedCue.current === eventKey) return;
+    lastDirectedCue.current = eventKey;
+
+    let message = "";
+    let tone: "calm" | "instructional" | "assertive" | "proud" = "instructional";
+    if (session.phase === "work") {
+      const technique = exercise.cues[session.setIndex % exercise.cues.length] ??
+        "Stay balanced and controlled.";
+      message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. ${technique}`;
+    } else if (session.phase === "rest") {
+      message = `Rest ${exercise.restSeconds} seconds. Reset your breathing and prepare for set ${session.setIndex + 1}.`;
+      tone = "calm";
+    } else if (session.phase === "transition") {
+      message = `Next: ${exercise.name}. ${exercise.cues[0] ?? "Get into position."}`;
+      tone = "assertive";
+    } else if (session.phase === "complete") {
+      message = "Workout complete. Good work finishing your session.";
+      tone = "proud";
+    }
+
+    if (message) {
+      setLiveCue(message);
+      if (voiceOn && getVoiceStatus() === "ready")
+        speak(message, true, { tone, interrupt: true });
+    }
+  }, [
+    session.workout.id, session.exerciseIndex, session.setIndex,
+    session.phase, session.running, voiceOn, exercise?.id,
+  ]);
 
   // The existing speech recognizer manages Android microphone restarts and
   // ignores the coach's own spoken responses. Workout state remains authoritative.
@@ -330,11 +369,6 @@ function V2Coach() {
   const toggleWorkout = () => {
     const next = session.running ? "pause" : "start";
     dispatch({ type: next });
-    if (voiceOn && next === "start") {
-      speak(`Let's work. ${exercise?.name ?? session.workout.title}.`, true, {
-        tone: "assertive",
-      });
-    }
   };
 
   const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
