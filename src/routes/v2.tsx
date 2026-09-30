@@ -594,7 +594,7 @@ function V2Coach() {
                 key={stageMedia.url}
                 url={stageMedia.url}
                 poster={"poster" in stageMedia ? stageMedia.poster : undefined}
-                playing={videoPlaying}
+                playing={showCoach && (session.phase === "ready" || videoPlaying)}
                 rate={videoRate}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
