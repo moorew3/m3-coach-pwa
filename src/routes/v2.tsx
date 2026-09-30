@@ -324,12 +324,29 @@ function V2Coach() {
           dispatch({ type: "pause" });
           setLiveCue("Workout paused.");
           return;
+        case "completeSet": {
+          if (session.phase !== "work") {
+            setLiveCue("You are already between sets. The workout will continue automatically.");
+            return;
+          }
+          const observed = metricsSnapshot();
+          if (exercise?.category === "strength" &&
+              observed && observed.confidence >= 0.65 && observed.reps > 0) {
+            dispatch({
+              type: "set-reps", exerciseId: exercise.id,
+              setIndex: session.setIndex, reps: observed.reps,
+            });
+          }
+          dispatch({ type: "complete-set" });
+          setLiveCue("Set complete. Keep moving with the coach.");
+          return;
+        }
         case "next":
         case "skip":
-          // Do not accidentally mark a not-yet-started or resting set done.
-          // The existing reducer and exercise ordering remain untouched.
+          // Explicit next/skip remains available, but ordinary set completion
+          // should use the hands-free "done" command.
           if (session.phase !== "work") {
-            setLiveCue("Wait for the current rest or transition before advancing.");
+            setLiveCue("You are already between sets. The workout will continue automatically.");
             return;
           }
           dispatch({ type: "complete-set" });
@@ -457,8 +474,22 @@ function V2Coach() {
   };
 
   const toggleWorkout = () => {
-    const next = session.running ? "pause" : "start";
-    dispatch({ type: next });
+    if (session.running) {
+      dispatch({ type: "pause" });
+      return;
+    }
+
+    // The first Start tap is the one user gesture needed to arm the hands-free
+    // workout. Android may show microphone/audio permission prompts the first time.
+    if (voiceControlAvailable() && !voiceControl.listening) startListening();
+    if (!voiceOn) {
+      void unlockVoice("M3 Coach ready. Starting your workout.", "calm").then((status) => {
+        const ready = status === "ready";
+        setVoiceOn(ready);
+        setVoiceError(ready ? null : "Coach audio could not start. The workout and hands-free controls still work.");
+      });
+    }
+    dispatch({ type: "start" });
   };
 
   const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
@@ -841,7 +872,7 @@ function V2Coach() {
                     {voiceControl.listening ? "Stop hands-free listening" : "Enable hands-free commands"}
                   </button>
                   <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-                    Say start, pause, next, 12 reps, 50 pounds, or ask Coach a question.
+                    Press Start once. Then say “done” after an untimed strength set. Timed work, rests and transitions advance automatically. You can also say pause, resume, next, 12 reps or 50 pounds.
                   </p>
                   {voiceControl.heard && (
                     <p className="mt-1 text-[11px] text-cyan-200">
