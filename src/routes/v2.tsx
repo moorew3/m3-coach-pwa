@@ -215,12 +215,22 @@ function V2Coach() {
   );
 
   useEffect(() => {
-    if (session.phase === "work" && session.running) setRoundFeedback(null);
-  }, [session.phase, session.running, session.setIndex, session.exerciseIndex]);
+    if (session.phase === "work" && session.running) {
+      setRoundFeedback(null);
+      // A new strength or kick-only drill must not inherit an earlier boxer
+      // observation, which could silence its own rest instructions.
+      const trackedBoxing = [
+        "boxingStance", "jab", "cross", "jabCross",
+        "boxingCombination", "defensiveReset", "guardReset",
+      ].includes(exercise?.motionKey ?? "");
+      if (!trackedBoxing) latestBoxing.current = null;
+    }
+  }, [session.phase, session.running, session.setIndex, session.exerciseIndex, exercise?.motionKey]);
 
   useEffect(() => {
     if (!roundFeedback || !voiceOn || getVoiceStatus() !== "ready" ||
-        (session.phase !== "rest" && session.phase !== "complete")) return;
+        (session.phase !== "rest" && session.phase !== "transition" &&
+          session.phase !== "complete")) return;
     // Round notes replace the generic rest instruction; never double-talk.
     speak(roundFeedback, true, { tone: "attentive", interrupt: true });
   }, [roundFeedback, session.phase, voiceOn]);
@@ -235,6 +245,15 @@ function V2Coach() {
     ].join(":");
     if (lastDirectedCue.current === eventKey) return;
     lastDirectedCue.current = eventKey;
+
+    // A camera-observed boxing round has its own specific post-round coach
+    // review. Don't start the generic "Rest..." announcement first and then
+    // interrupt it with the review (the original double-talking problem).
+    const observedBoxingReview =
+      (session.phase === "rest" || session.phase === "transition" ||
+       session.phase === "complete") &&
+      (latestBoxing.current?.confidence ?? 0) >= 0.65;
+    if (observedBoxingReview) return;
 
     let message = "";
     let tone: "calm" | "instructional" | "assertive" | "proud" = "instructional";
