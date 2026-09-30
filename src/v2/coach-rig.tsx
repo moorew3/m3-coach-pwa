@@ -7,9 +7,11 @@ export const V2_COACH_MODEL_URL = "/v2/coach.glb";
 function LoadedCoach({
   motionKey,
   position,
+  running,
 }: {
   motionKey: string;
   position: [number, number, number];
+  running: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(V2_COACH_MODEL_URL);
@@ -18,14 +20,15 @@ function LoadedCoach({
   useEffect(() => {
     const exact = actions[motionKey];
     const idle = actions.Idle ?? actions.idle;
-    const action = exact ?? idle;
+    const action = running ? exact ?? idle : idle ?? exact;
     if (!action) return;
 
-    action.reset().fadeIn(0.2).play();
+    action.reset().fadeIn(0.25).play();
+    action.paused = !running && !idle;
     return () => {
-      action.fadeOut(0.2);
+      action.fadeOut(0.25);
     };
-  }, [actions, motionKey]);
+  }, [actions, motionKey, running]);
 
   return (
     <primitive
@@ -43,9 +46,11 @@ export function CoachRigSlot({
   motionKey,
   position,
   fallback,
+  running,
 }: {
   motionKey: string;
   position: [number, number, number];
+  running: boolean;
   fallback: React.ReactNode;
 }) {
   const [available, setAvailable] = useState(false);
@@ -66,5 +71,5 @@ export function CoachRigSlot({
 
   if (!available) return <>{fallback}</>;
 
-  return <LoadedCoach motionKey={motionKey} position={position} />;
+  return <LoadedCoach motionKey={motionKey} position={position} running={running} />;
 }
