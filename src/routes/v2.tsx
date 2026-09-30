@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
 import { getVoiceStatus, selectedBrowserVoice, speak, stopSpeech, unlockVoice, useVoiceStatus, voicePath } from "@/lib/coach-voice";
-import type { BoxingStance } from "@/v2/boxing-form";
+import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
@@ -62,7 +62,11 @@ function V2Coach() {
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [boxingStance, setBoxingStance] = useState<BoxingStance>("orthodox");
+  const [roundFeedback, setRoundFeedback] = useState<string | null>(null);
+  const latestBoxing = useRef<BoxingSnapshot | null>(null);
   const lastDirectedCue = useRef("");
+  const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
+  const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
 
   useEffect(() => {
     try {
@@ -209,6 +213,17 @@ function V2Coach() {
     [session.exerciseIndex, session.setIndex, session.workout],
   );
 
+  useEffect(() => {
+    if (session.phase === "work" && session.running) setRoundFeedback(null);
+  }, [session.phase, session.running, session.setIndex, session.exerciseIndex]);
+
+  useEffect(() => {
+    if (!roundFeedback || !voiceOn || getVoiceStatus() !== "ready" ||
+        (session.phase !== "rest" && session.phase !== "complete")) return;
+    // Round notes replace the generic rest instruction; never double-talk.
+    speak(roundFeedback, true, { tone: "attentive", interrupt: true });
+  }, [roundFeedback, session.phase, voiceOn]);
+
   // This runs only when the session enters a new phase or set, never per camera
   // frame. Observed form feedback remains separate and confidence-gated.
   useEffect(() => {
@@ -330,6 +345,8 @@ function V2Coach() {
     });
     setConversationHandler((phrase) => {
       const metrics = metricsSnapshot();
+      const boxer = exercise?.category === "boxing" ? latestBoxing.current : null;
+      const boxerReliable = Boolean(boxer && boxer.confidence >= 0.65);
       const context = {
         workout: session.workout.title,
         exercise: exercise?.name,
@@ -339,21 +356,26 @@ function V2Coach() {
         target: exercise?.reps,
         weight: targetWeight ? String(targetWeight) : undefined,
         camera: {
-          active: Boolean(metrics && metrics.confidence >= 0.55),
-          confidence: metrics?.confidence,
-          reps: metrics?.reps,
+          active: Boolean((metrics && metrics.confidence >= 0.55) || boxerReliable),
+          confidence: boxerReliable ? boxer!.confidence : metrics?.confidence,
+          reps: boxerReliable ? boxer!.leadPunches + boxer!.rearPunches : metrics?.reps,
           romAvg: metrics?.romAvg,
           symmetry: metrics?.symmetry,
-          cue: metrics?.cue,
+          cue: boxerReliable ? boxer!.lastCorrection : metrics?.cue,
         },
       };
       setLiveCue("Coach is considering your question…");
       void askLiveCoach(phrase, context).then((reply) => {
-        const line = reply ||
-          "Live questions are not configured in this preview yet. Workout commands and visual movement feedback remain available.";
+        const observed = boxerReliable && boxer
+          ? boxer.lastCorrection ||
+            ("The camera recorded " + boxer.leadPunches + " completed lead-hand cycles and " +
+            boxer.rearPunches + " rear-hand cycles. I cannot verify impact or hidden foot pivot.")
+          : null;
+        const line = reply || observed ||
+          "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
         setLiveCue(line);
-        if (reply && voiceOn && getVoiceStatus() === "ready")
-          speak(reply, true, { tone: "attentive" });
+        if (voiceOn && getVoiceStatus() === "ready")
+          speak(line, true, { tone: "attentive", interrupt: true });
       });
     });
     return () => {
@@ -499,6 +521,8 @@ function V2Coach() {
               onCue={giveFeedback}
               onRepCapture={captureReps}
               stance={boxingStance}
+              onBoxingSnapshot={receiveBoxing}
+              onRoundSummary={reportRound}
             />
 
             <div className="absolute inset-x-0 bottom-0 z-[9] p-3">
@@ -573,6 +597,21 @@ function V2Coach() {
                 })}
               </div>
             </section>
+
+            {roundFeedback && (exercise?.category === "boxing" || exercise?.category === "kickboxing") && (
+              <section className="rounded-3xl border border-cyan-300/30 bg-cyan-300/[.06] p-4">
+                <p className="text-[10px] font-black uppercase tracking-[.24em] text-cyan-300">Observed round review</p>
+                <p className="mt-2 text-sm leading-relaxed text-white/85">{roundFeedback}</p>
+                <button
+                  type="button"
+                  disabled={!voiceOn || getVoiceStatus() !== "ready"}
+                  onClick={() => speak(roundFeedback, true, { tone: "attentive", interrupt: true })}
+                  className="mt-3 min-h-10 rounded-xl bg-white/10 px-3 text-xs font-black text-white disabled:opacity-45"
+                >
+                  Hear this review
+                </button>
+              </section>
+            )}
 
             {(exercise?.category === "boxing" || exercise?.category === "kickboxing") && (
               <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
