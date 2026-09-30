@@ -5,7 +5,8 @@ import {
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
-import { getVoiceStatus, speak, stopSpeech, unlockVoice, useVoiceStatus } from "@/lib/coach-voice";
+import { getVoiceStatus, selectedBrowserVoice, speak, stopSpeech, unlockVoice, useVoiceStatus, voicePath } from "@/lib/coach-voice";
+import type { BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
@@ -60,7 +61,20 @@ function V2Coach() {
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  const [boxingStance, setBoxingStance] = useState<BoxingStance>("orthodox");
   const lastDirectedCue = useRef("");
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("m3-coach-v2-boxing-stance");
+      if (saved === "orthodox" || saved === "southpaw") setBoxingStance(saved);
+    } catch { /* device storage may be unavailable */ }
+  }, []);
+
+  useEffect(() => {
+    try { window.localStorage.setItem("m3-coach-v2-boxing-stance", boxingStance); }
+    catch { /* do not block training */ }
+  }, [boxingStance]);
 
   useEffect(() => {
     // A paused local snapshot protects the current workout during a refresh.
@@ -177,7 +191,7 @@ function V2Coach() {
     (cue: string) => {
       setLiveCue(cue);
       if (voiceOn && getVoiceStatus() === "ready")
-        speak(cue, true, { tone: "instructional", interrupt: false });
+        speak(cue, true, { tone: "instructional", interrupt: true });
     },
     [voiceOn],
   );
@@ -363,7 +377,7 @@ function V2Coach() {
     const status = await unlockVoice("M3 Coach audio enabled.", "calm");
     const ready = status === "ready";
     setVoiceOn(ready);
-    setVoiceError(ready ? null : "Voice was blocked. Check phone volume, audio output and browser permissions.");
+    setVoiceError(ready ? null : "The original male coach voice is unavailable. I will not substitute a female or robotic voice.");
   };
 
   const toggleWorkout = () => {
@@ -484,6 +498,7 @@ function V2Coach() {
               session={session}
               onCue={giveFeedback}
               onRepCapture={captureReps}
+              stance={boxingStance}
             />
 
             <div className="absolute inset-x-0 bottom-0 z-[9] p-3">
@@ -559,6 +574,29 @@ function V2Coach() {
               </div>
             </section>
 
+            {(exercise?.category === "boxing" || exercise?.category === "kickboxing") && (
+              <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
+                <p className="text-[10px] font-black uppercase tracking-[.24em] text-white/50">Your boxing stance</p>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {(["orthodox", "southpaw"] as const).map((choice) => (
+                    <button
+                      key={choice}
+                      type="button"
+                      onClick={() => setBoxingStance(choice)}
+                      className={`min-h-11 rounded-xl border px-2 text-xs font-black ${boxingStance === choice
+                        ? "border-cyan-300 bg-cyan-300/15 text-cyan-100"
+                        : "border-white/10 bg-black/30 text-white/65"}`}
+                    >
+                      {choice === "orthodox" ? "Orthodox · left lead" : "Southpaw · right lead"}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-[11px] leading-relaxed text-white/50">
+                  Put your phone far enough back to show your head, hands and feet, at about chest height and a three-quarter angle. Camera cues assess visible movement, not punch power or hidden foot pivot.
+                </p>
+              </section>
+            )}
+
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
               <button
                 type="button"
@@ -570,10 +608,16 @@ function V2Coach() {
                 }`}
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-                {voiceOn ? "Coach voice on" : "Enable coach voice"}
+                {voiceOn ? "Male coach voice on" : "Enable original male coach voice"}
               </button>
               <p className="mt-2 text-[11px] text-white/45">
-                Voice status: {voiceStatus}. Coach speaks when a real tracking cue is available.
+                Voice: {voiceStatus === "ready"
+                  ? voicePath() === "browser"
+                    ? selectedBrowserVoice() ?? "verified male fallback"
+                    : "Original M3 male coach (Onyx)"
+                  : voiceStatus === "blocked"
+                    ? "No male voice available — visual cues remain on"
+                    : "Off until you tap to enable"}. Spoken technique corrections use this one voice.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
