@@ -16,6 +16,7 @@ export function CoachMotion({
   playing = true,
   rate = 1,
   preloadUrl,
+  cycleKey,
   className = "",
   label,
   onLayerChange,
@@ -28,12 +29,15 @@ export function CoachMotion({
   rate?: number;
   /** Next movement's clip — fetched quietly so the transition is instant. */
   preloadUrl?: string;
+  /** Set/exercise identity: reset at a NEW round, not on manual pause/resume. */
+  cycleKey?: string;
   className?: string;
   label?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
   onLayerChange?: (layer: 0 | 1, reason: "loop" | "transition") => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const previousCycle = useRef(cycleKey);
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -45,6 +49,14 @@ export function CoachMotion({
     setLoaded(false);
     setIsPlaying(false);
   }, [url]);
+
+  useEffect(() => {
+    if (!cycleKey || previousCycle.current === cycleKey) return;
+    previousCycle.current = cycleKey;
+    const video = videoRef.current;
+    if (!video) return;
+    try { video.currentTime = 0; } catch { /* wait for loaded metadata */ }
+  }, [cycleKey, url]);
 
   useEffect(() => {
     const video = videoRef.current;
