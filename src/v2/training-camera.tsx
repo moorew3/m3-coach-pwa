@@ -30,8 +30,15 @@ export function V2TrainingCamera({ session, onCue, onRepCapture }: Props) {
   const motionKey = exercise?.motionKey ?? "";
   const kickKind: KickKind | null =
     motionKey === "frontKick" || motionKey === "roundKick" ? motionKey : null;
+  // Stationary stance, defensive movement, knee-chamber practice and guard
+  // resets cannot be honestly evaluated by the straight-punch rep analyzer.
+  const nonRepTechnique = new Set([
+    "boxingStance", "defensiveReset", "kneeChamber", "guardReset",
+  ]);
   const pattern =
-    kickKind ? null : patternFor(motionKey) ?? patternFor(exercise?.id);
+    kickKind || nonRepTechnique.has(motionKey)
+      ? null
+      : patternFor(motionKey) ?? patternFor(exercise?.id);
   const supported = typeof window !== "undefined" && cameraSupported();
   const isOn = cam.status === "live" || cam.status === "loading" || cam.status === "starting";
   const live = cam.status === "live";
