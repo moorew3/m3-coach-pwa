@@ -991,14 +991,10 @@ export function unlockVoice(
         return "ready" as VoiceStatus;
       }
 
-      note({ fallbackFired: "stream -> browser speech" });
-      if (await speakBrowser(confirmation, tone, true)) {
-        note({ path: "browser" });
-        setStatus("ready");
-        return "ready" as VoiceStatus;
-      }
-
-      note({ path: "none", fallbackFired: "all paths failed" });
+      // Do not fall back to the phone's robotic browser TTS. If the
+      // premium coach paths fail, report blocked and keep the workout silent
+      // rather than changing the coach's identity mid-session.
+      note({ path: "none", fallbackFired: "premium coach audio unavailable" });
       setStatus("blocked");
       return "blocked" as VoiceStatus;
     } finally {
@@ -1090,11 +1086,7 @@ export function speak(text: string, enabled: boolean, opts: SpeakOptions = {}) {
   if (ctx && ctx.state === "suspended") void ctx.resume().catch(() => {});
 
   const order: VoicePath[] =
-    diag.path === "browser"
-      ? ["browser", "file", "stream"]
-      : diag.path === "stream"
-        ? ["stream", "file", "browser"]
-        : ["file", "stream", "browser"];
+    diag.path === "stream" ? ["stream", "file"] : ["file", "stream"];
 
   void (async () => {
     for (const p of order) {
