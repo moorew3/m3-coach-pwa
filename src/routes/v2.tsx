@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
-  Check, Dumbbell, Eye, Glasses, Hand, Pause, Play,
+  Check, Dumbbell, Eye, Footprints, Glasses, Hand, Pause, Play,
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
@@ -16,6 +16,7 @@ import {
   stopListening, useVoiceControl, voiceControlAvailable, weightIn,
 } from "@/lib/voice-commands";
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
+import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
@@ -41,6 +42,8 @@ export const Route = createFileRoute("/v2")({
 });
 
 const V2_LOCAL_SAVE = "m3-coach-v2-local-session-v1";
+// Full original week first; keep every existing V2 workout including improved boxing.
+const ALL_V2_WORKOUTS = [...ORIGINAL_WEEK_WORKOUTS, ...V2_WORKOUTS];
 
 const modeIcon: Record<V2Mode, typeof Eye> = {
   coach: UserRound,
@@ -52,10 +55,11 @@ const mmss = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
 function V2Coach() {
-  // Open with the already-approved real boxing combination, not a placeholder.
-  const [workoutId, setWorkoutId] = useState("cardio-core");
+  // New sessions open the ORIGINAL plan for today, not the shortened V2 showcase.
+  // Paused older sessions are still restored below and can be resumed safely.
+  const [workoutId, setWorkoutId] = useState(() => originalWorkoutForToday().id);
   const workout = useMemo(
-    () => V2_WORKOUTS.find((w) => w.id === workoutId) ?? V2_WORKOUTS[0],
+    () => ALL_V2_WORKOUTS.find((w) => w.id === workoutId) ?? originalWorkoutForToday(),
     [workoutId],
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
@@ -114,7 +118,7 @@ function V2Coach() {
           workoutId?: string;
           session?: Partial<V2Session>;
         };
-        const savedWorkout = V2_WORKOUTS.find((item) => item.id === saved.workoutId);
+        const savedWorkout = ALL_V2_WORKOUTS.find((item) => item.id === saved.workoutId);
         const s = saved.session;
         if (saved.version === 1 && savedWorkout && s) {
           const exIdx = Math.max(0, Math.min(
@@ -472,6 +476,7 @@ function V2Coach() {
     ? exercise.motionKey === "boxingCombination" ? 1.017 : 1.05
     : 1;
   const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
+  const treadmillWithoutClip = !stageMedia && /treadmill|easy walk|incline walk/i.test(exercise?.name ?? "");
 
   return (
     <main className="min-h-dvh bg-[#080b0f] text-white">
@@ -524,6 +529,24 @@ function V2Coach() {
           </button>
           </div>
         </header>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
+          <div>
+            <p className="text-xs font-black text-cyan-200">Your original seven-day training plan is available here.</p>
+            <p className="mt-1 text-xs text-white/65">Today's program: {originalWorkoutForToday().title}. Missing videos do not remove exercises.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const day = originalWorkoutForToday();
+              setWorkoutId(day.id);
+              dispatch({ type: "reset", workout: day });
+              setLiveCue("Original " + day.title + " workout loaded. Press Start when ready.");
+            }}
+            className="min-h-11 rounded-xl bg-cyan-300 px-4 text-xs font-black text-black"
+          >
+            Load today's FULL workout
+          </button>
+        </div>
         {athleteError && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
@@ -547,13 +570,24 @@ function V2Coach() {
               />
             )}
             {showCoach && !realTimeRigReady && !stageMedia && (
-              <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-8 text-center">
-                <div className="max-w-md">
-                  <Dumbbell className="mx-auto size-12 text-white/25" />
-                  <p className="mt-4 text-lg font-black">Approved demonstration pending</p>
-                  <p className="mt-2 text-sm leading-relaxed text-white/50">
-                    We will not show a stick figure, a different trainer, or the wrong exercise.
-                    Your set, live camera and manual workout log remain available.
+              <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-5 py-24 text-center">
+                <div className="max-w-md rounded-2xl border border-white/10 bg-black/45 p-5">
+                  {treadmillWithoutClip
+                    ? <Footprints className="mx-auto size-14 text-cyan-300" />
+                    : <Dumbbell className="mx-auto size-12 text-cyan-300/70" />}
+                  <p className="mt-4 text-xl font-black">{exercise?.name}</p>
+                  <p className="mt-2 text-lg font-bold text-cyan-200">
+                    {session.phaseSecondsLeft !== null
+                      ? mmss(session.phaseSecondsLeft) + " remaining"
+                      : exercise?.reps ?? "Follow your prescribed set"}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-white/80">
+                    {treadmillWithoutClip
+                      ? "Use your treadmill for the prescribed walk. Walk tall, keep a controlled pace, and follow the timer and coach's voice."
+                      : exercise?.cues[0] ?? "Complete the prescribed movement with controlled form."}
+                  </p>
+                  <p className="mt-3 text-xs leading-relaxed text-amber-100/80">
+                    Correct moving demonstration pending. An unverified video or a stationary coach is not an exercise demonstration.
                   </p>
                 </div>
               </div>
@@ -813,15 +847,15 @@ function V2Coach() {
                 <select
                   value={workoutId}
                   onChange={(event) => {
-                    const nextWorkout = V2_WORKOUTS.find((w) => w.id === event.target.value) ??
-                      V2_WORKOUTS[0];
+                    const nextWorkout = ALL_V2_WORKOUTS.find((w) => w.id === event.target.value) ??
+                      originalWorkoutForToday();
                     setWorkoutId(nextWorkout.id);
                     dispatch({ type: "reset", workout: nextWorkout });
                     setLiveCue(null);
                   }}
                   className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#111920] px-3 text-sm font-bold text-white"
                 >
-                  {V2_WORKOUTS.map((item) => (
+                  {ALL_V2_WORKOUTS.map((item) => (
                     <option key={item.id} value={item.id}>{item.title}</option>
                   ))}
                 </select>
