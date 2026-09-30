@@ -1,6 +1,7 @@
 import type { V2Mode, V2Session, V2Workout } from "./types";
 
 export type V2Action =
+  | { type: "restore"; session: V2Session }
   | { type: "set-mode"; mode: V2Mode }
   | { type: "select-exercise"; exerciseIndex: number }
   | { type: "set-target-weight"; exerciseId: string; weight: number }
@@ -92,6 +93,8 @@ function updateSetEntry(
 
 export function v2SessionReducer(session: V2Session, action: V2Action): V2Session {
   switch (action.type) {
+    case "restore":
+      return { ...action.session, running: false };
     case "set-mode":
       return { ...session, mode: action.mode };
     case "select-exercise":
