@@ -96,63 +96,26 @@ export const Route = createFileRoute("/api/public/coach-speech")({
     handlers: {
       POST: async ({ request }) => {
         const key = process.env["OPENAI_API_KEY"];
-        // The isolated V2 preview has no copy of the private production API
-        // key. When voice is explicitly enabled by a user tap, use ONLY the
-        // owner's existing working male-onyx speech endpoint on the ORIGINAL
-        // M3 Coach service. No key crosses the preview app, no female browser
-        // fallback, no new voice subscription or new infrastructure.
+        // V2's selected coach voice is Marcus — Warm & Friendly (HeyGen
+        // voice 0fadce1e82af494a93873aa38ea8d106). The preview previously
+        // proxied missing speech configuration to production Onyx. That made
+        // the coach audibly become a different person. Never substitute a
+        // provider/browser voice when Marcus runtime speech is not connected.
         if (!key) {
-          const previewProject = process.env["RAILWAY_PROJECT_ID"] ===
-            "96ebe467-a371-4000-ba37-d82ff5b17761";
-          if (previewProject) {
-            let voiceLine: z.infer<typeof Body>;
-            try {
-              voiceLine = Body.parse(await request.json());
-            } catch {
-              return new Response(JSON.stringify({ message: "Invalid coach speech request." }), {
-                status: 400, headers: { "content-type": "application/json" },
-              });
-            }
-            // Browser playback uses MP3 on Android. Do not proxy the higher
-            // cost PCM/stream fallback or arbitrary oversized lines.
-            if (voiceLine.format !== "mp3" || voiceLine.text.length > 220)
-              return new Response(
-                JSON.stringify({ message: "Use a short MP3 coach cue in the preview." }),
-                { status: 400, headers: { "content-type": "application/json" } },
-              );
-            try {
-              const upstream = await fetch(
-                "https://m3-coach-pwa-production.up.railway.app/api/public/coach-speech",
-                {
-                  method: "POST",
-                  headers: { "content-type": "application/json" },
-                  body: JSON.stringify(voiceLine),
-                  signal: AbortSignal.timeout(12000),
-                },
-              );
-              const type = upstream.headers.get("content-type") || "";
-              if (!upstream.ok || !upstream.body || !type.startsWith("audio/mpeg"))
-                return new Response(
-                  JSON.stringify({ message: "Original M3 male coach voice is temporarily unavailable." }),
-                  { status: 503, headers: { "content-type": "application/json" } },
-                );
-              return new Response(upstream.body, {
-                headers: {
-                  "content-type": "audio/mpeg",
-                  "cache-control": "private, max-age=0",
-                  "x-m3-voice": "existing-onyx",
-                },
-              });
-            } catch {
-              return new Response(
-                JSON.stringify({ message: "Original M3 male coach voice could not be reached." }),
-                { status: 503, headers: { "content-type": "application/json" } },
-              );
-            }
-          }
           return new Response(
-            JSON.stringify({ message: "Coach voice is not configured on this server." }),
-            { status: 503, headers: { "content-type": "application/json" } },
+            JSON.stringify({
+              message:
+                "Marcus — Warm & Friendly is selected, but live Marcus speech is not connected to this preview server yet.",
+              voice: "Marcus — Warm & Friendly",
+              voiceId: "0fadce1e82af494a93873aa38ea8d106",
+            }),
+            {
+              status: 503,
+              headers: {
+                "content-type": "application/json",
+                "x-m3-voice": "marcus-runtime-pending",
+              },
+            },
           );
         }
 
