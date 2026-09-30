@@ -27,6 +27,10 @@ const LEGACY_MOTION_KEY: Record<string, string> = {
 
 export function approvedCoachMedia(exercise?: V2Exercise) {
   if (!exercise) return undefined;
+  // Day 3 uses 60-second cardio rounds. The dedicated 40/20 boxing
+  // workout uses the shorter complete-cycle flow. Neither loops mid-round.
+  if (exercise.id === "boxing-flow" && exercise.motionKey === "boxingCombination")
+    return coachMotionFor("shadowboxPunches60");
   const legacyKey = LEGACY_MOTION_KEY[exercise.motionKey];
   if (!legacyKey) return undefined;
   return coachMotionFor(legacyKey);
