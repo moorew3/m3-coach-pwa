@@ -1,35 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
-  Eye,
-  Glasses,
-  Hand,
-  Pause,
-  Play,
-  RotateCcw,
-  SkipForward,
-  UserRound,
+  Check, Dumbbell, Eye, Glasses, Hand, Pause, Play,
+  RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
+import { CoachMotion } from "@/components/CoachMotion";
+import { getVoiceStatus, speak, stopSpeech, unlockVoice, useVoiceStatus } from "@/lib/coach-voice";
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
-import { V2AthleteCamera } from "@/v2/athlete-camera";
-import { M3GymRenderer } from "@/v2/renderer";
+import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
+import { V2TrainingCamera } from "@/v2/training-camera";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
-import { sceneContractFor } from "@/v2/scene";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
 import type { V2Mode } from "@/v2/types";
 
 export const Route = createFileRoute("/v2")({
   head: () => ({
     meta: [
-      { title: "M3 Coach V2 — Clean Rebuild" },
+      { title: "M3 Coach V2 — Interactive Training" },
       {
         name: "description",
-        content:
-          "Isolated V2 workout runtime: one session, four viewpoints, renderer-ready gym scene contract.",
+        content: "Approved real-coach motion, a shared workout, and opt-in on-device movement tracking.",
       },
     ],
   }),
-  component: V2Preview,
+  component: V2Coach,
 });
 
 const modeIcon: Record<V2Mode, typeof Eye> = {
@@ -38,20 +32,25 @@ const modeIcon: Record<V2Mode, typeof Eye> = {
   shadow: Eye,
   glasses: Glasses,
 };
-
 const mmss = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
-function V2Preview() {
-  const [workoutId, setWorkoutId] = useState(V2_WORKOUTS[0].id);
+function V2Coach() {
+  // Open with the already-approved real boxing combination, not a placeholder.
+  const [workoutId, setWorkoutId] = useState("cardio-core");
   const workout = useMemo(
     () => V2_WORKOUTS.find((w) => w.id === workoutId) ?? V2_WORKOUTS[0],
     [workoutId],
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
+  const [voiceOn, setVoiceOn] = useState(false);
+  const voiceStatus = useVoiceStatus();
+  const [liveCue, setLiveCue] = useState<string | null>(null);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch({ type: "reset", workout });
+    setLiveCue(null);
   }, [workout]);
 
   useEffect(() => {
@@ -60,20 +59,25 @@ function V2Preview() {
     return () => window.clearInterval(timer);
   }, [session.running]);
 
+  useEffect(() => {
+    setLiveCue(null);
+  }, [session.exerciseIndex, session.workout.id]);
+
+  useEffect(() => () => stopSpeech(), []);
+
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
-  const scene = sceneContractFor(session);
-  const targetWeight = exercise ? (session.targetWeights[exercise.id] ?? 0) : 0;
+  const media = approvedCoachMedia(exercise);
+  const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
+  const targetWeight = exercise ? session.targetWeights[exercise.id] ?? 0 : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
-  const setEntries = exercise ? (session.setResults[exercise.id] ?? []) : [];
+  const setEntries = exercise ? session.setResults[exercise.id] ?? [] : [];
   const completedResults =
     exercise?.category === "strength"
-      ? setEntries
-          .slice(0, exercise.sets)
-          .filter(
-            (entry): entry is { reps: number; cleanForm: boolean } =>
-              typeof entry?.reps === "number" && typeof entry?.cleanForm === "boolean",
-          )
+      ? setEntries.slice(0, exercise.sets).filter(
+          (entry): entry is { reps: number; cleanForm: boolean } =>
+            typeof entry?.reps === "number" && typeof entry?.cleanForm === "boolean",
+        )
       : [];
   const progression =
     exercise?.category === "strength" &&
@@ -87,134 +91,183 @@ function V2Preview() {
         })
       : null;
 
+  const giveFeedback = useCallback(
+    (cue: string) => {
+      setLiveCue(cue);
+      if (voiceOn && getVoiceStatus() === "ready")
+        speak(cue, true, { tone: "instructional", interrupt: false });
+    },
+    [voiceOn],
+  );
+
+  const captureReps = useCallback(
+    (reps: number) => {
+      const current = session.workout.exercises[session.exerciseIndex];
+      if (current?.category !== "strength") return;
+      dispatch({
+        type: "set-reps", exerciseId: current.id,
+        setIndex: session.setIndex, reps,
+      });
+      setLiveCue(`Captured ${reps} camera reps. Confirm your form and complete the set.`);
+    },
+    [session.exerciseIndex, session.setIndex, session.workout],
+  );
+
+  const toggleVoice = async () => {
+    if (voiceOn) {
+      stopSpeech();
+      setVoiceOn(false);
+      setVoiceError(null);
+      return;
+    }
+    // Audio unlock begins in the actual tap, as required on Android.
+    const status = await unlockVoice("M3 Coach audio enabled.", "calm");
+    const ready = status === "ready";
+    setVoiceOn(ready);
+    setVoiceError(ready ? null : "Voice was blocked. Check phone volume, audio output and browser permissions.");
+  };
+
+  const toggleWorkout = () => {
+    const next = session.running ? "pause" : "start";
+    dispatch({ type: next });
+    if (voiceOn && next === "start") {
+      speak(`Let's work. ${exercise?.name ?? session.workout.title}.`, true, {
+        tone: "assertive",
+      });
+    }
+  };
+
+  const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
+  const showCoach = session.mode === "coach" || session.mode === "shadow";
+  const glasses = session.mode === "glasses";
+  const videoPlaying = session.running && session.phase === "work";
+
   return (
-    <main className="min-h-dvh bg-[#080a0d] text-white">
-      <div className="mx-auto flex min-h-dvh max-w-7xl flex-col px-3 py-3 sm:px-5">
-        <header className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3">
+    <main className="min-h-dvh bg-[#080b0f] text-white">
+      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5">
+        <header className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#111820] px-4 py-3">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.34em] text-cyan-300">
+            <p className="text-[10px] font-black uppercase tracking-[.32em] text-cyan-300">
               M3 Coach V2
             </p>
-            <h1 className="mt-1 text-lg font-black">Clean rebuild preview</h1>
+            <h1 className="mt-1 text-lg font-black">Interactive training</h1>
           </div>
-          <div className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-200">
-            Isolated branch
-          </div>
+          <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-cyan-200">
+            Private rebuild
+          </span>
         </header>
 
-        <div className="mt-3 grid flex-1 gap-3 lg:grid-cols-[1fr_320px]">
-          <section className="relative min-h-[64dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#10151a]">
-            <M3GymRenderer session={session} />
-            <V2AthleteCamera active={session.mode === "manual"} />
-            <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/30 via-transparent to-black/65" />
-
-            <div className="relative z-[4] flex items-center justify-between gap-2 p-3">
-              <div className="rounded-xl bg-black/35 px-3 py-2 backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">
-                  {viewpoint.label} view
-                </p>
-                <p className="text-xs text-white/55">{viewpoint.camera}</p>
-              </div>
-              <div className="rounded-xl bg-black/35 px-3 py-2 text-right backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-widest text-white/45">
-                  Scene
-                </p>
-                <p className="text-xs font-bold">M3 Gym V2</p>
-              </div>
-            </div>
-
-            <div className="relative z-[4] grid min-h-[50dvh] place-items-center px-4 pb-32 text-center">
-              <div className="max-w-xl">
-                <p className="text-xs font-black uppercase tracking-[0.32em] text-white/45">
-                  {session.phase}
-                </p>
-                <h2 className="mt-3 text-[clamp(2.1rem,7vw,5rem)] font-black uppercase leading-none">
-                  {exercise?.name ?? "Workout complete"}
-                </h2>
-                {exercise && (
-                  <>
-                    <p className="mt-4 text-lg font-semibold text-cyan-200">
-                      {exercise.seconds
-                        ? `${exercise.seconds}s work`
-                        : exercise.reps
-                          ? `${exercise.reps} reps`
-                          : "Follow coach"}
-                    </p>
-                    <p className="mt-2 text-sm text-white/55">
-                      Set {Math.min(session.setIndex + 1, exercise.sets)} of {exercise.sets}
-                    </p>
-                  </>
-                )}
-
-                <div className="mx-auto mt-8 max-w-md rounded-2xl border border-white/10 bg-black/25 p-4 text-left">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">
-                    Renderer contract
-                  </p>
-                  <dl className="mt-3 grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <dt className="text-white/40">Motion</dt>
-                      <dd className="mt-1 font-bold">{scene.motionKey}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-white/40">Camera FOV</dt>
-                      <dd className="mt-1 font-bold">{scene.camera.fov}°</dd>
-                    </div>
-                    <div>
-                      <dt className="text-white/40">Coach visible</dt>
-                      <dd className="mt-1 font-bold">{scene.showCoach ? "Yes" : "No"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-white/40">Athlete camera</dt>
-                      <dd className="mt-1 font-bold">{scene.showAthleteCamera ? "Yes" : "No"}</dd>
-                    </div>
-                  </dl>
-                  <p className="mt-3 text-[11px] leading-relaxed text-white/45">
-                    The gym and camera system are real WebGL. The temporary trainer is one reusable
-                    articulated rig driven by the same motion keys the final coach GLB will use.
+        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <section className="relative min-h-[67dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:min-h-[720px]">
+            {showCoach && media && (
+              <CoachMotion
+                key={media.url}
+                url={media.url}
+                poster={media.poster}
+                playing={videoPlaying}
+                preloadUrl={preload?.url}
+                className="absolute inset-0 h-full w-full"
+                label={`Approved coach demonstrating ${exercise?.name ?? "movement"}`}
+              />
+            )}
+            {showCoach && !media && (
+              <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-8 text-center">
+                <div className="max-w-md">
+                  <Dumbbell className="mx-auto size-12 text-white/25" />
+                  <p className="mt-4 text-lg font-black">Approved demonstration pending</p>
+                  <p className="mt-2 text-sm leading-relaxed text-white/50">
+                    We will not show a stick figure, a different trainer, or the wrong exercise.
+                    Your set, live camera and manual workout log remain available.
                   </p>
                 </div>
               </div>
+            )}
+            {glasses && (
+              <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#142630,#05090d_65%)]">
+                <div className="w-[85%] max-w-lg rounded-2xl border border-cyan-300/35 bg-cyan-300/5 p-6">
+                  <p className="text-xs font-black uppercase tracking-[.25em] text-cyan-300">
+                    Glasses / first-person HUD
+                  </p>
+                  <p className="mt-4 text-3xl font-black">{stageTitle}</p>
+                  <p className="mt-2 text-lg text-cyan-200">
+                    {session.phaseSecondsLeft !== null
+                      ? `${session.phaseSecondsLeft}s remaining`
+                      : exercise?.reps ?? "Follow your session"}
+                  </p>
+                  <p className="mt-4 text-xs leading-relaxed text-white/50">
+                    This is a compact phone HUD. Wearable display integration is not yet verified.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/70 via-transparent to-black/75" />
+
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-[4] p-3">
+              <div className="max-w-[min(80%,450px)] rounded-xl bg-black/60 p-3 backdrop-blur-sm">
+                <p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-300">
+                  {viewpoint.label} · {session.phase}
+                </p>
+                <h2 className="mt-1 text-xl font-black uppercase leading-tight sm:text-2xl">
+                  {stageTitle}
+                </h2>
+                <p className="mt-1 text-xs font-semibold text-white/70">
+                  {exercise?.seconds ? `${exercise.seconds}s work` : exercise?.reps ?? ""} · Set
+                  {" "}{Math.min(session.setIndex + 1, exercise?.sets ?? 1)}/{exercise?.sets ?? 1}
+                </p>
+              </div>
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 z-[4] p-3">
-              <div className="rounded-2xl border border-white/10 bg-black/70 p-3 backdrop-blur-xl">
+            {liveCue && (
+              <div
+                className="pointer-events-none absolute bottom-[105px] left-3 z-[8] max-w-[55%] rounded-xl border border-cyan-300/40 bg-black/85 px-3 py-2 text-xs font-bold text-cyan-100"
+                aria-live="polite"
+              >
+                {liveCue}
+              </div>
+            )}
+
+            <V2TrainingCamera
+              session={session}
+              onCue={giveFeedback}
+              onRepCapture={captureReps}
+            />
+
+            <div className="absolute inset-x-0 bottom-0 z-[9] p-3">
+              <div className="rounded-2xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold">{session.workout.title}</p>
-                    <p className="mt-0.5 text-[11px] text-white/45">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-black">{session.workout.title}</p>
+                    <p className="mt-1 text-[11px] text-white/50">
                       {mmss(session.elapsedSeconds)} elapsed
                       {session.phaseSecondsLeft !== null
                         ? ` · ${session.phaseSecondsLeft}s left`
                         : ""}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex shrink-0 gap-2">
                     <button
                       type="button"
-                      onClick={() =>
-                        dispatch({ type: session.running ? "pause" : "start" })
-                      }
-                      className="grid size-11 place-items-center rounded-xl bg-cyan-300 text-black"
-                      aria-label={session.running ? "Pause" : "Start"}
+                      onClick={toggleWorkout}
+                      disabled={session.phase === "complete"}
+                      className="grid size-11 place-items-center rounded-xl bg-cyan-300 text-black disabled:opacity-35"
+                      aria-label={session.running ? "Pause workout" : "Start workout"}
                     >
-                      {session.running ? (
-                        <Pause className="size-5" />
-                      ) : (
-                        <Play className="size-5" />
-                      )}
+                      {session.running ? <Pause className="size-5" /> : <Play className="size-5" />}
                     </button>
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "complete-set" })}
-                      className="grid size-11 place-items-center rounded-xl bg-white/10"
-                      aria-label="Complete set"
+                      disabled={session.phase === "complete"}
+                      className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
+                      aria-label="Complete set and advance"
                     >
                       <SkipForward className="size-5" />
                     </button>
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "reset", workout })}
-                      className="grid size-11 place-items-center rounded-xl bg-white/10"
+                      className="grid size-11 place-items-center rounded-xl bg-white/15"
                       aria-label="Reset workout"
                     >
                       <RotateCcw className="size-5" />
@@ -226,9 +279,9 @@ function V2Preview() {
           </section>
 
           <aside className="space-y-3">
-            <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-3">
-              <p className="px-1 text-[10px] font-black uppercase tracking-[0.28em] text-white/45">
-                Same workout · different viewpoint
+            <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
+              <p className="px-1 text-[10px] font-black uppercase tracking-[.24em] text-white/50">
+                One workout · four viewpoints
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {V2_VIEWPOINTS.map((mode) => {
@@ -239,45 +292,82 @@ function V2Preview() {
                       key={mode.id}
                       type="button"
                       onClick={() => dispatch({ type: "set-mode", mode: mode.id })}
-                      className={`min-h-20 rounded-2xl border p-3 text-left transition ${
+                      className={`min-h-[76px] rounded-2xl border p-3 text-left ${
                         active
-                          ? "border-cyan-300/70 bg-cyan-300/15"
-                          : "border-white/10 bg-black/20"
+                          ? "border-cyan-300 bg-cyan-300/15"
+                          : "border-white/10 bg-black/25"
                       }`}
                     >
-                      <Icon className={`size-5 ${active ? "text-cyan-300" : "text-white/50"}`} />
+                      <Icon className={`size-5 ${active ? "text-cyan-300" : "text-white/55"}`} />
                       <p className="mt-2 text-sm font-black">{mode.label}</p>
-                      <p className="mt-0.5 text-[10px] uppercase tracking-wider text-white/40">
-                        {mode.camera}
-                      </p>
                     </button>
                   );
                 })}
               </div>
             </section>
 
-            <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4">
-              <label className="text-[10px] font-black uppercase tracking-[0.28em] text-white/45">
+            <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
+              <button
+                type="button"
+                onClick={() => void toggleVoice()}
+                className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl text-xs font-black uppercase ${
+                  voiceOn
+                    ? "bg-cyan-300/15 text-cyan-200"
+                    : "bg-white/10 text-white/80"
+                }`}
+              >
+                {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
+                {voiceOn ? "Coach voice on" : "Enable coach voice"}
+              </button>
+              <p className="mt-2 text-[11px] text-white/45">
+                Voice status: {voiceStatus}. Coach speaks when a real tracking cue is available.
+              </p>
+              {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
+            </section>
+
+            <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
+              <label className="text-[10px] font-black uppercase tracking-[.24em] text-white/50">
                 Workout
                 <select
                   value={workoutId}
-                  onChange={(e) => setWorkoutId(e.target.value)}
-                  className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#12171c] px-3 text-sm font-bold text-white"
+                  onChange={(event) => setWorkoutId(event.target.value)}
+                  className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#111920] px-3 text-sm font-bold text-white"
                 >
                   {V2_WORKOUTS.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.title}
-                    </option>
+                    <option key={item.id} value={item.id}>{item.title}</option>
                   ))}
                 </select>
               </label>
-              <p className="mt-3 text-xs leading-relaxed text-white/45">{workout.focus}</p>
+              <p className="mt-2 text-xs text-white/50">{workout.focus}</p>
+              <div className="mt-3 space-y-1">
+                {session.workout.exercises.map((item, index) => {
+                  const approved = Boolean(approvedCoachMedia(item));
+                  const selected = index === session.exerciseIndex;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => dispatch({ type: "select-exercise", exerciseIndex: index })}
+                      className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-xl px-3 text-left text-xs ${
+                        selected ? "bg-cyan-300/15 text-cyan-100" : "bg-black/25 text-white/65"
+                      }`}
+                    >
+                      <span>{index + 1}. {item.name}</span>
+                      {approved ? (
+                        <Check className="size-4 shrink-0 text-emerald-300" />
+                      ) : (
+                        <span className="shrink-0 text-[9px] text-white/35">Clip pending</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </section>
 
             {exercise?.category === "strength" && (
-              <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/45">
-                  Working weight + warm-up
+              <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
+                <p className="text-[10px] font-black uppercase tracking-[.24em] text-white/50">
+                  Load · warm-up · working sets
                 </p>
                 <label className="mt-3 block text-xs font-bold text-white/70">
                   Target working weight
@@ -287,84 +377,62 @@ function V2Preview() {
                       min="0"
                       inputMode="decimal"
                       value={targetWeight || ""}
-                      onChange={(e) =>
-                        dispatch({
-                          type: "set-target-weight",
-                          exerciseId: exercise.id,
-                          weight: Math.max(0, Number(e.target.value) || 0),
-                        })
-                      }
-                      className="min-h-12 w-full rounded-xl border border-white/10 bg-[#12171c] px-3 text-base font-black text-white"
-                      placeholder="Enter weight"
+                      onChange={(e) => dispatch({
+                        type: "set-target-weight",
+                        exerciseId: exercise.id,
+                        weight: Math.max(0, Number(e.target.value) || 0),
+                      })}
+                      className="min-h-11 w-full rounded-xl border border-white/10 bg-[#111920] px-3 text-base font-black"
+                      placeholder="Enter target weight"
                     />
-                    <span className="text-sm font-black text-white/45">lb</span>
+                    <span className="text-sm font-black text-white/50">lb</span>
                   </div>
                 </label>
-
                 {warmups.length > 0 && (
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-3 space-y-1">
                     {warmups.map((step) => (
-                      <div
-                        key={step.label}
-                        className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-black/20 px-3 py-2"
-                      >
+                      <div key={step.label} className="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2">
                         <div>
-                          <p className="text-xs font-black">{step.label}</p>
+                          <p className="text-xs font-bold">{step.label}</p>
                           <p className="text-[10px] text-white/45">
-                            {step.percent === null ? "Easy prep set" : `${step.percent}%`} · {step.reps} reps
+                            {step.percent === null ? "Easy set" : `${step.percent}%`} · {step.reps} reps
                           </p>
                         </div>
-                        <p className="text-sm font-black text-cyan-300">
+                        <span className="text-sm font-black text-cyan-300">
                           {step.weight === null ? "Light" : `${step.weight} lb`}
-                        </p>
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-
                 {session.mode === "manual" && (
-                  <div className="mt-4 border-t border-white/10 pt-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/45">
-                      Working sets
-                    </p>
-                    <div className="mt-3 space-y-2">
+                  <div className="mt-4 border-t border-white/10 pt-3">
+                    <p className="text-[10px] font-black uppercase tracking-[.24em] text-white/50">Actual sets</p>
+                    <div className="mt-2 space-y-2">
                       {Array.from({ length: exercise.sets }, (_, index) => {
                         const entry = setEntries[index];
                         return (
-                          <div
-                            key={index}
-                            className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-xl border border-white/8 bg-black/20 p-2"
-                          >
-                            <span className="grid size-8 place-items-center rounded-lg bg-white/8 text-xs font-black">
-                              {index + 1}
-                            </span>
+                          <div key={index} className="grid grid-cols-[24px_1fr_auto] items-center gap-2">
+                            <span className="text-xs font-black">{index + 1}</span>
                             <input
                               type="number"
                               min="0"
                               inputMode="numeric"
                               value={entry?.reps ?? ""}
-                              onChange={(e) =>
-                                dispatch({
-                                  type: "set-reps",
-                                  exerciseId: exercise.id,
-                                  setIndex: index,
-                                  reps: e.target.value === "" ? null : Math.max(0, Number(e.target.value)),
-                                })
-                              }
-                              className="min-h-10 rounded-lg border border-white/10 bg-[#12171c] px-3 text-sm font-black text-white"
+                              onChange={(e) => dispatch({
+                                type: "set-reps", exerciseId: exercise.id, setIndex: index,
+                                reps: e.target.value === "" ? null : Math.max(0, Number(e.target.value)),
+                              })}
+                              className="min-h-10 min-w-0 rounded-xl border border-white/10 bg-[#111920] px-3 text-sm"
                               placeholder="Actual reps"
                             />
                             <button
                               type="button"
-                              onClick={() =>
-                                dispatch({
-                                  type: "set-form",
-                                  exerciseId: exercise.id,
-                                  setIndex: index,
-                                  cleanForm: entry?.cleanForm === true ? false : true,
-                                })
-                              }
-                              className={`min-h-10 rounded-lg px-3 text-[10px] font-black uppercase tracking-wider ${
+                              onClick={() => dispatch({
+                                type: "set-form", exerciseId: exercise.id, setIndex: index,
+                                cleanForm: entry?.cleanForm === true ? false : true,
+                              })}
+                              className={`min-h-10 rounded-xl px-3 text-[10px] font-black ${
                                 entry?.cleanForm === true
                                   ? "bg-emerald-400 text-black"
                                   : entry?.cleanForm === false
@@ -372,28 +440,18 @@ function V2Preview() {
                                     : "bg-white/10 text-white/60"
                               }`}
                             >
-                              {entry?.cleanForm === true
-                                ? "Clean"
-                                : entry?.cleanForm === false
-                                  ? "Form broke"
-                                  : "Form?"}
+                              {entry?.cleanForm === true ? "Clean" : entry?.cleanForm === false ? "Form broke" : "Form?"}
                             </button>
                           </div>
                         );
                       })}
                     </div>
-
                     {progression && (
-                      <div className="mt-3 rounded-xl border border-cyan-300/25 bg-cyan-300/10 p-3">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-cyan-300">
-                          Next workout
+                      <div className="mt-3 rounded-xl bg-cyan-300/10 p-3">
+                        <p className="text-xs font-black uppercase text-cyan-300">
+                          Next workout: {progression.action}
                         </p>
-                        <p className="mt-1 text-lg font-black uppercase">
-                          {progression.action} · {progression.nextWeight} lb
-                        </p>
-                        <p className="mt-1 text-[11px] leading-relaxed text-white/60">
-                          {progression.reason}
-                        </p>
+                        <p className="mt-1 text-sm">{progression.reason}</p>
                       </div>
                     )}
                   </div>
@@ -401,18 +459,11 @@ function V2Preview() {
               </section>
             )}
 
-            <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/45">
-                What is different now
-              </p>
-              <ul className="mt-3 space-y-2 text-xs leading-relaxed text-white/65">
-                <li>• One reducer owns the entire session.</li>
-                <li>• Modes only change camera/control behavior.</li>
-                <li>• Scene positions are stable across mode changes.</li>
-                <li>• Motion is addressed by reusable motion keys.</li>
-                <li>• No old Coach/Manual/Glasses screens are reused here.</li>
-              </ul>
-            </section>
+            <p className="px-2 pb-4 text-[11px] leading-relaxed text-white/40">
+              On-device visual feedback is limited to reliably visible body positions.
+              Camera tracking does not verify weight, impact, foot pivot, or injury risk.
+              The approved 3D character and remaining exercise animations are still being produced.
+            </p>
           </aside>
         </div>
       </div>
