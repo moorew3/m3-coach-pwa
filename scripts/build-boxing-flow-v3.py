@@ -121,6 +121,44 @@ def main() -> None:
     }, indent=2))
 
 
+    # The original Cardio+Core session uses 60s rounds, NOT the dedicated
+    # 40/20 boxing rounds. Add full, already-normalized guard-to-guard cycles
+    # so there is NO hidden 40.7s video restart in a 60s work interval.
+    long_clips = clips + [clips[1], clips[2], clips[3], clips[6]]
+    long_lengths = lengths + [lengths[1], lengths[2], lengths[3], lengths[6]]
+    long_filters: list[str] = []
+    long_previous = "[0:v]"
+    long_elapsed = long_lengths[0]
+    for i in range(1, len(long_clips)):
+        node = f"[v{i}]"
+        long_filters.append(
+            f"{long_previous}[{i}:v]xfade=transition=fade:duration={FADE:.3f}:"
+            f"offset={long_elapsed - FADE:.3f}{node}"
+        )
+        long_previous = node
+        long_elapsed += long_lengths[i] - FADE
+    long_output = Path("public/media/boxingFlow60.mp4")
+    long_cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"]
+    for clip in long_clips:
+        long_cmd += ["-i", str(clip)]
+    long_cmd += ["-filter_complex", ";".join(long_filters), "-map", long_previous,
+                 "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "21",
+                 "-pix_fmt", "yuv420p", "-r", "30", "-movflags", "+faststart",
+                 str(long_output)]
+    run(*long_cmd)
+    long_info = probe(long_output)
+    long_duration = float(long_info["format"]["duration"])
+    if not (60 <= long_duration <= 68 and long_output.stat().st_size < 15_000_000):
+        long_output.unlink(missing_ok=True)
+        raise ValueError("60-second cardio boxing footage would restart during the round.")
+    print(json.dumps({
+        "output": str(long_output),
+        "durationSeconds": long_duration,
+        "bytes": long_output.stat().st_size,
+        "note": "Complete original strike-and-return cycles preserved; no loop before 60-second bell.",
+    }, indent=2))
+
+
 if __name__ == "__main__":
     try:
         main()
