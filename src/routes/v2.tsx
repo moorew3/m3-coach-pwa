@@ -320,6 +320,12 @@ function V2Coach() {
           return;
         case "next":
         case "skip":
+          // Do not accidentally mark a not-yet-started or resting set done.
+          // The existing reducer and exercise ordering remain untouched.
+          if (session.phase !== "work") {
+            setLiveCue("Wait for the current rest or transition before advancing.");
+            return;
+          }
           dispatch({ type: "complete-set" });
           return;
         case "previous":
@@ -638,7 +644,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "complete-set" })}
-                      disabled={session.phase === "complete"}
+                      disabled={session.phase !== "work"}
                       className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
                       aria-label="Complete set and advance"
                     >
