@@ -128,10 +128,10 @@ export function recommendProgression({
 
   if (missedMinimum) {
     return {
-      action: "reduce",
+      action: "repeat",
       nextWeight: currentWeight,
       topRangeStreak: 0,
-      reason: "At least one set missed the minimum rep target. Repeat or reduce 5–10% next time.",
+      reason: "At least one set missed the minimum rep target. Repeat the load if manageable, or reduce 5–10% if needed.",
     };
   }
 
