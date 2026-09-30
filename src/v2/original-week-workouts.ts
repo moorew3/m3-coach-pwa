@@ -46,7 +46,7 @@ export const ORIGINAL_WEEK_WORKOUTS: V2Workout[] = CURRENT_WORKOUT_DAYS.map((day
   id: "weekly-" + DAY_KEYS[index],
   title: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][index] + " · " + day.title,
   focus: "Original M3 Coach program · " + day.exercises.length + " movements in the prescribed order",
-  exercises: day.exercises.map((original) => {
+  exercises: day.exercises.map((original): V2Exercise => {
     const prescription = String(original.reps ?? original.time ?? "");
     const category = categoryFor(original, day.day);
     return {
