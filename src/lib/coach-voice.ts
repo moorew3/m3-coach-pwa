@@ -777,17 +777,33 @@ function scoreVoice(v: SpeechSynthesisVoice): number {
   return s;
 }
 
+/**
+ * Never guess a speaker's gender from an unlabeled default browser voice.
+ * A male voice must be explicitly named/marked as male or be a known
+ * male-named preset. The preview's primary path remains the original Onyx.
+ */
+function allowedMaleVoice(v: SpeechSynthesisVoice): boolean {
+  const n = `${v.name} ${v.voiceURI}`.toLowerCase();
+  if (!/^en([_-]|$)/i.test(v.lang)) return false;
+  if (/female|woman|samantha|aria|zira|susan|karen|moira|tessa|fiona|joana|serena|victoria|jenny|salli|kendra|robot|child|kid/.test(n))
+    return false;
+  return /\bmale\b|\bman\b|\bguy\b|\bdavid\b|\bmatthew\b|\bbrian\b|\bdaniel\b|\balex\b|\bfred\b|\bgordon\b|\baaron\b|\bjoey\b|\bethan\b/.test(n);
+}
+
 function pick(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-  if (!voices.length) return null;
-  // Same device, same coach: reuse the stored choice when it still exists.
+  // A generic, unspecified browser voice can sound female even when its
+  // pitch is lowered. No voice is preferable to changing the coach's identity.
+  const male = voices.filter(allowedMaleVoice);
+  if (!male.length) return null;
+  // Same device, same coach: reuse an EXPLICITLY male saved choice only.
   try {
     const saved = window.localStorage.getItem(VOICE_KEY);
-    const hit = saved ? voices.find((v) => v.voiceURI === saved) : null;
+    const hit = saved ? male.find((v) => v.voiceURI === saved) : null;
     if (hit) return hit;
   } catch {
     /* storage unavailable — score fresh */
   }
-  const best = [...voices].sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] ?? null;
+  const best = [...male].sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] ?? null;
   if (best) {
     try {
       window.localStorage.setItem(VOICE_KEY, best.voiceURI);
@@ -870,6 +886,10 @@ async function speakBrowser(
     // Voices load asynchronously on Android; speaking before they exist
     // is one of the classic silent failures.
     if (!chosen) await loadVoices(2000);
+    if (!chosen || !allowedMaleVoice(chosen)) {
+      note({ lastError: "No explicitly identified male browser voice is available. Female/default fallback disabled." });
+      return false;
+    }
     if (gen !== generation) return true;
     if (interrupt) {
       synth.cancel();
