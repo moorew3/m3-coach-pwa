@@ -8,7 +8,7 @@
 import { angleAt, IDX, type LM } from "@/lib/vision/analysis";
 
 export type KickKind = "frontKick" | "roundKick";
-type Stage = "ready" | "chamber" | "extended";
+type Stage = "ready" | "chamber" | "extended" | "retracting";
 
 type Side = {
   stage: Stage;
@@ -88,9 +88,11 @@ export class KickTracker {
     const active = [this.left.stage, this.right.stage];
     const phase = active.includes("extended")
       ? "extended"
-      : active.includes("chamber")
-        ? "chamber"
-        : "ready";
+      : active.includes("retracting")
+        ? "returning"
+        : active.includes("chamber")
+          ? "chamber"
+          : "ready";
     return { reps: this.total(), phase, confidence: conf, cue, note };
   }
 
@@ -127,6 +129,15 @@ export class KickTracker {
         state.stage = "ready";
       } else if (kneeAngle > 148 && footLift > 0.23) {
         state.stage = "extended";
+        state.at = now;
+      }
+    } else if (state.stage === "extended") {
+      // A kick is NOT finished at extension or when the foot drops. We need
+      // to see a controlled re-chamber before grounded return.
+      if (now - state.at > 3500) {
+        state.stage = "ready";
+      } else if (kneeAngle < 138 && footLift > 0.18) {
+        state.stage = "retracting";
         state.at = now;
       }
     } else {
