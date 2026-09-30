@@ -21,6 +21,7 @@ import { beep, logIntervalFromCoach, markSetFromCoach, useApp, type SetEntry } f
 import {
   dropPending,
   flushPending,
+  isCoachSpeaking,
   loadVoices,
   onCoachSpeech,
   prefetchSpeech,
@@ -433,10 +434,13 @@ export function useCoachEngine(
     while (fired < cues.length && cues[fired].at <= elapsed) fired++;
     const t = setInterval(() => {
       elapsed += 1;
+      // Never layer a live cue over speech that is already audible. Wait
+      // until the coach finishes, then deliver the due cue once.
+      if (isCoachSpeaking()) return;
       while (fired < cues.length && cues[fired].at <= elapsed) {
         const cue = cues[fired++];
-        // Never interrupt: these layer over training, they don't restart it.
-        speak(cue.say, true, { tone: cue.tone, interrupt: false });
+        speak(cue.say, true, { tone: cue.tone, interrupt: true });
+        break;
       }
       if (fired >= cues.length) clearInterval(t);
     }, 1000);
