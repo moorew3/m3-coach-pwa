@@ -76,7 +76,10 @@ const walk = (mins: string, id: string): Exercise =>
     rest: 0,
     diagram: "treadmill-walk",
     image: "inclineTreadmillWalk",
-    mirror: "easyWalk",
+    // No verified treadmill-motion clip is approved yet. Leave motion
+    // unset so coached views show the correct treadmill instruction with
+    // the coach still instead of a wrong exercise animation.
+    mirror: undefined,
     tracked: false,
     notes: "Nose-breathing pace. Zero impact.",
     substitutions: ["Marching in place", "Easy stationary bike"],
