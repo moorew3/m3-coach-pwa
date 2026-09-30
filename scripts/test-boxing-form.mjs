@@ -1,7 +1,7 @@
 /**
  * Executable synthetic regression tests for what the ONE phone camera claims.
- * Uses actual src/v2/boxing-form.ts bundled with the project's existing
- * esbuild dependency; no new testing framework or subscription.
+ * Uses actual src/v2/boxing-form.ts compiled with the project's existing
+ * TypeScript dependency; no new testing framework or subscription.
  *
  * These tests validate detector state transitions. They do NOT validate
  * real-life biomechanics, camera accuracy or a professional boxing session.
@@ -28,7 +28,7 @@ const analysisText = await readFile("src/lib/vision/analysis.ts", "utf8");
 const boxingText = await readFile("src/v2/boxing-form.ts", "utf8");
 await writeFile(analysis, ts.transpileModule(analysisText, options).outputText);
 const boxed = ts.transpileModule(boxingText, options).outputText
-  .replace(/["']@\\/lib\\/vision\\/analysis["']/g, '"./m3-v2-analysis.test.mjs"');
+  .replaceAll("@/lib/vision/analysis", "./m3-v2-analysis.test.mjs");
 await writeFile(outfile, boxed);
 const { BoxingFormTracker } = await import(pathToFileURL(outfile).href);
 
