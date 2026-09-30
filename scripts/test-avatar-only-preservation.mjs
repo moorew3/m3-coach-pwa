@@ -1,32 +1,31 @@
 /**
- * Frozen reference baseline for the owner-requested AVATAR-ONLY correction.
+ * Git-blob reference baseline for the owner-requested AVATAR-ONLY correction.
  * This intentionally requires an explicit update if anyone modifies the
  * exercise catalogue, sets, order, timers, coaching-session logic or workout
  * recovery manifest. It prevents an "appearance fix" from silently changing
  * the program. No new dependencies, generated motions or paid services.
  */
 import { readFileSync, existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import assert from "node:assert/strict";
 
-const baseline = {
-  "src/v2/catalog.ts": "4caaec02",
-  "src/v2/session.ts": "0d92f1ea",
-  "src/lib/coach-session.ts": "b9459500",
-  "src/data/recovery/current-workout-integrity-manifest.ts": "aa59ec46",
+const baselineGitBlobs = {
+  "src/v2/catalog.ts": "a0a30b6902c4aeb46d4f3818b7d4d384d28d80f0",
+  "src/v2/session.ts": "03029cea2be7eb34291e448a433e21eef72a234d",
+  "src/lib/coach-session.ts": "7d69babc38ee63ee4da27344f30c758b7fc6eb63",
+  "src/data/recovery/current-workout-integrity-manifest.ts":
+    "b2ce7d8b6579a1318976443e23be8fd0831ccf8d",
 };
 
-function fnv32(text) {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < text.length; i++)
-    h = Math.imul(h ^ text.charCodeAt(i), 16777619) >>> 0;
-  return h.toString(16).padStart(8, "0");
-}
-
-for (const [file, expected] of Object.entries(baseline)) {
-  const actual = fnv32(readFileSync(file, "utf8"));
+// Git hashes the EXACT UTF-8 file bytes, including line endings, and avoids
+// differences between connector previews and the actual checked-out source.
+for (const [file, expectedBlobSha] of Object.entries(baselineGitBlobs)) {
+  const actual = execFileSync("git", ["rev-parse", `HEAD:${file}`], {
+    encoding: "utf8",
+  }).trim();
   assert.equal(
-    actual, expected,
-    `Workout-preservation gate failed for ${file}. An avatar or entrance change must not alter workout order, exercises, sets, timing or session logic.`,
+    actual, expectedBlobSha,
+    `Workout-preservation gate failed for ${file}. An avatar correction must not change the workout sequence, sets, timing or session engine.`,
   );
 }
 assert.ok(existsSync("public/coach-source/coach-primary-standing.png"),
