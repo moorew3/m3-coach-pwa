@@ -18,7 +18,7 @@ import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
 import { createV2Session, v2SessionReducer } from "@/v2/session";
-import type { V2Mode } from "@/v2/types";
+import type { V2Mode, V2Session } from "@/v2/types";
 
 export const Route = createFileRoute("/v2")({
   head: () => ({
@@ -32,6 +32,8 @@ export const Route = createFileRoute("/v2")({
   }),
   component: V2Coach,
 });
+
+const V2_LOCAL_SAVE = "m3-coach-v2-local-session-v1";
 
 const modeIcon: Record<V2Mode, typeof Eye> = {
   coach: UserRound,
@@ -50,6 +52,7 @@ function V2Coach() {
     [workoutId],
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
+  const [hydrated, setHydrated] = useState(false);
   const [voiceOn, setVoiceOn] = useState(false);
   const voiceStatus = useVoiceStatus();
   const voiceControl = useVoiceControl();
@@ -57,9 +60,74 @@ function V2Coach() {
   const [voiceError, setVoiceError] = useState<string | null>(null);
 
   useEffect(() => {
-    dispatch({ type: "reset", workout });
-    setLiveCue(null);
-  }, [workout]);
+    // A paused local snapshot protects the current workout during a refresh.
+    // This never records or persists camera frames, microphone audio or secrets.
+    try {
+      const raw = window.localStorage.getItem(V2_LOCAL_SAVE);
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          version?: number;
+          workoutId?: string;
+          session?: Partial<V2Session>;
+        };
+        const savedWorkout = V2_WORKOUTS.find((item) => item.id === saved.workoutId);
+        const s = saved.session;
+        if (saved.version === 1 && savedWorkout && s) {
+          const exIdx = Math.max(0, Math.min(
+            savedWorkout.exercises.length - 1,
+            Number.isInteger(s.exerciseIndex) ? s.exerciseIndex! : 0,
+          ));
+          const setIdx = Math.max(0, Math.min(
+            savedWorkout.exercises[exIdx].sets - 1,
+            Number.isInteger(s.setIndex) ? s.setIndex! : 0,
+          ));
+          const restored: V2Session = {
+            ...createV2Session(savedWorkout),
+            workout: savedWorkout,
+            mode: V2_VIEWPOINTS.some((v) => v.id === s.mode) ? s.mode! : "coach",
+            phase: s.phase === "complete" ? "complete" : "ready",
+            exerciseIndex: exIdx,
+            setIndex: setIdx,
+            elapsedSeconds:
+              typeof s.elapsedSeconds === "number" && Number.isFinite(s.elapsedSeconds)
+                ? Math.max(0, Math.floor(s.elapsedSeconds))
+                : 0,
+            running: false,
+            phaseSecondsLeft: null,
+            completedSetIds: Array.isArray(s.completedSetIds)
+              ? s.completedSetIds.filter((id): id is string => typeof id === "string")
+              : [],
+            targetWeights:
+              s.targetWeights && typeof s.targetWeights === "object" && !Array.isArray(s.targetWeights)
+                ? s.targetWeights
+                : {},
+            setResults:
+              s.setResults && typeof s.setResults === "object" && !Array.isArray(s.setResults)
+                ? s.setResults
+                : {},
+          };
+          setWorkoutId(savedWorkout.id);
+          dispatch({ type: "restore", session: restored });
+        }
+      }
+    } catch {
+      // Storage may be unavailable; use the in-memory session in that case.
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(V2_LOCAL_SAVE, JSON.stringify({
+        version: 1,
+        workoutId: session.workout.id,
+        session: { ...session, running: false },
+      }));
+    } catch {
+      // Private-browsing/storage restrictions must never prevent training.
+    }
+  }, [session, hydrated]);
 
   useEffect(() => {
     if (!session.running) return;
@@ -494,7 +562,13 @@ function V2Coach() {
                 Workout
                 <select
                   value={workoutId}
-                  onChange={(event) => setWorkoutId(event.target.value)}
+                  onChange={(event) => {
+                    const nextWorkout = V2_WORKOUTS.find((w) => w.id === event.target.value) ??
+                      V2_WORKOUTS[0];
+                    setWorkoutId(nextWorkout.id);
+                    dispatch({ type: "reset", workout: nextWorkout });
+                    setLiveCue(null);
+                  }}
                   className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#111920] px-3 text-sm font-bold text-white"
                 >
                   {V2_WORKOUTS.map((item) => (
