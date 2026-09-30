@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
 import { coachMotionFor } from "@/data/coach-identity";
-import { getVoiceStatus, selectedBrowserVoice, speak, stopSpeech, unlockVoice, useVoiceStatus, voicePath } from "@/lib/coach-voice";
+import { getVoiceStatus, useVoiceStatus } from "@/lib/coach-voice";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
@@ -19,6 +19,8 @@ import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
+import { recoveredMotionFor } from "@/v2/recovered-motion-media";
+import { clearV2CoachSpeech, queueV2CoachSpeech } from "@/v2/coach-speech-queue";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -189,14 +191,15 @@ function V2Coach() {
   }, [session.exerciseIndex, session.workout.id]);
 
   useEffect(() => () => {
-    stopSpeech();
+    clearV2CoachSpeech();
     stopListening();
   }, []);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
   const media = approvedCoachMedia(exercise);
-  const avatarGuide = media ? undefined : approvedAvatarGuide(exercise);
+  const recoveredMedia = media ? undefined : recoveredMotionFor(exercise);
+  const avatarGuide = media || recoveredMedia ? undefined : approvedAvatarGuide(exercise);
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   const targetWeight = exercise ? session.targetWeights[exercise.id] ?? 0 : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
@@ -224,7 +227,7 @@ function V2Coach() {
     (cue: string) => {
       setLiveCue(cue);
       if (voiceOn && getVoiceStatus() === "ready")
-        speak(cue, true, { tone: "instructional", interrupt: true });
+        queueV2CoachSpeech(cue, "instructional");
     },
     [voiceOn],
   );
@@ -260,7 +263,7 @@ function V2Coach() {
         (session.phase !== "rest" && session.phase !== "transition" &&
           session.phase !== "complete")) return;
     // Round notes replace the generic rest instruction; never double-talk.
-    speak(roundFeedback, true, { tone: "attentive", interrupt: true });
+    queueV2CoachSpeech(roundFeedback, "attentive");
   }, [roundFeedback, session.phase, voiceOn]);
 
   // This runs only when the session enters a new phase or set, never per camera
@@ -303,7 +306,7 @@ function V2Coach() {
     if (message) {
       setLiveCue(message);
       if (voiceOn && getVoiceStatus() === "ready")
-        speak(message, true, { tone, interrupt: true });
+        queueV2CoachSpeech(message, tone);
     }
   }, [
     session.workout.id, session.exerciseIndex, session.setIndex,
@@ -394,12 +397,12 @@ function V2Coach() {
           const next = session.workout.exercises[session.exerciseIndex + 1];
           const line = next ? `Next is ${next.name}.` : "That is the final movement.";
           setLiveCue(line);
-          if (voiceOn) speak(line, true, { tone: "calm" });
+          if (voiceOn && getVoiceStatus() === "ready") queueV2CoachSpeech(line, "calm");
           return;
         }
         case "muteCoach":
           setVoiceOn(false);
-          stopSpeech();
+          clearV2CoachSpeech();
           return;
         case "unmuteCoach":
           if (getVoiceStatus() === "ready") setVoiceOn(true);
@@ -446,7 +449,7 @@ function V2Coach() {
           "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
         setLiveCue(line);
         if (voiceOn && getVoiceStatus() === "ready")
-          speak(line, true, { tone: "attentive", interrupt: true });
+          queueV2CoachSpeech(line, "attentive");
       });
     });
     return () => {
@@ -461,16 +464,18 @@ function V2Coach() {
 
   const toggleVoice = async () => {
     if (voiceOn) {
-      stopSpeech();
+      clearV2CoachSpeech();
       setVoiceOn(false);
       setVoiceError(null);
       return;
     }
-    // Audio unlock begins in the actual tap, as required on Android.
-    const status = await unlockVoice("M3 Coach audio enabled.", "calm");
-    const ready = status === "ready";
-    setVoiceOn(ready);
-    setVoiceError(ready ? null : "The original male coach voice is unavailable. I will not substitute a female or robotic voice.");
+    // The user selected Marcus — Warm & Friendly. V2 previously routed this
+    // button to OpenAI Onyx and mislabeled it as the original coach. Do not
+    // substitute another voice while the exact Marcus runtime path is absent.
+    setVoiceOn(false);
+    setVoiceError(
+      "Marcus — Warm & Friendly is the selected coach voice. Live Marcus speech is not connected to this preview yet, so I will not substitute Onyx, a browser voice, or a robotic fallback.",
+    );
   };
 
   const toggleWorkout = () => {
@@ -482,13 +487,8 @@ function V2Coach() {
     // The first Start tap is the one user gesture needed to arm the hands-free
     // workout. Android may show microphone/audio permission prompts the first time.
     if (voiceControlAvailable() && !voiceControl.listening) startListening();
-    if (!voiceOn) {
-      void unlockVoice("M3 Coach ready. Starting your workout.", "calm").then((status) => {
-        const ready = status === "ready";
-        setVoiceOn(ready);
-        setVoiceError(ready ? null : "Coach audio could not start. The workout and hands-free controls still work.");
-      });
-    }
+    // Do not auto-enable a substitute voice. Hands-free commands remain
+    // available while the selected Marcus runtime connection is completed.
     dispatch({ type: "start" });
   };
 
@@ -497,7 +497,8 @@ function V2Coach() {
   const glasses = session.mode === "glasses";
   const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
   const guardClip = isFighterMovement ? coachMotionFor("guardReset") : undefined;
-  const stageMedia = session.phase === "rest" && guardClip ? guardClip : media;
+  const stageMedia = session.phase === "rest" && guardClip ? guardClip : (media ?? recoveredMedia);
+  const stageUsesRecovered = Boolean(!media && recoveredMedia && stageMedia === recoveredMedia);
   const stagePreloadUrl = isFighterMovement
     ? session.phase === "rest" ? media?.url : guardClip?.url
     : preload?.url;
@@ -599,8 +600,22 @@ function V2Coach() {
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
                 className="absolute inset-0 h-full w-full"
-                label={`Approved coach demonstrating ${exercise?.name ?? "movement"}`}
+                label={
+                  stageUsesRecovered
+                    ? `Motion demo of ${exercise?.name ?? "movement"}`
+                    : `Approved coach demonstrating ${exercise?.name ?? "movement"}`
+                }
               />
+            )}
+            {showCoach && !realTimeRigReady && stageUsesRecovered && recoveredMedia && (
+              <div className="pointer-events-none absolute bottom-[104px] right-3 z-[6] max-w-[58%] rounded-xl border border-amber-300/40 bg-black/80 px-3 py-2 text-right backdrop-blur">
+                <p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-200">
+                  Motion demo
+                </p>
+                <p className="mt-1 text-[10px] leading-relaxed text-white/65">
+                  Existing correct movement recovered from the original app. Demonstrator identity is reference-only until retargeted to the approved coach.
+                </p>
+              </div>
             )}
             {showCoach && !realTimeRigReady && !stageMedia && avatarGuide && (
               <div className="absolute inset-0 bg-black">
@@ -801,7 +816,7 @@ function V2Coach() {
                 <button
                   type="button"
                   disabled={!voiceOn || getVoiceStatus() !== "ready"}
-                  onClick={() => speak(roundFeedback, true, { tone: "attentive", interrupt: true })}
+                  onClick={() => queueV2CoachSpeech(roundFeedback, "attentive")}
                   className="mt-3 min-h-10 rounded-xl bg-white/10 px-3 text-xs font-black text-white disabled:opacity-45"
                 >
                   Hear this review
@@ -843,16 +858,10 @@ function V2Coach() {
                 }`}
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-                {voiceOn ? "Male coach voice on" : "Enable original male coach voice"}
+                {voiceOn ? "Marcus coach voice on" : "Marcus voice · connection pending"}
               </button>
               <p className="mt-2 text-[11px] text-white/45">
-                Voice: {voiceStatus === "ready"
-                  ? voicePath() === "browser"
-                    ? selectedBrowserVoice() ?? "verified male fallback"
-                    : "Original M3 male coach (Onyx)"
-                  : voiceStatus === "blocked"
-                    ? "No male voice available — visual cues remain on"
-                    : "Off until you tap to enable"}. Spoken technique corrections use this one voice.
+                Selected voice: Marcus — Warm & Friendly. This preview will not substitute Onyx or a browser voice while the exact Marcus runtime connection is incomplete. Visual coaching and hands-free commands remain available.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
@@ -914,7 +923,8 @@ function V2Coach() {
               <div className="mt-3 space-y-1">
                 {session.workout.exercises.map((item, index) => {
                   const approved = Boolean(approvedCoachMedia(item));
-                  const guide = !approved ? approvedAvatarGuide(item) : undefined;
+                  const recovered = !approved ? recoveredMotionFor(item) : undefined;
+                  const guide = !approved && !recovered ? approvedAvatarGuide(item) : undefined;
                   const selected = index === session.exerciseIndex;
                   return (
                     <button
@@ -928,6 +938,8 @@ function V2Coach() {
                       <span>{index + 1}. {item.name}</span>
                       {approved ? (
                         <Check className="size-4 shrink-0 text-emerald-300" />
+                      ) : recovered ? (
+                        <span className="shrink-0 rounded-full bg-amber-300/10 px-2 py-1 text-[9px] font-black text-amber-200">Motion demo</span>
                       ) : guide ? (
                         <span className="shrink-0 rounded-full bg-cyan-300/10 px-2 py-1 text-[9px] font-black text-cyan-200">Avatar guide</span>
                       ) : (
