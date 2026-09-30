@@ -69,7 +69,8 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance, onRound
   // Capture the finished round BEFORE the set-index change resets its tracker.
   useEffect(() => {
     if (previousPhase.current === "work" &&
-        (session.phase === "rest" || session.phase === "complete") &&
+        (session.phase === "rest" || session.phase === "transition" ||
+          session.phase === "complete") &&
         boxTracker.current) {
       onRoundSummary?.(boxTracker.current.summary());
     }
