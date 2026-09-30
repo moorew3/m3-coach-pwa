@@ -31,8 +31,11 @@ export function approvedCoachMedia(exercise?: V2Exercise) {
   // workout uses the shorter complete-cycle flow. Neither loops mid-round.
   if (exercise.id === "boxing-flow" && exercise.motionKey === "boxingCombination")
     return coachMotionFor("shadowboxPunches60");
-  const legacyKey = LEGACY_MOTION_KEY[exercise.motionKey];
-  if (!legacyKey) return undefined;
+  // The complete original week already uses the audited legacy keys.
+  // Preserve every verified original clip instead of limiting V2 to
+  // the short demonstration catalog. coachMotionFor still enforces the
+  // identity/movement quarantine; no missing clip is silently substituted.
+  const legacyKey = LEGACY_MOTION_KEY[exercise.motionKey] ?? exercise.motionKey;
   return coachMotionFor(legacyKey);
 }
 
