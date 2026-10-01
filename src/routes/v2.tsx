@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
 import { coachMotionFor } from "@/data/coach-identity";
-import { getVoiceStatus } from "@/lib/coach-voice";
+import { flushPending, getVoiceStatus, unlockVoice } from "@/lib/coach-voice";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
@@ -468,12 +468,26 @@ function V2Coach() {
       setVoiceError(null);
       return;
     }
-    // The user selected Marcus — Warm & Friendly. V2 previously routed this
-    // button to OpenAI Onyx and mislabeled it as the original coach. Do not
-    // substitute another voice while the exact Marcus runtime path is absent.
+
+    setVoiceError(null);
+    // unlockVoice performs the gesture-sensitive audio unlock synchronously
+    // before its first await. With no server speech credential configured on
+    // this preview it may fall back only to an explicitly identified male
+    // device voice; generic/female/novelty voices remain blocked.
+    const nextStatus = await unlockVoice("Coach audio on. Let's begin.", "calm");
+    if (nextStatus === "ready") {
+      lastDirectedCue.current = "";
+      setVoiceOn(true);
+      flushPending(true);
+      setLiveCue("Coach voice connected. Press Start once and keep moving.");
+      return;
+    }
+
     setVoiceOn(false);
     setVoiceError(
-      "Marcus — Warm & Friendly is the selected coach voice. Live Marcus speech is not connected to this preview yet, so I will not substitute Onyx, a browser voice, or a robotic fallback.",
+      nextStatus === "unsupported"
+        ? "Coach speech is not supported in this browser. The workout will still run automatically."
+        : "The exact Marcus runtime is not connected on this preview, and an approved male device voice could not be started. The workout will still run automatically.",
     );
   };
 
@@ -483,11 +497,10 @@ function V2Coach() {
       return;
     }
 
-    // The first Start tap is the one user gesture needed to arm the hands-free
-    // workout. Android may show microphone/audio permission prompts the first time.
+    // ONE-TAP START: use this same user gesture to arm audio, hands-free
+    // commands and the workout clock. Permission prompts may appear once.
+    if (!voiceOn) void toggleVoice();
     if (voiceControlAvailable() && !voiceControl.listening) startListening();
-    // Do not auto-enable a substitute voice. Hands-free commands remain
-    // available while the selected Marcus runtime connection is completed.
     dispatch({ type: "start" });
   };
 
@@ -594,7 +607,7 @@ function V2Coach() {
                 key={stageMedia.url}
                 url={stageMedia.url}
                 poster={"poster" in stageMedia ? stageMedia.poster : undefined}
-                playing={showCoach && (session.phase === "ready" || videoPlaying)}
+                playing={showCoach && videoPlaying}
                 rate={videoRate}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
@@ -734,10 +747,11 @@ function V2Coach() {
                       type="button"
                       onClick={toggleWorkout}
                       disabled={session.phase === "complete"}
-                      className="grid size-11 place-items-center rounded-xl bg-cyan-300 text-black disabled:opacity-35"
+                      className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-black disabled:opacity-35"
                       aria-label={session.running ? "Pause workout" : "Start workout"}
                     >
                       {session.running ? <Pause className="size-5" /> : <Play className="size-5" />}
+                      <span>{session.running ? "Pause" : "Start"}</span>
                     </button>
                     <button
                       type="button"
@@ -857,10 +871,10 @@ function V2Coach() {
                 }`}
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-                {voiceOn ? "Marcus coach voice on" : "Marcus voice · connection pending"}
+                {voiceOn ? "Coach voice on" : "Enable coach voice"}
               </button>
               <p className="mt-2 text-[11px] text-white/45">
-                Selected voice: Marcus — Warm & Friendly. This preview will not substitute Onyx or a browser voice while the exact Marcus runtime connection is incomplete. Visual coaching and hands-free commands remain available.
+                Target voice: Marcus — Warm & Friendly. Until the exact Marcus runtime is connected, this preview can use only an explicitly identified male device voice as a no-cost fallback. Generic, female and novelty voices stay blocked.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
