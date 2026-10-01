@@ -612,7 +612,7 @@ function V2Coach() {
                   Motion demo
                 </p>
                 <p className="mt-1 text-[10px] leading-relaxed text-white/65">
-                  Existing correct movement recovered from the original app. Demonstrator identity is reference-only until retargeted to the approved coach.
+                  Correct movement recovered from the original app. Follow the movement while your approved Virtual Coach provides the workout cues.
                 </p>
               </div>
             )}
@@ -629,7 +629,7 @@ function V2Coach() {
                   <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Original avatar guide</p>
                   <p className="mt-1 text-sm font-black">{avatarGuide.title}</p>
                   <p className="mt-1 text-xs text-white/75">{avatarGuide.cues.join(" · ")}</p>
-                  <p className="mt-1 text-[10px] text-white/45">Static START/FINISH guide recovered from the earlier app. Moving demo still pending.</p>
+                  <p className="mt-1 text-[10px] text-white/45">Original movement guide from the earlier app. Use it for setup and finish position while following your Virtual Coach cues.</p>
                 </div>
               </div>
             )}
