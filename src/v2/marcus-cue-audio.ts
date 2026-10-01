@@ -78,27 +78,30 @@ export async function playMarcusCue(cue: MarcusCue): Promise<boolean> {
   active = audio;
 
   try {
-    await waitForMetadata(audio);
-    if (myGeneration !== generation || active !== audio) return false;
-
-    if (cue !== "intro") {
-      const [start, end] = SEGMENTS[cue];
-      audio.currentTime = start;
-      await audio.play();
-      if (myGeneration !== generation || active !== audio) return false;
-      stopTimer = window.setTimeout(() => {
-        if (active === audio && myGeneration === generation) {
-          audio.pause();
-          active = null;
-          stopTimer = null;
-        }
-      }, Math.max(150, (end - start) * 1000));
-    } else {
+    if (cue === "intro") {
+      // Important on Android: call play() before the first await so this runs
+      // inside the user's actual tap and permanently unlocks site audio.
       await audio.play();
       audio.addEventListener("ended", () => {
         if (active === audio && myGeneration === generation) active = null;
       }, { once: true });
+      return true;
     }
+
+    await waitForMetadata(audio);
+    if (myGeneration !== generation || active !== audio) return false;
+
+    const [start, end] = SEGMENTS[cue];
+    audio.currentTime = start;
+    await audio.play();
+    if (myGeneration !== generation || active !== audio) return false;
+    stopTimer = window.setTimeout(() => {
+      if (active === audio && myGeneration === generation) {
+        audio.pause();
+        active = null;
+        stopTimer = null;
+      }
+    }, Math.max(150, (end - start) * 1000));
     return true;
   } catch {
     if (active === audio) active = null;
