@@ -62,11 +62,36 @@ export function CoachMotion({
     const video = videoRef.current;
     if (!video || failed) return;
     video.playbackRate = Math.max(0.5, Math.min(2, rate || 1));
-    if (playing) {
-      void video.play().catch(() => undefined);
-    } else {
+
+    if (!playing) {
       video.pause();
+      setIsPlaying(false);
+      return;
     }
+
+    // A blocked autoplay attempt in the READY screen must never leave the
+    // movement frozen after the user presses Start. Retry from the actual
+    // running state and again after metadata/canplay settles.
+    let cancelled = false;
+    const tryPlay = () => {
+      if (cancelled || !videoRef.current || !playing) return;
+      void videoRef.current.play().catch(() => undefined);
+    };
+
+    tryPlay();
+    const shortRetry = window.setTimeout(tryPlay, 120);
+    const settleRetry = window.setTimeout(tryPlay, 600);
+    const onVisible = () => {
+      if (!document.hidden) tryPlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(shortRetry);
+      window.clearTimeout(settleRetry);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [playing, rate, url, failed, loaded]);
 
   const still = poster || COACH_REFERENCE;
@@ -100,9 +125,14 @@ export function CoachMotion({
             playsInline
             autoPlay={playing}
             loop
+            controls={false}
+            disablePictureInPicture
             preload="auto"
             data-layer="0"
             data-active="true"
+            onLoadedMetadata={(event) => {
+              if (playing) void event.currentTarget.play().catch(() => undefined);
+            }}
             onCanPlay={(event) => {
               setLoaded(true);
               if (playing) void event.currentTarget.play().catch(() => undefined);
