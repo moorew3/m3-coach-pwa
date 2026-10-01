@@ -1,0 +1,81 @@
+name: Localize Recovered Motion Library
+
+on:
+  push:
+    branches:
+      - rebuild/m3-coach-v2
+    paths:
+      - .github/workflows/localize-recovered-motion-library.yml
+
+permissions:
+  contents: write
+
+jobs:
+  localize-recovered-motion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/m3-coach-v2
+          persist-credentials: true
+
+      - name: Ensure media tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Download exact recovered motion library
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public/media/recovered
+          download () {
+            key="$1"
+            url="$2"
+            curl -fL --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 180 \
+              -A "Mozilla/5.0" "$url" \
+              -o "public/media/recovered/${key}.mp4"
+          }
+          download chestPress "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ae3d443d-1b7e-4562-80e3-e44b54b55ac9/chestPressV3.mp4"
+          download chestSupportedRow "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/242f8087-efb6-4b71-bfd2-1b739cd081a2/chestSupportedRowV3.mp4"
+          download bulgarianSplitSquat "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/160c1726-61b7-4f3b-8350-0399cb72d5f8/bulgarianSplitSquatV3.mp4"
+          download reverseStepRow "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/d700a842-1844-4813-9e6d-fb5a6985e0a2/reverseStepRow.mp4"
+          download farmerMarch "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/62335289-13e9-4390-b070-723cb2a9e376/farmerMarch.mp4"
+          download squatToCurl "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/801f032b-7e52-4db2-9ea2-18a8a128ce26/squatToCurl.mp4"
+          download stepAltCurl "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/0e600c10-dc11-42ef-8759-861ecf478f67/stepAltCurl.mp4"
+          download stepShoulderPress "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/881b3195-744f-4b0e-ad94-6b6e3d43fd11/stepShoulderPress.mp4"
+          download cablePunch "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/52121fcd-b4d3-4d8f-b486-23173ebea24e/cablePunch.mp4"
+          download rearDeltFly "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/dda4926f-4c1a-425d-b1fb-c11814ddf571/rearDeltFly.mp4"
+          download legPress "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/cb6f3ffc-320a-4ffa-a105-d893aab8227f/legPress.mp4"
+          download medBallChestPass "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e7d12aaf-9d28-4b2d-853f-09aff32af3df/medBallChestPass.mp4"
+          download battleRopeFinisher "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e87a2f34-5473-45df-b40e-8963bc7a3a4d/battleRopeFinisher.mp4"
+
+      - name: Validate every recovered motion
+        shell: bash
+        run: |
+          set -euo pipefail
+          for key in chestPress chestSupportedRow bulgarianSplitSquat reverseStepRow farmerMarch squatToCurl stepAltCurl stepShoulderPress cablePunch rearDeltFly legPress medBallChestPass battleRopeFinisher; do
+            file="public/media/recovered/${key}.mp4"
+            test -s "$file"
+            ffprobe -v error -show_entries format=duration,size -of compact=p=0:nk=1 "$file"
+            sha256sum "$file" > "public/media/recovered/${key}.sha256"
+          done
+
+      - name: Commit localized recovered motion library
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/media/recovered
+          if git diff --cached --quiet; then
+            echo "Recovered motion library already localized."
+            exit 0
+          fi
+          git commit -m "V2: localize remaining recovered motion library"
+          git push origin HEAD:rebuild/m3-coach-v2
