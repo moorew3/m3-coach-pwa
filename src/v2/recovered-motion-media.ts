@@ -27,7 +27,7 @@ const ORIGIN = "https://twenty-two-gainz-tracker.lovable.app";
 
 const RECOVERED: Readonly<Record<string, RecoveredMotion>> = {
   dumbbellCurl: {
-    url: ORIGIN + "/__l5e/assets-v1/0c6f7ce9-22f8-43cc-a979-1e2681e6f9ae/dumbbellCurl.mp4",
+    url: "/media/recovered/dumbbellCurl.mp4",
     label: "Motion demo",
     note: "Recovered original Dumbbell Curl motion. Correct curl mechanics; coach identity is not promoted from this clip.",
   },
@@ -42,17 +42,17 @@ const RECOVERED: Readonly<Record<string, RecoveredMotion>> = {
     note: "Recovered incline-bench row motion; identity remains reference-only.",
   },
   easyWalk: {
-    url: ORIGIN + "/__l5e/assets-v1/21e0072b-b44f-4e33-b732-1fda2790cb7b/easyWalkV3.mp4",
+    url: "/media/recovered/easyWalkV3.mp4",
     label: "Motion demo",
     note: "Recovered real treadmill-walk motion; identity is not promoted from the profile view.",
   },
   treadmillWalk: {
-    url: ORIGIN + "/__l5e/assets-v1/21e0072b-b44f-4e33-b732-1fda2790cb7b/easyWalkV3.mp4",
+    url: "/media/recovered/easyWalkV3.mp4",
     label: "Motion demo",
     note: "Recovered real treadmill-walk motion; identity is not promoted from the profile view.",
   },
   inclineWalk: {
-    url: ORIGIN + "/__l5e/assets-v1/21e0072b-b44f-4e33-b732-1fda2790cb7b/easyWalkV3.mp4",
+    url: "/media/recovered/easyWalkV3.mp4",
     label: "Motion demo",
     note: "Recovered real treadmill-walk motion; identity is not promoted from the profile view.",
   },
