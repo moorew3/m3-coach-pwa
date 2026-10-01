@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
 import { coachMotionFor } from "@/data/coach-identity";
-import { flushPending, getVoiceStatus, unlockVoice } from "@/lib/coach-voice";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
@@ -20,7 +19,7 @@ import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-w
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
-import { clearV2CoachSpeech, queueV2CoachSpeech } from "@/v2/coach-speech-queue";
+import { playMarcusCue, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -190,7 +189,7 @@ function V2Coach() {
   }, [session.exerciseIndex, session.workout.id]);
 
   useEffect(() => () => {
-    clearV2CoachSpeech();
+    stopMarcusCue();
     stopListening();
   }, []);
 
@@ -224,11 +223,11 @@ function V2Coach() {
 
   const giveFeedback = useCallback(
     (cue: string) => {
+      // Dynamic form feedback remains visual until server-authenticated
+      // Marcus speech is available. Never substitute a different speaker.
       setLiveCue(cue);
-      if (voiceOn && getVoiceStatus() === "ready")
-        queueV2CoachSpeech(cue, "instructional");
     },
-    [voiceOn],
+    [],
   );
 
   const captureReps = useCallback(
@@ -257,14 +256,6 @@ function V2Coach() {
     }
   }, [session.phase, session.running, session.setIndex, session.exerciseIndex, exercise?.motionKey]);
 
-  useEffect(() => {
-    if (!roundFeedback || !voiceOn || getVoiceStatus() !== "ready" ||
-        (session.phase !== "rest" && session.phase !== "transition" &&
-          session.phase !== "complete")) return;
-    // Round notes replace the generic rest instruction; never double-talk.
-    queueV2CoachSpeech(roundFeedback, "attentive");
-  }, [roundFeedback, session.phase, voiceOn]);
-
   // This runs only when the session enters a new phase or set, never per camera
   // frame. Observed form feedback remains separate and confidence-gated.
   useEffect(() => {
@@ -286,26 +277,29 @@ function V2Coach() {
     if (observedBoxingReview) return;
 
     let message = "";
-    let tone: "calm" | "instructional" | "assertive" | "proud" = "instructional";
     if (session.phase === "work") {
       const technique = exercise.cues[session.setIndex % exercise.cues.length] ??
         "Stay balanced and controlled.";
       message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. ${technique}`;
     } else if (session.phase === "rest") {
       message = `Rest ${exercise.restSeconds} seconds. Reset your breathing and prepare for set ${session.setIndex + 1}.`;
-      tone = "calm";
     } else if (session.phase === "transition") {
       message = `Next: ${exercise.name}. ${exercise.cues[0] ?? "Get into position."}`;
-      tone = "assertive";
     } else if (session.phase === "complete") {
       message = "Workout complete. Good work finishing your session.";
-      tone = "proud";
     }
 
     if (message) {
       setLiveCue(message);
-      if (voiceOn && getVoiceStatus() === "ready")
-        queueV2CoachSpeech(message, tone);
+      if (voiceOn) {
+        const firstWorkoutCue =
+          session.phase === "work" && session.exerciseIndex === 0 && session.setIndex === 0;
+        if (session.phase === "rest") void playMarcusCue("rest");
+        else if (session.phase === "transition") void playMarcusCue("next");
+        else if (session.phase === "complete") void playMarcusCue("complete");
+        else if (session.phase === "work" && !firstWorkoutCue)
+          void playMarcusCue(session.setIndex === 1 ? "setTwo" : "start");
+      }
     }
   }, [
     session.workout.id, session.exerciseIndex, session.setIndex,
@@ -396,16 +390,17 @@ function V2Coach() {
           const next = session.workout.exercises[session.exerciseIndex + 1];
           const line = next ? `Next is ${next.name}.` : "That is the final movement.";
           setLiveCue(line);
-          if (voiceOn && getVoiceStatus() === "ready") queueV2CoachSpeech(line, "calm");
+          if (voiceOn) void playMarcusCue("next");
           return;
         }
         case "muteCoach":
           setVoiceOn(false);
-          clearV2CoachSpeech();
+          stopMarcusCue();
           return;
         case "unmuteCoach":
-          setVoiceOn(false);
-          setLiveCue("Marcus — Warm & Friendly is selected. Live Marcus speech is still being connected; no substitute voice will play.");
+          setVoiceOn(true);
+          void playMarcusCue("intro");
+          setLiveCue("Marcus — Warm & Friendly cue voice is on. Detailed coaching remains on screen.");
           return;
         case "end":
           dispatch({ type: "pause" });
@@ -447,8 +442,6 @@ function V2Coach() {
         const line = reply || observed ||
           "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
         setLiveCue(line);
-        if (voiceOn && getVoiceStatus() === "ready")
-          queueV2CoachSpeech(line, "attentive");
       });
     });
     return () => {
@@ -463,31 +456,24 @@ function V2Coach() {
 
   const toggleVoice = async () => {
     if (voiceOn) {
-      clearV2CoachSpeech();
+      stopMarcusCue();
       setVoiceOn(false);
       setVoiceError(null);
       return;
     }
 
     setVoiceError(null);
-    // unlockVoice performs the gesture-sensitive audio unlock synchronously
-    // before its first await. With no server speech credential configured on
-    // this preview it may fall back only to an explicitly identified male
-    // device voice; generic/female/novelty voices remain blocked.
-    const nextStatus = await unlockVoice("Coach audio on. Let's begin.", "calm");
-    if (nextStatus === "ready") {
+    const started = await playMarcusCue("intro");
+    if (started) {
       lastDirectedCue.current = "";
       setVoiceOn(true);
-      flushPending(true);
-      setLiveCue("Coach voice connected. Press Start once and keep moving.");
+      setLiveCue("Marcus — Warm & Friendly is connected for workout cues.");
       return;
     }
 
     setVoiceOn(false);
     setVoiceError(
-      nextStatus === "unsupported"
-        ? "Coach speech is not supported in this browser. The workout will still run automatically."
-        : "The exact Marcus runtime is not connected on this preview, and an approved male device voice could not be started. The workout will still run automatically.",
+      "Marcus audio could not start on this device. The workout will still run automatically with detailed coaching on screen.",
     );
   };
 
@@ -828,11 +814,10 @@ function V2Coach() {
                 <p className="mt-2 text-sm leading-relaxed text-white/85">{roundFeedback}</p>
                 <button
                   type="button"
-                  disabled={!voiceOn || getVoiceStatus() !== "ready"}
-                  onClick={() => queueV2CoachSpeech(roundFeedback, "attentive")}
+                  disabled
                   className="mt-3 min-h-10 rounded-xl bg-white/10 px-3 text-xs font-black text-white disabled:opacity-45"
                 >
-                  Hear this review
+                  Marcus review audio needs full runtime
                 </button>
               </section>
             )}
@@ -871,10 +856,10 @@ function V2Coach() {
                 }`}
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-                {voiceOn ? "Coach voice on" : "Enable coach voice"}
+                {voiceOn ? "Marcus cue voice on" : "Enable Marcus voice"}
               </button>
               <p className="mt-2 text-[11px] text-white/45">
-                Target voice: Marcus — Warm & Friendly. Until the exact Marcus runtime is connected, this preview can use only an explicitly identified male device voice as a no-cost fallback. Generic, female and novelty voices stay blocked.
+                Exact voice: Marcus — Warm & Friendly. Start, rest, next, set-two and finish cues now use real Marcus audio. Detailed exercise coaching stays on screen until dynamic Marcus speech can be authenticated server-side; no substitute speaker is used.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
