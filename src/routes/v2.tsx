@@ -293,14 +293,19 @@ function V2Coach() {
     if (observedBoxingReview) return;
 
     let message = "";
+    const setupCue = exercise.cues[0] ?? "Get into a stable starting position.";
+    const movementCue = exercise.cues[1] ?? "Move with smooth, controlled technique.";
+    const breathingCue = exercise.cues[2] ?? "Breathe steadily and keep your form controlled.";
     if (session.phase === "work") {
-      const technique = exercise.cues[session.setIndex % exercise.cues.length] ??
-        "Stay balanced and controlled.";
-      message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. ${technique}`;
+      const focusedCue = session.setIndex === 0
+        ? `${movementCue} ${breathingCue}`
+        : (session.setIndex % 2 === 1 ? movementCue : breathingCue);
+      message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. ${focusedCue}`;
     } else if (session.phase === "rest") {
       message = `Rest ${exercise.restSeconds} seconds. Reset your breathing and prepare for set ${session.setIndex + 1}.`;
     } else if (session.phase === "transition") {
-      message = `Next: ${exercise.name}. ${exercise.cues[0] ?? "Get into position."}`;
+      const setWord = exercise.sets === 1 ? "set" : "sets";
+      message = `Next is ${exercise.name}. Your target is ${exercise.sets} ${setWord}: ${exercise.reps}. Set up: ${setupCue} Then: ${movementCue} ${breathingCue}`;
     } else if (session.phase === "complete") {
       message = "Workout complete. Good work finishing your session.";
     }
