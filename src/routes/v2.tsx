@@ -20,6 +20,7 @@ import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-
 import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
+import { speakDetailedExercise, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -205,6 +206,7 @@ function V2Coach() {
   useEffect(() => () => {
     stopMarcusCue();
     stopListening();
+    stopDetailedExerciseSpeech();
   }, []);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
@@ -309,10 +311,17 @@ function V2Coach() {
         const firstWorkoutCue =
           session.phase === "work" && session.exerciseIndex === 0 && session.setIndex === 0;
         if (session.phase === "rest") void playMarcusCue("rest");
-        else if (session.phase === "transition") void playMarcusCue("next");
-        else if (session.phase === "complete") void playMarcusCue("complete");
-        else if (session.phase === "work" && !firstWorkoutCue)
-          void playMarcusCue(session.setIndex === 1 ? "setTwo" : "start");
+        else if (session.phase === "transition") {
+          // The canned Marcus "next" clip is not enough guidance. Until
+          // dynamic Marcus generation is available, speak the actual next
+          // movement and its first coaching cue with the device voice.
+          speakDetailedExercise(message);
+        } else if (session.phase === "complete") void playMarcusCue("complete");
+        else if (session.phase === "work") {
+          // Announce exactly what the athlete should do at the start of every
+          // work set instead of only saying "start" or "set two".
+          speakDetailedExercise(message);
+        }
       }
     }
   }, [
@@ -874,7 +883,7 @@ function V2Coach() {
                 {voiceOn ? "Marcus cue voice on" : "Enable Marcus voice"}
               </button>
               <p className="mt-2 text-[11px] text-white/45">
-                Exact voice: Marcus — Warm & Friendly. Start, rest, next, set-two and finish cues now use real Marcus audio. Detailed exercise coaching stays on screen until dynamic Marcus speech can be authenticated server-side; no substitute speaker is used.
+                Marcus — Warm & Friendly remains the recorded branded cue voice. Because the connected Marcus account cannot generate new exercise-specific speech right now, V2 uses your phone's local voice only for the detailed exercise name, set number and form cue so you are never left hearing only “next.”
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
