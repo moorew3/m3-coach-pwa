@@ -56,6 +56,14 @@ const modeIcon: Record<V2Mode, typeof Eye> = {
 const mmss = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
+const mountainDayKey = () =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Denver",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
 function V2Coach() {
   // New sessions open the ORIGINAL plan for today, not the shortened V2 showcase.
   // Paused older sessions are still restored below and can be resumed safely.
@@ -116,12 +124,16 @@ function V2Coach() {
       if (raw) {
         const saved = JSON.parse(raw) as {
           version?: number;
+          savedOn?: string;
           workoutId?: string;
           session?: Partial<V2Session>;
         };
         const savedWorkout = ALL_V2_WORKOUTS.find((item) => item.id === saved.workoutId);
         const s = saved.session;
-        if (saved.version === 1 && savedWorkout && s) {
+        // Never let yesterday's phone snapshot override today's prescribed
+        // workout. Version 1 had no date stamp, so it is intentionally not
+        // restored after this fix.
+        if (saved.version === 2 && saved.savedOn === mountainDayKey() && savedWorkout && s) {
           const exIdx = Math.max(0, Math.min(
             savedWorkout.exercises.length - 1,
             Number.isInteger(s.exerciseIndex) ? s.exerciseIndex! : 0,
@@ -169,7 +181,8 @@ function V2Coach() {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(V2_LOCAL_SAVE, JSON.stringify({
-        version: 1,
+        version: 2,
+        savedOn: mountainDayKey(),
         workoutId: session.workout.id,
         session: { ...session, running: false },
       }));
@@ -483,11 +496,19 @@ function V2Coach() {
       return;
     }
 
-    // ONE-TAP START: use this same user gesture to arm audio, hands-free
-    // commands and the workout clock. Permission prompts may appear once.
+    // ONE-TAP START: Marcus audio gets first priority on Android. Starting
+    // microphone capture at the same instant can steal/duck audio focus on
+    // some phones, which made the coach appear silent. Start the workout now,
+    // arm Marcus in the same user gesture, then start hands-free listening
+    // only after the short Marcus intro has had time to play.
     if (!voiceOn) void toggleVoice();
-    if (voiceControlAvailable() && !voiceControl.listening) startListening();
     dispatch({ type: "start" });
+
+    if (voiceControlAvailable() && !voiceControl.listening) {
+      window.setTimeout(() => {
+        if (!voiceControl.listening) startListening();
+      }, 3200);
+    }
   };
 
   const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
