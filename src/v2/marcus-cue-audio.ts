@@ -71,7 +71,10 @@ export async function playMarcusCue(cue: MarcusCue): Promise<boolean> {
   const myGeneration = generation;
   const audio = new Audio(cue === "intro" ? INTRO_URL : PACK_URL);
   audio.preload = "auto";
-  audio.volume = 1;
+  // Keep Marcus clear without overpowering music from Spotify/YouTube Music.
+  // External apps cannot be volume-controlled by a web page, so V2 mixes by
+  // lowering its own coach level and avoiding automatic microphone capture.
+  audio.volume = 0.72;
   active = audio;
 
   try {
