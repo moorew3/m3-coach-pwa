@@ -211,9 +211,14 @@ function V2Coach() {
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
-  const media = approvedCoachMedia(exercise);
-  const recoveredMedia = media ? undefined : recoveredMotionFor(exercise);
-  const avatarGuide = media || recoveredMedia ? undefined : approvedAvatarGuide(exercise);
+  // Leg curl is intentionally held to the recovered stable avatar still until
+  // its moving clip passes the owner's visual-stability review.
+  const stableAvatarOnly = exercise?.motionKey === "hamstringCurl";
+  const media = stableAvatarOnly ? undefined : approvedCoachMedia(exercise);
+  const recoveredMedia = stableAvatarOnly || media ? undefined : recoveredMotionFor(exercise);
+  const avatarGuide = stableAvatarOnly || (!media && !recoveredMedia)
+    ? approvedAvatarGuide(exercise)
+    : undefined;
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   const targetWeight = exercise ? session.targetWeights[exercise.id] ?? 0 : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
@@ -418,7 +423,7 @@ function V2Coach() {
           const next = session.workout.exercises[session.exerciseIndex + 1];
           const line = next ? `Next is ${next.name}.` : "That is the final movement.";
           setLiveCue(line);
-          if (voiceOn) void playMarcusCue("next");
+          if (voiceOn) speakDetailedExercise(line);
           return;
         }
         case "muteCoach":
@@ -525,7 +530,7 @@ function V2Coach() {
   const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
   const guardClip = isFighterMovement ? coachMotionFor("guardReset") : undefined;
   const stageMedia = session.phase === "rest" && guardClip ? guardClip : (media ?? recoveredMedia);
-  const stableCoachFraming = exercise?.motionKey === "hamstringCurl";
+  const stableCoachFraming = false;
   const stageUsesRecovered = Boolean(!media && recoveredMedia && stageMedia === recoveredMedia);
   const stagePreloadUrl = isFighterMovement
     ? session.phase === "rest" ? media?.url : guardClip?.url
@@ -662,18 +667,22 @@ function V2Coach() {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/80" />
                 <div className="absolute inset-x-3 bottom-[104px] z-[5] rounded-2xl border border-cyan-300/35 bg-black/80 p-3 text-left backdrop-blur">
-                  <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Original avatar guide</p>
+                  <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Recovered original avatar guide</p>
                   <p className="mt-1 text-sm font-black">{avatarGuide.title}</p>
                   <p className="mt-1 text-xs text-white/75">{avatarGuide.cues.join(" · ")}</p>
-                  <p className="mt-1 text-[10px] text-white/45">Original movement guide from the earlier app. Use it for setup and finish position while following your Virtual Coach cues.</p>
+                  <p className="mt-1 text-[10px] text-white/45">Recovered from your earlier workout app. This keeps the original avatar identity stable while you follow the Virtual Coach cues.</p>
                 </div>
               </div>
             )}
             {showCoach && !realTimeRigReady && !stageMedia && !avatarGuide && (
               <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)]">
                 <img
-                  src={COACH_REFERENCE}
-                  alt="Approved Virtual Coach"
+                  src={exercise?.motionKey === "trapBarDeadlift"
+                    ? "/media/recovered-avatar/approved-blue-avatar-standing.webp"
+                    : COACH_REFERENCE}
+                  alt={exercise?.motionKey === "trapBarDeadlift"
+                    ? "Original workout avatar"
+                    : "Approved Virtual Coach"}
                   className="absolute inset-y-0 left-0 h-full w-[52%] object-contain object-center opacity-95"
                   draggable={false}
                 />
@@ -681,7 +690,9 @@ function V2Coach() {
                 <div className="absolute inset-y-0 right-0 flex w-[58%] items-center justify-center px-4 py-24 text-left">
                   <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/65 p-5 backdrop-blur">
                     <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">
-                      Approved Virtual Coach
+                      {exercise?.motionKey === "trapBarDeadlift"
+                        ? "Original workout avatar"
+                        : "Approved Virtual Coach"}
                     </p>
                     {exercise?.motionKey === "trapBarDeadlift" ? (
                       <div className="mt-3 flex items-center gap-3 rounded-xl border border-cyan-300/20 bg-cyan-300/[.06] p-3">
