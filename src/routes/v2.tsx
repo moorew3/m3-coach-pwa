@@ -636,6 +636,12 @@ function V2Coach() {
                 }
               />
             )}
+            {showCoach && !realTimeRigReady && stableCoachFraming && stageMedia && (
+              <div className="pointer-events-none absolute left-3 top-3 z-[7] rounded-xl border border-cyan-300/40 bg-black/80 px-3 py-2 backdrop-blur">
+                <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Stable leg curl</p>
+                <p className="mt-1 text-[11px] text-white/80">Hips down · torso pinned · slow return</p>
+              </div>
+            )}
             {showCoach && !realTimeRigReady && stageUsesRecovered && recoveredMedia && (
               <div className="pointer-events-none absolute bottom-[104px] right-3 z-[6] max-w-[58%] rounded-xl border border-amber-300/40 bg-black/80 px-3 py-2 text-right backdrop-blur">
                 <p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-200">
