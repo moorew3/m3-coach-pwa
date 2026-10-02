@@ -496,19 +496,12 @@ function V2Coach() {
       return;
     }
 
-    // ONE-TAP START: Marcus audio gets first priority on Android. Starting
-    // microphone capture at the same instant can steal/duck audio focus on
-    // some phones, which made the coach appear silent. Start the workout now,
-    // arm Marcus in the same user gesture, then start hands-free listening
-    // only after the short Marcus intro has had time to play.
+    // MUSIC-FRIENDLY START: keep the phone's external music audio focus.
+    // Android browsers can duck/pause Spotify/YouTube Music when the
+    // microphone is opened for continuous speech recognition, so hands-free
+    // listening is opt-in instead of starting automatically with the workout.
     if (!voiceOn) void toggleVoice();
     dispatch({ type: "start" });
-
-    if (voiceControlAvailable() && !voiceControl.listening) {
-      window.setTimeout(() => {
-        if (!voiceControl.listening) startListening();
-      }, 3200);
-    }
   };
 
   const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
@@ -900,7 +893,7 @@ function V2Coach() {
                     {voiceControl.listening ? "Stop hands-free listening" : "Enable hands-free commands"}
                   </button>
                   <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-                    Press Start once. Then say “done” after an untimed strength set. Timed work, rests and transitions advance automatically. You can also say pause, resume, next, 12 reps or 50 pounds.
+                    Music-friendly mode is on by default: Start does not open the microphone, so your phone music and Marcus can play together. Enable hands-free commands only when you want voice control; on some Android phones microphone listening can temporarily duck external music.
                   </p>
                   {voiceControl.heard && (
                     <p className="mt-1 text-[11px] text-cyan-200">
