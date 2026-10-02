@@ -16,7 +16,6 @@
  *   4. honest no-media state
  */
 import type { V2Exercise } from "@/v2/types";
-import { isIdentityQuarantined } from "@/data/coach-identity";
 
 export type RecoveredMotion = {
   url: string;
@@ -114,12 +113,5 @@ const RECOVERED: Readonly<Record<string, RecoveredMotion>> = {
 
 export function recoveredMotionFor(exercise?: V2Exercise): RecoveredMotion | undefined {
   if (!exercise) return undefined;
-
-  // The owner rejected mismatched workout avatars. If a movement is identity-
-  // quarantined, do not show a recovered video with a different person at all.
-  // V2 will use the saved original workout-avatar guide for that exact movement.
-  if (isIdentityQuarantined(exercise.motionKey) || isIdentityQuarantined(exercise.id))
-    return undefined;
-
   return RECOVERED[exercise.motionKey] ?? RECOVERED[exercise.id];
 }
