@@ -10,16 +10,27 @@ function pickVoice(): SpeechSynthesisVoice | null {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   const english = voices.filter((v) => /^en(?:-|_)/i.test(v.lang));
+
+  // Never fall back to an unlabeled/default English voice. On several Android
+  // devices that resolved to the robotic female voice the owner rejected.
+  const blocked =
+    /(female|samantha|zira|susan|hazel|ava|jenny|aria|emma|joanna|salli|victoria|karen)/i;
+  const confidentlyMale =
+    /(\bmale\b|david|mark|guy|christopher|chris|eric|brian|ryan|daniel|james|george|arthur)/i;
   const preferred = [
-    /Google US English/i,
-    /Microsoft (?:David|Mark|Guy)/i,
-    /Samsung.*English/i,
+    /Microsoft (?:David|Mark|Guy|Christopher|Eric|Ryan)/i,
+    /Google.*(?:male|guy)/i,
+    /Samsung.*(?:male|voice\s*2)/i,
+    confidentlyMale,
   ];
+
   for (const pattern of preferred) {
-    const found = english.find((v) => pattern.test(v.name));
+    const found = english.find((v) => pattern.test(v.name) && !blocked.test(v.name));
     if (found) return found;
   }
-  return english.find((v) => /en-US/i.test(v.lang)) ?? english[0] ?? voices[0] ?? null;
+
+  // Silence is better than changing the coach into a robotic woman.
+  return null;
 }
 
 export function stopDetailedExerciseSpeech() {
@@ -37,9 +48,11 @@ export function speakDetailedExercise(text: string): boolean {
   if (!clean) return false;
 
   stopDetailedExerciseSpeech();
-  const utterance = new SpeechSynthesisUtterance(clean);
   const voice = pickVoice();
-  if (voice) utterance.voice = voice;
+  if (!voice) return false;
+
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.voice = voice;
   utterance.rate = 0.96;
   utterance.pitch = 0.92;
   utterance.volume = 0.72;
