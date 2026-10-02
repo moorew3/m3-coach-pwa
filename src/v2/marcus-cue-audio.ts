@@ -12,11 +12,8 @@
 
 export type MarcusCue = "intro" | "start" | "rest" | "next" | "setTwo" | "complete";
 
-const INTRO_URL =
-  "https://resource2.heygen.ai/text_to_speech/f9cf147f9f16428d960df47c12971b9f/0fadce1e82af494a93873aa38ea8d106/id=dbee98ea-0805-47f5-adc3-18333a8b8f71.wav";
-
-const PACK_URL =
-  "https://resource2.heygen.ai/text_to_speech/f9cf147f9f16428d960df47c12971b9f/0fadce1e82af494a93873aa38ea8d106/id=6f4f3443-074c-492f-a81d-2f46557413e6.wav";
+const INTRO_URL = "/media/marcus/intro.wav";
+const PACK_URL = "/media/marcus/cues.wav";
 
 const SEGMENTS: Record<Exclude<MarcusCue, "intro">, readonly [number, number]> = {
   start: [0.26, 0.80],
