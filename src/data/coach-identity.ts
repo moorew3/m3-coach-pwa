@@ -165,6 +165,7 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   legPress: "Coach identity continuity is not verified for this clip.",
   medBallChestPass: "Coach identity continuity is not verified for this clip.",
   rearDeltFly: "Coach identity continuity is not verified for this clip.",
+  romanianDeadlift: "Rejected after live user review: visible avatar does not match the preferred approved coach identity.",
   reverseStepRow: "Coach identity continuity is not verified for this clip.",
   shoulderPress: "Coach identity continuity is not verified for this clip.",
   squatToCurl: "Coach identity continuity is not verified for this clip.",
