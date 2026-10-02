@@ -525,6 +525,7 @@ function V2Coach() {
   const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
   const guardClip = isFighterMovement ? coachMotionFor("guardReset") : undefined;
   const stageMedia = session.phase === "rest" && guardClip ? guardClip : (media ?? recoveredMedia);
+  const stableCoachFraming = exercise?.motionKey === "hamstringCurl";
   const stageUsesRecovered = Boolean(!media && recoveredMedia && stageMedia === recoveredMedia);
   const stagePreloadUrl = isFighterMovement
     ? session.phase === "rest" ? media?.url : guardClip?.url
@@ -624,6 +625,7 @@ function V2Coach() {
                 poster={"poster" in stageMedia ? stageMedia.poster : undefined}
                 playing={showCoach && videoPlaying}
                 rate={videoRate}
+                stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
                 className="absolute inset-0 h-full w-full"
@@ -662,25 +664,52 @@ function V2Coach() {
               </div>
             )}
             {showCoach && !realTimeRigReady && !stageMedia && !avatarGuide && (
-              <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)] px-5 py-24 text-center">
-                <div className="max-w-md rounded-2xl border border-white/10 bg-black/45 p-5">
-                  {treadmillWithoutClip
-                    ? <Footprints className="mx-auto size-14 text-cyan-300" />
-                    : <Dumbbell className="mx-auto size-12 text-cyan-300/70" />}
-                  <p className="mt-4 text-xl font-black">{exercise?.name}</p>
-                  <p className="mt-2 text-lg font-bold text-cyan-200">
-                    {session.phaseSecondsLeft !== null
-                      ? mmss(session.phaseSecondsLeft) + " remaining"
-                      : exercise?.reps ?? "Follow your prescribed set"}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-white/80">
-                    {treadmillWithoutClip
-                      ? "Use your treadmill for the prescribed walk. Walk tall, keep a controlled pace, and follow the timer and coach's voice."
-                      : exercise?.cues[0] ?? "Complete the prescribed movement with controlled form."}
-                  </p>
-                  <p className="mt-3 text-xs leading-relaxed text-amber-100/80">
-                    No exact earlier avatar guide or approved moving clip is available for this exercise yet.
-                  </p>
+              <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)]">
+                <img
+                  src={COACH_REFERENCE}
+                  alt="Approved Virtual Coach"
+                  className="absolute inset-y-0 left-0 h-full w-[52%] object-contain object-center opacity-95"
+                  draggable={false}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-[#080b0f]/45 to-[#080b0f] sm:via-[#080b0f]/20" />
+                <div className="absolute inset-y-0 right-0 flex w-[58%] items-center justify-center px-4 py-24 text-left">
+                  <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/65 p-5 backdrop-blur">
+                    <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">
+                      Approved Virtual Coach
+                    </p>
+                    {exercise?.motionKey === "trapBarDeadlift" ? (
+                      <div className="mt-3 flex items-center gap-3 rounded-xl border border-cyan-300/20 bg-cyan-300/[.06] p-3">
+                        <svg viewBox="0 0 120 70" className="h-14 w-24 shrink-0 text-cyan-300" aria-hidden="true">
+                          <polygon points="28,8 92,8 112,35 92,62 28,62 8,35" fill="none" stroke="currentColor" strokeWidth="5" />
+                          <line x1="18" y1="35" x2="2" y2="35" stroke="currentColor" strokeWidth="5" />
+                          <line x1="118" y1="35" x2="102" y2="35" stroke="currentColor" strokeWidth="5" />
+                          <line x1="45" y1="24" x2="45" y2="46" stroke="currentColor" strokeWidth="4" />
+                          <line x1="75" y1="24" x2="75" y2="46" stroke="currentColor" strokeWidth="4" />
+                        </svg>
+                        <p className="text-xs leading-relaxed text-white/75">
+                          Correct equipment: hex / trap bar. The approved coach stays on screen while the replacement motion is pending.
+                        </p>
+                      </div>
+                    ) : treadmillWithoutClip ? (
+                      <Footprints className="mt-3 size-12 text-cyan-300" />
+                    ) : (
+                      <Dumbbell className="mt-3 size-10 text-cyan-300/70" />
+                    )}
+                    <p className="mt-4 text-xl font-black">{exercise?.name}</p>
+                    <p className="mt-2 text-lg font-bold text-cyan-200">
+                      {session.phaseSecondsLeft !== null
+                        ? mmss(session.phaseSecondsLeft) + " remaining"
+                        : exercise?.reps ?? "Follow your prescribed set"}
+                    </p>
+                    <p className="mt-3 text-sm leading-relaxed text-white/80">
+                      {treadmillWithoutClip
+                        ? "Use your treadmill for the prescribed walk. Walk tall, keep a controlled pace, and follow the timer and coach's voice."
+                        : exercise?.cues[0] ?? "Complete the prescribed movement with controlled form."}
+                    </p>
+                    <p className="mt-3 text-xs leading-relaxed text-amber-100/80">
+                      No unapproved substitute avatar is shown. The approved coach remains the visual identity until a matching motion clip passes review.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
