@@ -19,7 +19,7 @@ import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-w
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
-import { playMarcusCue, stopMarcusCue } from "@/v2/marcus-cue-audio";
+import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -96,6 +96,7 @@ function V2Coach() {
 
   useEffect(() => {
     if (!hydrated) return;
+    preloadMarcusAudio();
     setAthletePortrait(readAthletePortrait());
     try {
       if (session.phase === "ready" &&
