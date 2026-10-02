@@ -5,6 +5,7 @@
  */
 import { CURRENT_WORKOUT_DAYS, type SnapshotExercise } from "@/data/recovery/current-workout-integrity-manifest";
 import type { V2Exercise, V2Workout } from "./types";
+import { coachingCuesFor } from "./exercise-coaching";
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 const BOXING = new Set([
@@ -59,11 +60,7 @@ export const ORIGINAL_WEEK_WORKOUTS: V2Workout[] = CURRENT_WORKOUT_DAYS.map((day
       seconds: prescribedSeconds(original),
       restSeconds: Math.max(0, Number(original.rest ?? 0)),
       motionKey: original.mirror ?? "unavailable",
-      cues: category === "cardio"
-        ? ["Walk or work at the prescribed pace", "Stay controlled", "Complete the full interval"]
-        : category === "boxing" || category === "kickboxing"
-          ? ["Follow the approved demonstration", "Return to stance between repetitions", "Stay controlled"]
-          : ["Set up for the named movement", "Use controlled, pain-free form", "Complete the prescribed work"],
+      cues: coachingCuesFor(original.mirror, category),
       warmupStyle: original.id.startsWith("wu-") || category !== "strength" ? "none" : "compound",
       loadClass: day.day === 5 ? "lower" : "upper",
     };
