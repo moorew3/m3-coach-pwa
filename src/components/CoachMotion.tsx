@@ -17,6 +17,7 @@ export function CoachMotion({
   rate = 1,
   preloadUrl,
   cycleKey,
+  stableFraming = false,
   className = "",
   label,
   onLayerChange,
@@ -31,6 +32,8 @@ export function CoachMotion({
   preloadUrl?: string;
   /** Set/exercise identity: reset at a NEW round, not on manual pause/resume. */
   cycleKey?: string;
+  /** Keep the full machine/body in frame and cover brief playback stalls with the approved poster. */
+  stableFraming?: boolean;
   className?: string;
   label?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
@@ -108,14 +111,13 @@ export function CoachMotion({
       role="img"
     >
       <div className="absolute inset-0" style={mirrored ? { transform: "scaleX(-1)" } : undefined}>
-        {failed ? (
-          <img
-            src={still}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-top"
-            draggable={false}
-          />
-        ) : (
+        <img
+          src={still}
+          alt=""
+          className={`absolute inset-0 h-full w-full ${stableFraming ? "object-contain object-center" : "object-cover object-top"}`}
+          draggable={false}
+        />
+        {!failed && (
           <video
             key={url}
             ref={videoRef}
@@ -144,13 +146,16 @@ export function CoachMotion({
             }}
             onPlaying={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
+            onWaiting={() => setIsPlaying(false)}
+            onStalled={() => setIsPlaying(false)}
             onEnded={() => setIsPlaying(false)}
             onError={() => {
               setFailed(true);
               setLoaded(false);
               setIsPlaying(false);
             }}
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className={`absolute inset-0 h-full w-full transition-opacity duration-200 ${stableFraming ? "object-contain object-center" : "object-cover object-top"} ${isPlaying ? "opacity-100" : "opacity-0"}`}
+            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
             aria-hidden="true"
           />
         )}
