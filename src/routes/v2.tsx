@@ -21,6 +21,7 @@ import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import { speakDetailedExercise, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
+import { playFridayPremiumCue, stopFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -207,6 +208,7 @@ function V2Coach() {
     stopMarcusCue();
     stopListening();
     stopDetailedExerciseSpeech();
+    stopFridayPremiumCue();
   }, []);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
@@ -313,19 +315,32 @@ function V2Coach() {
     if (message) {
       setLiveCue(message);
       if (voiceOn) {
-        const firstWorkoutCue =
-          session.phase === "work" && session.exerciseIndex === 0 && session.setIndex === 0;
-        if (session.phase === "rest") void playMarcusCue("rest");
-        else if (session.phase === "transition") {
-          // The canned Marcus "next" clip is not enough guidance. Until
-          // dynamic Marcus generation is available, speak the actual next
-          // movement and its first coaching cue with the device voice.
-          speakDetailedExercise(message);
-        } else if (session.phase === "complete") void playMarcusCue("complete");
-        else if (session.phase === "work") {
-          // Announce exactly what the athlete should do at the start of every
-          // work set instead of only saying "start" or "set two".
-          speakDetailedExercise(message);
+        const premiumFriday = session.workout.id === "weekly-fri";
+        if (session.phase === "rest") {
+          stopFridayPremiumCue();
+          void playMarcusCue("rest");
+        } else if (session.phase === "transition") {
+          // Friday's premium exercise instruction starts with the work set,
+          // so transition time stays quiet and never double-talks over it.
+          if (!premiumFriday) speakDetailedExercise(message);
+        } else if (session.phase === "complete") {
+          stopFridayPremiumCue();
+          void playMarcusCue("complete");
+        } else if (session.phase === "work") {
+          if (premiumFriday && session.setIndex === 0) {
+            // One natural premium instruction per exercise. If that network
+            // cue is unavailable, the explicitly-male device fallback remains.
+            stopDetailedExerciseSpeech();
+            void playFridayPremiumCue(exercise.motionKey).then((started) => {
+              if (!started) speakDetailedExercise(message);
+            });
+          } else if (premiumFriday) {
+            // Short branded cues on later sets; never bring the phone robot
+            // voice back into Friday's workout.
+            void playMarcusCue(session.setIndex === 1 ? "setTwo" : "start");
+          } else {
+            speakDetailedExercise(message);
+          }
         }
       }
     }
@@ -418,12 +433,25 @@ function V2Coach() {
           const next = session.workout.exercises[session.exerciseIndex + 1];
           const line = next ? `Next is ${next.name}.` : "That is the final movement.";
           setLiveCue(line);
-          if (voiceOn) void playMarcusCue("next");
+          if (voiceOn) {
+            if (session.workout.id === "weekly-fri" && next) {
+              stopDetailedExerciseSpeech();
+              void playFridayPremiumCue(next.motionKey).then((started) => {
+                if (!started) speakDetailedExercise(
+                  `${line} ${next.cues[0] ?? "Get into position."}`,
+                );
+              });
+            } else {
+              void playMarcusCue("next");
+            }
+          }
           return;
         }
         case "muteCoach":
           setVoiceOn(false);
           stopMarcusCue();
+          stopDetailedExerciseSpeech();
+          stopFridayPremiumCue();
           return;
         case "unmuteCoach":
           setVoiceOn(true);
@@ -485,6 +513,8 @@ function V2Coach() {
   const toggleVoice = async () => {
     if (voiceOn) {
       stopMarcusCue();
+      stopDetailedExerciseSpeech();
+      stopFridayPremiumCue();
       setVoiceOn(false);
       setVoiceError(null);
       return;
