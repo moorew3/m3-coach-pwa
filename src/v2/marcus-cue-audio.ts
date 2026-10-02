@@ -24,8 +24,34 @@ const SEGMENTS: Record<Exclude<MarcusCue, "intro">, readonly [number, number]> =
 };
 
 let active: HTMLAudioElement | null = null;
+let introPlayer: HTMLAudioElement | null = null;
+let packPlayer: HTMLAudioElement | null = null;
 let stopTimer: number | null = null;
 let generation = 0;
+
+function ensurePlayer(kind: "intro" | "pack"): HTMLAudioElement {
+  const existing = kind === "intro" ? introPlayer : packPlayer;
+  if (existing) return existing;
+
+  const audio = new Audio(kind === "intro" ? INTRO_URL : PACK_URL);
+  audio.preload = "auto";
+  audio.volume = 1;
+  audio.muted = false;
+
+  if (kind === "intro") introPlayer = audio;
+  else packPlayer = audio;
+  return audio;
+}
+
+export function preloadMarcusAudio() {
+  if (typeof window === "undefined") return;
+  try {
+    ensurePlayer("intro").load();
+    ensurePlayer("pack").load();
+  } catch {
+    // Preloading is best-effort. The user gesture can still start playback.
+  }
+}
 
 export function stopMarcusCue() {
   generation += 1;
