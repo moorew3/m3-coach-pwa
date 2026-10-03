@@ -2,12 +2,10 @@
  * COACH MOTION — direct playback of verified coach clips.
  * ------------------------------------------------------------------
  * Keep this intentionally simple and reliable on phone browsers:
- * one visible muted/inline video for the approved clip, the canonical coach
- * still only as its poster/error fallback, plus one hidden preload for the
- * next approved clip.
+ * one visible muted/inline video for the approved clip plus one hidden preload
+ * for the next approved clip. Never substitute a still image for motion.
  */
 import { useEffect, useRef, useState } from "react";
-import { COACH_REFERENCE } from "@/data/coach-identity";
 
 export function CoachMotion({
   url,
@@ -97,8 +95,6 @@ export function CoachMotion({
     };
   }, [playing, rate, url, failed, loaded]);
 
-  const still = poster || COACH_REFERENCE;
-
   return (
     <div
       className={`relative overflow-hidden bg-black ${className}`}
@@ -107,22 +103,16 @@ export function CoachMotion({
       data-url={url}
       data-playing={isPlaying ? "true" : "false"}
       data-shown-url={loaded && !failed ? url : ""}
+      data-motion-only="true"
       aria-label={label ?? "Coach demonstration"}
       role="img"
     >
       <div className="absolute inset-0" style={mirrored ? { transform: "scaleX(-1)" } : undefined}>
-        <img
-          src={still}
-          alt=""
-          className={`absolute inset-0 h-full w-full ${stableFraming ? "object-contain object-center" : "object-cover object-top"}`}
-          draggable={false}
-        />
         {!failed && (
           <video
             key={url}
             ref={videoRef}
             src={url}
-            poster={still}
             muted
             playsInline
             autoPlay={playing}
