@@ -9,7 +9,6 @@ import { useEffect, useRef, useState } from "react";
 
 export function CoachMotion({
   url,
-  poster,
   mirrored = false,
   playing = true,
   rate = 1,
@@ -21,7 +20,6 @@ export function CoachMotion({
   onLayerChange,
 }: {
   url: string;
-  poster?: string;
   mirrored?: boolean;
   playing?: boolean;
   /** Playback speed so the coach's cadence matches the movement's target tempo. */
@@ -30,7 +28,7 @@ export function CoachMotion({
   preloadUrl?: string;
   /** Set/exercise identity: reset at a NEW round, not on manual pause/resume. */
   cycleKey?: string;
-  /** Keep the full machine/body in frame and cover brief playback stalls with the approved poster. */
+  /** Keep the full machine/body in frame. */
   stableFraming?: boolean;
   className?: string;
   label?: string;
