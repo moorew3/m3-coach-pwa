@@ -5,7 +5,7 @@ import {
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
-import { coachMotionFor } from "@/data/coach-identity";
+import { coachMotionFor, COACH_REFERENCE } from "@/data/coach-identity";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
@@ -648,7 +648,6 @@ function V2Coach() {
               <CoachMotion
                 key={stageMedia.url}
                 url={stageMedia.url}
-                poster={"poster" in stageMedia ? stageMedia.poster : undefined}
                 playing={showCoach && videoPlaying}
                 rate={videoRate}
                 stableFraming={stableCoachFraming}
