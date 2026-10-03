@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
-  Check, Dumbbell, Eye, Footprints, Glasses, Hand, Pause, Play,
+  Check, Eye, Glasses, Hand, Pause, Play,
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
@@ -17,7 +17,6 @@ import {
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
-import { approvedAvatarGuide } from "@/v2/approved-avatar-guide";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import { speakDetailedExercise, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
@@ -25,7 +24,6 @@ import { playFridayPremiumCue, stopFridayPremiumCue } from "@/v2/friday-premium-
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
-import { COACH_REFERENCE } from "@/data/coach-identity";
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
 import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
@@ -215,7 +213,6 @@ function V2Coach() {
   const viewpoint = viewpointFor(session.mode);
   const media = approvedCoachMedia(exercise);
   const recoveredMedia = media ? undefined : recoveredMotionFor(exercise);
-  const avatarGuide = media || recoveredMedia ? undefined : approvedAvatarGuide(exercise);
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   const targetWeight = exercise ? session.targetWeights[exercise.id] ?? 0 : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
@@ -568,7 +565,6 @@ function V2Coach() {
     ? exercise.motionKey === "boxingCombination" ? 1.017 : 1.05
     : 1;
   const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
-  const treadmillWithoutClip = !stageMedia && /treadmill|easy walk|incline walk/i.test(exercise?.name ?? "");
 
   return (
     <main className="min-h-dvh bg-[#080b0f] text-white">
@@ -682,72 +678,12 @@ function V2Coach() {
                 </p>
               </div>
             )}
-            {showCoach && !realTimeRigReady && !stageMedia && avatarGuide && (
-              <div className="absolute inset-0 bg-black">
-                <img
-                  src={avatarGuide.src}
-                  alt={avatarGuide.title + " original avatar guide"}
-                  className="absolute inset-0 h-full w-full object-contain"
-                  draggable={false}
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/80" />
-                <div className="absolute inset-x-3 bottom-[104px] z-[5] rounded-2xl border border-cyan-300/35 bg-black/80 p-3 text-left backdrop-blur">
-                  <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">Original avatar guide</p>
-                  <p className="mt-1 text-sm font-black">{avatarGuide.title}</p>
-                  <p className="mt-1 text-xs text-white/75">{avatarGuide.cues.join(" · ")}</p>
-                  <p className="mt-1 text-[10px] text-white/45">Original movement guide from the earlier app. Use it for setup and finish position while following your Virtual Coach cues.</p>
-                </div>
-              </div>
-            )}
-            {showCoach && !realTimeRigReady && !stageMedia && !avatarGuide && (
-              <div className="absolute inset-0 overflow-hidden bg-[radial-gradient(circle_at_center,#152a36,#080b0f_65%)]">
-                <img
-                  src={COACH_REFERENCE}
-                  alt="Approved Virtual Coach"
-                  className="absolute inset-y-0 left-0 h-full w-[52%] object-contain object-center opacity-95"
-                  draggable={false}
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-[#080b0f]/45 to-[#080b0f] sm:via-[#080b0f]/20" />
-                <div className="absolute inset-y-0 right-0 flex w-[58%] items-center justify-center px-4 py-24 text-left">
-                  <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/65 p-5 backdrop-blur">
-                    <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">
-                      Approved Virtual Coach
-                    </p>
-                    {exercise?.motionKey === "trapBarDeadlift" ? (
-                      <div className="mt-3 flex items-center gap-3 rounded-xl border border-cyan-300/20 bg-cyan-300/[.06] p-3">
-                        <svg viewBox="0 0 120 70" className="h-14 w-24 shrink-0 text-cyan-300" aria-hidden="true">
-                          <polygon points="28,8 92,8 112,35 92,62 28,62 8,35" fill="none" stroke="currentColor" strokeWidth="5" />
-                          <line x1="18" y1="35" x2="2" y2="35" stroke="currentColor" strokeWidth="5" />
-                          <line x1="118" y1="35" x2="102" y2="35" stroke="currentColor" strokeWidth="5" />
-                          <line x1="45" y1="24" x2="45" y2="46" stroke="currentColor" strokeWidth="4" />
-                          <line x1="75" y1="24" x2="75" y2="46" stroke="currentColor" strokeWidth="4" />
-                        </svg>
-                        <p className="text-xs leading-relaxed text-white/75">
-                          Correct equipment: hex / trap bar. The approved coach stays on screen while the replacement motion is pending.
-                        </p>
-                      </div>
-                    ) : treadmillWithoutClip ? (
-                      <Footprints className="mt-3 size-12 text-cyan-300" />
-                    ) : (
-                      <Dumbbell className="mt-3 size-10 text-cyan-300/70" />
-                    )}
-                    <p className="mt-4 text-xl font-black">{exercise?.name}</p>
-                    <p className="mt-2 text-lg font-bold text-cyan-200">
-                      {session.phaseSecondsLeft !== null
-                        ? mmss(session.phaseSecondsLeft) + " remaining"
-                        : exercise?.reps ?? "Follow your prescribed set"}
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed text-white/80">
-                      {treadmillWithoutClip
-                        ? "Use your treadmill for the prescribed walk. Walk tall, keep a controlled pace, and follow the timer and coach's voice."
-                        : exercise?.cues[0] ?? "Complete the prescribed movement with controlled form."}
-                    </p>
-                    <p className="mt-3 text-xs leading-relaxed text-amber-100/80">
-                      No unapproved substitute avatar is shown. The approved coach remains the visual identity until a matching motion clip passes review.
-                    </p>
-                  </div>
-                </div>
-              </div>
+            {showCoach && !realTimeRigReady && !stageMedia && (
+              <div
+                className="absolute inset-0 bg-[#070c12]"
+                data-testid="motion-pending-stage"
+                aria-label={`Approved motion pending for ${exercise?.name ?? "movement"}`}
+              />
             )}
             {glasses && !realTimeRigReady && (
               <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#142630,#05090d_65%)]">
@@ -1016,7 +952,6 @@ function V2Coach() {
                 {session.workout.exercises.map((item, index) => {
                   const approved = Boolean(approvedCoachMedia(item));
                   const recovered = !approved ? recoveredMotionFor(item) : undefined;
-                  const guide = !approved && !recovered ? approvedAvatarGuide(item) : undefined;
                   const selected = index === session.exerciseIndex;
                   return (
                     <button
@@ -1032,10 +967,8 @@ function V2Coach() {
                         <Check className="size-4 shrink-0 text-emerald-300" />
                       ) : recovered ? (
                         <span className="shrink-0 rounded-full bg-amber-300/10 px-2 py-1 text-[9px] font-black text-amber-200">Motion demo</span>
-                      ) : guide ? (
-                        <span className="shrink-0 rounded-full bg-cyan-300/10 px-2 py-1 text-[9px] font-black text-cyan-200">Avatar guide</span>
                       ) : (
-                        <span className="shrink-0 text-[9px] text-white/35">Clip pending</span>
+                        <span className="shrink-0 rounded-full border border-white/10 px-2 py-1 text-[9px] font-black text-white/45">Motion pending</span>
                       )}
                     </button>
                   );
