@@ -69,7 +69,8 @@ export function playRecordedCoachAudio(url: string, group: string, segment?: rea
   if (!unlockRecordedCoachAudio()) return Promise.resolve(false);
   return new Promise((resolve) => {
     // Keep the current sentence intact, while bounding stale queued instructions.
-    while (queue.length >= 2) queue.shift()!.resolve(false);
+    // A deliberately discarded cue is handled; do not fire a fallback voice.
+    while (queue.length >= 2) queue.shift()!.resolve(true);
     queue.push({ url, group, segment, resolve });
     void pump();
   });
@@ -77,12 +78,13 @@ export function playRecordedCoachAudio(url: string, group: string, segment?: rea
 
 export function stopRecordedCoachAudio(group: string) {
   for (let i = queue.length - 1; i >= 0; i--) {
-    if (queue[i].group === group) queue.splice(i, 1)[0].resolve(false);
+    if (queue[i].group === group) queue.splice(i, 1)[0].resolve(true);
   }
   if (current?.clip.group === group) {
     const previous = current;
     current = null;
-    previous.clip.resolve(false);
+    // Cancellation is intentional, not a playback failure.
+    previous.clip.resolve(true);
     if (previous.source) {
       previous.source.onended = null;
       try { previous.source.stop(); previous.source.disconnect(); } catch { /* already ended */ }
