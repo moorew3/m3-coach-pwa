@@ -142,7 +142,7 @@ export function CoachMotion({
               setLoaded(false);
               setIsPlaying(false);
             }}
-            className={`absolute inset-0 h-full w-full transition-opacity duration-200 ${stableFraming ? "object-contain object-center" : "object-cover object-top"} ${isPlaying ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 h-full w-full transition-opacity duration-200 ${stableFraming ? "object-contain object-center" : "object-cover object-top"} ${loaded ? "opacity-100" : "opacity-0"}`}
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
             aria-hidden="true"
           />

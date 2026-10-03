@@ -20,7 +20,7 @@ export function WorkoutOpeningScene({
   useEffect(() => {
     const reveal = window.setTimeout(() => setRevealed(true), 60);
     return () => window.clearTimeout(reveal);
-  }, [onDone]);
+  }, []);
 
   return (
     <div
