@@ -83,7 +83,7 @@ function V2Coach() {
     try { window.sessionStorage.setItem("m3-v2-entrance-seen", "1"); }
     catch { /* session-only; do not block training */ }
   }, []);
-  const [voiceOn, setVoiceOn] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(true);
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
@@ -315,28 +315,30 @@ function V2Coach() {
         const premiumFriday = session.workout.id === "weekly-fri";
         if (session.phase === "rest") {
           stopFridayPremiumCue();
-          void playMarcusCue("rest");
+          void playMarcusCue("rest").then((started) => {
+            if (!started) speakDetailedExercise(message);
+          });
         } else if (session.phase === "transition") {
-          // Friday's premium exercise instruction starts with the work set,
-          // so transition time stays quiet and never double-talks over it.
-          if (!premiumFriday) speakDetailedExercise(message);
+          if (!premiumFriday && !speakDetailedExercise(message))
+            void playMarcusCue("next");
         } else if (session.phase === "complete") {
           stopFridayPremiumCue();
-          void playMarcusCue("complete");
+          void playMarcusCue("complete").then((started) => {
+            if (!started) speakDetailedExercise(message);
+          });
         } else if (session.phase === "work") {
           if (premiumFriday && session.setIndex === 0) {
-            // One natural premium instruction per exercise. If that network
-            // cue is unavailable, the explicitly-male device fallback remains.
             stopDetailedExerciseSpeech();
             void playFridayPremiumCue(exercise.motionKey).then((started) => {
-              if (!started) speakDetailedExercise(message);
+              if (!started && !speakDetailedExercise(message))
+                void playMarcusCue("start");
             });
           } else if (premiumFriday) {
-            // Short branded cues on later sets; never bring the phone robot
-            // voice back into Friday's workout.
-            void playMarcusCue(session.setIndex === 1 ? "setTwo" : "start");
-          } else {
-            speakDetailedExercise(message);
+            void playMarcusCue(session.setIndex === 1 ? "setTwo" : "start").then((started) => {
+              if (!started) speakDetailedExercise(message);
+            });
+          } else if (!speakDetailedExercise(message)) {
+            void playMarcusCue(session.setIndex === 0 ? "start" : "setTwo");
           }
         }
       }
@@ -495,6 +497,7 @@ function V2Coach() {
         const line = reply || observed ||
           "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
         setLiveCue(line);
+        if (voiceOn && !speakDetailedExercise(line)) void playMarcusCue("next");
       });
     });
     return () => {
@@ -526,9 +529,12 @@ function V2Coach() {
       return;
     }
 
-    setVoiceOn(false);
+    const fallbackStarted = speakDetailedExercise("Coach voice is on.");
+    setVoiceOn(fallbackStarted);
     setVoiceError(
-      "Marcus audio could not start on this device. The workout will still run automatically with detailed coaching on screen.",
+      fallbackStarted
+        ? null
+        : "Coach audio could not start. Press the voice button once to unlock audio on this device.",
     );
   };
 
@@ -538,11 +544,24 @@ function V2Coach() {
       return;
     }
 
-    // MUSIC-FRIENDLY START: keep the phone's external music audio focus.
-    // Android browsers can duck/pause Spotify/YouTube Music when the
-    // microphone is opened for continuous speech recognition, so hands-free
-    // listening is opt-in instead of starting automatically with the workout.
+    // A Start/Resume tap is a browser-approved user gesture. Use it to keep
+    // coach audio unlocked across Coach, Shadow, Manual and Glasses scenes.
     if (!voiceOn) void toggleVoice();
+    else void playMarcusCue("start");
+    dispatch({ type: "start" });
+  };
+
+  const startFromOpening = async () => {
+    setVoiceError(null);
+    // Start Workout is the only opening-scene exit and also unlocks audio.
+    const started = await playMarcusCue("intro");
+    if (started) setVoiceOn(true);
+    else if (!speakDetailedExercise("Coach is ready. Starting your workout.")) {
+      setVoiceOn(false);
+      setVoiceError("Coach audio could not start. Tap the voice button once after the workout opens.");
+    }
+    lastDirectedCue.current = "";
+    dismissOpening();
     dispatch({ type: "start" });
   };
 
@@ -597,7 +616,11 @@ function V2Coach() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              onClick={() => setShowOpening(true)}
+              onClick={() => {
+                if (session.running) dispatch({ type: "pause" });
+                setShowOpening(true);
+                if (voiceOn) void playMarcusCue("intro");
+              }}
               className="min-h-11 rounded-xl border border-white/20 bg-white/5 px-3 text-xs font-black text-white/85"
             >
               Opening scene
@@ -1082,7 +1105,7 @@ function V2Coach() {
         <WorkoutOpeningScene
           athletePortrait={athletePortrait}
           onChooseAthlete={() => athletePicker.current?.click()}
-          onDone={dismissOpening}
+          onStart={() => void startFromOpening()}
         />
       )}
     </main>
