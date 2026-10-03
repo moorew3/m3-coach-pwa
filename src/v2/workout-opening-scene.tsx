@@ -8,24 +8,18 @@ import { COACH_REFERENCE } from "@/data/coach-identity";
 
 export function WorkoutOpeningScene({
   athletePortrait,
-  onDone,
+  onStart,
   onChooseAthlete,
 }: {
   athletePortrait: string | null;
-  onDone: () => void;
+  onStart: () => void;
   onChooseAthlete: () => void;
 }) {
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
     const reveal = window.setTimeout(() => setRevealed(true), 60);
-    // Short, optional entrance: NEVER trap the user at the old "enter gym"
-    // gate or start an exercise/voice interaction without consent.
-    const finish = window.setTimeout(onDone, 3900);
-    return () => {
-      window.clearTimeout(reveal);
-      window.clearTimeout(finish);
-    };
+    return () => window.clearTimeout(reveal);
   }, [onDone]);
 
   return (
@@ -57,14 +51,6 @@ export function WorkoutOpeningScene({
               Your approved athlete. Your original coach. One uninterrupted session.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onDone}
-            className="min-h-11 shrink-0 rounded-xl border border-white/25 bg-black/55 px-3 text-xs font-bold text-white"
-            aria-label="Skip opening scene"
-          >
-            Skip
-          </button>
         </div>
 
         <div
@@ -116,15 +102,15 @@ export function WorkoutOpeningScene({
               Discipline builds freedom
             </p>
             <p className="mt-1 text-[11px] text-white/55">
-              The workout starts only when you press Play.
+              This screen stays here until you press Start Workout.
             </p>
           </div>
           <button
             type="button"
-            onClick={onDone}
+            onClick={onStart}
             className="min-h-12 shrink-0 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-[#071019]"
           >
-            Enter workout
+            Start workout
           </button>
         </div>
       </div>
