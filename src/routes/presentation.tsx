@@ -27,7 +27,7 @@ import { TrainerStageMedia } from "@/components/TrainerStageMedia";
 import { WorkoutModeButton, toggleFullScreen } from "@/components/WorkoutModeMenu";
 import { CoachAudioGate } from "@/components/CoachAudio";
 import { stopSpeech } from "@/lib/coach-voice";
-import { coachMotionFor } from "@/data/coach-identity";
+import { exerciseMotionFor } from "@/data/coach-identity";
 import { mirrorFor } from "@/data/mirror-me";
 import { effectiveExercise, effectiveExercises, effectivePlan } from "@/lib/activities";
 import { buildCoachScript, currentCue } from "@/lib/coach-script";
@@ -156,7 +156,7 @@ function BigScreenMode() {
   if (!step) return null;
 
   const move = mirrorFor(step.mirror);
-  const coachClip = move ? coachMotionFor(move.id) : undefined;
+  const coachClip = move ? exerciseMotionFor(move.id) : undefined;
   const upcomingClip = (() => {
     if (step.kind !== "rest") return undefined;
     for (let k = engine.i + 1; k < script.length; k++) {
@@ -164,7 +164,7 @@ function BigScreenMode() {
       if (s.kind !== "work" && s.kind !== "cooldown") continue;
       const m = mirrorFor(s.mirror);
       if (!m) continue;
-      return coachMotionFor(m.id);
+      return exerciseMotionFor(m.id);
     }
     return undefined;
   })();
