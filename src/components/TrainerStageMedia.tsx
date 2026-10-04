@@ -26,6 +26,7 @@ export function TrainerStageMedia({
 }) {
   const motion = decision.mode === "motion" ? decision.motion : undefined;
   const ambient = motion ? undefined : decision.ambient;
+  const demonstrator = motion?.actor === "demonstrator";
 
   return (
     <div
@@ -36,6 +37,7 @@ export function TrainerStageMedia({
       data-ambient={ambient ? "true" : "false"}
       data-ambient-motion={ambient?.url ?? ""}
       data-visible-motion={motion?.url ?? ""}
+      data-motion-actor={motion?.actor ?? ""}
       data-preload-motion={preloadMotion?.url ?? ""}
     >
       {ambient ? (
@@ -55,16 +57,23 @@ export function TrainerStageMedia({
           <div className="pointer-events-none absolute inset-0 bg-black/20" />
         </>
       ) : motion ? (
-        <CoachMotion
-          url={motion.url}
-          poster={motion.poster}
-          mirrored={mirrored}
-          playing={playing}
-          rate={rate}
-          preloadUrl={preloadMotion?.url}
-          className="h-full w-full"
-          label={label}
-        />
+        <>
+          <CoachMotion
+            url={motion.url}
+            poster={motion.poster}
+            mirrored={mirrored}
+            playing={playing}
+            rate={rate}
+            preloadUrl={preloadMotion?.url}
+            className="h-full w-full"
+            label={demonstrator ? `${label} — workout partner demonstration` : label}
+          />
+          {demonstrator && (
+            <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary shadow-lg">
+              Workout Partner Demo
+            </div>
+          )}
+        </>
       ) : (
         <>
           <CoachFace
