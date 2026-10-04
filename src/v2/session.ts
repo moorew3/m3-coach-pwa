@@ -97,10 +97,32 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
       return { ...action.session, running: false };
     case "set-mode":
       return { ...session, mode: action.mode };
-    case "select-exercise":
-      return action.exerciseIndex >= 0 && action.exerciseIndex < session.workout.exercises.length
-        ? { ...session, exerciseIndex: action.exerciseIndex, setIndex: 0, phase: "ready", phaseSecondsLeft: null, running: false }
-        : session;
+    case "select-exercise": {
+      if (action.exerciseIndex < 0 || action.exerciseIndex >= session.workout.exercises.length) {
+        return session;
+      }
+      const selected = session.workout.exercises[action.exerciseIndex];
+      // Browsing exercises during an active workout must not silently pause the
+      // session. Keep the workout live and start the selected movement at set 1.
+      // When already paused/not started, selection remains a READY preview.
+      return session.running
+        ? {
+            ...session,
+            exerciseIndex: action.exerciseIndex,
+            setIndex: 0,
+            phase: "work",
+            phaseSecondsLeft: selected?.seconds ?? null,
+            running: true,
+          }
+        : {
+            ...session,
+            exerciseIndex: action.exerciseIndex,
+            setIndex: 0,
+            phase: "ready",
+            phaseSecondsLeft: null,
+            running: false,
+          };
+    }
     case "set-target-weight":
       return {
         ...session,
