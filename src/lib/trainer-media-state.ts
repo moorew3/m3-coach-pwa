@@ -35,13 +35,13 @@ export interface TrainerMediaDecision {
    * always a verified clip — never the current exercise, never a person
    * who is not him. Undefined means "fall back to the approved still".
    */
-  ambient?: { url: string; poster?: string };
+  ambient?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
   /**
    * The clip on the stage. For every state except REST_PREVIEW this is the
    * exact CURRENT movement. In REST_PREVIEW it is the exact UPCOMING movement,
    * shown as a demonstration only.
    */
-  motion?: { url: string; poster?: string };
+  motion?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
   /** True only while an upcoming movement is being demonstrated during rest. */
   preview?: boolean;
 }
@@ -60,9 +60,9 @@ function decideTrainerMedia({
   lead: number | null;
   left: number | null;
   speaking: boolean;
-  exactMotion?: { url: string; poster?: string };
+  exactMotion?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
   /** Exact clip of the movement the session is resting INTO, if verified. */
-  nextMotion?: { url: string; poster?: string };
+  nextMotion?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
 }): TrainerMediaDecision {
   if (step.kind === "complete") return { state: "COMPLETE", mode: "static" };
   if (step.kind === "intro") return { state: "INTRO", mode: "static" };
