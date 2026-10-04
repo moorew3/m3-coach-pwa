@@ -30,6 +30,9 @@ export const CANONICAL_COACH_ID = "approved-original-coach" as const;
 export const COACH_DESCRIPTION =
   "Heavily tattooed muscular bearded Black coach, shirtless, black athletic shorts, dark charcoal gym with cyan rim light.";
 
+export type MotionActor = "coach" | "demonstrator";
+export type ExerciseMotion = { url: string; poster?: string; actor: MotionActor };
+
 /** Verified coach-performed motion clips, keyed by MirrorMove id. */
 export const COACH_MOTION: Record<string, string> = {
   boxingStance: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ba2daa61-d337-44ea-9fe0-12f6698cc43f/boxingStanceV2.mp4",
@@ -65,6 +68,54 @@ export const COACH_MOTION: Record<string, string> = {
   squat: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/86ca5509-96be-4531-85ea-bc241319f293/squatV2.mp4",
   suitcaseCarry: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4670b0c7-7068-40bd-8d9a-1ecde974b0ae/suitcaseCarry.mp4",
   tricepsPressdown: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
+};
+
+/**
+ * Existing exercise-specific motion performed by a WORKOUT PARTNER, not the
+ * canonical coach. These clips were retained because the exercise mechanics
+ * are correct even though the visible person is not the approved coach.
+ *
+ * Identity rule: these actors must remain visibly distinct demonstrators.
+ * They are never used for coach presence, speech, intro, rest, transitions,
+ * or still imagery, and they must never be described as the canonical coach.
+ * A demonstrator that visibly copies the primary coach's distinctive tattoo
+ * set must be removed from this map rather than treated as him.
+ */
+export const DEMONSTRATOR_MOTION: Readonly<Record<string, string>> = {
+  chestPress:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ae3d443d-1b7e-4562-80e3-e44b54b55ac9/chestPressV3.mp4",
+  dumbbellCurl:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/0c6f7ce9-22f8-43cc-a979-1e2681e6f9ae/dumbbellCurl.mp4",
+  chestSupportedRow:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/242f8087-efb6-4b71-bfd2-1b739cd081a2/chestSupportedRowV3.mp4",
+  shoulderPress:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/332dd309-aaf6-4b52-8c61-c24b8a4ee596/shoulderPress.mp4",
+  easyWalk:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/21e0072b-b44f-4e33-b732-1fda2790cb7b/easyWalkV3.mp4",
+  bulgarianSplitSquat:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/160c1726-61b7-4f3b-8350-0399cb72d5f8/bulgarianSplitSquatV3.mp4",
+  reverseStepRow:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/d700a842-1844-4813-9e6d-fb5a6985e0a2/reverseStepRow.mp4",
+  farmerMarch:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/62335289-13e9-4390-b070-723cb2a9e376/farmerMarch.mp4",
+  squatToCurl:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/801f032b-7e52-4db2-9ea2-18a8a128ce26/squatToCurl.mp4",
+  stepAltCurl:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/0e600c10-dc11-42ef-8759-861ecf478f67/stepAltCurl.mp4",
+  stepShoulderPress:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/881b3195-744f-4b0e-ad94-6b6e3d43fd11/stepShoulderPress.mp4",
+  cablePunch:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/52121fcd-b4d3-4d8f-b486-23173ebea24e/cablePunch.mp4",
+  rearDeltFly:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/dda4926f-4c1a-425d-b1fb-c11814ddf571/rearDeltFly.mp4",
+  trapBarDeadlift:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a83a7bf4-ee46-4a7c-be93-f492c7e3057f/trapBarDeadlift.mp4",
+  legPress:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/cb6f3ffc-320a-4ffa-a105-d893aab8227f/legPress.mp4",
+  medBallChestPass:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e7d12aaf-9d28-4b2d-853f-09aff32af3df/medBallChestPass.mp4",
+  battleRopeFinisher:
+    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e87a2f34-5473-45df-b40e-8963bc7a3a4d/battleRopeFinisher.mp4",
 };
 
 /** Coach stills used as posters for the verified clips.
@@ -190,6 +241,20 @@ export function coachMotionFor(id: string): { url: string; poster?: string } | u
   const key = resolve(id);
   const url = COACH_MOTION[key];
   return key && url ? { url, poster: COACH_FRAMES[key] } : undefined;
+}
+
+/**
+ * Exact exercise motion for an active set. Prefer the canonical coach; when he
+ * has no approved clip, use the audited workout-partner demonstration. This
+ * function is intentionally NOT used by coach-presence/ambient surfaces.
+ */
+export function exerciseMotionFor(id: string): ExerciseMotion | undefined {
+  const coach = coachMotionFor(id);
+  if (coach) return { ...coach, actor: "coach" };
+
+  const root = COACH_ALIASES[id] ?? id;
+  const url = DEMONSTRATOR_MOTION[id] ?? DEMONSTRATOR_MOTION[root];
+  return url ? { url, actor: "demonstrator" } : undefined;
 }
 
 /**
