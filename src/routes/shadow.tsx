@@ -28,7 +28,7 @@ import { SheetPanel } from "@/components/Sheet";
 import { CoachMotion } from "@/components/CoachMotion";
 import { CoachPresence } from "@/components/CoachPresence";
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
-import { coachMotionFor } from "@/data/coach-identity";
+import { exerciseMotionFor } from "@/data/coach-identity";
 import { effectiveExercise, effectiveExercises, effectivePlan } from "@/lib/activities";
 import { buildCoachScript, currentCue } from "@/lib/coach-script";
 import { recordWorkStep, useCoachEngine } from "@/lib/coach-session";
@@ -130,7 +130,7 @@ function ShadowMode() {
     ? effectiveExercise(state, day, step.exerciseId)
     : undefined;
   const motionKey = step?.mirror || stepExercise?.mirror || step?.exerciseId || "";
-  const motion = motionKey ? coachMotionFor(motionKey) : undefined;
+  const motion = motionKey ? exerciseMotionFor(motionKey) : undefined;
   const combat =
     plan.type === "boxing" ||
     stepExercise?.category === "boxing" ||
