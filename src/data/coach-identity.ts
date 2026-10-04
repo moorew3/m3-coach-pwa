@@ -69,6 +69,7 @@ export const COACH_MOTION: Record<string, string> = {
   squat: "/media/approved/squat.mp4",
   suitcaseCarry: "/media/approved/suitcaseCarry.mp4",
   tricepsPressdown: "/media/approved/tricepsPressdown.mp4",
+  trapBarDeadlift: "https://d8j0ntlcm91z4.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/hf_20261004_011937_62f64095-63ab-4281-b437-855406550ffd.mp4",
 };
 
 /** Coach stills used as posters for the verified clips.
@@ -144,6 +145,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "squat",
   "suitcaseCarry",
   "tricepsPressdown",
+  "trapBarDeadlift",
 ]);
 
 /**
@@ -170,7 +172,6 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   squatToCurl: "Coach identity continuity is not verified for this clip.",
   stepAltCurl: "Step + Alternating Curl needs a verified step-and-curl clip.",
   stepShoulderPress: "Step + Shoulder Press needs a verified overhead step-and-press clip.",
-  trapBarDeadlift: "This clip shows a straight barbell, not the required trap bar.",
 };
 
 /**
