@@ -114,5 +114,21 @@
   {
     "key": "tricepsPressdown",
     "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4"
+  },
+  {
+    "key": "../recovered/medBallChestPass",
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=medBallChestPass"
+  },
+  {
+    "key": "../recovered/legPress",
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=legPress"
+  },
+  {
+    "key": "../recovered/bulgarianSplitSquat",
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=bulgarianSplitSquat"
+  },
+  {
+    "key": "../recovered/chestPress",
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=chestPress"
   }
 ]
