@@ -32,7 +32,7 @@ import {
   X,
 } from "lucide-react";
 import { BOARD_PANELS, boardFor, boardMetaFor } from "@/data/mirror-boards";
-import { coachMotionFor, isCoachVerified } from "@/data/coach-identity";
+import { exerciseMotionFor, isCoachVerified } from "@/data/coach-identity";
 import { mirrorFor, type CueIcon, type MirrorMove } from "@/data/mirror-me";
 import { coachStillFor } from "@/data/coach-identity";
 
@@ -47,7 +47,7 @@ function MotionPlayer({
   mirrored,
   playing,
   height,
-  coach,
+  actor,
   onOpen,
 }: {
   move: MirrorMove;
@@ -56,7 +56,7 @@ function MotionPlayer({
   mirrored: boolean;
   playing: boolean;
   height: string;
-  coach?: boolean;
+  actor?: "coach" | "demonstrator";
   onOpen?: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -124,10 +124,14 @@ function MotionPlayer({
       </div>
       <span
         className={`absolute left-2 top-2 rounded-full bg-background/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
-          coach ? "text-accent" : "text-muted-foreground"
+          actor === "coach"
+            ? "text-accent"
+            : actor === "demonstrator"
+              ? "text-primary"
+              : "text-muted-foreground"
         }`}
       >
-        {coach ? "Train with Coach" : "Coach motion pending"}
+        {actor === "coach" ? "Train with Coach" : actor === "demonstrator" ? "Workout Partner Demo" : "Motion pending"}
       </span>
       {mirrored && (
         <span className="absolute right-2 top-2 rounded-full bg-primary/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
@@ -256,13 +260,13 @@ export function MirrorMeDemo({
   // APPROVED AVATAR ONLY. A movement plays a clip only when the verified
   // coach-identity asset exists; legacy/stand-in clips of a different person
   // are never substituted. Everything else falls back to the static board.
-  const motion = coachMotionFor(move.id);
+  const motion = exerciseMotionFor(move.id);
   if (motion) {
     return (
       <MotionPlayer
         move={move}
         url={motion.url}
-        coach
+        actor={motion.actor}
         poster={motion.poster || board}
         mirrored={mirrored}
         playing={playing}
@@ -373,7 +377,7 @@ function PhaseBoardDetail({
 }) {
   const board = boardFor(move.id);
   const still = coachStillFor(move.id);
-  const motion = coachMotionFor(move.id);
+  const motion = exerciseMotionFor(move.id);
   const panels = panelCount(move);
   const panelAspect = boardMetaFor(move.id)?.panelAspect ?? 1;
   const list = useMemo(() => Array.from({ length: panels }, (_, i) => i), [panels]);
@@ -500,7 +504,7 @@ export function MirrorMeCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-            Mirror Me · {isCoachVerified(move.id) ? "Your coach" : "Coach clip pending"}
+            Mirror Me · {isCoachVerified(move.id) ? "Your coach" : exerciseMotionFor(move.id) ? "Workout partner demo" : "Motion pending"}
           </p>
           <h3 className="truncate font-display text-xl font-bold leading-tight">{move.name}</h3>
           <p className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">
