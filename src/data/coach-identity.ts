@@ -70,6 +70,7 @@ export const COACH_MOTION: Record<string, string> = {
   squat: "/media/approved/squat.mp4",
   suitcaseCarry: "/media/approved/suitcaseCarry.mp4",
   tricepsPressdown: "/media/approved/tricepsPressdown.mp4",
+  cablePunch: "/api/public/approved-coach-motion?key=cablePunch",
   trapBarDeadlift: "https://d8j0ntlcm91z4.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/hf_20261004_011937_62f64095-63ab-4281-b437-855406550ffd.mp4",
 };
 
@@ -148,6 +149,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "suitcaseCarry",
   "tricepsPressdown",
   "trapBarDeadlift",
+  "cablePunch",
 ]);
 
 /**
@@ -159,7 +161,6 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   boxingCombo1: "Rejected after live user review: motion is not smooth or biomechanically acceptable.",
   battleRopeFinisher: "The current Boxing Combo 1 substitute was rejected; no verified finisher motion is approved.",
   bulgarianSplitSquat: "Coach identity continuity is not verified for this clip.",
-  cablePunch: "Coach identity continuity is not verified for this clip.",
   chestPress: "Coach identity continuity is not verified for this clip.",
   chestSupportedRow: "Coach identity continuity is not verified for this clip.",
   dumbbellCurl: "Coach identity continuity is not verified for this clip.",
