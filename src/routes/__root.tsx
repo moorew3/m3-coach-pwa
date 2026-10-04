@@ -161,6 +161,8 @@ function RootComponent() {
     pathname.startsWith("/display") ||
     pathname.startsWith("/glasses") ||
     pathname.startsWith("/presentation");
+  // V2 is a dedicated direct-entry visual preview, not the old app's intro flow.
+  const v2Preview = pathname.startsWith("/v2");
   // The coached session keeps the bottom nav but goes full width on desktop.
   const wide = pathname.startsWith("/coach");
 
@@ -175,6 +177,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync />
+      {v2Preview ? (
+        <div className="min-h-screen w-full">
+          <Outlet />
+        </div>
+      ) : (
       <AppEntryGate>
         <div
           className={
@@ -190,6 +197,7 @@ function RootComponent() {
         </div>
         {!displayMode && <BottomNav />}
       </AppEntryGate>
+      )}
     </QueryClientProvider>
   );
 }

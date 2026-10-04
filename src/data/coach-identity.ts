@@ -32,39 +32,45 @@ export const COACH_DESCRIPTION =
 
 /** Verified coach-performed motion clips, keyed by MirrorMove id. */
 export const COACH_MOTION: Record<string, string> = {
-  boxingStance: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ba2daa61-d337-44ea-9fe0-12f6698cc43f/boxingStanceV2.mp4",
-  cross: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/767f7369-4a91-4f1e-bbe3-ad429dc80d15/crossV2.mp4",
-  defensiveReset: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/39d355b3-eb12-4628-98d6-107ebbd966c4/defensiveResetV2.mp4",
-  gluteBridge: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a72a39b6-d28b-44e4-8d69-20d7dedadbe4/gluteBridgeV3.mp4",
-  guardReset: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/de47b48c-3ce6-4ebc-9ee8-56ac2acb0161/guardResetV2.mp4",
-  jab: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fea6c3ab-2ad2-4c0a-8380-432cc8496e49/jabV2.mp4",
-  // Smooth follow-along flow assembled from the already-approved stance, jab, cross,\n  // jab-cross, defensive-reset and guard-reset coach clips. This is the canonical\n  // Shadow Boxing loop; the individual Saturday technique drills keep their own clips.\n  shadowboxPunches: "/media/boxingCombo2.mp4",
-  bandPullApart: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
-  benchPress: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4",
-  chestMobility: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4",
+  boxingStance: "/media/approved/boxingStance.mp4",
+  cross: "/media/approved/cross.mp4",
+  defensiveReset: "/media/approved/defensiveReset.mp4",
+  gluteBridge: "/media/approved/gluteBridge.mp4",
+  easyWalk: "https://d8j0ntlcm91z4.cloudfront.net/user_3JXmCGSXSFw5lD08HDyoQd7zNaY/hf_20261004_021847_308c25c6-dfd1-4a26-b7d4-2e4d9e238100.mp4",
+  guardReset: "/media/approved/guardReset.mp4",
+  jab: "/media/approved/jab.mp4",
+  // Complete-cycle 40.7-second flow from the SAME previously approved coach clips.
+  // Unlike Combo 2, source punches are NOT cut before extension/retraction.
+  // This is a preview motion; athlete must still visually QA the transitions.
+  shadowboxPunches: "/media/boxingFlow3.mp4",
+  shadowboxPunches60: "/media/boxingFlow60.mp4",
+  bandPullApart: "/media/approved/bandPullApart.mp4",
+  benchPress: "/media/approved/benchPress.mp4",
+  chestMobility: "/media/approved/chestMobility.mp4",
   controlledShoulderWork:
-    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/bd8c08f2-f0f7-41a6-8286-0714fb017645/controlledShoulderWork.mp4",
-  deadBug: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2c12477d-f5f5-48e8-9528-73ca1275cfb9/deadBugV3.mp4",
-  frontKick: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ef4b2839-4898-4f96-bdc6-4c112be5142c/frontKick.mp4",
-  hamstringCurl: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/dc585bcc-7aa8-445b-93b4-2f7a088ce975/hamstringCurlV2.mp4",
-  hammerCurl: "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hammerCurl.mp4",
+    "/media/approved/controlledShoulderWork.mp4",
+  deadBug: "/media/approved/deadBug.mp4",
+  frontKick: "/media/approved/frontKick.mp4",
+  hamstringCurl: "/media/approved/hamstringCurl.mp4",
+  hammerCurl: "/media/approved/hammerCurl.mp4",
   hamstringMobility:
-    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/afa99947-ec33-4d47-976d-7788ad4b845d/hamstringMobilityV3.mp4",
-  hipFlexorStretch: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/63cdf4b4-32a8-493b-ba65-399172405412/hipFlexorStretchV3.mp4",
+    "/media/approved/hamstringMobility.mp4",
+  hipFlexorStretch: "/media/approved/hipFlexorStretch.mp4",
   inclineDumbbellPress:
-    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2d0cad85-aedc-4326-bbc6-2c3db57ea42e/inclineDumbbellPressV3.mp4",
-  jabCross: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4a42a4f8-dc38-44ee-93fa-b62815263ebd/jabCrossV2.mp4",
-  kneeChamber: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9458679e-92e5-49ea-aa70-f369aed89dc1/kneeChamberV2.mp4",
-  latPulldown: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
-  lateralRaise: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4",
-  lowerBodyMobility: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a2b9f071-159d-4362-8943-e95dcaf79a23/lowerBodyMobility.mp4",
-  romanianDeadlift: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/c406059f-cfce-4344-8d5d-ccc9d8c303e0/romanianDeadliftV2.mp4",
-  roundKick: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9e7a71c5-c696-4d1d-beca-2d83963a6d11/roundKick.mp4",
-  seatedRow: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fb904bbb-9853-486a-997f-cae8fd811e93/seatedRowV3.mp4",
-  shoulderMobility: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ac623364-1584-4306-acef-c8460c3e2cdb/shoulderMobility.mp4",
-  squat: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/86ca5509-96be-4531-85ea-bc241319f293/squatV2.mp4",
-  suitcaseCarry: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4670b0c7-7068-40bd-8d9a-1ecde974b0ae/suitcaseCarry.mp4",
-  tricepsPressdown: "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
+    "/media/approved/inclineDumbbellPress.mp4",
+  jabCross: "/media/approved/jabCross.mp4",
+  kneeChamber: "/media/approved/kneeChamber.mp4",
+  latPulldown: "/media/approved/latPulldown.mp4",
+  lateralRaise: "/media/approved/lateralRaise.mp4",
+  lowerBodyMobility: "/media/approved/lowerBodyMobility.mp4",
+  romanianDeadlift: "/media/approved/romanianDeadlift.mp4",
+  roundKick: "/media/approved/roundKick.mp4",
+  seatedRow: "/media/approved/seatedRow.mp4",
+  shoulderMobility: "/media/approved/shoulderMobility.mp4",
+  squat: "/media/approved/squat.mp4",
+  suitcaseCarry: "/media/approved/suitcaseCarry.mp4",
+  tricepsPressdown: "/media/approved/tricepsPressdown.mp4",
+  trapBarDeadlift: "https://d8j0ntlcm91z4.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/hf_20261004_011937_62f64095-63ab-4281-b437-855406550ffd.mp4",
 };
 
 /** Coach stills used as posters for the verified clips.
@@ -119,6 +125,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "defensiveReset",
   "frontKick",
   "gluteBridge",
+  "easyWalk",
   "guardReset",
   "hamstringCurl",
   "hammerCurl",
@@ -135,10 +142,12 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "roundKick",
   "seatedRow",
   "shadowboxPunches",
+  "shadowboxPunches60",
   "shoulderMobility",
   "squat",
   "suitcaseCarry",
   "tricepsPressdown",
+  "trapBarDeadlift",
 ]);
 
 /**
@@ -154,7 +163,6 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   chestPress: "Coach identity continuity is not verified for this clip.",
   chestSupportedRow: "Coach identity continuity is not verified for this clip.",
   dumbbellCurl: "Coach identity continuity is not verified for this clip.",
-  easyWalk: "Coach identity cannot be verified clearly throughout this clip.",
   externalRotation: "Coach identity continuity is not verified for this clip.",
   farmerMarch: "Coach identity continuity is not verified for this clip.",
   legPress: "Coach identity continuity is not verified for this clip.",
@@ -165,7 +173,6 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   squatToCurl: "Coach identity continuity is not verified for this clip.",
   stepAltCurl: "Step + Alternating Curl needs a verified step-and-curl clip.",
   stepShoulderPress: "Step + Shoulder Press needs a verified overhead step-and-press clip.",
-  trapBarDeadlift: "This clip shows a straight barbell, not the required trap bar.",
 };
 
 /**

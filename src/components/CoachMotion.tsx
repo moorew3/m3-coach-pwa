@@ -2,38 +2,41 @@
  * COACH MOTION — direct playback of verified coach clips.
  * ------------------------------------------------------------------
  * Keep this intentionally simple and reliable on phone browsers:
- * one visible muted/inline video for the approved clip, the canonical coach
- * still only as its poster/error fallback, plus one hidden preload for the
- * next approved clip.
+ * one visible muted/inline video for the approved clip plus one hidden preload
+ * for the next approved clip. Never substitute a still image for motion.
  */
 import { useEffect, useRef, useState } from "react";
-import { COACH_REFERENCE } from "@/data/coach-identity";
 
 export function CoachMotion({
   url,
-  poster,
   mirrored = false,
   playing = true,
   rate = 1,
   preloadUrl,
+  cycleKey,
+  stableFraming = false,
   className = "",
   label,
   onLayerChange,
 }: {
   url: string;
-  poster?: string;
   mirrored?: boolean;
   playing?: boolean;
   /** Playback speed so the coach's cadence matches the movement's target tempo. */
   rate?: number;
   /** Next movement's clip — fetched quietly so the transition is instant. */
   preloadUrl?: string;
+  /** Set/exercise identity: reset at a NEW round, not on manual pause/resume. */
+  cycleKey?: string;
+  /** Keep the full machine/body in frame. */
+  stableFraming?: boolean;
   className?: string;
   label?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
   onLayerChange?: (layer: 0 | 1, reason: "loop" | "transition") => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const previousCycle = useRef(cycleKey);
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -47,17 +50,48 @@ export function CoachMotion({
   }, [url]);
 
   useEffect(() => {
+    if (!cycleKey || previousCycle.current === cycleKey) return;
+    previousCycle.current = cycleKey;
+    const video = videoRef.current;
+    if (!video) return;
+    try { video.currentTime = 0; } catch { /* wait for loaded metadata */ }
+  }, [cycleKey, url]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video || failed) return;
     video.playbackRate = Math.max(0.5, Math.min(2, rate || 1));
-    if (playing) {
-      void video.play().catch(() => undefined);
-    } else {
-      video.pause();
-    }
-  }, [playing, rate, url, failed, loaded]);
 
-  const still = poster || COACH_REFERENCE;
+    if (!playing) {
+      video.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    // A blocked autoplay attempt in the READY screen must never leave the
+    // movement frozen after the user presses Start. Retry from the actual
+    // running state and again after metadata/canplay settles.
+    let cancelled = false;
+    const tryPlay = () => {
+      if (cancelled || !videoRef.current || !playing) return;
+      void videoRef.current.play().catch(() => undefined);
+    };
+
+    tryPlay();
+    const shortRetry = window.setTimeout(tryPlay, 120);
+    const settleRetry = window.setTimeout(tryPlay, 600);
+    const onVisible = () => {
+      if (!document.hidden) tryPlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(shortRetry);
+      window.clearTimeout(settleRetry);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [playing, rate, url, failed, loaded]);
 
   return (
     <div
@@ -67,30 +101,28 @@ export function CoachMotion({
       data-url={url}
       data-playing={isPlaying ? "true" : "false"}
       data-shown-url={loaded && !failed ? url : ""}
+      data-motion-only="true"
       aria-label={label ?? "Coach demonstration"}
       role="img"
     >
       <div className="absolute inset-0" style={mirrored ? { transform: "scaleX(-1)" } : undefined}>
-        {failed ? (
-          <img
-            src={still}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-top"
-            draggable={false}
-          />
-        ) : (
+        {!failed && (
           <video
             key={url}
             ref={videoRef}
             src={url}
-            poster={still}
             muted
             playsInline
             autoPlay={playing}
             loop
+            controls={false}
+            disablePictureInPicture
             preload="auto"
             data-layer="0"
             data-active="true"
+            onLoadedMetadata={(event) => {
+              if (playing) void event.currentTarget.play().catch(() => undefined);
+            }}
             onCanPlay={(event) => {
               setLoaded(true);
               if (playing) void event.currentTarget.play().catch(() => undefined);
@@ -102,13 +134,16 @@ export function CoachMotion({
             }}
             onPlaying={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
+            onWaiting={() => setIsPlaying(false)}
+            onStalled={() => setIsPlaying(false)}
             onEnded={() => setIsPlaying(false)}
             onError={() => {
               setFailed(true);
               setLoaded(false);
               setIsPlaying(false);
             }}
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className={`absolute inset-0 h-full w-full transition-opacity duration-200 ${stableFraming ? "object-contain object-center" : "object-cover object-top"} ${loaded ? "opacity-100" : "opacity-0"}`}
+            style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
             aria-hidden="true"
           />
         )}

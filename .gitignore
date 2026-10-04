@@ -34,3 +34,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Build-localized, identity-approved remote media
+/public/media/approved/
+/public/media/marcus/
