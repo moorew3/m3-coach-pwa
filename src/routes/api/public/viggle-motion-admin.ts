@@ -71,10 +71,29 @@ export const Route = createFileRoute("/api/public/viggle-motion-admin")({
           });
         }
 
+        if (action === "startAnimate") {
+          const form = new FormData();
+          form.append("character_image_url", COACH_IMAGE);
+          form.append("driving_video_url", CABLE_PUNCH_MOTION);
+          form.append(
+            "prompt",
+            "Use the exact approved coach identity from the character image while preserving the source cable-punch movement, stance, cable equipment, camera, and timing.",
+          );
+          form.append("watermark", "false");
+
+          return viggle("/videos", {
+            method: "POST",
+            headers: {
+              "Idempotency-Key": "m3-cable-punch-animate-20261004-v1",
+            },
+            body: form,
+          });
+        }
+
         if (action === "status") {
           const id = url.searchParams.get("id") ?? "";
-          if (!/^render_[A-Za-z0-9_-]+$/.test(id)) {
-            return json({ message: "Invalid render id." }, 400);
+          if (!/^[A-Za-z0-9_-]{8,128}$/.test(id)) {
+            return json({ message: "Invalid video id." }, 400);
           }
           return viggle(`/videos/${encodeURIComponent(id)}`);
         }
