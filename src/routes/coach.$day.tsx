@@ -36,7 +36,7 @@ import { planForDay } from "@/data/program";
 import { mirrorFor } from "@/data/mirror-me";
 import { TrainerStageMedia } from "@/components/TrainerStageMedia";
 import { SheetPanel } from "@/components/Sheet";
-import { coachMotionFor } from "@/data/coach-identity";
+import { exerciseMotionFor } from "@/data/coach-identity";
 import { SubstitutionSelect } from "@/components/SubstitutionSelect";
 import { coachStateFor } from "@/lib/coach-states";
 
@@ -1331,7 +1331,7 @@ function CoachSession() {
   const loggedRows = Object.entries(log.exercises).filter(([, el]) => el.sets.some((s) => s.done));
 
   /* ---------------- coach presence + set intelligence ---------------- */
-  const coachClip = move ? coachMotionFor(move.id) : undefined;
+  const coachClip = move ? exerciseMotionFor(move.id) : undefined;
   const stepExercise = step.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
   /* Telling the trainer "give me something else" has to work during rest and
      transitions too — fall back to the movement we're resting into. */
@@ -1352,7 +1352,7 @@ function CoachSession() {
     .slice(-1)[0]?.vision?.cues[0];
 
   /* STAGE INVARIANT — the visible moving clip may ONLY ever be the verified
-     clip of the CURRENT movement (coachMotionFor(move.id)). If the current
+     clip of the CURRENT movement (exerciseMotionFor(move.id)). If the current
      movement has no verified clip we show the approved coach still plus an
      honest "motion pending" label. clipAfter() is used exclusively for hidden
      cache warming of an upcoming movement; it can never become visible. */
@@ -1360,7 +1360,7 @@ function CoachSession() {
     for (let k = from; k < script.length; k++) {
       const m = mirrorFor(script[k].mirror);
       if (!m) continue;
-      const c = coachMotionFor(m.id);
+      const c = exerciseMotionFor(m.id);
       if (c && c.url !== notUrl) return c;
     }
     return undefined;
@@ -1375,7 +1375,7 @@ function CoachSession() {
       if (!m) continue;
       return {
         name: m.name,
-        clip: coachMotionFor(m.id),
+        clip: exerciseMotionFor(m.id),
         sameExercise: Boolean(step.exerciseId) && s.exerciseId === step.exerciseId,
       };
     }
