@@ -36,6 +36,7 @@ export const COACH_MOTION: Record<string, string> = {
   cross: "/media/approved/cross.mp4",
   defensiveReset: "/media/approved/defensiveReset.mp4",
   gluteBridge: "/media/approved/gluteBridge.mp4",
+  easyWalk: "https://d8j0ntlcm91z4.cloudfront.net/user_3JXmCGSXSFw5lD08HDyoQd7zNaY/hf_20261004_021847_308c25c6-dfd1-4a26-b7d4-2e4d9e238100.mp4",
   guardReset: "/media/approved/guardReset.mp4",
   jab: "/media/approved/jab.mp4",
   // Complete-cycle 40.7-second flow from the SAME previously approved coach clips.
@@ -124,6 +125,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "defensiveReset",
   "frontKick",
   "gluteBridge",
+  "easyWalk",
   "guardReset",
   "hamstringCurl",
   "hammerCurl",
@@ -161,7 +163,6 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   chestPress: "Coach identity continuity is not verified for this clip.",
   chestSupportedRow: "Coach identity continuity is not verified for this clip.",
   dumbbellCurl: "Coach identity continuity is not verified for this clip.",
-  easyWalk: "Coach identity cannot be verified clearly throughout this clip.",
   externalRotation: "Coach identity continuity is not verified for this clip.",
   farmerMarch: "Coach identity continuity is not verified for this clip.",
   legPress: "Coach identity continuity is not verified for this clip.",
