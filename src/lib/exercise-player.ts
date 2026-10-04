@@ -10,7 +10,7 @@
  * the program can be played by the same component with no new assets.
  */
 import type { Exercise } from "@/data/program";
-import { coachMotionFor } from "@/data/coach-identity";
+import { exerciseMotionFor } from "@/data/coach-identity";
 import { coachingForExercise, movementKeyFor, type MovementCoaching } from "@/data/coach-cues";
 import { patternFor, type PatternId } from "@/lib/vision/patterns";
 import { ROM_TARGET, PACE_TARGET } from "@/lib/form-score";
@@ -74,7 +74,7 @@ export function trackingRulesFor(exerciseId?: string): TrackingRules {
 /** Build the full player configuration for one exercise. */
 export function exercisePlayerConfig(ex: Exercise): ExercisePlayerConfig {
   const motionKey = movementKeyFor(ex) || ex.mirror || ex.id;
-  const motion = coachMotionFor(motionKey) ?? coachMotionFor(ex.id);
+  const motion = exerciseMotionFor(motionKey) ?? exerciseMotionFor(ex.id);
   const coaching = coachingForExercise(ex);
   return {
     id: ex.id,
