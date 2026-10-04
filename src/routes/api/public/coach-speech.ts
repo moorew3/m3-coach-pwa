@@ -95,6 +95,29 @@ export const Route = createFileRoute("/api/public/coach-speech")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const isV2Preview =
+          process.env["RAILWAY_PROJECT_ID"] === "96ebe467-a371-4000-ba37-d82ff5b17761";
+        // V2's selected coach voice is Marcus — Warm & Friendly (HeyGen
+        // voice 0fadce1e82af494a93873aa38ea8d106). Never let a future OpenAI
+        // key silently turn this preview back into Onyx or another speaker.
+        if (isV2Preview) {
+          return new Response(
+            JSON.stringify({
+              message:
+                "Marcus — Warm & Friendly is selected, but live Marcus speech is not connected to this preview server yet.",
+              voice: "Marcus — Warm & Friendly",
+              voiceId: "0fadce1e82af494a93873aa38ea8d106",
+            }),
+            {
+              status: 503,
+              headers: {
+                "content-type": "application/json",
+                "x-m3-voice": "marcus-runtime-pending",
+              },
+            },
+          );
+        }
+
         const key = process.env["OPENAI_API_KEY"];
         if (!key) {
           return new Response(

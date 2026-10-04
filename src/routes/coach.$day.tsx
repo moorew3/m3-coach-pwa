@@ -950,6 +950,10 @@ function CoachSession() {
         case "skip":
           engine.skipStep();
           break;
+        case "completeSet":
+          if (step?.kind === "work") engine.finishWork();
+          else engine.advance();
+          break;
         case "addTime":
           if (coachChoice?.kind === "rest") resolveCoachChoice(true);
           else engine.bumpRest(secondsIn(phrase));
