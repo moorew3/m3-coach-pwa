@@ -4,6 +4,10 @@ const VIGGLE_BASE = "https://apis.viggle.ai/v1";
 
 const VIDEO_ID_BY_KEY: Record<string, string> = {
   cablePunch: "anim_4cf5adfc-6911-4314-ba73-89247d699a03",
+  medBallChestPass: "anim_171a7c7d-89ae-4db6-8729-04a194bd1b0d",
+  legPress: "anim_400bb9f7-4e80-4b21-9a17-a652d5c5c870",
+  bulgarianSplitSquat: "anim_f92bd259-9d71-42db-b1bc-21cc18cc3ba9",
+  chestPress: "anim_6651c88c-06d3-4145-bda2-6681c88afad8",
 };
 
 export const Route = createFileRoute("/api/public/approved-coach-motion")({
