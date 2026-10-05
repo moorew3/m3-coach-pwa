@@ -387,6 +387,9 @@ function V2Coach() {
           setLiveCue("Workout resumed.");
           return;
         case "pause":
+          stopMarcusCue();
+          stopFridayPremiumCue();
+          stopDetailedExerciseSpeech();
           dispatch({ type: "pause" });
           setLiveCue("Workout paused.");
           return;
@@ -484,11 +487,15 @@ function V2Coach() {
           stopFridayPremiumCue();
           return;
         case "unmuteCoach":
+          lastDirectedCue.current = "";
           setVoiceOn(true);
-          void playMarcusCue("intro");
+          unlockRecordedCoachAudio();
           setLiveCue("Marcus — Warm & Friendly cue voice is on. Detailed coaching remains on screen.");
           return;
         case "end":
+          stopMarcusCue();
+          stopFridayPremiumCue();
+          stopDetailedExerciseSpeech();
           dispatch({ type: "pause" });
           stopListening();
           setLiveCue("Workout paused. Your session stays here.");
@@ -552,7 +559,7 @@ function V2Coach() {
     }
 
     setVoiceError(null);
-    const started = await playMarcusCue("intro");
+    const started = unlockRecordedCoachAudio();
     if (started) {
       lastDirectedCue.current = "";
       setVoiceOn(true);
