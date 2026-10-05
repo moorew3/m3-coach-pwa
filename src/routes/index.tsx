@@ -274,7 +274,7 @@ function Today() {
               </p>
             )}
             <p className="mt-2 text-center text-xs text-muted-foreground">
-              Coach performs every movement with you, talks you through sets, rest, camera and form.
+              Your coach guides sets, rest and form, with reviewed exercise demonstrations from your coach and workout partners.
             </p>
 
             <button

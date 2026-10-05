@@ -14,7 +14,7 @@
 import { useMemo, useState } from "react";
 import { Eye, Search, X } from "lucide-react";
 import { ALL_MIRROR_MOVES, type MirrorMove } from "@/data/mirror-me";
-import { coachStillFor, coachStatusFor } from "@/data/coach-identity";
+import { coachStillFor, exerciseMotionFor } from "@/data/coach-identity";
 import { MirrorMeCard } from "@/components/MirrorMe";
 
 type Category =
@@ -108,7 +108,7 @@ const CATEGORIES: Category[] = [
 function thumbFor(move: MirrorMove): string | undefined {
   // Prefer the verified exact-movement frame. If one is unavailable, keep
   // the canonical approved coach visible as a presence-only fallback.
-  return coachStillFor(move.id);
+  return exerciseMotionFor(move.id)?.poster ?? coachStillFor(move.id);
 }
 
 export default function ExerciseLibraryModal({ onClose }: { onClose: () => void }) {
@@ -205,7 +205,7 @@ export default function ExerciseLibraryModal({ onClose }: { onClose: () => void 
             </p>
             <ul className="grid w-full grid-cols-1 gap-2">
               {moves.map((m) => {
-                const status = coachStatusFor(m.id);
+                const status = exerciseMotionFor(m.id)?.actor;
                 const thumb = thumbFor(m);
                 return (
                   <li key={m.id}>
@@ -222,7 +222,7 @@ export default function ExerciseLibraryModal({ onClose }: { onClose: () => void 
                             src={thumb}
                             alt=""
                             loading="lazy"
-                            className="size-full object-cover"
+                            className="size-full object-contain"
                           />
                         ) : (
                           <Eye className="size-5 text-muted-foreground" aria-hidden />
@@ -241,7 +241,11 @@ export default function ExerciseLibraryModal({ onClose }: { onClose: () => void 
                             : "bg-muted text-muted-foreground"
                         }`}
                       >
-                        {status === "coach" ? "Coach motion" : "Motion pending"}
+                        {status === "coach"
+                          ? "Coach motion"
+                          : status === "demonstrator"
+                            ? "Partner demo"
+                            : "Motion pending"}
                       </span>
                     </button>
                   </li>
