@@ -61,6 +61,8 @@ export function TrainerStageMedia({
         <>
           <CoachMotion
             url={motion.url}
+            vimeoId={motion.vimeoId}
+            vimeoSegment={motion.vimeoSegment}
             poster={motion.poster}
             mirrored={mirrored}
             playing={playing}
@@ -79,7 +81,7 @@ export function TrainerStageMedia({
             data-visible="true"
             className="absolute inset-0 h-full w-full"
           />
-          {preloadMotion && (
+          {preloadMotion && !preloadMotion.url.startsWith("https://player.vimeo.com/") && (
             <video
               src={preloadMotion.url}
               muted

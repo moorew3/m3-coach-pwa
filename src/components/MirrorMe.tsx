@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { BOARD_PANELS, boardFor, boardMetaFor } from "@/data/mirror-boards";
 import { exerciseMotionFor, isCoachVerified } from "@/data/coach-identity";
+import { EmbeddedMotion } from "@/components/EmbeddedMotion";
 import { MotionCredit } from "@/components/MotionCredit";
 import type { ExerciseMotion } from "@/data/coach-identity";
 import { mirrorFor, type CueIcon, type MirrorMove } from "@/data/mirror-me";
@@ -66,6 +67,11 @@ function MotionPlayer({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+
+  useEffect(() => {
+    setVideoFailed(false);
+    setVideoPlaying(false);
+  }, [url]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -106,25 +112,39 @@ function MotionPlayer({
             draggable={false}
           />
         )}
-        <video
-          ref={videoRef}
-          src={url}
-          poster={poster}
-          muted
-          autoPlay={playing}
-          loop
-          playsInline
-          preload="auto"
-          onPlaying={() => setVideoPlaying(true)}
-          onPause={() => setVideoPlaying(false)}
-          onError={() => {
-            setVideoPlaying(false);
-            setVideoFailed(true);
-          }}
-          className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-200 ${videoFailed ? "opacity-0" : "opacity-100"}`}
-          style={mirrored ? { transform: "scaleX(-1)" } : undefined}
-          aria-label={`${move.name} — moving demonstration`}
-        />
+        {motion?.vimeoId ? (
+          <EmbeddedMotion
+            id={motion.vimeoId}
+            segment={motion.vimeoSegment}
+            playing={playing}
+            mirrored={mirrored}
+            label={`${move.name} — moving demonstration`}
+            poster={poster}
+            className="absolute inset-0 h-full w-full"
+            onPlayingChange={setVideoPlaying}
+            onFailure={() => setVideoFailed(true)}
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            src={url}
+            poster={poster}
+            muted
+            autoPlay={playing}
+            loop
+            playsInline
+            preload="auto"
+            onPlaying={() => setVideoPlaying(true)}
+            onPause={() => setVideoPlaying(false)}
+            onError={() => {
+              setVideoPlaying(false);
+              setVideoFailed(true);
+            }}
+            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-200 ${videoFailed ? "opacity-0" : "opacity-100"}`}
+            style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+            aria-label={`${move.name} — moving demonstration`}
+          />
+        )}
       </div>
       {actor !== "demonstrator" && (
         <span
@@ -419,17 +439,28 @@ function PhaseBoardDetail({
       <div className="space-y-3 p-3 pb-16">
         {motion && (
           <div className="relative">
-            <video
-              src={motion.url}
-              poster={motion.poster ?? board}
-              className="w-full rounded-xl border border-primary/30 bg-black"
-              style={mirrored ? { transform: "scaleX(-1)" } : undefined}
-              autoPlay
-              loop
-              muted
-              playsInline
-              aria-label={`${move.name} — moving demonstration`}
-            />
+            {motion.vimeoId ? (
+              <EmbeddedMotion
+                id={motion.vimeoId}
+                segment={motion.vimeoSegment}
+                mirrored={mirrored}
+                label={`${move.name} — moving demonstration`}
+                poster={motion.poster}
+                className="aspect-video w-full rounded-xl"
+              />
+            ) : (
+              <video
+                src={motion.url}
+                poster={motion.poster ?? board}
+                className="w-full rounded-xl border border-primary/30 bg-black"
+                style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+                autoPlay
+                loop
+                muted
+                playsInline
+                aria-label={`${move.name} — moving demonstration`}
+              />
+            )}
             <MotionCredit motion={motion} />
           </div>
         )}

@@ -7,10 +7,13 @@
  * next approved clip.
  */
 import { useEffect, useRef, useState } from "react";
+import { EmbeddedMotion } from "@/components/EmbeddedMotion";
 import { COACH_REFERENCE } from "@/data/coach-identity";
 
 export function CoachMotion({
   url,
+  vimeoId,
+  vimeoSegment,
   poster,
   mirrored = false,
   playing = true,
@@ -21,6 +24,8 @@ export function CoachMotion({
   onLayerChange,
 }: {
   url: string;
+  vimeoId?: string;
+  vimeoSegment?: { start: number; end: number };
   poster?: string;
   mirrored?: boolean;
   playing?: boolean;
@@ -58,6 +63,18 @@ export function CoachMotion({
   }, [playing, rate, url, failed, loaded]);
 
   const still = poster || COACH_REFERENCE;
+  if (vimeoId)
+    return (
+      <EmbeddedMotion
+        id={vimeoId}
+        segment={vimeoSegment}
+        playing={playing}
+        mirrored={mirrored}
+        label={label}
+        poster={poster}
+        className={className}
+      />
+    );
 
   return (
     <div
@@ -114,7 +131,7 @@ export function CoachMotion({
         )}
       </div>
 
-      {preloadUrl && preloadUrl !== url && (
+      {preloadUrl && !preloadUrl.startsWith("https://player.vimeo.com/") && preloadUrl !== url && (
         <video
           src={preloadUrl}
           muted

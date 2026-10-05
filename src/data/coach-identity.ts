@@ -40,6 +40,8 @@ export type MotionCredit = {
   disclaimer?: string;
 };
 export type ExerciseMotion = {
+  vimeoId?: string;
+  vimeoSegment?: { start: number; end: number };
   url: string;
   poster?: string;
   actor: MotionActor;
@@ -157,6 +159,77 @@ export const DEMONSTRATOR_MOTION: Readonly<Record<string, string>> = {
  * fallback set failed this review on 2026-10-04; URLs remain as recovery sources,
  * but none may be promoted by merely adding a URL to DEMONSTRATOR_MOTION. */
 const APPROVED_DEMONSTRATOR_MOTION: Record<string, ExerciseMotion> = {
+  cablePunch: {
+    url: "https://player.vimeo.com/video/43502659",
+    vimeoId: "43502659",
+    vimeoSegment: {
+      start: 8,
+      end: 24,
+    },
+    poster:
+      "https://i.vimeocdn.com/video/302056007-da211970f204dc0542011e161b1a3d7a4856c7d5b394199d6ffcce497c5e0f44-d_640?region=us",
+    actor: "demonstrator",
+    credit: {
+      author: "Compton Sports",
+      source: "https://vimeo.com/43502659",
+      license: "Owner-enabled Vimeo embed",
+      licenseUrl:
+        "https://help.vimeo.com/hc/en-us/articles/12426275096337-Embedding-features-by-plan-type",
+      changes:
+        "Original Vimeo footage, working demonstration from 8\u201324 seconds. Audio muted; segment loops. No downloaded or rehosted copy.",
+    },
+  },
+  chestSupportedRow: {
+    url: "https://player.vimeo.com/video/1071608352",
+    vimeoId: "1071608352",
+    poster:
+      "https://i.vimeocdn.com/video/2000393523-ebb7060e8d14e502a853f03b81bad13ed49c0144a561236e1781b286dd1c3d91-d_295x166?region=us",
+    actor: "demonstrator",
+    credit: {
+      author: "Ally Schoenenberger",
+      source: "https://vimeo.com/1071608352",
+      license: "Owner-enabled Vimeo embed",
+      licenseUrl:
+        "https://help.vimeo.com/hc/en-us/articles/12426275096337-Embedding-features-by-plan-type",
+      changes:
+        "Original footage played through the owner\u2019s Vimeo embed. Audio muted; loops during the set. No downloaded or rehosted copy.",
+    },
+  },
+
+  bulgarianSplitSquat: {
+    url: "https://player.vimeo.com/video/545382464",
+    vimeoId: "545382464",
+    poster:
+      "https://i.vimeocdn.com/video/1136152413-3b8711b68d7811610a19b6a7808e02ee92c9a4b8020f9091392f239d939eb6b5-d_295x166?region=us",
+    actor: "demonstrator",
+    credit: {
+      author: "CHFITNESS",
+      source: "https://vimeo.com/545382464",
+      license: "Owner-enabled Vimeo embed",
+      licenseUrl:
+        "https://help.vimeo.com/hc/en-us/articles/12426275096337-Embedding-features-by-plan-type",
+      changes:
+        "Original footage played through the owner\u2019s Vimeo embed. Audio muted; loops during the set. No downloaded or rehosted copy.",
+    },
+  },
+
+  easyWalk: {
+    url: "https://player.vimeo.com/video/1121444303",
+    vimeoId: "1121444303",
+    poster:
+      "https://i.vimeocdn.com/video/2062507313-2e878285060dfd8b3ecb18de30d87f145e468ed858eeaf32f82a600d30c0bcce-d_295x166?region=us",
+    actor: "demonstrator",
+    credit: {
+      author: "Matt West",
+      source: "https://vimeo.com/1121444303",
+      license: "Owner-enabled Vimeo embed",
+      licenseUrl:
+        "https://help.vimeo.com/hc/en-us/articles/12426275096337-Embedding-features-by-plan-type",
+      changes:
+        "Original footage played through the owner\u2019s Vimeo embed. Audio muted; loops during the set. No downloaded or rehosted copy.",
+    },
+  },
+
   dumbbellCurl: {
     url: "https://d2ol7oe51mr4n9.cloudfront.net/user_3JXmCGSXSFw5lD08HDyoQd7zNaY/eea40be7-7510-43e6-8cd9-41be6c158cd2.mp4",
     poster:

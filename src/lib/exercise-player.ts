@@ -10,6 +10,7 @@
  * the program can be played by the same component with no new assets.
  */
 import type { Exercise } from "@/data/program";
+import type { ExerciseMotion } from "@/data/coach-identity";
 import { exerciseMotionFor } from "@/data/coach-identity";
 import { coachingForExercise, movementKeyFor, type MovementCoaching } from "@/data/coach-cues";
 import { patternFor, type PatternId } from "@/lib/vision/patterns";
@@ -36,7 +37,7 @@ export interface ExercisePlayerConfig {
   name: string;
   /** Key into the verified coach motion clips. */
   motionKey: string;
-  motion?: { url: string; poster?: string };
+  motion?: ExerciseMotion;
   /** True when no verified clip exists — show the approved still + pending. */
   motionPending: boolean;
   sets: number;
