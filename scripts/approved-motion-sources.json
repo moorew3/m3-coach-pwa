@@ -199,5 +199,10 @@
     "key": "shoulderPress",
     "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/332dd309-aaf6-4b52-8c61-c24b8a4ee596/shoulderPress.mp4",
     "sha256": "4d24bc2a68c58baff9e032c6e2da2d685c883ed13bae64d116e8418c5be46338"
+  },
+  {
+    "key": "shoulderPressApprovedV2",
+    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/1a0192fb-98a6-44a7-81b8-5555294e1d25/shoulderPressApprovedV2.mp4",
+    "sha256": "ccfd1526e855a437e4869b3a7805f453e344f5d8e2ceafd30192d613d97e7e86"
   }
 ]

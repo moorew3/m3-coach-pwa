@@ -73,7 +73,7 @@ export const COACH_MOTION: Record<string, string> = {
   cablePunch: "/media/recovered/cablePunch.mp4",
   // Restored original avatar clip after the owner's explicit correction.
   // Full-body standing dumbbell press, not a machine or a stock trainer.
-  shoulderPress: "/media/approved/shoulderPress.mp4",
+  shoulderPress: "/media/approved/shoulderPressApprovedV2.mp4",
   trapBarDeadlift: "/media/approved/trapBarDeadlift.mp4",
 };
 
