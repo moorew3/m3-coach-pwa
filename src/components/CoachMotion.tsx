@@ -97,7 +97,7 @@ export function CoachMotion({
 
   return (
     <div
-      className={`relative overflow-hidden bg-black ${className}`}
+      className={`${className.split(/\s+/).includes("absolute") ? "absolute" : "relative"} overflow-hidden bg-black ${className}`}
       data-testid="coach-motion"
       data-failed={failed ? "true" : "false"}
       data-url={url}
