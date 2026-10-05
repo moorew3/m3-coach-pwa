@@ -337,7 +337,7 @@ function V2Coach() {
           setVoiceError(null);
         } else {
           setVoiceError("Detailed male coaching audio is unavailable on this device. Follow the coaching instructions on screen; short recorded cues are still available.");
-          void playMarcusCue(session.phase === "rest" ? "rest" : session.phase === "complete" ? "complete" : session.phase === "transition" ? "next" : "setTwo");
+          void playMarcusCue(session.phase === "rest" ? "rest" : session.phase === "complete" ? "complete" : session.phase === "transition" ? "next" : session.setIndex === 1 ? "setTwo" : "start");
         }
       }
     }
