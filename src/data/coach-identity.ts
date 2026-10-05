@@ -118,6 +118,12 @@ export const DEMONSTRATOR_MOTION: Readonly<Record<string, string>> = {
     "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e87a2f34-5473-45df-b40e-8963bc7a3a4d/battleRopeFinisher.mp4",
 };
 
+/** A separate actor is permitted only after a visual review confirms correct
+ * movement AND that he does not copy the approved coach's tattoos. The legacy
+ * fallback set failed this review on 2026-10-04; URLs remain as recovery sources,
+ * but none may be promoted by merely adding a URL to DEMONSTRATOR_MOTION. */
+const APPROVED_DEMONSTRATOR_MOTION = new Set<string>();
+
 /** Coach stills used as posters for the verified clips.
  * The GitHub/Railway build uses the locked canonical coach still as a safe
  * fallback until exercise-specific poster files are migrated locally.
@@ -253,6 +259,7 @@ export function exerciseMotionFor(id: string): ExerciseMotion | undefined {
   if (coach) return { ...coach, actor: "coach" };
 
   const root = COACH_ALIASES[id] ?? id;
+  if (!APPROVED_DEMONSTRATOR_MOTION.has(root)) return undefined;
   const url = DEMONSTRATOR_MOTION[id] ?? DEMONSTRATOR_MOTION[root];
   return url ? { url, actor: "demonstrator" } : undefined;
 }

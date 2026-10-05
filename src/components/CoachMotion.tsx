@@ -75,7 +75,7 @@ export function CoachMotion({
           <img
             src={still}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className="absolute inset-0 h-full w-full object-contain"
             draggable={false}
           />
         ) : (
@@ -108,7 +108,7 @@ export function CoachMotion({
               setLoaded(false);
               setIsPlaying(false);
             }}
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className="absolute inset-0 h-full w-full object-contain"
             aria-hidden="true"
           />
         )}

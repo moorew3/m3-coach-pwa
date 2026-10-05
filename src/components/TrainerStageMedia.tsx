@@ -48,7 +48,7 @@ export function TrainerStageMedia({
             url={ambient.url}
             poster={ambient.poster}
             mirrored={mirrored}
-            playing
+            playing={playing}
             rate={AMBIENT_RATE}
             preloadUrl={preloadMotion?.url}
             className="h-full w-full"
