@@ -678,7 +678,7 @@ function V2Coach() {
         )}
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="relative min-h-[67dvh] overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:min-h-[720px]">
+          <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
             {realTimeRigReady && <M3GymRenderer session={session} />}
             {showCoach && !realTimeRigReady && stageMedia && (
               <CoachMotion
@@ -689,7 +689,7 @@ function V2Coach() {
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
-                className="absolute inset-0 h-full w-full"
+                className="absolute inset-x-0 top-[92px] bottom-[196px] w-full"
                 label={
                   stageUsesRecovered
                     ? `Motion demo of ${exercise?.name ?? "movement"}`
@@ -765,7 +765,7 @@ function V2Coach() {
 
             {liveCue && (
               <div
-                className="pointer-events-none absolute bottom-[105px] left-3 z-[8] max-w-[55%] rounded-xl border border-cyan-300/40 bg-black/85 px-3 py-2 text-xs font-bold text-cyan-100"
+                className="absolute bottom-[105px] left-3 right-3 z-[8] max-h-20 overflow-y-auto rounded-xl border border-cyan-300/40 bg-black/85 px-3 py-2 text-xs font-bold text-cyan-100"
                 aria-live="polite"
               >
                 {liveCue}

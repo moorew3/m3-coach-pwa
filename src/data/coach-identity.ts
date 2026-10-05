@@ -70,7 +70,7 @@ export const COACH_MOTION: Record<string, string> = {
   squat: "/media/approved/squat.mp4",
   suitcaseCarry: "/media/approved/suitcaseCarry.mp4",
   tricepsPressdown: "/media/approved/tricepsPressdown.mp4",
-  cablePunch: "/media/approved/cablePunch.mp4",
+  cablePunch: "/media/recovered/cablePunch.mp4",
   // Restored original avatar clip after the owner's explicit correction.
   // Full-body standing dumbbell press, not a machine or a stock trainer.
   shoulderPress: "/media/approved/shoulderPress.mp4",

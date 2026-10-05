@@ -174,18 +174,6 @@
     "sha256": "d28792943cac702a19976903f0049d9130bf1fd2c9e617dd00122a2052f172c2"
   },
   {
-    "key": "../recovered/medBallChestPass",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/medBallChestPass.mp4",
-    "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=medBallChestPass",
-    "sha256": "0d8d166464f0961f076c22c047ecf9f3513d0f5f52aec445f6e937e689dddca2"
-  },
-  {
-    "key": "../recovered/legPress",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/legPress.mp4",
-    "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=legPress",
-    "sha256": "0f5d8fadf10cc99a309625a61499b7230cf004642c5ea93093554ab77e28d9dd"
-  },
-  {
     "key": "../recovered/bulgarianSplitSquat",
     "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/bulgarianSplitSquat.mp4",
     "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=bulgarianSplitSquat",
@@ -206,11 +194,6 @@
     "key": "trapBarDeadlift",
     "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/hf_20261004_011937_62f64095-63ab-4281-b437-855406550ffd.mp4",
     "sha256": "1e0145720d2cf34fa1c6f15808be8df36a60cac94a69baf19851c9b531f5ffb1"
-  },
-  {
-    "key": "cablePunch",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=cablePunch",
-    "sha256": "dee13f1ce21d4c827aa811e9825022288c0ecffec18db68199dc3bb2ef11cf8d"
   },
   {
     "key": "shoulderPress",
