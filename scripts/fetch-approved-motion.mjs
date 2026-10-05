@@ -16,8 +16,12 @@ await Promise.all(Array.from({ length: 4 }, async () => {
     if (bytes.length < 1000 || !bytes.subarray(0, 48).includes(Buffer.from('ftyp'))) {
       throw new Error(`Approved motion ${source.key}: invalid MP4`);
     }
+    const sha256 = createHash('sha256').update(bytes).digest('hex');
+    if (source.sha256 && source.sha256 !== sha256) {
+      throw new Error(`Approved motion ${source.key}: source changed; preserve the approved footage`);
+    }
     await writeFile(file, bytes);
-    audit.push({ key: source.key, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') });
+    audit.push({ key: source.key, bytes: bytes.length, sha256 });
     console.log(`Localized approved motion: ${source.key} (${bytes.length} bytes)`);
   }
 }));

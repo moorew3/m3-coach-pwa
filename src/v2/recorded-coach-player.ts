@@ -1,5 +1,5 @@
 /** One gesture-unlocked output for recorded coaching across every viewpoint. */
-type Clip = { url: string; group: string; segment?: readonly [number, number]; resolve: (started: boolean) => void };
+type Clip = { url: string; group: string; segment?: readonly [number, number]; waitForEnd: boolean; resolve: (started: boolean) => void };
 let context: AudioContext | null = null;
 let current: { clip: Clip; source: AudioBufferSourceNode | null } | null = null;
 const queue: Clip[] = [];
@@ -51,11 +51,12 @@ async function pump() {
     playback.source = source;
     source.onended = () => {
       source.disconnect();
+      if (clip.waitForEnd) clip.resolve(true);
       if (current === playback) { current = null; void pump(); }
     };
     if (clip.segment) source.start(0, clip.segment[0], clip.segment[1] - clip.segment[0]);
     else source.start();
-    clip.resolve(true);
+    if (!clip.waitForEnd) clip.resolve(true);
   } catch {
     if (current === playback) {
       current = null;
@@ -65,13 +66,13 @@ async function pump() {
   }
 }
 
-export function playRecordedCoachAudio(url: string, group: string, segment?: readonly [number, number]): Promise<boolean> {
+export function playRecordedCoachAudio(url: string, group: string, segment?: readonly [number, number], waitForEnd = false): Promise<boolean> {
   if (!unlockRecordedCoachAudio()) return Promise.resolve(false);
   return new Promise((resolve) => {
     // Keep the current sentence intact, while bounding stale queued instructions.
     // A deliberately discarded cue is handled; do not fire a fallback voice.
     while (queue.length >= 2) queue.shift()!.resolve(true);
-    queue.push({ url, group, segment, resolve });
+    queue.push({ url, group, segment, waitForEnd, resolve });
     void pump();
   });
 }

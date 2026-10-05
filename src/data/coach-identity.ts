@@ -36,7 +36,7 @@ export const COACH_MOTION: Record<string, string> = {
   cross: "/media/approved/cross.mp4",
   defensiveReset: "/media/approved/defensiveReset.mp4",
   gluteBridge: "/media/approved/gluteBridge.mp4",
-  easyWalk: "https://d8j0ntlcm91z4.cloudfront.net/user_3JXmCGSXSFw5lD08HDyoQd7zNaY/hf_20261004_021847_308c25c6-dfd1-4a26-b7d4-2e4d9e238100.mp4",
+  easyWalk: "/media/approved/easyWalk.mp4",
   guardReset: "/media/approved/guardReset.mp4",
   jab: "/media/approved/jab.mp4",
   // Complete-cycle 40.7-second flow from the SAME previously approved coach clips.
@@ -70,8 +70,11 @@ export const COACH_MOTION: Record<string, string> = {
   squat: "/media/approved/squat.mp4",
   suitcaseCarry: "/media/approved/suitcaseCarry.mp4",
   tricepsPressdown: "/media/approved/tricepsPressdown.mp4",
-  cablePunch: "/api/public/approved-coach-motion?key=cablePunch",
-  trapBarDeadlift: "https://d8j0ntlcm91z4.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/hf_20261004_011937_62f64095-63ab-4281-b437-855406550ffd.mp4",
+  cablePunch: "/media/approved/cablePunch.mp4",
+  // Restored original avatar clip after the owner's explicit correction.
+  // Full-body standing dumbbell press, not a machine or a stock trainer.
+  shoulderPress: "/media/approved/shoulderPress.mp4",
+  trapBarDeadlift: "/media/approved/trapBarDeadlift.mp4",
 };
 
 /** Coach stills used as posters for the verified clips.
@@ -150,6 +153,7 @@ const CANONICAL_IDENTITY_MOTION = new Set([
   "tricepsPressdown",
   "trapBarDeadlift",
   "cablePunch",
+  "shoulderPress",
 ]);
 
 /**
@@ -170,7 +174,6 @@ export const INVALID_COACH_MOTION: Readonly<Record<string, string>> = {
   medBallChestPass: "Coach identity continuity is not verified for this clip.",
   rearDeltFly: "Coach identity continuity is not verified for this clip.",
   reverseStepRow: "Coach identity continuity is not verified for this clip.",
-  shoulderPress: "Coach identity continuity is not verified for this clip.",
   squatToCurl: "Coach identity continuity is not verified for this clip.",
   stepAltCurl: "Step + Alternating Curl needs a verified step-and-curl clip.",
   stepShoulderPress: "Step + Shoulder Press needs a verified overhead step-and-press clip.",

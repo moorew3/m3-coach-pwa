@@ -10,10 +10,12 @@ export function WorkoutOpeningScene({
   athletePortrait,
   onStart,
   onChooseAthlete,
+  starting = false,
 }: {
   athletePortrait: string | null;
   onStart: () => void;
   onChooseAthlete: () => void;
+  starting?: boolean;
 }) {
   const [revealed, setRevealed] = useState(false);
 
@@ -108,9 +110,10 @@ export function WorkoutOpeningScene({
           <button
             type="button"
             onClick={onStart}
+            disabled={starting}
             className="min-h-12 shrink-0 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-[#071019]"
           >
-            Start workout
+            {starting ? "Coach introduction…" : "Start workout"}
           </button>
         </div>
       </div>

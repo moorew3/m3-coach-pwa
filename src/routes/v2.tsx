@@ -19,6 +19,7 @@ import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-w
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
+import { unlockRecordedCoachAudio } from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, stopFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { V2TrainingCamera } from "@/v2/training-camera";
@@ -75,6 +76,7 @@ function V2Coach() {
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [hydrated, setHydrated] = useState(false);
   const [showOpening, setShowOpening] = useState(false);
+  const [openingStarting, setOpeningStarting] = useState(false);
   const [athletePortrait, setAthletePortrait] = useState<string | null>(null);
   const [athleteError, setAthleteError] = useState<string | null>(null);
   const athletePicker = useRef<HTMLInputElement>(null);
@@ -281,6 +283,10 @@ function V2Coach() {
     ].join(":");
     if (lastDirectedCue.current === eventKey) return;
     lastDirectedCue.current = eventKey;
+    // A new movement must not inherit the previous movement's spoken cue.
+    stopMarcusCue();
+    stopFridayPremiumCue();
+    stopDetailedExerciseSpeech();
 
     // A camera-observed boxing round has its own specific post-round coach
     // review. Don't start the generic "Rest..." announcement first and then
@@ -540,21 +546,26 @@ function V2Coach() {
 
   const toggleWorkout = () => {
     if (session.running) {
+      stopMarcusCue();
+      stopFridayPremiumCue();
+      stopDetailedExerciseSpeech();
       dispatch({ type: "pause" });
       return;
     }
 
     // A Start/Resume tap is a browser-approved user gesture. Use it to keep
     // coach audio unlocked across Coach, Shadow, Manual and Glasses scenes.
-    if (!voiceOn) void toggleVoice();
-    else void playMarcusCue("start");
+    unlockRecordedCoachAudio();
+    lastDirectedCue.current = "";
     dispatch({ type: "start" });
   };
 
   const startFromOpening = async () => {
+    if (openingStarting) return;
+    setOpeningStarting(true);
     setVoiceError(null);
     // Start Workout is the only opening-scene exit and also unlocks audio.
-    const started = await playMarcusCue("intro");
+    const started = await playMarcusCue("intro", true);
     if (started) setVoiceOn(true);
     else if (!speakDetailedExercise("Coach is ready. Starting your workout.")) {
       setVoiceOn(false);
@@ -562,10 +573,12 @@ function V2Coach() {
     }
     lastDirectedCue.current = "";
     dismissOpening();
+    setOpeningStarting(false);
     dispatch({ type: "start" });
   };
 
-  const stageTitle = session.phase === "complete" ? "Workout complete" : exercise?.name ?? "";
+  const stageTitle = session.phase === "complete" ? "Workout complete"
+    : session.phase === "rest" ? "Rest / get ready" : exercise?.name ?? "";
   const showCoach = session.mode === "coach" || session.mode === "shadow";
   const glasses = session.mode === "glasses";
   const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
@@ -1103,6 +1116,7 @@ function V2Coach() {
       </div>
       {showOpening && (
         <WorkoutOpeningScene
+          starting={openingStarting}
           athletePortrait={athletePortrait}
           onChooseAthlete={() => athletePicker.current?.click()}
           onStart={() => void startFromOpening()}

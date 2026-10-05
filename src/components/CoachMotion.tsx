@@ -20,6 +20,8 @@ export function CoachMotion({
   onLayerChange,
 }: {
   url: string;
+  /** Compatibility with legacy callers; playback never substitutes a portrait. */
+  poster?: string;
   mirrored?: boolean;
   playing?: boolean;
   /** Playback speed so the coach's cadence matches the movement's target tempo. */
@@ -142,7 +144,7 @@ export function CoachMotion({
               setLoaded(false);
               setIsPlaying(false);
             }}
-            className={`absolute inset-0 h-full w-full transition-opacity duration-200 ${stableFraming ? "object-contain object-center" : "object-cover object-top"} ${loaded ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
             aria-hidden="true"
           />

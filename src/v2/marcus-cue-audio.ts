@@ -33,10 +33,11 @@ export function stopMarcusCue() {
   stopRecordedCoachAudio("marcus");
 }
 
-export function playMarcusCue(cue: MarcusCue): Promise<boolean> {
+export function playMarcusCue(cue: MarcusCue, waitForEnd = false): Promise<boolean> {
   return playRecordedCoachAudio(
     cue === "intro" ? INTRO_URL : PACK_URL,
     "marcus",
     cue === "intro" ? undefined : SEGMENTS[cue],
+    waitForEnd,
   );
 }

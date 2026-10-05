@@ -1,134 +1,220 @@
 [
   {
     "key": "boxingStance",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ba2daa61-d337-44ea-9fe0-12f6698cc43f/boxingStanceV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/boxingStance.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ba2daa61-d337-44ea-9fe0-12f6698cc43f/boxingStanceV2.mp4",
+    "sha256": "04b003276b16a48de95b92e6a24ca0741042d1d3197ca38b50ccf6c94128614e"
   },
   {
     "key": "cross",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/767f7369-4a91-4f1e-bbe3-ad429dc80d15/crossV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/cross.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/767f7369-4a91-4f1e-bbe3-ad429dc80d15/crossV2.mp4",
+    "sha256": "dc43f5716c23e801986dc96f3266c821eb5e4f49b7bfe3eeb5c9c6d9f61d8130"
   },
   {
     "key": "defensiveReset",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/39d355b3-eb12-4628-98d6-107ebbd966c4/defensiveResetV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/defensiveReset.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/39d355b3-eb12-4628-98d6-107ebbd966c4/defensiveResetV2.mp4",
+    "sha256": "c8e5e071ba4133f18e94004fd21e063f879113d202c1721e449a698d99521ee9"
   },
   {
     "key": "gluteBridge",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a72a39b6-d28b-44e4-8d69-20d7dedadbe4/gluteBridgeV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/gluteBridge.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a72a39b6-d28b-44e4-8d69-20d7dedadbe4/gluteBridgeV3.mp4",
+    "sha256": "fe391392ab82ea928d5d456edab62670893bb5226f0c2840ae2c48c88b52ae1b"
   },
   {
     "key": "guardReset",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/de47b48c-3ce6-4ebc-9ee8-56ac2acb0161/guardResetV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/guardReset.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/de47b48c-3ce6-4ebc-9ee8-56ac2acb0161/guardResetV2.mp4",
+    "sha256": "0e82f16289983c6b5352d112b5371cef92087838488267547883137ffc8fba86"
   },
   {
     "key": "jab",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fea6c3ab-2ad2-4c0a-8380-432cc8496e49/jabV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/jab.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fea6c3ab-2ad2-4c0a-8380-432cc8496e49/jabV2.mp4",
+    "sha256": "1dcf81acfc11b4714a0815b798713a6f1bab4c763bfda35a86253d297389606f"
   },
   {
     "key": "bandPullApart",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/bandPullApart.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
+    "sha256": "d16c824be2da809244edb2f6734ae1d140d305aa11010f006ccc442b7e78c032"
   },
   {
     "key": "benchPress",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/benchPress.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4",
+    "sha256": "fcf6fa8525008028e8b014b4f205ddaca808e0a8f68e41e3da9c257d5c35c9e3"
   },
   {
     "key": "chestMobility",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/chestMobility.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4",
+    "sha256": "75890eab01793f4975823f8d06040f85bc213e7a712d11a13f06f098b8055377"
   },
   {
     "key": "controlledShoulderWork",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/bd8c08f2-f0f7-41a6-8286-0714fb017645/controlledShoulderWork.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/controlledShoulderWork.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/bd8c08f2-f0f7-41a6-8286-0714fb017645/controlledShoulderWork.mp4",
+    "sha256": "54703b13e49473f48f8a2cb32f250552f1b5adb48f0513dc8acb58d8f07f91d5"
   },
   {
     "key": "deadBug",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2c12477d-f5f5-48e8-9528-73ca1275cfb9/deadBugV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/deadBug.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2c12477d-f5f5-48e8-9528-73ca1275cfb9/deadBugV3.mp4",
+    "sha256": "36f2b5b6e8fbf8c27b2b2a1cf5281fa5261e8e9e7787a74e87f7cf8bc5a247ba"
   },
   {
     "key": "frontKick",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ef4b2839-4898-4f96-bdc6-4c112be5142c/frontKick.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/frontKick.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ef4b2839-4898-4f96-bdc6-4c112be5142c/frontKick.mp4",
+    "sha256": "825f6737c509156b04802f908a0cd1c3bbdf6034d13702cca3e9148c078f5f21"
   },
   {
     "key": "hamstringCurl",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/dc585bcc-7aa8-445b-93b4-2f7a088ce975/hamstringCurlV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/hamstringCurl.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/dc585bcc-7aa8-445b-93b4-2f7a088ce975/hamstringCurlV2.mp4",
+    "sha256": "76a45c80bc16326c126334738068ad16ba892a85b00998651997373decd825e0"
   },
   {
     "key": "hammerCurl",
-    "url": "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hammerCurl.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/hammerCurl.mp4",
+    "originalUrl": "https://github.com/moorew3/m3-coach-pwa/releases/download/coach-media-v1/hammerCurl.mp4",
+    "sha256": "6ac539093f7883ff2fc6d6a725471f8fbba0350477ebfb965d84a44b76deed67"
   },
   {
     "key": "hamstringMobility",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/afa99947-ec33-4d47-976d-7788ad4b845d/hamstringMobilityV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/hamstringMobility.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/afa99947-ec33-4d47-976d-7788ad4b845d/hamstringMobilityV3.mp4",
+    "sha256": "37ddc339d8037fd370748ee0fa44c590ff517e4452d201fb59bee5443b3c7ecd"
   },
   {
     "key": "hipFlexorStretch",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/63cdf4b4-32a8-493b-ba65-399172405412/hipFlexorStretchV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/hipFlexorStretch.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/63cdf4b4-32a8-493b-ba65-399172405412/hipFlexorStretchV3.mp4",
+    "sha256": "1b294f8b7390c8c3f684e832c78325614839918cc6792d10b6636888bd769de1"
   },
   {
     "key": "inclineDumbbellPress",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2d0cad85-aedc-4326-bbc6-2c3db57ea42e/inclineDumbbellPressV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/inclineDumbbellPress.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2d0cad85-aedc-4326-bbc6-2c3db57ea42e/inclineDumbbellPressV3.mp4",
+    "sha256": "d30031ffa259ecc71e03fd2f4ce173605892b298c235e473385faa248209a683"
   },
   {
     "key": "jabCross",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4a42a4f8-dc38-44ee-93fa-b62815263ebd/jabCrossV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/jabCross.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4a42a4f8-dc38-44ee-93fa-b62815263ebd/jabCrossV2.mp4",
+    "sha256": "6a522e05dcd7f0729ee8994626c8c19e217138dd1a47c73b26aa4cdd567617e4"
   },
   {
     "key": "kneeChamber",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9458679e-92e5-49ea-aa70-f369aed89dc1/kneeChamberV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/kneeChamber.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9458679e-92e5-49ea-aa70-f369aed89dc1/kneeChamberV2.mp4",
+    "sha256": "787fb5317d914d30732179c03c1b713fc06139a7373d53ab42655b94425493c5"
   },
   {
     "key": "latPulldown",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/latPulldown.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
+    "sha256": "9d48d43105858b2054b7f196c0fefd1b8a617be718a4a677bb77d06d38ba2ef7"
   },
   {
     "key": "lateralRaise",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/lateralRaise.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4",
+    "sha256": "8b00598bbffab69eda890657d540bdbfb1c849212d441a099759ae66a81b599a"
   },
   {
     "key": "lowerBodyMobility",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a2b9f071-159d-4362-8943-e95dcaf79a23/lowerBodyMobility.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/lowerBodyMobility.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/a2b9f071-159d-4362-8943-e95dcaf79a23/lowerBodyMobility.mp4",
+    "sha256": "194f53034a7d7ade4fb5d67ac1c815365b218758cd6fd3a4062fbcf81b9664d3"
   },
   {
     "key": "romanianDeadlift",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/c406059f-cfce-4344-8d5d-ccc9d8c303e0/romanianDeadliftV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/romanianDeadlift.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/c406059f-cfce-4344-8d5d-ccc9d8c303e0/romanianDeadliftV2.mp4",
+    "sha256": "a973a25249d2fb377165eae601adc34c936f6c6ac94d0b9ad60d71fe187e2676"
   },
   {
     "key": "roundKick",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9e7a71c5-c696-4d1d-beca-2d83963a6d11/roundKick.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/roundKick.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9e7a71c5-c696-4d1d-beca-2d83963a6d11/roundKick.mp4",
+    "sha256": "cfca64db7319f454a0b23b0d77355f37a5dcb84738bc7bb216a72077d8db988d"
   },
   {
     "key": "seatedRow",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fb904bbb-9853-486a-997f-cae8fd811e93/seatedRowV3.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/seatedRow.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fb904bbb-9853-486a-997f-cae8fd811e93/seatedRowV3.mp4",
+    "sha256": "cf14b7856bb26b4c00fc7c321d141989f1bd13d3d1095711157629694081d9df"
   },
   {
     "key": "shoulderMobility",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ac623364-1584-4306-acef-c8460c3e2cdb/shoulderMobility.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/shoulderMobility.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ac623364-1584-4306-acef-c8460c3e2cdb/shoulderMobility.mp4",
+    "sha256": "b6245931b0a9a2e53dbe3ba84bd9ebdb4fee8d190ee30e991fcbf966ded31c8a"
   },
   {
     "key": "squat",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/86ca5509-96be-4531-85ea-bc241319f293/squatV2.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/squat.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/86ca5509-96be-4531-85ea-bc241319f293/squatV2.mp4",
+    "sha256": "f56458f2e63b0bbd8c78ffda8f1ccdc935c0a3ff8998a3926f1c7eb0b5b6c885"
   },
   {
     "key": "suitcaseCarry",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4670b0c7-7068-40bd-8d9a-1ecde974b0ae/suitcaseCarry.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/suitcaseCarry.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4670b0c7-7068-40bd-8d9a-1ecde974b0ae/suitcaseCarry.mp4",
+    "sha256": "fdb8fb43d1c5e180772927a1de527b3f94cf386bf8bbd52873ea438fb44c619e"
   },
   {
     "key": "tricepsPressdown",
-    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/approved/tricepsPressdown.mp4",
+    "originalUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
+    "sha256": "d28792943cac702a19976903f0049d9130bf1fd2c9e617dd00122a2052f172c2"
   },
   {
     "key": "../recovered/medBallChestPass",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=medBallChestPass"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/medBallChestPass.mp4",
+    "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=medBallChestPass",
+    "sha256": "0d8d166464f0961f076c22c047ecf9f3513d0f5f52aec445f6e937e689dddca2"
   },
   {
     "key": "../recovered/legPress",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=legPress"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/legPress.mp4",
+    "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=legPress",
+    "sha256": "0f5d8fadf10cc99a309625a61499b7230cf004642c5ea93093554ab77e28d9dd"
   },
   {
     "key": "../recovered/bulgarianSplitSquat",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=bulgarianSplitSquat"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/bulgarianSplitSquat.mp4",
+    "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=bulgarianSplitSquat",
+    "sha256": "2435dfff106edfec8ac32031d7670f5295f79592966286df8f44084a45ea8c89"
   },
   {
     "key": "../recovered/chestPress",
-    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=chestPress"
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/media/recovered/chestPress.mp4",
+    "originalUrl": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=chestPress",
+    "sha256": "0a5f8923510666cade9478f0e7d7d6bb702cffb31004897bbed8d0082d9d130c"
+  },
+  {
+    "key": "easyWalk",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3JXmCGSXSFw5lD08HDyoQd7zNaY/hf_20261004_021847_308c25c6-dfd1-4a26-b7d4-2e4d9e238100.mp4",
+    "sha256": "d9ceb17bc9eb5f02c07e305ff8e5d1677427fe70a4b0597f3d9551fe288ef192"
+  },
+  {
+    "key": "trapBarDeadlift",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/hf_20261004_011937_62f64095-63ab-4281-b437-855406550ffd.mp4",
+    "sha256": "1e0145720d2cf34fa1c6f15808be8df36a60cac94a69baf19851c9b531f5ffb1"
+  },
+  {
+    "key": "cablePunch",
+    "url": "https://m3-coach-v2-visual-production.up.railway.app/api/public/approved-coach-motion?key=cablePunch",
+    "sha256": "dee13f1ce21d4c827aa811e9825022288c0ecffec18db68199dc3bb2ef11cf8d"
+  },
+  {
+    "key": "shoulderPress",
+    "url": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/332dd309-aaf6-4b52-8c61-c24b8a4ee596/shoulderPress.mp4",
+    "sha256": "4d24bc2a68c58baff9e032c6e2da2d685c883ed13bae64d116e8418c5be46338"
   }
 ]

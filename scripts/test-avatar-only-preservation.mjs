@@ -11,7 +11,11 @@ import assert from "node:assert/strict";
 
 const baselineGitBlobs = {
   "src/v2/catalog.ts": "a0a30b6902c4aeb46d4f3818b7d4d384d28d80f0",
-  "src/v2/session.ts": "03029cea2be7eb34291e448a433e21eef72a234d",
+  "src/v2/session.ts": [
+    "03029cea2be7eb34291e448a433e21eef72a234d",
+    // Published V2 fix: selecting an exercise keeps an active session running.
+    "369f4c598f335d49186f714536f260898dfcbba6",
+  ],
   "src/lib/coach-session.ts": [
     // Original published main branch; the PR CI checks out its merge commit.
     "0a7cc1b3a029f2f2014e188f2d7ae7e323fea429",
@@ -25,7 +29,7 @@ const baselineGitBlobs = {
 // Git hashes the EXACT UTF-8 file bytes, including line endings, and avoids
 // differences between connector previews and the actual checked-out source.
 for (const [file, expectedBlobSha] of Object.entries(baselineGitBlobs)) {
-  const actual = execFileSync("git", ["rev-parse", `HEAD:${file}`], {
+  const actual = execFileSync("git", ["hash-object", file], {
     encoding: "utf8",
   }).trim();
   assert.ok(
