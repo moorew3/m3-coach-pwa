@@ -574,7 +574,7 @@ export function MirrorMeCard({
           move={move}
           mirrored={mirrored}
           playing={loop}
-          height="h-64 md:h-44"
+          height="h-64 md:h-80"
           onOpen={() => setDetail(true)}
         />
       </div>

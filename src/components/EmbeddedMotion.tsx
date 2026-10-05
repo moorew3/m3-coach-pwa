@@ -81,8 +81,9 @@ export function EmbeddedMotion({
           });
         await instance.ready();
         if (cancelled) return;
-        await instance.setMuted(true);
         await instance.setVolume(0);
+        // Vimeo setVolume clears mute; apply hard mute after volume changes.
+        await instance.setMuted(true);
         await instance.setLoop(true);
         if (segment) await instance.setCurrentTime(segment.start);
         if (cancelled) return;
