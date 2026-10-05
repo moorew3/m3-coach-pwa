@@ -33,6 +33,8 @@ import {
 } from "lucide-react";
 import { BOARD_PANELS, boardFor, boardMetaFor } from "@/data/mirror-boards";
 import { exerciseMotionFor, isCoachVerified } from "@/data/coach-identity";
+import { MotionCredit } from "@/components/MotionCredit";
+import type { ExerciseMotion } from "@/data/coach-identity";
 import { mirrorFor, type CueIcon, type MirrorMove } from "@/data/mirror-me";
 import { coachStillFor } from "@/data/coach-identity";
 
@@ -48,6 +50,7 @@ function MotionPlayer({
   playing,
   height,
   actor,
+  motion,
   onOpen,
 }: {
   move: MirrorMove;
@@ -57,6 +60,7 @@ function MotionPlayer({
   playing: boolean;
   height: string;
   actor?: "coach" | "demonstrator";
+  motion?: ExerciseMotion;
   onOpen?: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -97,7 +101,7 @@ function MotionPlayer({
           <img
             src={poster}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className="absolute inset-0 h-full w-full object-contain"
             style={mirrored ? { transform: "scaleX(-1)" } : undefined}
             draggable={false}
           />
@@ -107,7 +111,7 @@ function MotionPlayer({
           src={url}
           poster={poster}
           muted
-          autoPlay
+          autoPlay={playing}
           loop
           playsInline
           preload="auto"
@@ -117,22 +121,28 @@ function MotionPlayer({
             setVideoPlaying(false);
             setVideoFailed(true);
           }}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ${videoFailed ? "opacity-0" : "opacity-100"}`}
+          className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-200 ${videoFailed ? "opacity-0" : "opacity-100"}`}
           style={mirrored ? { transform: "scaleX(-1)" } : undefined}
           aria-label={`${move.name} — moving demonstration`}
         />
       </div>
-      <span
-        className={`absolute left-2 top-2 rounded-full bg-background/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
-          actor === "coach"
-            ? "text-accent"
+      {actor !== "demonstrator" && (
+        <span
+          className={`absolute left-2 top-2 rounded-full bg-background/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
+            actor === "coach"
+              ? "text-accent"
+              : actor === "demonstrator"
+                ? "text-primary"
+                : "text-muted-foreground"
+          }`}
+        >
+          {actor === "coach"
+            ? "Train with Coach"
             : actor === "demonstrator"
-              ? "text-primary"
-              : "text-muted-foreground"
-        }`}
-      >
-        {actor === "coach" ? "Train with Coach" : actor === "demonstrator" ? "Workout Partner Demo" : "Motion pending"}
-      </span>
+              ? "Workout Partner Demo"
+              : "Motion pending"}
+        </span>
+      )}
       {mirrored && (
         <span className="absolute right-2 top-2 rounded-full bg-primary/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
           Mirror
@@ -147,17 +157,22 @@ function MotionPlayer({
   );
 
   const shell = "relative w-full overflow-hidden rounded-xl border border-primary/30 bg-black";
-  return onOpen ? (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={`${shell} block text-left`}
-      aria-label={`Open ${move.name} demonstration`}
-    >
-      {body}
-    </button>
-  ) : (
-    <div className={shell}>{body}</div>
+  return (
+    <div className={shell}>
+      {onOpen ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          className="block w-full text-left"
+          aria-label={`Open ${move.name} demonstration`}
+        >
+          {body}
+        </button>
+      ) : (
+        body
+      )}
+      {motion && <MotionCredit motion={motion} />}
+    </div>
   );
 }
 
@@ -257,9 +272,7 @@ export function MirrorMeDemo({
     }
   }, [phase, onPhase]);
 
-  // APPROVED AVATAR ONLY. A movement plays a clip only when the verified
-  // coach-identity asset exists; legacy/stand-in clips of a different person
-  // are never substituted. Everything else falls back to the static board.
+  // Play only the reviewed exact exercise, with its own actor and poster.
   const motion = exerciseMotionFor(move.id);
   if (motion) {
     return (
@@ -267,6 +280,7 @@ export function MirrorMeDemo({
         move={move}
         url={motion.url}
         actor={motion.actor}
+        motion={motion}
         poster={motion.poster || board}
         mirrored={mirrored}
         playing={playing}
@@ -404,17 +418,20 @@ function PhaseBoardDetail({
       </div>
       <div className="space-y-3 p-3 pb-16">
         {motion && (
-          <video
-            src={motion.url}
-            poster={motion.poster ?? board}
-            className="w-full rounded-xl border border-primary/30 bg-black"
-            style={mirrored ? { transform: "scaleX(-1)" } : undefined}
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-label={`${move.name} — moving demonstration`}
-          />
+          <div className="relative">
+            <video
+              src={motion.url}
+              poster={motion.poster ?? board}
+              className="w-full rounded-xl border border-primary/30 bg-black"
+              style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+              autoPlay
+              loop
+              muted
+              playsInline
+              aria-label={`${move.name} — moving demonstration`}
+            />
+            <MotionCredit motion={motion} />
+          </div>
         )}
 
         {board && (
@@ -504,7 +521,12 @@ export function MirrorMeCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-            Mirror Me · {isCoachVerified(move.id) ? "Your coach" : exerciseMotionFor(move.id) ? "Workout partner demo" : "Motion pending"}
+            Mirror Me ·{" "}
+            {isCoachVerified(move.id)
+              ? "Your coach"
+              : exerciseMotionFor(move.id)
+                ? "Workout partner demo"
+                : "Motion pending"}
           </p>
           <h3 className="truncate font-display text-xl font-bold leading-tight">{move.name}</h3>
           <p className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">

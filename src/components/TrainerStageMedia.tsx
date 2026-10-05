@@ -6,6 +6,7 @@
  */
 import { CoachFace } from "@/components/CoachFace";
 import { CoachMotion } from "@/components/CoachMotion";
+import { MotionCredit } from "@/components/MotionCredit";
 import { AMBIENT_RATE } from "@/lib/coach-ambient";
 import type { TrainerMediaDecision } from "@/lib/trainer-media-state";
 
@@ -68,11 +69,7 @@ export function TrainerStageMedia({
             className="h-full w-full"
             label={demonstrator ? `${label} — workout partner demonstration` : label}
           />
-          {demonstrator && (
-            <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-primary shadow-lg">
-              Workout Partner Demo
-            </div>
-          )}
+          {demonstrator && <MotionCredit motion={motion} />}
         </>
       ) : (
         <>

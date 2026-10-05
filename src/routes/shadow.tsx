@@ -26,6 +26,7 @@ import { CoachAudioGate } from "@/components/CoachAudio";
 import { CameraCoach } from "@/components/CameraCoach";
 import { SheetPanel } from "@/components/Sheet";
 import { CoachMotion } from "@/components/CoachMotion";
+import { MotionCredit } from "@/components/MotionCredit";
 import { CoachPresence } from "@/components/CoachPresence";
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
 import { exerciseMotionFor } from "@/data/coach-identity";
@@ -200,24 +201,25 @@ function ShadowMode() {
             startWorkoutOnce(day);
             return engine.enableAudio();
           }}
-          onSkip={() =>
-            setState((p) => ({ ...p, settings: { ...p.settings, coachVoice: false } }))
-          }
+          onSkip={() => setState((p) => ({ ...p, settings: { ...p.settings, coachVoice: false } }))}
           dark
         />
       )}
 
       <div className="absolute inset-0">
         {motion ? (
-          <CoachMotion
-            url={motion.url}
-            poster={motion.poster}
-            mirrored={mirrored}
-            playing={running && lead === null}
-            rate={1}
-            className="h-full w-full"
-            label={`${step.title} — follow your coach`}
-          />
+          <>
+            <CoachMotion
+              url={motion.url}
+              poster={motion.poster}
+              mirrored={mirrored}
+              playing={running && lead === null}
+              rate={1}
+              className="h-full w-full"
+              label={`${step.title} — ${motion.actor === "demonstrator" ? "workout partner demonstration" : "follow your coach"}`}
+            />
+            <MotionCredit motion={motion} />
+          </>
         ) : (
           <div className="grid h-full place-items-center p-4">
             <CoachPresence
@@ -256,11 +258,7 @@ function ShadowMode() {
 
       <section className="pointer-events-none absolute inset-x-0 top-[18dvh] z-10 px-4 text-center">
         <p className="text-[11px] font-black uppercase tracking-[0.35em] text-white/60">
-          {step.kind === "rest"
-            ? "Recover"
-            : combat
-              ? "Mirror the coach"
-              : "Match the coach"}
+          {step.kind === "rest" ? "Recover" : combat ? "Mirror the coach" : "Match the coach"}
         </p>
         <h1 className="mt-1 text-[clamp(2rem,7vw,5rem)] font-black uppercase leading-none drop-shadow-lg">
           {step.title}

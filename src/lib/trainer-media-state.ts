@@ -6,6 +6,7 @@
  * the completely static approved coach still. Only an active movement may
  * show the verified clip for that exact current movement.
  */
+import type { ExerciseMotion } from "@/data/coach-identity";
 import { ambientClipFor } from "@/lib/coach-ambient";
 import type { CoachStep } from "@/lib/coach-script";
 
@@ -35,13 +36,13 @@ export interface TrainerMediaDecision {
    * always a verified clip — never the current exercise, never a person
    * who is not him. Undefined means "fall back to the approved still".
    */
-  ambient?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
+  ambient?: { url: string; poster?: string };
   /**
    * The clip on the stage. For every state except REST_PREVIEW this is the
    * exact CURRENT movement. In REST_PREVIEW it is the exact UPCOMING movement,
    * shown as a demonstration only.
    */
-  motion?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
+  motion?: ExerciseMotion;
   /** True only while an upcoming movement is being demonstrated during rest. */
   preview?: boolean;
 }
@@ -60,9 +61,9 @@ function decideTrainerMedia({
   lead: number | null;
   left: number | null;
   speaking: boolean;
-  exactMotion?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
+  exactMotion?: ExerciseMotion;
   /** Exact clip of the movement the session is resting INTO, if verified. */
-  nextMotion?: { url: string; poster?: string; actor?: "coach" | "demonstrator" };
+  nextMotion?: ExerciseMotion;
 }): TrainerMediaDecision {
   if (step.kind === "complete") return { state: "COMPLETE", mode: "static" };
   if (step.kind === "intro") return { state: "INTRO", mode: "static" };
