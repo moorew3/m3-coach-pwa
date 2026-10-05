@@ -62,7 +62,6 @@ export function TrainerStageMedia({
           <CoachMotion
             url={motion.url}
             vimeoId={motion.vimeoId}
-            vimeoSegment={motion.vimeoSegment}
             poster={motion.poster}
             mirrored={mirrored}
             playing={playing}

@@ -4,7 +4,6 @@ import type Player from "@vimeo/player";
 /** Owner-enabled Vimeo embeds stay on the owner's host. Audio is always muted. */
 export function EmbeddedMotion({
   id,
-  segment,
   playing = true,
   mirrored = false,
   label,
@@ -14,7 +13,6 @@ export function EmbeddedMotion({
   onFailure,
 }: {
   id: string;
-  segment?: { start: number; end: number };
   playing?: boolean;
   mirrored?: boolean;
   label?: string;
@@ -36,7 +34,6 @@ export function EmbeddedMotion({
   useEffect(() => {
     let cancelled = false;
     let instance: Player | undefined;
-    let rewinding = false;
     setFailed(false);
     setActive(false);
     setReady(false);
@@ -65,33 +62,12 @@ export function EmbeddedMotion({
           }
         });
         instance.on("error", fail);
-        if (segment)
-          instance.on("timeupdate", ({ seconds }: { seconds: number }) => {
-            if (cancelled || rewinding || seconds < segment.end - 0.1) return;
-            rewinding = true;
-            void instance!
-              .setCurrentTime(segment.start)
-              .then(async () => {
-                if (!cancelled && desired.current) await instance!.play();
-              })
-              .catch(fail)
-              .finally(() => {
-                rewinding = false;
-              });
-          });
         await instance.ready();
         if (cancelled) return;
         await instance.setVolume(0);
         // Vimeo setVolume clears mute; apply hard mute after volume changes.
         await instance.setMuted(true);
         await instance.setLoop(true);
-        // Start the muted stream before seeking: older Vimeo uploads otherwise
-        // remain at HAVE_METADATA indefinitely when initialized while paused.
-        if (segment) {
-          await instance.play();
-          if (cancelled) return;
-          await instance.setCurrentTime(segment.start);
-        }
         if (cancelled) return;
         setReady(true);
         if (desired.current) await instance.play();
@@ -103,7 +79,7 @@ export function EmbeddedMotion({
       player.current = null;
       if (instance) void instance.destroy().catch(() => undefined);
     };
-  }, [id, segment?.start, segment?.end]);
+  }, [id]);
 
   useEffect(() => {
     const instance = player.current;

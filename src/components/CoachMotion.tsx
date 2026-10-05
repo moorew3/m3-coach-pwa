@@ -13,7 +13,6 @@ import { COACH_REFERENCE } from "@/data/coach-identity";
 export function CoachMotion({
   url,
   vimeoId,
-  vimeoSegment,
   poster,
   mirrored = false,
   playing = true,
@@ -25,7 +24,6 @@ export function CoachMotion({
 }: {
   url: string;
   vimeoId?: string;
-  vimeoSegment?: { start: number; end: number };
   poster?: string;
   mirrored?: boolean;
   playing?: boolean;
@@ -67,7 +65,6 @@ export function CoachMotion({
     return (
       <EmbeddedMotion
         id={vimeoId}
-        segment={vimeoSegment}
         playing={playing}
         mirrored={mirrored}
         label={label}

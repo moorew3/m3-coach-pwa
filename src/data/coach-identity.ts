@@ -41,7 +41,6 @@ export type MotionCredit = {
 };
 export type ExerciseMotion = {
   vimeoId?: string;
-  vimeoSegment?: { start: number; end: number };
   url: string;
   poster?: string;
   actor: MotionActor;
@@ -162,10 +161,6 @@ const APPROVED_DEMONSTRATOR_MOTION: Record<string, ExerciseMotion> = {
   cablePunch: {
     url: "https://player.vimeo.com/video/43502659",
     vimeoId: "43502659",
-    vimeoSegment: {
-      start: 8,
-      end: 24,
-    },
     poster:
       "https://i.vimeocdn.com/video/302056007-da211970f204dc0542011e161b1a3d7a4856c7d5b394199d6ffcce497c5e0f44-d_640?region=us",
     actor: "demonstrator",

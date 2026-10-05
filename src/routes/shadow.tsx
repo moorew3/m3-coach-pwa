@@ -212,7 +212,6 @@ function ShadowMode() {
             <CoachMotion
               url={motion.url}
               vimeoId={motion.vimeoId}
-              vimeoSegment={motion.vimeoSegment}
               poster={motion.poster}
               mirrored={mirrored}
               playing={running && lead === null}

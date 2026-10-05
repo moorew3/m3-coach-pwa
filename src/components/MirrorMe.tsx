@@ -115,7 +115,6 @@ function MotionPlayer({
         {motion?.vimeoId ? (
           <EmbeddedMotion
             id={motion.vimeoId}
-            segment={motion.vimeoSegment}
             playing={playing}
             mirrored={mirrored}
             label={`${move.name} — moving demonstration`}
@@ -442,7 +441,6 @@ function PhaseBoardDetail({
             {motion.vimeoId ? (
               <EmbeddedMotion
                 id={motion.vimeoId}
-                segment={motion.vimeoSegment}
                 mirrored={mirrored}
                 label={`${move.name} — moving demonstration`}
                 poster={motion.poster}
