@@ -93,3 +93,8 @@ export function stopRecordedCoachAudio(group: string) {
     void pump();
   }
 }
+
+/** Includes a pending clip load so reminders cannot interrupt its instruction. */
+export function recordedCoachAudioBusy(): boolean {
+  return current !== null;
+}

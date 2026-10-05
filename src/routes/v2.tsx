@@ -19,9 +19,9 @@ import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-w
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
-import { unlockRecordedCoachAudio } from "@/v2/recorded-coach-player";
+import { unlockRecordedCoachAudio, recordedCoachAudioBusy } from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
-import { playFridayPremiumCue, stopFridayPremiumCue } from "@/v2/friday-premium-voice";
+import { playFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -93,6 +93,8 @@ function V2Coach() {
   const [roundFeedback, setRoundFeedback] = useState<string | null>(null);
   const latestBoxing = useRef<BoxingSnapshot | null>(null);
   const lastDirectedCue = useRef("");
+  const coachingClock = useRef({ key: "", start: 0, last: "" });
+  const lastSpokenFeedback = useRef({ text: "", at: 0 });
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
   const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
 
@@ -240,11 +242,14 @@ function V2Coach() {
 
   const giveFeedback = useCallback(
     (cue: string) => {
-      // Dynamic form feedback remains visual until server-authenticated
-      // Marcus speech is available. Never substitute a different speaker.
       setLiveCue(cue);
+      const now = Date.now();
+      if (!voiceOn || !session.running || cue === lastSpokenFeedback.current.text ||
+          now - lastSpokenFeedback.current.at < 12_000 || recordedCoachAudioBusy() ||
+          (typeof window !== "undefined" && window.speechSynthesis?.speaking)) return;
+      if (speakDetailedExercise(cue)) lastSpokenFeedback.current = { text: cue, at: now };
     },
-    [],
+    [voiceOn, session.running],
   );
 
   const captureReps = useCallback(
@@ -305,12 +310,12 @@ function V2Coach() {
       const focusedCue = session.setIndex === 0
         ? `${movementCue} ${breathingCue}`
         : (session.setIndex % 2 === 1 ? movementCue : breathingCue);
-      message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. ${focusedCue}`;
+      message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. Target: ${exercise.reps ?? `${exercise.seconds ?? 30} seconds`}.${targetWeight > 0 ? ` Working weight: ${targetWeight} pounds.` : ""} ${setupCue} ${focusedCue}${exercise.seconds ? "" : " When your prescribed reps are finished, tap complete set or say complete set with hands-free commands on."}`;
     } else if (session.phase === "rest") {
       message = `Rest ${exercise.restSeconds} seconds. Reset your breathing and prepare for set ${session.setIndex + 1}.`;
     } else if (session.phase === "transition") {
       const setWord = exercise.sets === 1 ? "set" : "sets";
-      message = `Next is ${exercise.name}. Your target is ${exercise.sets} ${setWord}: ${exercise.reps}. Set up: ${setupCue} Then: ${movementCue} ${breathingCue}`;
+      message = `Next: ${exercise.name}. ${exercise.sets} ${setWord}, ${exercise.reps ?? `${exercise.seconds ?? 30} seconds`}. ${setupCue}`;
     } else if (session.phase === "complete") {
       message = "Workout complete. Good work finishing your session.";
     }
@@ -318,34 +323,21 @@ function V2Coach() {
     if (message) {
       setLiveCue(message);
       if (voiceOn) {
-        const premiumFriday = session.workout.id === "weekly-fri";
-        if (session.phase === "rest") {
-          stopFridayPremiumCue();
-          void playMarcusCue("rest").then((started) => {
-            if (!started) speakDetailedExercise(message);
+        // Speak the actual instruction first. A generic "next" is not coaching.
+        if (session.phase === "work" && session.setIndex === 0 && hasFridayPremiumCue(exercise.motionKey)) {
+          let cancelled = false;
+          void playFridayPremiumCue(exercise.motionKey).then((started) => {
+            if (!cancelled && !started && !speakDetailedExercise(message)) {
+              setVoiceError("Detailed male coaching audio is unavailable on this device. Follow the coaching instructions on screen; short recorded cues are still available.");
+              void playMarcusCue("start");
+            }
           });
-        } else if (session.phase === "transition") {
-          if (!premiumFriday && !speakDetailedExercise(message))
-            void playMarcusCue("next");
-        } else if (session.phase === "complete") {
-          stopFridayPremiumCue();
-          void playMarcusCue("complete").then((started) => {
-            if (!started) speakDetailedExercise(message);
-          });
-        } else if (session.phase === "work") {
-          if (premiumFriday && session.setIndex === 0) {
-            stopDetailedExerciseSpeech();
-            void playFridayPremiumCue(exercise.motionKey).then((started) => {
-              if (!started && !speakDetailedExercise(message))
-                void playMarcusCue("start");
-            });
-          } else if (premiumFriday) {
-            void playMarcusCue(session.setIndex === 1 ? "setTwo" : "start").then((started) => {
-              if (!started) speakDetailedExercise(message);
-            });
-          } else if (!speakDetailedExercise(message)) {
-            void playMarcusCue(session.setIndex === 0 ? "start" : "setTwo");
-          }
+          return () => { cancelled = true; stopFridayPremiumCue(); };
+        } else if (speakDetailedExercise(message)) {
+          setVoiceError(null);
+        } else {
+          setVoiceError("Detailed male coaching audio is unavailable on this device. Follow the coaching instructions on screen; short recorded cues are still available.");
+          void playMarcusCue(session.phase === "rest" ? "rest" : session.phase === "complete" ? "complete" : session.phase === "transition" ? "next" : "setTwo");
         }
       }
     }
@@ -353,6 +345,36 @@ function V2Coach() {
     session.workout.id, session.exerciseIndex, session.setIndex,
     session.phase, session.running, voiceOn, exercise?.id,
   ]);
+
+  // Brief reminders during the set; never infer unseen reps or form.
+  useEffect(() => {
+    if (!session.running || !exercise || !["work", "rest"].includes(session.phase)) return;
+    const key = `${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase}`;
+    if (coachingClock.current.key !== key) {
+      coachingClock.current = { key, start: session.elapsedSeconds, last: "" };
+      return;
+    }
+    const elapsed = session.elapsedSeconds - coachingClock.current.start;
+    let checkpoint = "";
+    let message = "";
+    if (session.phase === "rest" && session.phaseSecondsLeft === 5) {
+      checkpoint = "ready";
+      message = `Five seconds. Get ready for ${exercise.name}, set ${session.setIndex + 1}.`;
+    } else if (session.phase === "work" && session.phaseSecondsLeft === 10 && (exercise.seconds ?? 0) >= 25) {
+      checkpoint = "finish";
+      message = "Ten seconds left. Keep your technique controlled.";
+    } else if (session.phase === "work" && elapsed >= 25 && elapsed % 30 === 25 && (session.phaseSecondsLeft === null || session.phaseSecondsLeft > 15)) {
+      checkpoint = `form:${elapsed}`;
+      const cue = exercise.cues[1 + (Math.floor(elapsed / 30) % Math.max(1, exercise.cues.length - 1))] ?? "Move smoothly and breathe steadily.";
+      message = `${exercise.name}. ${cue}`;
+    }
+    if (!message || coachingClock.current.last === checkpoint) return;
+    coachingClock.current.last = checkpoint;
+    // Let the initial instruction finish; reminders must never double-talk.
+    if (recordedCoachAudioBusy() || (typeof window !== "undefined" && window.speechSynthesis?.speaking)) return;
+    setLiveCue(message);
+    if (voiceOn) speakDetailedExercise(message);
+  }, [session.elapsedSeconds, session.running, session.phaseSecondsLeft, session.phase, session.setIndex, session.exerciseIndex, session.workout.id, exercise, voiceOn]);
 
   // The existing speech recognizer manages Android microphone restarts and
   // ignores the coach's own spoken responses. Workout state remains authoritative.
@@ -447,7 +469,10 @@ function V2Coach() {
                 );
               });
             } else {
-              void playMarcusCue("next");
+              stopMarcusCue();
+              stopFridayPremiumCue();
+              if (!speakDetailedExercise(`${line} ${next?.cues[0] ?? "Finish your current set with control."}`))
+                void playMarcusCue("next");
             }
           }
           return;
@@ -924,7 +949,7 @@ function V2Coach() {
                 {voiceOn ? "Marcus cue voice on" : "Enable Marcus voice"}
               </button>
               <p className="mt-2 text-[11px] text-white/45">
-                Marcus — Warm & Friendly remains the recorded branded cue voice. Because the connected Marcus account cannot generate new exercise-specific speech right now, V2 uses your phone's local voice only for the detailed exercise name, set number and form cue so you are never left hearing only “next.”
+                Coaching follows your exercise, target, set and rest timer. Recorded Marcus instructions play when available; detailed spoken guidance requires a supported male voice on your device.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
