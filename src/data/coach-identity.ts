@@ -171,7 +171,7 @@ const APPROVED_DEMONSTRATOR_MOTION: Record<string, ExerciseMotion> = {
       licenseUrl:
         "https://help.vimeo.com/hc/en-us/articles/12426275096337-Embedding-features-by-plan-type",
       changes:
-        "Original Vimeo footage, working demonstration from 8\u201324 seconds. Audio muted; segment loops. No downloaded or rehosted copy.",
+        "Original Vimeo footage. Audio muted; the complete source video loops, including brief source branding. No downloaded or rehosted copy.",
     },
   },
   chestSupportedRow: {
