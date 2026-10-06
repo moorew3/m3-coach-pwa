@@ -42,6 +42,7 @@ export function CoachMotion({
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const callbackRef = useRef(onLayerChange);
   callbackRef.current = onLayerChange;
 
@@ -108,9 +109,8 @@ export function CoachMotion({
       role="img"
     >
       <div className="absolute inset-0" style={mirrored ? { transform: "scaleX(-1)" } : undefined}>
-        {!failed && (
           <video
-            key={url}
+            key={`${url}:${retryAttempt}`}
             ref={videoRef}
             src={url}
             muted
@@ -148,8 +148,25 @@ export function CoachMotion({
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
             aria-hidden="true"
           />
-        )}
       </div>
+
+      {failed && (
+        <div role="alert" className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/90 p-4 text-center text-sm text-white">
+          <p>The movement video could not load.</p>
+          <button
+            type="button"
+            className="min-h-11 rounded-xl bg-cyan-300 px-4 font-bold text-black"
+            onClick={() => {
+              setFailed(false);
+              setLoaded(false);
+              setIsPlaying(false);
+              setRetryAttempt((attempt) => attempt + 1);
+            }}
+          >
+            Retry movement video
+          </button>
+        </div>
+      )}
 
       {preloadUrl && preloadUrl !== url && (
         <video
