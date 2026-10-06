@@ -348,7 +348,7 @@ function V2Coach() {
           if (started) {
             setVoiceError(null);
           } else {
-            setVoiceError("Full spoken coaching is unavailable: the recorded exercise audio cannot be loaded and this device has no supported male coaching voice. The instructions below remain available. Marcus currently has only short recorded cues.");
+            setVoiceError("Full personal-trainer coaching in your approved Marcus voice is not available yet. Only short Marcus cues can play; exercise instructions and form reminders remain on screen.");
             // A repeated 'start' hides missing instruction audio. Only play
             // the short pack when its words match the actual workout phase.
             if (session.phase === "rest") void playMarcusCue("rest");
@@ -997,7 +997,7 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Coaching follows your exercise, target, set and rest timer. Existing recordings coach the movement on later sets when your device has no supported male voice. Your current set, target and weight appear on screen; spoken updates to those values require device voice support.
+                Only your approved Marcus voice is enabled. Full exercise teaching, form corrections and recovery coaching in that voice are not recorded yet. Follow the current exercise instructions below; short voice cues do not replace full coaching.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (

@@ -32,7 +32,9 @@ export function stopFridayPremiumCue() {
 }
 
 export function hasFridayPremiumCue(motionKey?: string): boolean {
-  return Boolean(motionKey && FRIDAY_KEYS.has(audioKey(motionKey)));
+  // These restored recordings have an unverified speaker. The owner requires
+  // only the approved Marcus voice; retain the assets without playing them.
+  return false;
 }
 
 export function preloadFridayPremiumCue(motionKey?: string) {
