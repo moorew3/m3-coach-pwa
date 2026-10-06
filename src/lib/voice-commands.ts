@@ -9,6 +9,7 @@
  * speaking are dropped, so the app never answers itself.
  */
 import { isCoachSpeaking } from "@/lib/coach-voice";
+import { recordedCoachSpeechActive } from "@/v2/recorded-coach-player";
 
 export type VoiceCommand =
   | "start"
@@ -256,7 +257,7 @@ export function startListening() {
       if (!res.isFinal) continue;
       const phrase = res[0].transcript.trim();
       // The coach's own line must never be treated as a user command.
-      if (isCoachSpeaking()) continue;
+      if (isCoachSpeaking() || recordedCoachSpeechActive()) continue;
       const cmd = matchCommand(phrase);
       set({ heard: phrase, lastCommand: cmd, error: null });
       if (cmd && handler) handler(cmd, phrase.toLowerCase());

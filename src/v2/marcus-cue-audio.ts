@@ -1,19 +1,10 @@
 import { playRecordedCoachAudio, preloadRecordedCoachAudio, stopRecordedCoachAudio } from "./recorded-coach-player";
-/**
- * EXACT MARCUS CUE AUDIO
- * ------------------------------------------------------------------
- * These clips were generated in the owner's connected HeyGen workspace with
- * voice 0fadce1e82af494a93873aa38ea8d106 (Marcus - Warm & Friendly).
- *
- * The current HeyGen Free speech allowance is exhausted, so V2 uses this
- * compact reusable pack without substituting a different speaker. Detailed
- * coaching text remains on screen until a server-side HeyGen credential is
- * available for dynamic Marcus speech.
- */
+/** All clips use the owner's approved Marcus voice. Full trainer recordings
+ * share the same gesture-unlocked output as the short control cues. */
 
 export type MarcusCue = "intro" | "start" | "rest" | "next" | "setTwo" | "complete";
 
-const INTRO_URL = "/media/marcus/intro.wav";
+const INTRO_URL = "/media/marcus-trainer/intro.mp3";
 const PACK_URL = "/media/marcus/cues.wav";
 
 const SEGMENTS: Record<Exclude<MarcusCue, "intro">, readonly [number, number]> = {

@@ -250,6 +250,60 @@ const COACHING: Record<string, CoachingTriple> = {
   ],
 };
 
+
+const ADDITIONAL_COACHING: Record<string, CoachingTriple> = {
+  "inclinePress": [
+    "Set your feet firmly and your upper back against the incline bench, with dumbbells beside your upper chest.",
+    "Press smoothly upward without rolling your shoulders forward, then lower the weights under control.",
+    "Breathe in as you lower and out as you press. Keep your ribs down and avoid bouncing."
+  ],
+  "bentOverRow": [
+    "Hinge at your hips with soft knees, a long spine, and the weight hanging close to your legs.",
+    "Pull your elbows back toward your hips without lifting your torso, then lower slowly.",
+    "Breathe out as you row and in as you lower. Keep your stomach braced and avoid swinging."
+  ],
+  "facePull": [
+    "Set the rope around face height. Stand balanced with your ribs down and take a light, controlled load.",
+    "Pull the rope toward your face, separating your hands beside your temples. Return slowly without leaning back.",
+    "Breathe out as you pull. Keep your neck relaxed and your shoulders away from your ears."
+  ],
+  "hangingKneeRaise": [
+    "Set your forearms on the captain's chair pads, grip the handles, and keep your back against the support.",
+    "Lift your knees toward your chest without swinging, then lower slowly.",
+    "Breathe out as you lift. Keep your shoulders down and your stomach braced."
+  ],
+  "vSitCrunch": [
+    "Sit with your knees bent, lean back slightly with a long spine, and brace your stomach.",
+    "Draw your knees toward your chest as your torso comes forward, then extend only as far as you can control.",
+    "Breathe out as you tuck in. Keep the motion smooth and shorten the range if your lower back loses control."
+  ],
+  "sidePlank": [
+    "For the side plank, place your elbow under your shoulder and lift your hips into a straight line. Use bent knees if needed.",
+    "Hold your hips steady without rolling forward or letting your waist drop. Switch sides as prescribed.",
+    "Breathe steadily through the hold. If you choose side crunches, use slow controlled repetitions instead of the hold."
+  ],
+  "reverseLunge": [
+    "Stand tall with your feet under your hips and your weights controlled by your sides.",
+    "Step one foot back, lower both knees under control, then push through the front foot to stand. Alternate as prescribed.",
+    "Breathe in as you lower and out as you stand. Keep your front knee tracking with your toes."
+  ],
+  "legExtension": [
+    "Adjust the seat so your knee lines up with the machine pivot and the pad rests just above your ankles.",
+    "Straighten your knees smoothly, squeeze your thighs, then lower slowly without kicking the weight.",
+    "Breathe out as you lift and in as you lower. Keep your hips against the seat."
+  ],
+  "calfRaise": [
+    "Set the balls of your feet firmly on the platform. Keep your knees softly straight when standing, or bent when seated.",
+    "Rise onto your toes, pause at the top, then lower your heels through a comfortable range without bouncing.",
+    "Breathe steadily and keep the pressure through the balls of your feet. Make each repetition controlled."
+  ],
+  "boxingCombination": [
+    "Set your stance with your hands by your cheeks, chin tucked, and knees soft.",
+    "Snap the jab back to guard, turn your hips through the cross, then reset your feet before the next combination.",
+    "Breathe out with each punch. Keep your shoulders relaxed and your balance under you."
+  ]
+};
+
 const FALLBACK: Record<V2Exercise["category"], CoachingTriple> = {
   strength: [
     "Set your body and equipment before you start the first rep.",
@@ -287,6 +341,7 @@ export function coachingCuesFor(
   motionKey: string | undefined,
   category: V2Exercise["category"],
 ): string[] {
-  const triple = (motionKey && COACHING[motionKey]) || FALLBACK[category];
+  const key = motionKey === "backSquat" ? "squat" : motionKey === "treadmillWalk" ? "easyWalk" : motionKey;
+  const triple = (key && (ADDITIONAL_COACHING[key] || COACHING[key])) || FALLBACK[category];
   return [...triple];
 }

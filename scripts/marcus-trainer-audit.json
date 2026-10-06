@@ -1,0 +1,609 @@
+{
+  "account": "m3alertsbackup@gmail.com",
+  "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+  "recordings": [
+    {
+      "key": "shoulderPress",
+      "text": "Dumbbell Shoulder Press. Sit or stand tall with the dumbbells at shoulder height and your core braced. Press the weights overhead in a smooth path without leaning back or shrugging. Exhale as you press, inhale as you lower, and keep every rep controlled and pain-free.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=898affcf-3499-4195-9804-cb189cc7e43d.wav",
+      "duration": 18.886530612244897,
+      "request_id": "61e65c94d659407d9366e81291000b72",
+      "sha256": "ef74e1601a95410cf0f79a3eacdf91ffe3ed2a9b7ba4fbc3df6f4701df2c915c",
+      "bytes": 151554
+    },
+    {
+      "key": "inclinePress",
+      "text": "Incline Press. Set your feet firmly and your upper back against the incline bench, with dumbbells beside your upper chest. Press smoothly upward without rolling your shoulders forward, then lower the weights under control. Breathe in as you lower and out as you press. Keep your ribs down and avoid bouncing.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=c27c9656-7e47-47ed-b9a2-61443f4d9c36.wav",
+      "duration": 21.49877551020408,
+      "request_id": "1e4be48850b5440a8ea8b3ce1a591552",
+      "sha256": "028edbd77c09d18208ab1944ace79aea2ea6ab1df9f20db67b349b2cc784b023",
+      "bytes": 172452
+    },
+    {
+      "key": "chestPress",
+      "text": "Chest Press. Set the seat and handles so your hands start around chest level with your back supported. Press forward smoothly without shrugging or letting your shoulders roll off the pad. Exhale as you press, inhale as you return, and stop short of any painful shoulder range.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=462a0e34-6543-4fc4-b220-e9dac4bcea79.wav",
+      "duration": 17.47591836734694,
+      "request_id": "d06256d76c184bbb81b8971ddd4185be",
+      "sha256": "2660e10fbd2c1f80e1c061e7986978423e35e791b128b8e6a40330f2bf628170",
+      "bytes": 140269
+    },
+    {
+      "key": "lateralRaise",
+      "text": "Lateral Raise. Stand tall with the dumbbells by your sides, elbows softly bent, and core braced. Raise the weights out to the sides only as high as you can control without shrugging. Exhale on the lift, inhale on the lowering phase, and lead with the elbows instead of the hands.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6e4febd6-deeb-4834-86c5-1dd90328d935.wav",
+      "duration": 18.93877551020408,
+      "request_id": "64c5d213eaec4c74aaa6a8ff08a67247",
+      "sha256": "58263f3f252f7f516030f697700fb0588560013e8144e72021dac1184a34452c",
+      "bytes": 151972
+    },
+    {
+      "key": "tricepsPressdown",
+      "text": "Triceps. Stand tall with your elbows tucked to your sides and the cable or band close to your body. Press down by straightening the elbows while keeping your upper arms still. Exhale as you press, inhale as you return, and avoid leaning your body into the movement.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=fc38162a-d58d-48ca-aee1-29a5f2e65220.wav",
+      "duration": 19.069387755102042,
+      "request_id": "01066abc09264c929e1d3685b12d3b57",
+      "sha256": "165269812b2ab776f0674bb9739cfa87365856c65a0a877cb007eadd673433d0",
+      "bytes": 153017
+    },
+    {
+      "key": "latPulldown",
+      "text": "Lat Pulldown. Sit tall with your thighs secured and take a comfortable grip on the bar. Pull the bar toward your upper chest by driving your elbows down instead of leaning far back. Exhale on the pull, inhale on the return, and let the shoulders rise only under control.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=2eea1d82-d513-4722-8f11-99e47d6fe1e3.wav",
+      "duration": 17.89387755102041,
+      "request_id": "7834361be0d24d5599decb483f2e6a9a",
+      "sha256": "b3cb107ecc665053d4e476f26e47c9ca4b00d5615be514ad5011dcd9665fbe61",
+      "bytes": 143613
+    },
+    {
+      "key": "seatedRow",
+      "text": "Row. Sit tall with a neutral spine, chest open, and shoulders relaxed. Row the handle toward your torso by driving your elbows back without rocking your body. Exhale on the pull, inhale on the return, and keep the movement smooth from start to finish.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=49fadd04-12b7-4893-92e0-168b138be5b8.wav",
+      "duration": 19.80081632653061,
+      "request_id": "22e338016353426686b6b43a41eb638e",
+      "sha256": "1e79bd21879fe22473ad9ff8d066bc5f322412b533578ba456f4a3b1b5c6676f",
+      "bytes": 158868
+    },
+    {
+      "key": "bentOverRow",
+      "text": "Bent-Over Row. Hinge at your hips with soft knees, a long spine, and the weight hanging close to your legs. Pull your elbows back toward your hips without lifting your torso, then lower slowly. Breathe out as you row and in as you lower. Keep your stomach braced and avoid swinging.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=2976cad8-35ea-4e3d-b0cc-7a8fda55b5a5.wav",
+      "duration": 17.684897959183672,
+      "request_id": "af0a6a59efa54f118e7777dafa30b8f2",
+      "sha256": "fce7518d5f15272b5b6d2db7492140241ba3fc90d61c3a40d8992614021aa725",
+      "bytes": 141941
+    },
+    {
+      "key": "facePull",
+      "text": "Face Pull. Set the rope around face height. Stand balanced with your ribs down and take a light, controlled load. Pull the rope toward your face, separating your hands beside your temples. Return slowly without leaning back. Breathe out as you pull. Keep your neck relaxed and your shoulders away from your ears.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=e8327871-e77e-4f72-ba3d-fdc71d8e0817.wav",
+      "duration": 20.688979591836734,
+      "request_id": "e21cdbbd3b1a4f809c078a02859b2418",
+      "sha256": "8376791d055ede1f194ae4740386413888274108b40e5d8c18db1223f9209a08",
+      "bytes": 165973
+    },
+    {
+      "key": "dumbbellCurl",
+      "text": "Biceps. Stand tall with your elbows close to your ribs and palms facing forward or slightly inward. Curl the dumbbells without swinging your torso or letting your elbows drift forward. Exhale as you curl, inhale as you lower, and control the weight all the way down.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=d5ec0f80-1323-4bd2-9346-3b7be54f3a38.wav",
+      "duration": 17.03183673469388,
+      "request_id": "8d7a668d2f4b42c5933fb398c1ad0a3d",
+      "sha256": "987f31ad32f41ece53a49c0ec134a8bc5d1ed2a8fd0d76f42dc86c0d26061b83",
+      "bytes": 136716
+    },
+    {
+      "key": "boxingStance",
+      "text": "Boxing Stance. Set one foot slightly forward, knees soft, chin tucked, and both hands high. Stay light on your feet and keep your weight balanced so you can move in any direction. Breathe steadily, keep your shoulders loose, and return to this position after every action.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=01c6d43f-0a5a-4889-8ac4-3000d686a6d9.wav",
+      "duration": 18.599183673469387,
+      "request_id": "776d2913fb3c4462b05561c99045d85f",
+      "sha256": "59361874e2a2eb4c16642a0aa38cd14a60591142ca97c2304b17c8130dde1b66",
+      "bytes": 149255
+    },
+    {
+      "key": "jab",
+      "text": "Jab. Start in your boxing stance with your lead hand high and rear hand protecting your face. Drive the lead fist straight out and snap it directly back to guard without reaching. Exhale sharply on the punch, keep the shoulder relaxed, and let the feet stay balanced underneath you.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=83e95467-c5c4-4b8c-847d-553ee93ce0bd.wav",
+      "duration": 18.729795918367348,
+      "request_id": "998fdd4a9a8040df99fb23e805c9f222",
+      "sha256": "c0c78d2306a7d36b14d72a965c05f1de162e4731dd634c5dc96cfc3df31f3730",
+      "bytes": 150300
+    },
+    {
+      "key": "cross",
+      "text": "Cross. Start in guard with your rear heel ready to turn and your lead hand protecting your face. Drive the rear hand straight through while rotating the hip and shoulder, then return immediately to guard. Exhale on the punch, pivot smoothly, and do not over-rotate or fall forward.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=958e4b7a-ac0d-44de-97f0-fd9164280823.wav",
+      "duration": 19.61795918367347,
+      "request_id": "3330012e44294a5baafa921414f16acf",
+      "sha256": "a9cce89bd1f2a9e0b7a55d94b16e6bb29ece6fda396ff3b8d115ab3877822dcc",
+      "bytes": 157405
+    },
+    {
+      "key": "jabCross",
+      "text": "Jab\u2013Cross Combination. Set your stance and guard before the combination starts. Snap the jab out and back, then drive the cross with coordinated hip rotation and recover to guard. Exhale on each punch and keep the combination crisp without sacrificing balance.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=062b07a6-5cc5-432e-a1b2-c15675ef511f.wav",
+      "duration": 16.822857142857142,
+      "request_id": "003bd53bb1c04f2a992fb569b7155318",
+      "sha256": "df864b53d34412bf3f68a6e71d3dbaf0bf2fa248c066309c2687c6e9e332be0a",
+      "bytes": 135044
+    },
+    {
+      "key": "defensiveReset",
+      "text": "Defensive Reset / Movement. Begin in a balanced guard with your feet under you and your chin tucked. Use the prescribed slip, step, or reset movement, then re-establish your stance before the next action. Breathe steadily, keep your eyes forward, and never cross your feet during the reset.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6aeeefcc-00bf-4317-a094-20f3c881d17a.wav",
+      "duration": 17.94612244897959,
+      "request_id": "a684b75caeea4fa6b303f75065de954b",
+      "sha256": "d76aa47992f3f00fb5821e577ceccdaa4fdbe84e25c50c8fa161dd4c653fcf82",
+      "bytes": 144030
+    },
+    {
+      "key": "boxingCombination",
+      "text": "Shadow Boxing. Set your stance with your hands by your cheeks, chin tucked, and knees soft. Snap the jab back to guard, turn your hips through the cross, then reset your feet before the next combination. Breathe out with each punch. Keep your shoulders relaxed and your balance under you.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=4546a441-370e-470f-9b54-afef69ec1588.wav",
+      "duration": 19.04326530612245,
+      "request_id": "cf3f9bff1298401094214799d0860b6c",
+      "sha256": "47257251dc16b69a86da8d90f48d7f6acd2457654817585ad239357273f8361d",
+      "bytes": 152808
+    },
+    {
+      "key": "frontKick",
+      "text": "Front Kick. Set your guard, shift your weight onto the support leg, and lift the working knee first. Extend the lower leg into the front kick, then recoil the knee before placing the foot down. Exhale on the kick, keep your torso tall, and prioritize balance over height or power.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=b348e87c-1764-4260-a2d0-03b0fb5e1820.wav",
+      "duration": 21.15918367346939,
+      "request_id": "9add6cbbf9b34cc684e8140b7c7d80a9",
+      "sha256": "613c36e63979211ccb074e2febece86336525e2fd70d02de66d8c75cbcb2f176",
+      "bytes": 169735
+    },
+    {
+      "key": "roundKick",
+      "text": "Round Kick. Set your guard and balance on the support leg before turning the hip. Pivot the support foot, rotate the hip through the kick, then recoil and return to stance. Exhale on contact, keep the motion controlled, and reduce the range if your balance breaks.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=7e8de182-e5b1-410b-ba90-e9db8baee157.wav",
+      "duration": 18.808163265306124,
+      "request_id": "bc299ad2b5e6488595688a572bc4cf9f",
+      "sha256": "37129c94af1cc8e9822d1d568f3749dd69afb9eeb6298c46706eb3328a332a86",
+      "bytes": 150927
+    },
+    {
+      "key": "kneeChamber",
+      "text": "Knee Chamber. Start in guard with your weight balanced and your support foot stable. Drive one knee upward under control, then return the foot to stance before repeating. Exhale as the knee rises, keep your torso tall, and avoid leaning back to create height.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=f5886463-c7ed-4508-b98a-14024e2395ec.wav",
+      "duration": 18.128979591836735,
+      "request_id": "3da093ef14ce46ca863bf66331b7c225",
+      "sha256": "a3ee054ddd4e1d8ab466935b23c02c033a843c28e797058d0528951e50226d5b",
+      "bytes": 145493
+    },
+    {
+      "key": "guardReset",
+      "text": "Guard / Reset Drill. Bring both hands back to your cheeks with your elbows controlled and chin tucked. Reset your feet underneath you before starting the next combination. Take one steady breath, relax the shoulders, and make balance the priority.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=2bf58ff4-1356-4f88-9143-7be672062460.wav",
+      "duration": 16.535510204081632,
+      "request_id": "58fb5e152c1147e989a90c03df23ccb5",
+      "sha256": "c7ae65b530837f0cb368347e076b97cc8713ccad758a1970c3eca7e30caa8997",
+      "bytes": 132746
+    },
+    {
+      "key": "treadmillWalk",
+      "text": "Treadmill HIIT / Incline Walk. Stand tall, relax your shoulders, and let your arms swing naturally. Walk at the prescribed pace with short, smooth steps and steady posture. Breathe rhythmically and stay at a pace you can control without straining.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6e2d5326-f2cf-4947-a688-461ca4d2f955.wav",
+      "duration": 15.333877551020407,
+      "request_id": "ad6f525f0ec7446eade7943306466e2e",
+      "sha256": "90969a57a59bda81bae5eab58f9b209b75a881cfeecc56c3e733d2c42422a9e7",
+      "bytes": 123133
+    },
+    {
+      "key": "hangingKneeRaise",
+      "text": "Captain\u2019s Chair Knee Raise. Set your forearms on the captain's chair pads, grip the handles, and keep your back against the support. Lift your knees toward your chest without swinging, then lower slowly. Breathe out as you lift. Keep your shoulders down and your stomach braced.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=d2948488-90f3-437e-8fbc-3c68a9eb2f64.wav",
+      "duration": 18.36408163265306,
+      "request_id": "2b59f0b7450148f4a1f5f8189d71d064",
+      "sha256": "f0d01562412a783aaaf2cf204cff3487e2a44aae259dd70eb5674ee09590936b",
+      "bytes": 147374
+    },
+    {
+      "key": "vSitCrunch",
+      "text": "V-Sit Crunch. Sit with your knees bent, lean back slightly with a long spine, and brace your stomach. Draw your knees toward your chest as your torso comes forward, then extend only as far as you can control. Breathe out as you tuck in. Keep the motion smooth and shorten the range if your lower back loses control.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=db243e82-9446-408b-9307-54f3544ef410.wav",
+      "duration": 22.230204081632653,
+      "request_id": "106512bf13b746c48101f021787f3677",
+      "sha256": "7eec08a6e38a9ed13ee1b0e8aa53f3aa22c993048ff43ad22bcb190367ec5ef6",
+      "bytes": 178303
+    },
+    {
+      "key": "sidePlank",
+      "text": "Side Crunch / Plank. For the side plank, place your elbow under your shoulder and lift your hips into a straight line. Use bent knees if needed. Hold your hips steady without rolling forward or letting your waist drop. Switch sides as prescribed. Breathe steadily through the hold. If you choose side crunches, use slow controlled repetitions instead of the hold.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=c54f5a41-7721-40ba-8e72-48146231a071.wav",
+      "duration": 23.719183673469388,
+      "request_id": "f62627e6eaf94026a8e089cea73199ae",
+      "sha256": "11f968c7e4ebf0e6d2138986246821faf75bacd63ff44bd930dcc8239fc0aa84",
+      "bytes": 190215
+    },
+    {
+      "key": "backSquat",
+      "text": "Back Squat. Set your feet in a comfortable squat stance, brace your core, and keep your whole foot planted. Sit down and back between your hips, then drive through the floor to stand tall. Inhale and brace before the descent, exhale through the stand, and keep your knees tracking over your toes.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6312e39f-7dc2-454f-8d0a-1053e33673e1.wav",
+      "duration": 19.461224489795917,
+      "request_id": "3f373d5f8272467b8adf5a23755cd4e6",
+      "sha256": "b5c5e8a029853dd4b53472417d9c785b55adabcc8ecac9f2b33b6a6d904839f6",
+      "bytes": 156151
+    },
+    {
+      "key": "reverseLunge",
+      "text": "Reverse Lunge. Stand tall with your feet under your hips and your weights controlled by your sides. Step one foot back, lower both knees under control, then push through the front foot to stand. Alternate as prescribed. Breathe in as you lower and out as you stand. Keep your front knee tracking with your toes.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=97bed15f-6a6e-45bc-bd11-bcf1ff4a12fe.wav",
+      "duration": 21.368163265306123,
+      "request_id": "49d0fe402c5f4a81b456062574813230",
+      "sha256": "bb968f2c5f46f6f28fb3ffdd69b34ea148d4dea6c2d21072a0492b207b6fc44f",
+      "bytes": 171407
+    },
+    {
+      "key": "legPress",
+      "text": "Leg Press. Set your feet firmly on the platform and keep your hips and back supported against the pad. Lower the platform under control to a comfortable depth, then press through your whole foot without locking the knees hard. Inhale as you lower, exhale as you press, and keep your knees tracking with your toes.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=a1cec1af-b05a-4106-9e83-8befd35e9295.wav",
+      "duration": 19.931428571428572,
+      "request_id": "f3c3e94a600740f9a715fa892f643e9e",
+      "sha256": "b847df5f77d6fe504d9084807521c5524bb1979611d5140ac32d8e9a30282ee1",
+      "bytes": 159913
+    },
+    {
+      "key": "legExtension",
+      "text": "Leg Extension. Adjust the seat so your knee lines up with the machine pivot and the pad rests just above your ankles. Straighten your knees smoothly, squeeze your thighs, then lower slowly without kicking the weight. Breathe out as you lift and in as you lower. Keep your hips against the seat.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=17b2b70a-e01f-427e-8eb0-335136997dda.wav",
+      "duration": 18.311836734693877,
+      "request_id": "1f6167104fc9493eacc679346ad4eff8",
+      "sha256": "72ef0f039a45efc2e458f626f738a6a2e2e51b8c19fd7b9efb46b6c7a5199c55",
+      "bytes": 146956
+    },
+    {
+      "key": "calfRaise",
+      "text": "Standing / Seated Calf Raise. Set the balls of your feet firmly on the platform. Keep your knees softly straight when standing, or bent when seated. Rise onto your toes, pause at the top, then lower your heels through a comfortable range without bouncing. Breathe steadily and keep the pressure through the balls of your feet. Make each repetition controlled.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=ea2dccba-ab1a-4363-9aca-49124626a0e6.wav",
+      "duration": 23.61469387755102,
+      "request_id": "3aa0d9fbfc7e4e4caac0985a5dae25b2",
+      "sha256": "c8fad0e18329ce6b7e1f0b1bfd03d8e2699c38d25dd01bf7b625cd468d8d534c",
+      "bytes": 189379
+    },
+    {
+      "key": "easyWalk",
+      "text": "Easy Walk / Treadmill. Stand tall, relax your shoulders, and let your arms swing naturally. Walk at the prescribed pace with short, smooth steps and steady posture. Breathe rhythmically and stay at a pace you can control without straining.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=45b4a7bd-d5d0-43d7-ae0c-d97fb86de381.wav",
+      "duration": 17.31918367346939,
+      "request_id": "52f4dfd97ba1436eadfc01fdb5699237",
+      "sha256": "ea0096c559af39cbf5e5d684dde36616278169af1f346868edb650de8a14e5e8",
+      "bytes": 139015
+    },
+    {
+      "key": "shoulderMobility",
+      "text": "Shoulder Mobility. Stand tall with your ribs stacked over your hips and your neck relaxed. Move your shoulders through a comfortable range with slow circles and controlled reaches. Breathe slowly, keep the motion pain-free, and never force the end range.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=ba674123-4ab3-4bdd-b3ac-9c5c313d7751.wav",
+      "duration": 17.632653061224488,
+      "request_id": "6b21920207c644e4abc8d6b6cba75152",
+      "sha256": "5ceb73e10149c42a231275701bcfd2b43d74564f441b651bdfc077f635ebc6f3",
+      "bytes": 141523
+    },
+    {
+      "key": "bandPullApart",
+      "text": "Band Pull-Apart. Hold the band at chest height with straight but unlocked elbows and hands just wider than shoulder width. Pull the band apart by driving your hands outward and squeezing your shoulder blades together. Exhale as you pull, inhale as you return, and keep your shoulders down away from your ears.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=9fbb12b7-7be4-413b-9fbc-b5e8e7c44ba3.wav",
+      "duration": 19.931428571428572,
+      "request_id": "cfc4affef446436a9680ec38ee608276",
+      "sha256": "2099ebfbbfb547744721a2422de9e765957a0130ac19d40535b06b990cd6f9e5",
+      "bytes": 159913
+    },
+    {
+      "key": "externalRotation",
+      "text": "Shoulder External Rotation. Set your elbow at about ninety degrees and keep it tucked close to your side. Rotate your forearm outward without letting the elbow drift away from your body. Exhale on the rotation, return slowly, and stop before any shoulder pinching or pain.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=9298feb0-34e0-4ae9-8451-c493b284c352.wav",
+      "duration": 17.972244897959182,
+      "request_id": "1fe78b59af474e159fb7435a4bc7633f",
+      "sha256": "130f207b96bdce974ebf60d5d9b9ac35d08c490fc5ab2ad6a0f46a2b0f156717",
+      "bytes": 144239
+    },
+    {
+      "key": "rearDeltFly",
+      "text": "Rear-Delt Fly. Hinge slightly at the hips with a long spine and soft elbows. Open the arms out and back by squeezing through the rear shoulders and upper back. Exhale as you open, lower slowly, and keep your neck relaxed instead of shrugging.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=04ca4a7a-183b-468c-a8e7-72a7c1fb6cb3.wav",
+      "duration": 17.684897959183672,
+      "request_id": "352bcbcecc3042e9814ece2d6257b9fa",
+      "sha256": "9550dc0410ef74a7826cb1572b33ee11d9c33fa7d02cd1d505fe0c72c020591d",
+      "bytes": 141941
+    },
+    {
+      "key": "hammerCurl",
+      "text": "Hammer Curl. Stand tall with a neutral grip, thumbs pointing up, and elbows pinned near your sides. Curl the dumbbells toward your shoulders without rocking or using momentum. Exhale on the curl, inhale on the return, and lower under control.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=ee84d897-3c5a-4afe-868a-89720515287e.wav",
+      "duration": 15.151020408163266,
+      "request_id": "40b7ba91b44449adbcb96ffccb9cdd06",
+      "sha256": "6557d5fcec511ddaeb1555d4777d9232bc2d22a45d626e8d1534f5c3acfd3f46",
+      "bytes": 121670
+    },
+    {
+      "key": "battleRopeFinisher",
+      "text": "Boxing / Battle-Rope Finisher. Set an athletic stance with your knees soft, chest tall, and core braced. Drive the ropes or your boxing rhythm at the prescribed work pace while staying balanced. Breathe continuously, keep the shoulders relaxed, and reduce the pace before your form breaks.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=8f13255d-e403-43da-8827-5bbe4fd116fb.wav",
+      "duration": 21.106938775510205,
+      "request_id": "f2ba0ff09b154241936883fbc8826784",
+      "sha256": "8db70c74515d4e92066342fe635531d04f25e7cd96c0fb95cbd3602ba935b9d3",
+      "bytes": 169317
+    },
+    {
+      "key": "controlledShoulderWork",
+      "text": "Controlled Shoulder Work. Stand tall with your ribs down and your shoulders relaxed. Use small, smooth shoulder motions through only the range that feels comfortable. Breathe steadily and keep the movement controlled with no bouncing or forced range.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=2b78156e-b07e-481a-881f-f8110a3e9ac9.wav",
+      "duration": 17.18857142857143,
+      "request_id": "3682572d06814789ae938062f5e56129",
+      "sha256": "8b83ef7ef5bfd440661c7158915c666908dafb42a185d78960b1c32d1d299cc5",
+      "bytes": 137970
+    },
+    {
+      "key": "squatToCurl",
+      "text": "Squat-to-Curl. Set your feet about shoulder width with the dumbbells controlled at your sides. Sit into a squat, stand through the whole foot, then perform the curl without rushing the transition. Inhale into the squat, exhale as you stand and curl, and keep your knees tracking over your toes.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=2ef9cc12-05be-47e5-bb02-1f0e245bb310.wav",
+      "duration": 20.19265306122449,
+      "request_id": "e552cc670b454efb809b02978054d355",
+      "sha256": "6033b04c4d6f03c7cd5eabe6a96f36d3b20c56bdf6d9592934d9091bd80f4ebf",
+      "bytes": 162003
+    },
+    {
+      "key": "stepAltCurl",
+      "text": "Step + Alternating Curl. Stand tall with room to step and keep the dumbbells controlled by your sides. Take a smooth step while curling the opposite or alternating arm, then reset before the next rep. Breathe continuously, stay upright, and keep the curl strict instead of swinging.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=7a05c83b-1b85-480c-a84a-d850684199b3.wav",
+      "duration": 19.826938775510204,
+      "request_id": "73acab57c4d44f1ea1e7b84b9cc45aa1",
+      "sha256": "ef1ecb7b67e8c5c714310c161d29c53ee1cb9704e33cd12cfb77be76f5c4c0fd",
+      "bytes": 159077
+    },
+    {
+      "key": "stepShoulderPress",
+      "text": "Step + Shoulder Press. Stand tall with the dumbbells at shoulder height and your core braced. Step under control and press overhead only when you are balanced. Exhale on the press, inhale as you reset, and avoid arching your lower back.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=ce49efcf-555d-4d19-8fd6-6d191f48ac32.wav",
+      "duration": 16.22204081632653,
+      "request_id": "797790898a904cf992c9b61beb34d56e",
+      "sha256": "cdbb7eb5373da118065c1d889632e52f65fa666a865a2b0222739c0021234e02",
+      "bytes": 130238
+    },
+    {
+      "key": "reverseStepRow",
+      "text": "Reverse Step + Row. Set the weights or cable with your torso tall and enough room to step back safely. Step back under control, brace, then row by pulling your elbows behind you before returning. Exhale on the row, keep your spine long, and do not yank the weight with momentum.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=93c3df50-cd2b-4011-bd5f-3ffd2dc62046.wav",
+      "duration": 19.408979591836733,
+      "request_id": "9cca23ac8115423fafd5633d6776c339",
+      "sha256": "0a2656dc60824a900cd29d1767c64f9e5852881c775566f76f71f5dc15c26d49",
+      "bytes": 155733
+    },
+    {
+      "key": "lightPunches",
+      "text": "Shadowbox Punches (no weights). Set your boxing stance with your hands high, chin tucked, and knees soft. Throw light, crisp punches and bring each hand straight back to guard. Exhale sharply on each punch and stay relaxed enough to keep your shoulders from tightening.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=e3350f10-e0bc-447c-88dc-d32c0f685053.wav",
+      "duration": 19.04326530612245,
+      "request_id": "a9b8e9eff1124c68b74629bdbf441a86",
+      "sha256": "dcca7e9a426a35fab3f0b58ac1397006dd44f4a116e3f7c46765c60bfa2a78a3",
+      "bytes": 152808
+    },
+    {
+      "key": "farmerMarch",
+      "text": "Farmer / Suitcase March. Stand tall with the weight secure at your side or sides and your ribs stacked over your hips. March slowly by lifting one knee at a time without leaning or letting the weight pull you sideways. Breathe behind the brace, keep your steps quiet, and stay tall through every rep.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=edad07f8-cae8-4d33-95ab-f457e076188a.wav",
+      "duration": 21.368163265306123,
+      "request_id": "3dc53b6d73b444e9a4aea65e05a81453",
+      "sha256": "a624a4d1ec654ead63e80c01f78e590194b48dffac17df6b561d8af5d1a684d9",
+      "bytes": 171407
+    },
+    {
+      "key": "benchPress",
+      "text": "Bench Press. Set your feet firmly, upper back tight on the bench, and hands evenly placed on the bar. Lower the bar under control toward the mid-to-lower chest, then press it back up without bouncing. Inhale and brace on the way down, exhale through the press, and keep your shoulders packed.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=b219c959-c5a7-413a-bbe5-7bc7a461d82d.wav",
+      "duration": 18.93877551020408,
+      "request_id": "bd289092052247929238c581e14338db",
+      "sha256": "8516c4cb5b5c72dab079c7578d2f43a16e4016c85aa79c0db6b1b3d44e06f50b",
+      "bytes": 151972
+    },
+    {
+      "key": "chestSupportedRow",
+      "text": "Chest-Supported Row. Set your chest firmly against the pad with a neutral spine and shoulders relaxed. Row the weights by driving your elbows back and squeezing your shoulder blades together. Exhale on the pull, inhale on the return, and avoid lifting your chest off the support.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=f15121b9-e62f-4ebf-914c-d5685332aee5.wav",
+      "duration": 19.069387755102042,
+      "request_id": "cdd9175972a3413996ec812458d5d8b0",
+      "sha256": "e6b01658331144a4b9e7d964673151144c373275126a4474012dbde2637beddb",
+      "bytes": 153017
+    },
+    {
+      "key": "inclineDumbbellPress",
+      "text": "Incline Dumbbell Press. Set your upper back against the incline bench with the dumbbells over your chest and feet planted. Lower the weights with control, then press up without letting your shoulders roll forward. Inhale as you lower, exhale as you press, and keep the motion smooth and pain-free.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=cea3bd29-ac01-44d2-912a-90c8e247e4d6.wav",
+      "duration": 19.04326530612245,
+      "request_id": "e8864622a1644b3e811cd4148e99ce50",
+      "sha256": "0bace60f6fbcfdcd29b1717bdaa47a565221bc8af2d4c933dee09313543c3963",
+      "bytes": 152808
+    },
+    {
+      "key": "hipFlexorStretch",
+      "text": "Hip-Flexor Stretch. Set a stable split or half-kneeling stance and gently tuck your pelvis. Shift forward only until you feel a stretch across the front of the rear hip. Breathe slowly, keep your ribs down, and never force the stretch into pain.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=681bed94-04fd-455c-ac60-cb8474d0c85f.wav",
+      "duration": 17.50204081632653,
+      "request_id": "9b42638283f04eb49217a5f3db87bcd4",
+      "sha256": "29aa6c464f23e37b10b5847173f490894e9b04b8b488b715a7717ba1102e1348",
+      "bytes": 140478
+    },
+    {
+      "key": "chestMobility",
+      "text": "Chest Mobility. Set a tall posture with your shoulder down and your chest relaxed. Open through the chest gradually using the prescribed arm position or reach. Take slow breaths into the stretch and keep the shoulder out of any painful position.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=14def898-ddfe-47a3-b5c6-1d644580b040.wav",
+      "duration": 16.744489795918366,
+      "request_id": "6f0453f7dfc04da2a3d182423afc9f96",
+      "sha256": "cf3eef4672e7e4ff4c49ec4fc43c1c9bff6ebbd75a460081a9739641dc438049",
+      "bytes": 134417
+    },
+    {
+      "key": "hamstringMobility",
+      "text": "Hamstring Mobility. Set a stable stance with a long spine and the working leg positioned comfortably. Hinge from the hips until you feel a gentle stretch along the back of the thigh. Breathe slowly, keep the back long, and avoid bouncing deeper into the stretch.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=3cb7432b-a961-484b-820e-608113bd141b.wav",
+      "duration": 17.867755102040817,
+      "request_id": "fda97b0e374f444bb094bce9261d16e0",
+      "sha256": "e9a07a5f6106c64249d68669376758a846fa9fe36d83377871100ab308e2ce31",
+      "bytes": 143404
+    },
+    {
+      "key": "lowerBodyMobility",
+      "text": "Optional Easy Mobility. Stand or kneel in a stable position with enough space to move comfortably. Flow slowly through the prescribed hip, knee, and ankle ranges without rushing. Breathe continuously and use only pain-free range with smooth transitions.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=e171fd79-d995-479e-bd46-d0f54e20e864.wav",
+      "duration": 17.841632653061225,
+      "request_id": "5f4806a9397d449386aab4e557787c78",
+      "sha256": "ebef4d1ea3fb3c146a1cffaef6739ab29d1fd2e175416b4ad44e60f768548a0b",
+      "bytes": 143195
+    },
+    {
+      "key": "deadBug",
+      "text": "Dead Bug. Lie on your back with your knees over your hips, arms up, and lower back gently braced toward the floor. Extend the opposite arm and leg slowly without letting your ribs flare or back arch. Exhale through each extension, inhale as you reset, and make the range smaller if your back lifts.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=5df0ca08-c56e-4240-8c1c-73ac4452581f.wav",
+      "duration": 19.722448979591835,
+      "request_id": "538e449e7e3b4a9c9d71dd3385da6ed1",
+      "sha256": "b67a36a08edcac705fa9585728e9b9ac0dcdb930cf7423e1c296cbfdcb1a58c7",
+      "bytes": 158241
+    },
+    {
+      "key": "gluteBridge",
+      "text": "Glute Bridge (activation). Lie on your back with your feet planted, knees bent, and ribs down. Drive through your feet and squeeze your glutes to lift your hips without over-arching your back. Exhale as you lift, inhale as you lower, and keep your knees tracking straight ahead.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=fb6bb209-c477-412c-b959-4f306d9c719f.wav",
+      "duration": 19.461224489795917,
+      "request_id": "dcd9aba0b7c64447947cd87fb0eebde5",
+      "sha256": "9c854ddaf9661d85581be26db61e44d061e7cba9e021862a961f4c219fd3f3e0",
+      "bytes": 156151
+    },
+    {
+      "key": "squat",
+      "text": "Squat. Set your feet in a comfortable squat stance, brace your core, and keep your whole foot planted. Sit down and back between your hips, then drive through the floor to stand tall. Inhale and brace before the descent, exhale through the stand, and keep your knees tracking over your toes.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=b3c162db-b1de-4d04-8e66-3343eab6900c.wav",
+      "duration": 18.494693877551022,
+      "request_id": "4901935938d749c1a16ed1020bd2d681",
+      "sha256": "8bdb34b04481cb2c9d2d83bef9b75e06321a6365c845db7b2ed531ce081e1ec8",
+      "bytes": 148419
+    },
+    {
+      "key": "romanianDeadlift",
+      "text": "Romanian Deadlift. Stand tall with the weight close to your thighs, knees softly bent, and lats engaged. Push your hips back while keeping the weight close until your hamstrings load, then drive the hips forward. Inhale and brace on the hinge, exhale as you stand, and keep your spine long throughout.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=ce962f41-40f5-4ddf-acda-7b2544741804.wav",
+      "duration": 19.435102040816325,
+      "request_id": "d15d9ad7d9ca4eb380b45e3e9f44e5e8",
+      "sha256": "6993bf2bc8c24d9a6986f8909f2d5ae169c396c2220b1531d28fa09489bc572b",
+      "bytes": 155942
+    },
+    {
+      "key": "trapBarDeadlift",
+      "text": "Trap-Bar Deadlift. Step into the trap bar, center your feet, brace your core, and set your shoulders over a strong grip. Push the floor away and stand tall with hips and shoulders rising together. Take a breath and brace before each rep, exhale near the top, and lower with control instead of dropping.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=18ed448a-d4be-4416-906f-cabc5395f904.wav",
+      "duration": 23.04,
+      "request_id": "4492cf59fe53483890d8b3e56f599202",
+      "sha256": "b7a56e0c68b86ff3918765db47c6679452efecaafd25b2580708fca936490734",
+      "bytes": 184781
+    },
+    {
+      "key": "bulgarianSplitSquat",
+      "text": "Bulgarian Split Squat. Set your rear foot securely and place the front foot far enough forward to stay balanced. Lower straight down under control, then drive through the front foot to stand without bouncing. Inhale on the descent, exhale on the rise, and keep the front knee tracking over the toes.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=06fe55db-2239-4a42-a18a-3672315c145c.wav",
+      "duration": 21.49877551020408,
+      "request_id": "087a573260e546afac8839f4dcdac2d8",
+      "sha256": "e48759f4791a98d91b3c2f9a0fbeb9b168bea0cf18394785d32d1a958b3d2376",
+      "bytes": 172452
+    },
+    {
+      "key": "hamstringCurl",
+      "text": "Hamstring Curl. Set the machine so your knee lines up comfortably with the pivot and keep your hips anchored. Curl your heels toward you without lifting your hips or jerking the pad. Exhale on the curl, inhale on the return, and lower the weight slowly.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=68c4d7c3-5e5d-482b-8460-6529bc5db51d.wav",
+      "duration": 17.711020408163265,
+      "request_id": "d0a63d2954f348d59fcac012338f5b34",
+      "sha256": "7a6bce709c3be686c90cbb839b9d4abc310f051d8d9aeb7b8aeb9e8f8d7616d0",
+      "bytes": 142150
+    },
+    {
+      "key": "suitcaseCarry",
+      "text": "Suitcase Carry. Stand tall with one weight at your side, shoulders level, and core braced. Walk with controlled steps without leaning toward or away from the weight. Breathe behind the brace, keep your ribs stacked over your hips, and switch sides as prescribed.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=73060b03-555f-4672-8829-db3b2938b0bb.wav",
+      "duration": 18.808163265306124,
+      "request_id": "a968b487bc694fd5bf139f0404ef329f",
+      "sha256": "c794f51b9f549fe43109fbe6677aa6e98a88361bbd94c3a940efbb0de40a168c",
+      "bytes": 150927
+    },
+    {
+      "key": "cablePunch",
+      "text": "Cable Punch. Set a staggered stance with the cable behind the punching arm and your core braced. Punch forward by rotating through the torso while keeping the shoulder controlled, then return slowly. Exhale on the punch, resist the cable on the way back, and keep your feet planted and balanced.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=faecaf97-e68c-4d8a-bb35-542ebfe34eee.wav",
+      "duration": 18.91265306122449,
+      "request_id": "1d9a255de1384d568f2f175889cd9774",
+      "sha256": "9f2dc26e1f57b65a2466435cc006005ba7c2f647eab9e16774d6daa6d878c5d5",
+      "bytes": 151763
+    },
+    {
+      "key": "medBallChestPass",
+      "text": "Medicine-Ball Chest Pass. Set an athletic stance with the medicine ball at chest height and your core braced. Drive the ball straight forward from the chest using a coordinated push, then reset your stance. Exhale on the throw, keep your knees soft, and stay balanced instead of falling forward.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=d8d70a49-ac3c-4755-bf1c-e77943ce6a3a.wav",
+      "duration": 19.879183673469388,
+      "request_id": "60c171d51dfa4151beca4ee1a20916aa",
+      "sha256": "68d11dfb53c331a2b21080e97db2fde3ac82e8f2e55350a2341060213f05c4fa",
+      "bytes": 159495
+    },
+    {
+      "key": "rest",
+      "text": "Rest now. Let your breathing settle and relax your grip. Use this time to reset your position. Keep the next set controlled, and adjust the weight if your technique was breaking down.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=64a323b1-9e17-4959-a8df-11621dfce35b.wav",
+      "duration": 11.885714285714286,
+      "request_id": "eac520020d164342bdf7689ae2dea3ce",
+      "sha256": "2622d411b5aacd3e5c6ada3e42dd187eb26e93251b62ba8f7cddaa9bdd60b858",
+      "bytes": 95547
+    },
+    {
+      "key": "ready",
+      "text": "Five seconds. Get into position for your next set.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=a78ab339-4609-4ec9-84c0-ebcadc05517d.wav",
+      "duration": 4.937142857142857,
+      "request_id": "a6399d75a0e04dbc9ff60eccddce1c05",
+      "sha256": "aa0b8a39badbdf16512701ec7fa4549f633705ff1c4faa72ede138091dfa2cfe",
+      "bytes": 39959
+    },
+    {
+      "key": "finish",
+      "text": "Ten seconds left. Keep your movement controlled and your breathing steady.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=a136b439-d272-4df3-bf00-2b2d207c0283.wav",
+      "duration": 5.276734693877551,
+      "request_id": "972a827004f64cd99d783c2c97ce0fbe",
+      "sha256": "0eed3313b5198e85311ad3f2123953e2a193c210ffa26db38099aa50164098fe",
+      "bytes": 42675
+    },
+    {
+      "key": "complete",
+      "text": "You've finished your workout. Take a moment to walk easily and let your breathing settle. Check your results and note how the session felt. Good work staying with it.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=8311a03b-1fad-45d5-8880-68ee0532fc98.wav",
+      "duration": 10.94530612244898,
+      "request_id": "5f17c4988a19490bb301c2add6dd5239",
+      "sha256": "052c2f012785ec84d97e16babcec1ea19e90f4680fa4a43476126a9f0044a23a",
+      "bytes": 88024
+    },
+    {
+      "key": "voiceOn",
+      "text": "I'm here. I'll guide your setup, movement, and breathing. Follow your current set, repetitions, and weight on the screen.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=76921493-375a-4631-9ea8-3eeaf8a59523.wav",
+      "duration": 9.769795918367347,
+      "request_id": "8139b89bf27849a18fbf5c3e61cd7deb",
+      "sha256": "b5879aee82168b5d217c55a84b9223e7711ee05688a3a97f978d21a7e29bb532",
+      "bytes": 78620
+    },
+    {
+      "key": "intro",
+      "text": "Let's get to work. I'll walk you through each movement and keep reminding you about your technique and breathing. Start with the exercise on screen, and stay in control.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=56feb2b2-51ee-4fc0-baac-7278e93db931.wav",
+      "duration": 11.624489795918368,
+      "request_id": "372448f4c84340a7af3affb93b7062b8",
+      "sha256": "52f7854be3a5f4f5aa5f7d19ec436ae4de87288eed53f26933d68446dc322ebe",
+      "bytes": 93457
+    },
+    {
+      "key": "recovery",
+      "text": "Let your breathing settle. Relax your hands and shoulders, then review your setup. For the next set, use a weight and range you can control. Stay ready without rushing your recovery.",
+      "audio_url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=7201f9e6-6f36-40c4-aa7c-d2d565e3a908.wav",
+      "duration": 13.531428571428572,
+      "request_id": "0583ac04cfef49b2934850c3318e91df",
+      "sha256": "378bedbe674c7ea26311c2e9254086c76d2c7a9bf65af40cd51fb1687fa83867",
+      "bytes": 108713
+    }
+  ]
+}

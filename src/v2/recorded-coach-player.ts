@@ -1,6 +1,7 @@
 /** One gesture-unlocked output for recorded coaching across every viewpoint. */
 type Clip = { url: string; group: string; segment?: readonly [number, number]; waitForEnd: boolean; resolve: (started: boolean) => void };
 let context: AudioContext | null = null;
+let lastSpeechEnd = 0;
 let current: { clip: Clip; source: AudioBufferSourceNode | null } | null = null;
 const queue: Clip[] = [];
 const downloads = new Map<string, Promise<ArrayBuffer>>();
@@ -50,6 +51,7 @@ async function pump() {
     source.connect(context.destination);
     playback.source = source;
     source.onended = () => {
+      lastSpeechEnd = Date.now();
       source.disconnect();
       if (clip.waitForEnd) clip.resolve(true);
       if (current === playback) { current = null; void pump(); }
@@ -87,6 +89,7 @@ export function stopRecordedCoachAudio(group: string) {
     // Cancellation is intentional, not a playback failure.
     previous.clip.resolve(true);
     if (previous.source) {
+      lastSpeechEnd = Date.now();
       previous.source.onended = null;
       try { previous.source.stop(); previous.source.disconnect(); } catch { /* already ended */ }
     }
@@ -97,4 +100,9 @@ export function stopRecordedCoachAudio(group: string) {
 /** Includes a pending clip load so reminders cannot interrupt its instruction. */
 export function recordedCoachAudioBusy(): boolean {
   return current !== null;
+}
+
+/** Guard speech recognition against the coach and delayed final transcripts. */
+export function recordedCoachSpeechActive(): boolean {
+  return Boolean(current?.source) || Date.now() - lastSpeechEnd < 800;
 }
