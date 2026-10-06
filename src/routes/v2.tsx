@@ -337,6 +337,14 @@ function V2Coach() {
           }
           const started = await speakDetailedExerciseWhenReady(message);
           if (cancelled) return;
+          // Later sets still need exercise coaching on phones without a
+          // supported device voice. Reuse the restored movement recording
+          // instead of leaving the coach silent or saying only 'start'.
+          if (!started && session.phase === "work" && session.setIndex > 0 && hasFridayPremiumCue(exercise.motionKey)) {
+            const recorded = await playFridayPremiumCue(exercise.motionKey);
+            if (cancelled) return;
+            if (recorded) { setVoiceError(null); return; }
+          }
           if (started) {
             setVoiceError(null);
           } else {
@@ -989,7 +997,7 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Coaching follows your exercise, target, set and rest timer. Existing recorded exercise instructions play when available; detailed spoken guidance requires a supported male voice on your device.
+                Coaching follows your exercise, target, set and rest timer. Existing recordings coach the movement on later sets when your device has no supported male voice. Your current set, target and weight appear on screen; spoken updates to those values require device voice support.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
