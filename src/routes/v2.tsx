@@ -22,6 +22,7 @@ import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cu
 import { unlockRecordedCoachAudio, recordedCoachAudioBusy } from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
+import { playMarcusTrainer } from "@/v2/marcus-trainer-audio";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -298,14 +299,6 @@ function V2Coach() {
     stopFridayPremiumCue();
     stopDetailedExerciseSpeech();
 
-    // A camera-observed boxing round has its own specific post-round coach
-    // review. Don't start the generic "Rest..." announcement first and then
-    // interrupt it with the review (the original double-talking problem).
-    const observedBoxingReview =
-      (session.phase === "rest" || session.phase === "transition" ||
-       session.phase === "complete") &&
-      (latestBoxing.current?.confidence ?? 0) >= 0.65;
-    if (observedBoxingReview) return;
 
     let message = "";
     const setupCue = exercise.cues[0] ?? "Get into a stable starting position.";
@@ -330,31 +323,13 @@ function V2Coach() {
       if (voiceOn) {
         let cancelled = false;
         const announce = async () => {
-          if (session.phase === "work" && session.setIndex === 0 && hasFridayPremiumCue(exercise.motionKey)) {
-            const started = await playFridayPremiumCue(exercise.motionKey);
-            if (cancelled) return;
-            if (started) { setVoiceError(null); return; }
-          }
-          const started = await speakDetailedExerciseWhenReady(message);
+          const started = session.phase === "work"
+            ? await playMarcusTrainer(exercise.motionKey)
+            : session.phase === "transition"
+              ? await playMarcusTrainer(exercise.motionKey, "name")
+              : await speakDetailedExerciseWhenReady(message);
           if (cancelled) return;
-          // Later sets still need exercise coaching on phones without a
-          // supported device voice. Reuse the restored movement recording
-          // instead of leaving the coach silent or saying only 'start'.
-          if (!started && session.phase === "work" && session.setIndex > 0 && hasFridayPremiumCue(exercise.motionKey)) {
-            const recorded = await playFridayPremiumCue(exercise.motionKey);
-            if (cancelled) return;
-            if (recorded) { setVoiceError(null); return; }
-          }
-          if (started) {
-            setVoiceError(null);
-          } else {
-            setVoiceError("Full personal-trainer coaching in your approved Marcus voice is not available yet. Only short Marcus cues can play; exercise instructions and form reminders remain on screen.");
-            // A repeated 'start' hides missing instruction audio. Only play
-            // the short pack when its words match the actual workout phase.
-            if (session.phase === "rest") void playMarcusCue("rest");
-            else if (session.phase === "complete") void playMarcusCue("complete");
-            else if (session.phase === "transition") void playMarcusCue("next");
-          }
+          setVoiceError(started ? null : "Coach audio could not play. Tap Replay exercise coaching or enable the voice again.");
         };
         void announce();
         return () => {
@@ -384,6 +359,9 @@ function V2Coach() {
     if (session.phase === "rest" && session.phaseSecondsLeft === 5) {
       checkpoint = "ready";
       message = `Five seconds. Get ready for ${exercise.name}, set ${session.setIndex + 1}.`;
+    } else if (session.phase === "rest" && elapsed >= 25 && elapsed % 30 === 25 && (session.phaseSecondsLeft ?? 0) > 20) {
+      checkpoint = `recovery:${elapsed}`;
+      message = "Recovery. Settle your breathing and prepare your next set with control.";
     } else if (session.phase === "work" && session.phaseSecondsLeft === 10 && (exercise.seconds ?? 0) >= 25) {
       checkpoint = "finish";
       message = "Ten seconds left. Keep your technique controlled.";
@@ -397,7 +375,11 @@ function V2Coach() {
     // Let the initial instruction finish; reminders must never double-talk.
     if (recordedCoachAudioBusy() || (typeof window !== "undefined" && window.speechSynthesis?.speaking)) return;
     setLiveCue(message);
-    if (voiceOn) speakDetailedExercise(message);
+    if (voiceOn) {
+      if (checkpoint.startsWith("form:")) {
+        void playMarcusTrainer(exercise.motionKey, Math.floor(elapsed / 30) % 2 === 0 ? "movement" : "breathing");
+      } else speakDetailedExercise(message);
+    }
   }, [session.elapsedSeconds, session.running, session.phaseSecondsLeft, session.phase, session.setIndex, session.exerciseIndex, session.workout.id, exercise, voiceOn]);
 
   // The existing speech recognizer manages Android microphone restarts and
@@ -498,8 +480,7 @@ function V2Coach() {
             } else {
               stopMarcusCue();
               stopFridayPremiumCue();
-              if (!speakDetailedExercise(`${line} ${next?.cues[0] ?? "Finish your current set with control."}`))
-                void playMarcusCue("next");
+              if (next) void playMarcusTrainer(next.motionKey, "setup");
             }
           }
           return;
@@ -559,7 +540,7 @@ function V2Coach() {
         const line = reply || observed ||
           "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
         setLiveCue(line);
-        if (voiceOn && !speakDetailedExercise(line)) void playMarcusCue("next");
+        if (voiceOn) speakDetailedExercise(line);
       });
     });
     return () => {
@@ -977,7 +958,7 @@ function V2Coach() {
                 }`}
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-                {voiceOn ? "Marcus cue voice on" : "Enable Marcus voice"}
+                {voiceOn ? "Marcus trainer voice on" : "Enable Marcus voice"}
               </button>
               {hasFridayPremiumCue(exercise?.motionKey) && (
                 <button
@@ -997,7 +978,7 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Only your approved Marcus voice is enabled. Full exercise teaching, form corrections and recovery coaching in that voice are not recorded yet. Follow the current exercise instructions below; short voice cues do not replace full coaching.
+                Your approved Marcus voice teaches each movement, repeats technique and breathing cues during work, and guides recovery. Your current set, reps and weight are shown below. Camera observations and personal questions appear as text when no matching recording is available.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
