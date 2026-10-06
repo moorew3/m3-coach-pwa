@@ -4,7 +4,7 @@ import { playRecordedCoachAudio, preloadRecordedCoachAudio, stopRecordedCoachAud
 
 export type MarcusCue = "intro" | "start" | "rest" | "next" | "setTwo" | "complete";
 
-const INTRO_URL = "/media/marcus-trainer/intro.mp3";
+const INTRO_URL = "/media/marcus-trainer/intro.wav";
 const PACK_URL = "/media/marcus/cues.wav";
 
 const SEGMENTS: Record<Exclude<MarcusCue, "intro">, readonly [number, number]> = {
