@@ -4,8 +4,8 @@ const VIGGLE_BASE = "https://apis.viggle.ai/v1";
 const COACH_IMAGE =
   "https://m3-coach-v2-visual-production.up.railway.app/coach-source/coach-primary-standing.png";
 const MOTION_BY_EXERCISE: Record<string, string> = {
-  externalRotation:
-    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/b565013d-eaf9-4266-bc69-7162b31e3ac0/externalRotationV2.mp4",
+  bentOverRow:
+    "https://m3-coach-v2-visual-production.up.railway.app/media/motion-reference/bentOverRow.mp4",
   shoulderPress:
     "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/332dd309-aaf6-4b52-8c61-c24b8a4ee596/shoulderPress.mp4",
   rearDeltFly:
@@ -100,7 +100,7 @@ export const Route = createFileRoute("/api/public/viggle-motion-admin")({
           return viggle("/renders", {
             method: "POST",
             headers: {
-              "Idempotency-Key": "m3-cable-punch-20261004-v1",
+              "Idempotency-Key": `m3-${exercise}-render-20261006-v1`,
             },
             body: form,
           });
