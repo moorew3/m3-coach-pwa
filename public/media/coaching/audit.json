@@ -1,0 +1,77 @@
+[
+  {
+    "key": "suitcaseCarry",
+    "bytes": 189379,
+    "sha256": "da74a99584cb4d9db821610320944e3423a17161586553c7b08fd9bf4eedc71e"
+  },
+  {
+    "key": "tricepsPressdown",
+    "bytes": 159704,
+    "sha256": "2e55f4ca5a2d0d8107dd3317229a7289d2abb20641543c232dbfa7d1f40c8a0a"
+  },
+  {
+    "key": "dumbbellCurl",
+    "bytes": 170153,
+    "sha256": "b548c52488659dbde682a051fcd9bd365e96218677742661047703ca695887bf"
+  },
+  {
+    "key": "lateralRaise",
+    "bytes": 198156,
+    "sha256": "afe67255db69c209dd021332b82ba3cd9057f8c6d1c16e86f9304ff88288f604"
+  },
+  {
+    "key": "seatedRow",
+    "bytes": 180184,
+    "sha256": "7a72486d3b3cecd4ebe0dfc2e6020b45fcda3938439ffb059533582de13a0243"
+  },
+  {
+    "key": "chestPress",
+    "bytes": 176422,
+    "sha256": "7bfd6f7fe9013dd37ab9c473a2d641ebe87747dfed40249ada32d49c006f7f10"
+  },
+  {
+    "key": "hamstringCurl",
+    "bytes": 194395,
+    "sha256": "6c6800d4e7bd307db8e586a4d11b570ee6ce5f7f30e96090cebecb4faae36bb1"
+  },
+  {
+    "key": "bulgarianSplitSquat",
+    "bytes": 222398,
+    "sha256": "9f879b65cfdcb6fce7cf15965873bd77771aad919b89549eba0696a20353743b"
+  },
+  {
+    "key": "legPress",
+    "bytes": 212367,
+    "sha256": "98afe4875264a4c82fd1f6fa7af9134d7fde411f863fb845e09a7dc1ab91eb94"
+  },
+  {
+    "key": "trapBarDeadlift",
+    "bytes": 229085,
+    "sha256": "c47179f86d9f81fb01bc50a84e4525b0bc77811b203f62ad189fdac3401ef5dc"
+  },
+  {
+    "key": "romanianDeadlift",
+    "bytes": 194395,
+    "sha256": "4f80e521b87e37f6e0a456e62bfbbbad97d0f7ba788615ab3b87890d744740ac"
+  },
+  {
+    "key": "gluteBridge",
+    "bytes": 164719,
+    "sha256": "89d32f19b824e727ac109a08c71c8c3ebd5cc7c2688d5c5a541d04078d892b4a"
+  },
+  {
+    "key": "squat",
+    "bytes": 181438,
+    "sha256": "e9dc11696eb965f5cf89a11e133db0436d5b8b1ac11da22a7c0f13db2fcaf392"
+  },
+  {
+    "key": "lowerBodyMobility",
+    "bytes": 226159,
+    "sha256": "44a640d395d9a9e83d4c4369ba4777178bac6cc70750a129b900ceb01c2f7bf7"
+  },
+  {
+    "key": "easyWalk",
+    "bytes": 218636,
+    "sha256": "c0a9ae535808e1393849ae260342a3cdd1bd4e935080aeac6b7b3127faebdd90"
+  }
+]

@@ -28,28 +28,13 @@ export const Route = createFileRoute("/api/public/friday-coach-audio")({
           return new Response("Unknown Friday coach cue.", { status: 404 });
         }
 
-        const source = process.env[envName];
-        if (!source) {
-          return new Response("Friday coach cue is not configured.", { status: 503 });
-        }
-
-        let upstream: Response;
-        try {
-          upstream = await fetch(source, { signal: AbortSignal.timeout(6000) });
-        } catch {
-          return new Response("Recorded exercise coaching could not be loaded.", { status: 502 });
-        }
-        if (!upstream.ok || !upstream.body) {
-          return new Response("Friday coach cue is temporarily unavailable.", {
-            status: 502,
-          });
-        }
-
-        return new Response(upstream.body, {
+        // Existing recordings are now pinned in the app. Never depend on
+        // an expiring generation URL or regenerate/change the chosen recording.
+        return new Response(null, {
+          status: 307,
           headers: {
-            "Content-Type": "audio/mpeg",
-            "Cache-Control": "private, max-age=3600",
-            "X-M3-Coach-Voice": "premium-friday-male",
+            Location: `/media/coaching/${key}.mp3`,
+            "Cache-Control": "public, max-age=3600",
           },
         });
       },

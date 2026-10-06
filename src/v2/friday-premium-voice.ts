@@ -17,8 +17,14 @@ const FRIDAY_KEYS = new Set([
   "suitcaseCarry",
 ]);
 
+const AUDIO_ALIASES: Record<string, string> = {
+  treadmillWalk: "easyWalk",
+  inclineWalk: "easyWalk",
+  backSquat: "squat",
+};
+const audioKey = (key: string) => AUDIO_ALIASES[key] ?? key;
 function endpoint(key: string) {
-  return `/api/public/friday-coach-audio?key=${encodeURIComponent(key)}`;
+  return `/media/coaching/${audioKey(key)}.mp3`;
 }
 
 export function stopFridayPremiumCue() {
@@ -26,7 +32,7 @@ export function stopFridayPremiumCue() {
 }
 
 export function hasFridayPremiumCue(motionKey?: string): boolean {
-  return Boolean(motionKey && FRIDAY_KEYS.has(motionKey));
+  return Boolean(motionKey && FRIDAY_KEYS.has(audioKey(motionKey)));
 }
 
 export function preloadFridayPremiumCue(motionKey?: string) {
