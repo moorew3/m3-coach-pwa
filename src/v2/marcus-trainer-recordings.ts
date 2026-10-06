@@ -2,7 +2,7 @@
 type TrainerRecording = { url: string; name: readonly [number, number]; setup: readonly [number, number]; movement: readonly [number, number]; breathing: readonly [number, number] };
 export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
   "shoulderPress": {
-    "url": "/media/marcus-trainer/shoulderPress.wav",
+    "url": "/media/marcus-trainer/shoulderPress.mp3",
     "name": [
       0,
       2.552978723404255
@@ -21,7 +21,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "inclinePress": {
-    "url": "/media/marcus-trainer/inclinePress.wav",
+    "url": "/media/marcus-trainer/inclinePress.mp3",
     "name": [
       0,
       1.7806382978723405
@@ -40,7 +40,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "chestPress": {
-    "url": "/media/marcus-trainer/chestPress.wav",
+    "url": "/media/marcus-trainer/chestPress.mp3",
     "name": [
       0,
       1.6902127659574466
@@ -59,7 +59,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "lateralRaise": {
-    "url": "/media/marcus-trainer/lateralRaise.wav",
+    "url": "/media/marcus-trainer/lateralRaise.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -78,7 +78,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "tricepsPressdown": {
-    "url": "/media/marcus-trainer/tricepsPressdown.wav",
+    "url": "/media/marcus-trainer/tricepsPressdown.mp3",
     "name": [
       0,
       1.4178723404255318
@@ -97,7 +97,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "latPulldown": {
-    "url": "/media/marcus-trainer/latPulldown.wav",
+    "url": "/media/marcus-trainer/latPulldown.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -116,7 +116,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "seatedRow": {
-    "url": "/media/marcus-trainer/seatedRow.wav",
+    "url": "/media/marcus-trainer/seatedRow.mp3",
     "name": [
       0,
       1.2817021276595744
@@ -135,7 +135,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "bentOverRow": {
-    "url": "/media/marcus-trainer/bentOverRow.wav",
+    "url": "/media/marcus-trainer/bentOverRow.mp3",
     "name": [
       0,
       1.5082978723404254
@@ -154,7 +154,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "facePull": {
-    "url": "/media/marcus-trainer/facePull.wav",
+    "url": "/media/marcus-trainer/facePull.mp3",
     "name": [
       0,
       1.6902127659574466
@@ -173,7 +173,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "dumbbellCurl": {
-    "url": "/media/marcus-trainer/dumbbellCurl.wav",
+    "url": "/media/marcus-trainer/dumbbellCurl.mp3",
     "name": [
       0,
       1.599787234042553
@@ -192,7 +192,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "boxingStance": {
-    "url": "/media/marcus-trainer/boxingStance.wav",
+    "url": "/media/marcus-trainer/boxingStance.mp3",
     "name": [
       0,
       1.8263829787234043
@@ -211,7 +211,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "jab": {
-    "url": "/media/marcus-trainer/jab.wav",
+    "url": "/media/marcus-trainer/jab.mp3",
     "name": [
       0,
       1.2817021276595744
@@ -230,7 +230,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "cross": {
-    "url": "/media/marcus-trainer/cross.wav",
+    "url": "/media/marcus-trainer/cross.mp3",
     "name": [
       0,
       1.4178723404255318
@@ -249,7 +249,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "jabCross": {
-    "url": "/media/marcus-trainer/jabCross.wav",
+    "url": "/media/marcus-trainer/jabCross.mp3",
     "name": [
       0,
       2.3253191489361704
@@ -268,7 +268,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "defensiveReset": {
-    "url": "/media/marcus-trainer/defensiveReset.wav",
+    "url": "/media/marcus-trainer/defensiveReset.mp3",
     "name": [
       0,
       2.0082978723404254
@@ -287,7 +287,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "boxingCombination": {
-    "url": "/media/marcus-trainer/boxingCombination.wav",
+    "url": "/media/marcus-trainer/boxingCombination.mp3",
     "name": [
       0,
       1.872127659574468
@@ -306,7 +306,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "frontKick": {
-    "url": "/media/marcus-trainer/frontKick.wav",
+    "url": "/media/marcus-trainer/frontKick.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -325,7 +325,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "roundKick": {
-    "url": "/media/marcus-trainer/roundKick.wav",
+    "url": "/media/marcus-trainer/roundKick.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -344,7 +344,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "kneeChamber": {
-    "url": "/media/marcus-trainer/kneeChamber.wav",
+    "url": "/media/marcus-trainer/kneeChamber.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -363,7 +363,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "guardReset": {
-    "url": "/media/marcus-trainer/guardReset.wav",
+    "url": "/media/marcus-trainer/guardReset.mp3",
     "name": [
       0,
       2.3253191489361704
@@ -382,7 +382,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "treadmillWalk": {
-    "url": "/media/marcus-trainer/treadmillWalk.wav",
+    "url": "/media/marcus-trainer/treadmillWalk.mp3",
     "name": [
       0,
       2.82531914893617
@@ -401,7 +401,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "hangingKneeRaise": {
-    "url": "/media/marcus-trainer/hangingKneeRaise.wav",
+    "url": "/media/marcus-trainer/hangingKneeRaise.mp3",
     "name": [
       0,
       2.597659574468085
@@ -420,7 +420,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "vSitCrunch": {
-    "url": "/media/marcus-trainer/vSitCrunch.wav",
+    "url": "/media/marcus-trainer/vSitCrunch.mp3",
     "name": [
       0,
       1.6444680851063829
@@ -439,7 +439,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "sidePlank": {
-    "url": "/media/marcus-trainer/sidePlank.wav",
+    "url": "/media/marcus-trainer/sidePlank.mp3",
     "name": [
       0,
       2.461489361702127
@@ -458,7 +458,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "backSquat": {
-    "url": "/media/marcus-trainer/backSquat.wav",
+    "url": "/media/marcus-trainer/backSquat.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -477,7 +477,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "reverseLunge": {
-    "url": "/media/marcus-trainer/reverseLunge.wav",
+    "url": "/media/marcus-trainer/reverseLunge.mp3",
     "name": [
       0,
       1.6444680851063829
@@ -496,7 +496,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "legPress": {
-    "url": "/media/marcus-trainer/legPress.wav",
+    "url": "/media/marcus-trainer/legPress.mp3",
     "name": [
       0,
       1.5082978723404254
@@ -515,7 +515,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "legExtension": {
-    "url": "/media/marcus-trainer/legExtension.wav",
+    "url": "/media/marcus-trainer/legExtension.mp3",
     "name": [
       0,
       1.5082978723404254
@@ -534,7 +534,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "calfRaise": {
-    "url": "/media/marcus-trainer/calfRaise.wav",
+    "url": "/media/marcus-trainer/calfRaise.mp3",
     "name": [
       0,
       3.5061702127659573
@@ -553,7 +553,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "easyWalk": {
-    "url": "/media/marcus-trainer/easyWalk.wav",
+    "url": "/media/marcus-trainer/easyWalk.mp3",
     "name": [
       0,
       2.597659574468085
@@ -572,7 +572,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "shoulderMobility": {
-    "url": "/media/marcus-trainer/shoulderMobility.wav",
+    "url": "/media/marcus-trainer/shoulderMobility.mp3",
     "name": [
       0,
       1.9168085106382977
@@ -591,7 +591,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "bandPullApart": {
-    "url": "/media/marcus-trainer/bandPullApart.wav",
+    "url": "/media/marcus-trainer/bandPullApart.mp3",
     "name": [
       0,
       1.4178723404255318
@@ -610,7 +610,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "externalRotation": {
-    "url": "/media/marcus-trainer/externalRotation.wav",
+    "url": "/media/marcus-trainer/externalRotation.mp3",
     "name": [
       0,
       2.82531914893617
@@ -629,7 +629,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "rearDeltFly": {
-    "url": "/media/marcus-trainer/rearDeltFly.wav",
+    "url": "/media/marcus-trainer/rearDeltFly.mp3",
     "name": [
       0,
       1.7806382978723405
@@ -648,7 +648,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "hammerCurl": {
-    "url": "/media/marcus-trainer/hammerCurl.wav",
+    "url": "/media/marcus-trainer/hammerCurl.mp3",
     "name": [
       0,
       1.5540425531914892
@@ -667,7 +667,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "battleRopeFinisher": {
-    "url": "/media/marcus-trainer/battleRopeFinisher.wav",
+    "url": "/media/marcus-trainer/battleRopeFinisher.mp3",
     "name": [
       0,
       2.9157446808510636
@@ -686,7 +686,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "controlledShoulderWork": {
-    "url": "/media/marcus-trainer/controlledShoulderWork.wav",
+    "url": "/media/marcus-trainer/controlledShoulderWork.mp3",
     "name": [
       0,
       2.371063829787234
@@ -705,7 +705,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "squatToCurl": {
-    "url": "/media/marcus-trainer/squatToCurl.wav",
+    "url": "/media/marcus-trainer/squatToCurl.mp3",
     "name": [
       0,
       2.052978723404255
@@ -724,7 +724,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "stepAltCurl": {
-    "url": "/media/marcus-trainer/stepAltCurl.wav",
+    "url": "/media/marcus-trainer/stepAltCurl.mp3",
     "name": [
       0,
       3.324255319148936
@@ -743,7 +743,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "stepShoulderPress": {
-    "url": "/media/marcus-trainer/stepShoulderPress.wav",
+    "url": "/media/marcus-trainer/stepShoulderPress.mp3",
     "name": [
       0,
       2.7338297872340425
@@ -762,7 +762,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "reverseStepRow": {
-    "url": "/media/marcus-trainer/reverseStepRow.wav",
+    "url": "/media/marcus-trainer/reverseStepRow.mp3",
     "name": [
       0,
       2.0082978723404254
@@ -781,7 +781,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "lightPunches": {
-    "url": "/media/marcus-trainer/lightPunches.wav",
+    "url": "/media/marcus-trainer/lightPunches.mp3",
     "name": [
       0,
       3.2338297872340425
@@ -800,7 +800,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "farmerMarch": {
-    "url": "/media/marcus-trainer/farmerMarch.wav",
+    "url": "/media/marcus-trainer/farmerMarch.mp3",
     "name": [
       0,
       3.0061702127659573
@@ -819,7 +819,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "benchPress": {
-    "url": "/media/marcus-trainer/benchPress.wav",
+    "url": "/media/marcus-trainer/benchPress.mp3",
     "name": [
       0,
       1.599787234042553
@@ -838,7 +838,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "chestSupportedRow": {
-    "url": "/media/marcus-trainer/chestSupportedRow.wav",
+    "url": "/media/marcus-trainer/chestSupportedRow.mp3",
     "name": [
       0,
       1.9168085106382977
@@ -857,7 +857,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "inclineDumbbellPress": {
-    "url": "/media/marcus-trainer/inclineDumbbellPress.wav",
+    "url": "/media/marcus-trainer/inclineDumbbellPress.mp3",
     "name": [
       0,
       2.371063829787234
@@ -876,7 +876,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "hipFlexorStretch": {
-    "url": "/media/marcus-trainer/hipFlexorStretch.wav",
+    "url": "/media/marcus-trainer/hipFlexorStretch.mp3",
     "name": [
       0,
       2.0082978723404254
@@ -895,7 +895,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "chestMobility": {
-    "url": "/media/marcus-trainer/chestMobility.wav",
+    "url": "/media/marcus-trainer/chestMobility.mp3",
     "name": [
       0,
       1.7359574468085106
@@ -914,7 +914,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "hamstringMobility": {
-    "url": "/media/marcus-trainer/hamstringMobility.wav",
+    "url": "/media/marcus-trainer/hamstringMobility.mp3",
     "name": [
       0,
       2.0082978723404254
@@ -933,7 +933,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "lowerBodyMobility": {
-    "url": "/media/marcus-trainer/lowerBodyMobility.wav",
+    "url": "/media/marcus-trainer/lowerBodyMobility.mp3",
     "name": [
       0,
       2.371063829787234
@@ -952,7 +952,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "deadBug": {
-    "url": "/media/marcus-trainer/deadBug.wav",
+    "url": "/media/marcus-trainer/deadBug.mp3",
     "name": [
       0,
       1.6444680851063829
@@ -971,7 +971,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "gluteBridge": {
-    "url": "/media/marcus-trainer/gluteBridge.wav",
+    "url": "/media/marcus-trainer/gluteBridge.mp3",
     "name": [
       0,
       2.9614893617021276
@@ -990,7 +990,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "squat": {
-    "url": "/media/marcus-trainer/squat.wav",
+    "url": "/media/marcus-trainer/squat.mp3",
     "name": [
       0,
       1.2817021276595744
@@ -1009,7 +1009,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "romanianDeadlift": {
-    "url": "/media/marcus-trainer/romanianDeadlift.wav",
+    "url": "/media/marcus-trainer/romanianDeadlift.mp3",
     "name": [
       0,
       2.0082978723404254
@@ -1028,7 +1028,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "trapBarDeadlift": {
-    "url": "/media/marcus-trainer/trapBarDeadlift.wav",
+    "url": "/media/marcus-trainer/trapBarDeadlift.mp3",
     "name": [
       0,
       1.6444680851063829
@@ -1047,7 +1047,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "bulgarianSplitSquat": {
-    "url": "/media/marcus-trainer/bulgarianSplitSquat.wav",
+    "url": "/media/marcus-trainer/bulgarianSplitSquat.mp3",
     "name": [
       0,
       2.87
@@ -1066,7 +1066,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "hamstringCurl": {
-    "url": "/media/marcus-trainer/hamstringCurl.wav",
+    "url": "/media/marcus-trainer/hamstringCurl.mp3",
     "name": [
       0,
       1.7806382978723405
@@ -1085,7 +1085,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "suitcaseCarry": {
-    "url": "/media/marcus-trainer/suitcaseCarry.wav",
+    "url": "/media/marcus-trainer/suitcaseCarry.mp3",
     "name": [
       0,
       2.052978723404255
@@ -1104,7 +1104,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "cablePunch": {
-    "url": "/media/marcus-trainer/cablePunch.wav",
+    "url": "/media/marcus-trainer/cablePunch.mp3",
     "name": [
       0,
       1.7359574468085106
@@ -1123,7 +1123,7 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
     ]
   },
   "medBallChestPass": {
-    "url": "/media/marcus-trainer/medBallChestPass.wav",
+    "url": "/media/marcus-trainer/medBallChestPass.mp3",
     "name": [
       0,
       2.507234042553191
@@ -1144,24 +1144,24 @@ export const MARCUS_TRAINER_RECORDINGS: Record<string, TrainerRecording> = {
 };
 export const MARCUS_GENERAL_RECORDINGS: Record<string, {url: string}> = {
   "rest": {
-    "url": "/media/marcus-trainer/rest.wav"
+    "url": "/media/marcus-trainer/rest.mp3"
   },
   "ready": {
-    "url": "/media/marcus-trainer/ready.wav"
+    "url": "/media/marcus-trainer/ready.mp3"
   },
   "finish": {
-    "url": "/media/marcus-trainer/finish.wav"
+    "url": "/media/marcus-trainer/finish.mp3"
   },
   "complete": {
-    "url": "/media/marcus-trainer/complete.wav"
+    "url": "/media/marcus-trainer/complete.mp3"
   },
   "voiceOn": {
-    "url": "/media/marcus-trainer/voiceOn.wav"
+    "url": "/media/marcus-trainer/voiceOn.mp3"
   },
   "intro": {
-    "url": "/media/marcus-trainer/intro.wav"
+    "url": "/media/marcus-trainer/intro.mp3"
   },
   "recovery": {
-    "url": "/media/marcus-trainer/recovery.wav"
+    "url": "/media/marcus-trainer/recovery.mp3"
   }
 };
