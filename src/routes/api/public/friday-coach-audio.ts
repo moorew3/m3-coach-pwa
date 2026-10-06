@@ -33,7 +33,12 @@ export const Route = createFileRoute("/api/public/friday-coach-audio")({
           return new Response("Friday coach cue is not configured.", { status: 503 });
         }
 
-        const upstream = await fetch(source);
+        let upstream: Response;
+        try {
+          upstream = await fetch(source, { signal: AbortSignal.timeout(6000) });
+        } catch {
+          return new Response("Recorded exercise coaching could not be loaded.", { status: 502 });
+        }
         if (!upstream.ok || !upstream.body) {
           return new Response("Friday coach cue is temporarily unavailable.", {
             status: 502,

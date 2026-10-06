@@ -5,6 +5,7 @@
  * It never claims to be Marcus.
  */
 let activeUtterance: SpeechSynthesisUtterance | null = null;
+let speechGeneration = 0;
 
 function pickVoice(): SpeechSynthesisVoice | null {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
@@ -34,6 +35,7 @@ function pickVoice(): SpeechSynthesisVoice | null {
 }
 
 export function stopDetailedExerciseSpeech() {
+  speechGeneration++;
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   activeUtterance = null;
@@ -65,4 +67,26 @@ export function speakDetailedExercise(text: string): boolean {
   activeUtterance = utterance;
   window.speechSynthesis.speak(utterance);
   return true;
+}
+
+/** Android can report an empty voice list until voiceschanged arrives. */
+export async function speakDetailedExerciseWhenReady(text: string): Promise<boolean> {
+  if (speakDetailedExercise(text)) return true;
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
+  const generation = speechGeneration;
+  await new Promise<void>((resolve) => {
+    const synth = window.speechSynthesis;
+    const finish = () => {
+      window.clearTimeout(timeout);
+      synth.removeEventListener("voiceschanged", changed);
+      resolve();
+    };
+    const changed = () => { if (pickVoice()) finish(); };
+    const timeout = window.setTimeout(finish, 1500);
+    synth.addEventListener("voiceschanged", changed);
+    changed();
+  });
+  // Pause, mute or an exercise change cancels a pending announcement too.
+  if (generation !== speechGeneration) return false;
+  return speakDetailedExercise(text);
 }

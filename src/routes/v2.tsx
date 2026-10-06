@@ -20,7 +20,7 @@ import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import { unlockRecordedCoachAudio, recordedCoachAudioBusy } from "@/v2/recorded-coach-player";
-import { speakDetailedExercise, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
+import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
@@ -323,22 +323,33 @@ function V2Coach() {
     if (message) {
       setLiveCue(message);
       if (voiceOn) {
-        // Speak the actual instruction first. A generic "next" is not coaching.
-        if (session.phase === "work" && session.setIndex === 0 && hasFridayPremiumCue(exercise.motionKey)) {
-          let cancelled = false;
-          void playFridayPremiumCue(exercise.motionKey).then((started) => {
-            if (!cancelled && !started && !speakDetailedExercise(message)) {
-              setVoiceError("Detailed male coaching audio is unavailable on this device. Follow the coaching instructions on screen; short recorded cues are still available.");
-              void playMarcusCue("start");
-            }
-          });
-          return () => { cancelled = true; stopFridayPremiumCue(); };
-        } else if (speakDetailedExercise(message)) {
-          setVoiceError(null);
-        } else {
-          setVoiceError("Detailed male coaching audio is unavailable on this device. Follow the coaching instructions on screen; short recorded cues are still available.");
-          void playMarcusCue(session.phase === "rest" ? "rest" : session.phase === "complete" ? "complete" : session.phase === "transition" ? "next" : session.setIndex === 1 ? "setTwo" : "start");
-        }
+        let cancelled = false;
+        const announce = async () => {
+          if (session.phase === "work" && session.setIndex === 0 && hasFridayPremiumCue(exercise.motionKey)) {
+            const started = await playFridayPremiumCue(exercise.motionKey);
+            if (cancelled) return;
+            if (started) { setVoiceError(null); return; }
+          }
+          const started = await speakDetailedExerciseWhenReady(message);
+          if (cancelled) return;
+          if (started) {
+            setVoiceError(null);
+          } else {
+            setVoiceError("Full spoken coaching is unavailable: the recorded exercise audio cannot be loaded and this device has no supported male coaching voice. The instructions below remain available. Marcus currently has only short recorded cues.");
+            // A repeated 'start' hides missing instruction audio. Only play
+            // the short pack when its words match the actual workout phase.
+            if (session.phase === "rest") void playMarcusCue("rest");
+            else if (session.phase === "complete") void playMarcusCue("complete");
+            else if (session.phase === "transition") void playMarcusCue("next");
+          }
+        };
+        void announce();
+        return () => {
+          cancelled = true;
+          stopFridayPremiumCue();
+          stopDetailedExerciseSpeech();
+          stopMarcusCue();
+        };
       }
     }
   }, [
@@ -563,7 +574,7 @@ function V2Coach() {
     if (started) {
       lastDirectedCue.current = "";
       setVoiceOn(true);
-      setLiveCue("Marcus — Warm & Friendly is connected for workout cues.");
+      setLiveCue("Coach audio enabled. Loading the current exercise instruction.");
       return;
     }
 
@@ -1010,11 +1021,18 @@ function V2Coach() {
                   className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#111920] px-3 text-sm font-bold text-white"
                 >
                   {ALL_V2_WORKOUTS.map((item) => (
-                    <option key={item.id} value={item.id}>{item.title}</option>
+                    <option key={item.id} value={item.id}>{item.title} · {item.exercises.length} exercises</option>
                   ))}
                 </select>
               </label>
               <p className="mt-2 text-xs text-white/50">{workout.focus}</p>
+              {session.workout.exercises.some((item) => !approvedCoachMedia(item) && !recoveredMotionFor(item)) && (
+                <p role="status" className="mt-2 text-xs text-amber-200">
+                  Moving demos still missing: {session.workout.exercises
+                    .filter((item) => !approvedCoachMedia(item) && !recoveredMotionFor(item))
+                    .map((item) => item.name).join(", ")}. These exercises remain in your workout.
+                </p>
+              )}
               <div className="mt-3 space-y-1">
                 {session.workout.exercises.map((item, index) => {
                   const approved = Boolean(approvedCoachMedia(item));
