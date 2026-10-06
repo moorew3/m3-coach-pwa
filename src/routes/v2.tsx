@@ -21,7 +21,7 @@ import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import { unlockRecordedCoachAudio, recordedCoachAudioBusy } from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
-import { playFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
+import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -218,6 +218,11 @@ function V2Coach() {
   const media = approvedCoachMedia(exercise);
   const recoveredMedia = media ? undefined : recoveredMotionFor(exercise);
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
+  useEffect(() => {
+    if (!hydrated) return;
+    preloadFridayPremiumCue(exercise?.motionKey);
+    preloadFridayPremiumCue(session.workout.exercises[session.exerciseIndex + 1]?.motionKey);
+  }, [hydrated, session.workout.id, session.exerciseIndex, exercise?.motionKey]);
   const targetWeight = exercise ? session.targetWeights[exercise.id] ?? 0 : 0;
   const warmups = exercise ? warmupPlanFor(exercise, targetWeight, 5) : [];
   const setEntries = exercise ? session.setResults[exercise.id] ?? [] : [];
@@ -966,8 +971,25 @@ function V2Coach() {
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
                 {voiceOn ? "Marcus cue voice on" : "Enable Marcus voice"}
               </button>
+              {hasFridayPremiumCue(exercise?.motionKey) && (
+                <button
+                  type="button"
+                  disabled={!voiceOn || !["ready", "work"].includes(session.phase)}
+                  onClick={() => {
+                    stopMarcusCue();
+                    stopFridayPremiumCue();
+                    stopDetailedExerciseSpeech();
+                    void playFridayPremiumCue(exercise?.motionKey).then((started) => {
+                      setVoiceError(started ? null : "Exercise coaching could not play. Tap Replay exercise coaching to retry.");
+                    });
+                  }}
+                  className="mt-2 min-h-11 w-full rounded-xl border border-cyan-300/25 px-3 text-xs font-bold text-cyan-100 disabled:opacity-40"
+                >
+                  Replay exercise coaching
+                </button>
+              )}
               <p className="mt-2 text-[11px] text-white/45">
-                Coaching follows your exercise, target, set and rest timer. Recorded Marcus instructions play when available; detailed spoken guidance requires a supported male voice on your device.
+                Coaching follows your exercise, target, set and rest timer. Existing recorded exercise instructions play when available; detailed spoken guidance requires a supported male voice on your device.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
