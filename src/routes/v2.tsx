@@ -34,6 +34,7 @@ import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
 import { FLEX_PRESENCE_LABEL, resolveFlexPresence } from "@/v2/flex-presence";
+import { LiveFlexAvatar } from "@/v2/live-flex-avatar";
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
 import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
@@ -777,6 +778,10 @@ function V2Coach() {
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
+            <LiveFlexAvatar
+              presence={flexPresence}
+              visible={showCoach && !videoPlaying && session.phase !== "complete"}
+            />
             {realTimeRigReady && <M3GymRenderer session={session} />}
             {showCoach && !realTimeRigReady && stageMedia && (
               <CoachMotion
