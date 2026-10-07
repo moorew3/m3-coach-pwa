@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import {
   Check, Eye, Glasses, Hand, Pause, Play,
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
@@ -9,6 +9,7 @@ import { coachMotionFor, COACH_REFERENCE } from "@/data/coach-identity";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
 import { FLEX_NAME, FLEX_VOICE_NAME } from "@/lib/coach-persona";
+import { useCoachSpeaking } from "@/lib/coach-voice";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
 import {
@@ -20,13 +21,19 @@ import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-w
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
-import { unlockRecordedCoachAudio, recordedCoachAudioBusy } from "@/v2/recorded-coach-player";
+import {
+  unlockRecordedCoachAudio,
+  recordedCoachAudioBusy,
+  recordedCoachSpeaking,
+  subscribeRecordedCoachSpeech,
+} from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { playMarcusTrainer } from "@/v2/marcus-trainer-audio";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
+import { FLEX_PRESENCE_LABEL, resolveFlexPresence } from "@/v2/flex-presence";
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
 import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
@@ -98,7 +105,14 @@ function V2Coach() {
   const coachingClock = useRef({ key: "", start: 0, last: "" });
   const lastSpokenFeedback = useRef({ text: "", at: 0 });
   const coachTalkBusy = useRef(false);
+  const [flexThinking, setFlexThinking] = useState(false);
   const coachDialogue = useRef<string[]>([]);
+  const liveSpeechPlaying = useCoachSpeaking();
+  const recordedSpeechPlaying = useSyncExternalStore(
+    subscribeRecordedCoachSpeech,
+    recordedCoachSpeaking,
+    () => false,
+  );
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
   const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
 
@@ -548,7 +562,8 @@ function V2Coach() {
         },
       };
       coachTalkBusy.current = true;
-      setLiveCue(`${FLEX_NAME} is listening…`);
+      setFlexThinking(true);
+      setLiveCue(`${FLEX_NAME} is thinking…`);
       void askLiveCoach(phrase, context)
         .then((reply) => {
           const observed = boxerReliable && boxer
@@ -568,6 +583,7 @@ function V2Coach() {
         })
         .finally(() => {
           coachTalkBusy.current = false;
+          setFlexThinking(false);
         });
     });
     return () => {
@@ -663,6 +679,12 @@ function V2Coach() {
     ? exercise.motionKey === "boxingCombination" ? 1.017 : 1.05
     : 1;
   const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
+  const flexPresence = resolveFlexPresence({
+    thinking: flexThinking,
+    speaking: liveSpeechPlaying || recordedSpeechPlaying,
+    demonstrating: Boolean(stageMedia && videoPlaying),
+    listening: voiceControl.listening,
+  });
 
   return (
     <main className="min-h-dvh bg-[#080b0f] text-white">
@@ -719,6 +741,15 @@ function V2Coach() {
           </button>
           </div>
         </header>
+        <div
+          role="status"
+          aria-live="polite"
+          data-flex-presence={flexPresence}
+          className="mt-2 flex min-h-10 items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/35 px-3 text-xs"
+        >
+          <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
+          <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
+        </div>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
           <div>
             <p className="text-xs font-black text-cyan-200">Your original seven-day training plan is available here.</p>
