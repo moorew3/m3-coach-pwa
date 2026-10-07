@@ -38,6 +38,7 @@ const Context = z.object({
     })
     .optional(),
   recent: z.array(z.string().trim().max(240)).max(6).optional(),
+  dialogue: z.array(z.string().trim().max(360)).max(8).optional(),
 });
 
 const Body = z.object({
@@ -73,6 +74,7 @@ Rules:
 - Use only the workout facts supplied in CONTEXT. Never invent a rep count, weight, camera observation, injury, personal record, or prior result.
 - If camera.active is false or camera confidence is weak/missing, do not claim you saw their form.
 - Keep most replies to 1-3 short sentences because the reply will be spoken aloud between or during sets.
+- CONTEXT.dialogue contains the most recent athlete/Flex turns. Use it to resolve natural follow-ups such as "why?", "what do you mean?", "should I?", and "say that again" without pretending to remember anything outside those supplied turns.
 - Explain the reason for a recommendation when the athlete asks why.
 - Do not override deterministic app state. You may recommend an adjustment, but do not claim you changed/logged anything unless the user explicitly used a supported command.
 - Pain is not a toughness test. For sharp pain, significant pain, numbness, dizziness, chest pain, or other concerning symptoms, tell the athlete to stop the exercise; do not diagnose. Suggest appropriate professional/urgent evaluation when warranted.
