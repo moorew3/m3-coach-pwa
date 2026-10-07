@@ -94,7 +94,7 @@ export function WorkoutOpeningScene({
               draggable={false}
             />
             <p className="absolute bottom-2 left-2 rounded-lg bg-black/75 px-2 py-1 text-[10px] font-black uppercase tracking-[.12em]">
-              M3 · ${FLEX_NAME}
+              M3 · {FLEX_NAME}
             </p>
           </div>
         </div>
