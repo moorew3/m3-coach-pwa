@@ -329,6 +329,8 @@ function CoachSession() {
   const voiceRef = useRef(true);
   voiceRef.current = voiceOn;
   const coachTalkBusy = useRef(false);
+  /** Short in-session transcript for natural follow-up questions. */
+  const coachDialogue = useRef<string[]>([]);
   const [coachChoice, setCoachChoice] = useState<CoachCheckIn | null>(null);
   const askedChoiceFor = useRef("");
 
@@ -842,6 +844,7 @@ function CoachSession() {
       ].slice(0, 6);
 
       coachTalkBusy.current = true;
+      const dialogueBefore = coachDialogue.current.slice(-8);
       void askLiveCoach(phrase, {
         athlete: state.userAvatar.displayName?.trim() || undefined,
         workout: `${plan.title} · ${plan.focus}`,
@@ -865,6 +868,7 @@ function CoachSession() {
           cue: m?.cue ?? m?.cues?.[0] ?? null,
         },
         recent,
+        dialogue: dialogueBefore,
       })
         .then((reply) => {
           if (!reply) {
@@ -874,6 +878,11 @@ function CoachSession() {
             });
             return;
           }
+          coachDialogue.current = [
+            ...coachDialogue.current,
+            `Athlete: ${phrase}`,
+            `${FLEX_NAME}: ${reply}`,
+          ].slice(-8);
           speak(reply, voiceRef.current, { tone: "attentive", interrupt: false });
         })
         .finally(() => {
