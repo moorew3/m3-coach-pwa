@@ -14,7 +14,7 @@ import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
 import {
   repsIn, setCommandHandler, setConversationHandler, startListening,
-  stopListening, useVoiceControl, voiceControlAvailable, weightIn,
+  stopListening, submitCoachConversation, useVoiceControl, voiceControlAvailable, weightIn,
 } from "@/lib/voice-commands";
 import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
@@ -97,6 +97,7 @@ function V2Coach() {
   const [voiceOn, setVoiceOn] = useState(true);
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
+  const [flexQuestion, setFlexQuestion] = useState("");
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [boxingStance, setBoxingStance] = useState<BoxingStance>("orthodox");
   const [roundFeedback, setRoundFeedback] = useState<string | null>(null);
@@ -1075,6 +1076,31 @@ function V2Coach() {
                   the on-screen buttons work normally.
                 </p>
               )}
+              <form
+                className="mt-3 flex gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (submitCoachConversation(flexQuestion)) setFlexQuestion("");
+                }}
+              >
+                <input
+                  value={flexQuestion}
+                  onChange={(event) => setFlexQuestion(event.target.value)}
+                  placeholder="Ask Flex anything about this workout…"
+                  aria-label="Ask Flex"
+                  className="min-h-11 min-w-0 flex-1 rounded-xl border border-white/10 bg-black/35 px-3 text-xs text-white outline-none placeholder:text-white/35 focus:border-cyan-300/50"
+                />
+                <button
+                  type="submit"
+                  disabled={!flexQuestion.trim() || flexThinking}
+                  className="min-h-11 rounded-xl bg-cyan-300 px-3 text-xs font-black uppercase text-black disabled:opacity-40"
+                >
+                  {flexThinking ? "Thinking…" : "Ask Flex"}
+                </button>
+              </form>
+              <p className="mt-1 text-[10px] leading-relaxed text-white/35">
+                Typed questions use the same Flex workout context and conversation memory as hands-free voice.
+              </p>
             </section>
 
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
