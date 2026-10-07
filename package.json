@@ -70,7 +70,8 @@
     "zod": "^3.24.2",
     "three": "^0.186.0",
     "@react-three/fiber": "^9.8.1",
-    "@react-three/drei": "^10.7.9"
+    "@react-three/drei": "^10.7.9",
+    "@heygen/liveavatar-web-sdk": "0.0.19"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
