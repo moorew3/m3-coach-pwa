@@ -5,6 +5,21 @@ let lastSpeechEnd = 0;
 let current: { clip: Clip; source: AudioBufferSourceNode | null } | null = null;
 const queue: Clip[] = [];
 const downloads = new Map<string, Promise<ArrayBuffer>>();
+const speechListeners = new Set<() => void>();
+
+function emitSpeechState() {
+  speechListeners.forEach((listener) => listener());
+}
+
+export function subscribeRecordedCoachSpeech(listener: () => void) {
+  speechListeners.add(listener);
+  return () => speechListeners.delete(listener);
+}
+
+/** True only while a decoded recorded Flex/Marcus clip is actually playing. */
+export function recordedCoachSpeaking(): boolean {
+  return Boolean(current?.source);
+}
 
 function download(url: string) {
   let pending = downloads.get(url);
@@ -54,14 +69,20 @@ async function pump() {
       lastSpeechEnd = Date.now();
       source.disconnect();
       if (clip.waitForEnd) clip.resolve(true);
-      if (current === playback) { current = null; void pump(); }
+      if (current === playback) {
+        current = null;
+        emitSpeechState();
+        void pump();
+      }
     };
     if (clip.segment) source.start(0, clip.segment[0], clip.segment[1] - clip.segment[0]);
     else source.start();
+    emitSpeechState();
     if (!clip.waitForEnd) clip.resolve(true);
   } catch {
     if (current === playback) {
       current = null;
+      emitSpeechState();
       clip.resolve(false);
       void pump();
     }
@@ -86,6 +107,7 @@ export function stopRecordedCoachAudio(group: string) {
   if (current?.clip.group === group) {
     const previous = current;
     current = null;
+    emitSpeechState();
     // Cancellation is intentional, not a playback failure.
     previous.clip.resolve(true);
     if (previous.source) {
