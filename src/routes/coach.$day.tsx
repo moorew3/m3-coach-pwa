@@ -56,6 +56,7 @@ import {
 } from "@/lib/voice-commands";
 import { speak } from "@/lib/coach-voice";
 import { askLiveCoach } from "@/lib/coach-talk";
+import { FLEX_NAME } from "@/lib/coach-persona";
 import { exerciseMemoryFor } from "@/lib/coach-memory";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 
@@ -166,7 +167,7 @@ function CaptionStrip({ text, speaking }: { text: string; speaking: boolean }) {
       } ${visible ? "opacity-100" : "opacity-0"}`}
     >
       <span className="mr-1.5 text-[clamp(9px,1vh,19px)] font-bold uppercase tracking-widest text-white/55">
-        {speaking ? "Coach" : "Cue"}
+        {speaking ? FLEX_NAME : "Cue"}
       </span>
       {text}
     </p>
@@ -1094,7 +1095,7 @@ function CoachSession() {
             mirrored={false}
             playing={false}
             rate={1}
-            label="Session recap"
+            label={`${FLEX_NAME} session recap`}
           />
         </div>
 
