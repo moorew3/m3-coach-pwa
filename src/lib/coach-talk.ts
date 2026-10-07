@@ -29,6 +29,8 @@ export interface LiveCoachContext {
     cue?: string | null;
   };
   recent?: string[];
+  /** Recent athlete/Flex turns for natural follow-up questions. */
+  dialogue?: string[];
 }
 
 export async function askLiveCoach(
