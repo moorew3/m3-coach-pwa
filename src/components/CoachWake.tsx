@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { ambientClipFor, AMBIENT_RATE } from "@/lib/coach-ambient";
 import { ALT_LABELS, type AltSession } from "@/lib/alt-sessions";
 import { speak } from "@/lib/coach-voice";
+import { FLEX_NAME, FLEX_WAKE_PHRASE } from "@/lib/coach-persona";
 
 type Phase = "approach" | "ask" | "affirm" | "options";
 
@@ -140,7 +141,7 @@ export function CoachWake({
       const p = phaseRef.current;
       if (
         p === "approach" &&
-        /good\s+(morning|afternoon|evening)|hey\s+coach|wake\s+up/.test(said)
+        /good\s+(morning|afternoon|evening)(?:\s+flex)?|hey\s+(coach|flex)|wake\s+up/.test(said)
       ) {
         wake();
       } else if (p === "ask" && /\b(yes|yeah|yep|ready|let'?s go)\b/.test(said)) {
@@ -197,7 +198,7 @@ export function CoachWake({
               className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${
                 entranceEnded ? "opacity-0" : "opacity-100"
               }`}
-              label="Your coach walking toward you"
+              label={`${FLEX_NAME} walking toward you`}
             />
             {readyClip && (
               <CoachMotion
@@ -208,7 +209,7 @@ export function CoachWake({
                 className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${
                   entranceEnded ? "opacity-100" : "opacity-0"
                 }`}
-                label="Your coach ready in front of you"
+                label={`${FLEX_NAME} ready in front of you`}
               />
             )}
           </>
@@ -243,7 +244,7 @@ export function CoachWake({
               </span>
             )}
             <span className="mt-3 block text-[clamp(22px,3.6vh,56px)] font-black leading-tight">
-              Say “Good morning, Coach”
+              {`Say “${FLEX_WAKE_PHRASE}”`}
             </span>
             <span className="mt-2 block text-[clamp(12px,1.6vh,22px)] font-bold uppercase tracking-widest text-white/55">
               {voiceReady ? "…or tap to meet him" : "Tap to meet him"}
