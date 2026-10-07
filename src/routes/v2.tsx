@@ -8,6 +8,7 @@ import { CoachMotion } from "@/components/CoachMotion";
 import { coachMotionFor, COACH_REFERENCE } from "@/data/coach-identity";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
+import { FLEX_NAME, FLEX_VOICE_NAME } from "@/lib/coach-persona";
 import { metricsSnapshot, startCamera, stopCamera } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
 import {
@@ -96,6 +97,8 @@ function V2Coach() {
   const lastDirectedCue = useRef("");
   const coachingClock = useRef({ key: "", start: 0, last: "" });
   const lastSpokenFeedback = useRef({ text: "", at: 0 });
+  const coachTalkBusy = useRef(false);
+  const coachDialogue = useRef<string[]>([]);
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
   const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
 
@@ -495,7 +498,7 @@ function V2Coach() {
           lastDirectedCue.current = "";
           setVoiceOn(true);
           unlockRecordedCoachAudio();
-          setLiveCue("Marcus — Warm & Friendly cue voice is on. Detailed coaching remains on screen.");
+          setLiveCue(`${FLEX_NAME}'s ${FLEX_VOICE_NAME} voice is on. Detailed coaching remains on screen.`);
           return;
         case "end":
           stopMarcusCue();
@@ -510,9 +513,20 @@ function V2Coach() {
       }
     });
     setConversationHandler((phrase) => {
+      if (coachTalkBusy.current) return;
+
+      // A deliberate conversation turn takes priority over canned coaching.
+      // Stop current Flex audio so he listens instead of talking over the athlete.
+      stopMarcusCue();
+      stopFridayPremiumCue();
+      stopDetailedExerciseSpeech();
+
       const metrics = metricsSnapshot();
       const boxer = exercise?.category === "boxing" ? latestBoxing.current : null;
       const boxerReliable = Boolean(boxer && boxer.confidence >= 0.65);
+      const currentResult = exercise ? session.setResults[exercise.id]?.[session.setIndex] : undefined;
+      const dialogueBefore = coachDialogue.current.slice(-8);
+      const next = session.workout.exercises[session.exerciseIndex + 1];
       const context = {
         workout: session.workout.title,
         exercise: exercise?.name,
@@ -521,6 +535,9 @@ function V2Coach() {
         totalSets: exercise?.sets,
         target: exercise?.reps,
         weight: targetWeight ? String(targetWeight) : undefined,
+        reps: currentResult?.reps ? String(currentResult.reps) : undefined,
+        next: next?.name,
+        dialogue: dialogueBefore,
         camera: {
           active: Boolean((metrics && metrics.confidence >= 0.55) || boxerReliable),
           confidence: boxerReliable ? boxer!.confidence : metrics?.confidence,
@@ -530,18 +547,28 @@ function V2Coach() {
           cue: boxerReliable ? boxer!.lastCorrection : metrics?.cue,
         },
       };
-      setLiveCue("Coach is considering your question…");
-      void askLiveCoach(phrase, context).then((reply) => {
-        const observed = boxerReliable && boxer
-          ? boxer.lastCorrection ||
-            ("The camera recorded " + boxer.leadPunches + " completed lead-hand cycles and " +
-            boxer.rearPunches + " rear-hand cycles. I cannot verify impact or hidden foot pivot.")
-          : null;
-        const line = reply || observed ||
-          "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
-        setLiveCue(line);
-        if (voiceOn) speakDetailedExercise(line);
-      });
+      coachTalkBusy.current = true;
+      setLiveCue(`${FLEX_NAME} is listening…`);
+      void askLiveCoach(phrase, context)
+        .then((reply) => {
+          const observed = boxerReliable && boxer
+            ? boxer.lastCorrection ||
+              ("The camera recorded " + boxer.leadPunches + " completed lead-hand cycles and " +
+              boxer.rearPunches + " rear-hand cycles. I cannot verify impact or hidden foot pivot.")
+            : null;
+          const line = reply || observed ||
+            "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
+          coachDialogue.current = [
+            ...coachDialogue.current,
+            `Athlete: ${phrase}`,
+            `${FLEX_NAME}: ${line}`,
+          ].slice(-8);
+          setLiveCue(line);
+          if (voiceOn) speakDetailedExercise(line);
+        })
+        .finally(() => {
+          coachTalkBusy.current = false;
+        });
     });
     return () => {
       setCommandHandler(null);
@@ -593,6 +620,7 @@ function V2Coach() {
     // A Start/Resume tap is a browser-approved user gesture. Use it to keep
     // coach audio unlocked across Coach, Shadow, Manual and Glasses scenes.
     unlockRecordedCoachAudio();
+    if (voiceControlAvailable() && !voiceControl.listening) startListening();
     lastDirectedCue.current = "";
     dispatch({ type: "start" });
   };
@@ -604,10 +632,11 @@ function V2Coach() {
     // Start Workout is the only opening-scene exit and also unlocks audio.
     const started = await playMarcusCue("intro", true);
     if (started) setVoiceOn(true);
-    else if (!speakDetailedExercise("Coach is ready. Starting your workout.")) {
+    else if (!speakDetailedExercise(`${FLEX_NAME} is ready. Starting your workout.`)) {
       setVoiceOn(false);
       setVoiceError("Coach audio could not start. Tap the voice button once after the workout opens.");
     }
+    if (voiceControlAvailable() && !voiceControl.listening) startListening();
     lastDirectedCue.current = "";
     dismissOpening();
     setOpeningStarting(false);
@@ -958,7 +987,7 @@ function V2Coach() {
                 }`}
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
-                {voiceOn ? "Marcus trainer voice on" : "Enable Marcus voice"}
+                {voiceOn ? `${FLEX_NAME} voice on · ${FLEX_VOICE_NAME}` : `Enable ${FLEX_NAME} voice`}
               </button>
               {hasFridayPremiumCue(exercise?.motionKey) && (
                 <button
@@ -978,7 +1007,7 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Your approved Marcus voice teaches each movement, repeats technique and breathing cues during work, and guides recovery. Your current set, reps and weight are shown below. Camera observations and personal questions appear as text when no matching recording is available.
+                Flex uses your approved Marcus voice to teach each movement, repeat technique and breathing cues, guide recovery, and answer you during the workout. Your current set, reps and weight are shown below.
               </p>
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
@@ -995,10 +1024,10 @@ function V2Coach() {
                         : "border-white/10 bg-white/10 text-white/80"
                     }`}
                   >
-                    {voiceControl.listening ? "Stop hands-free listening" : "Enable hands-free commands"}
+                    {voiceControl.listening ? `Stop ${FLEX_NAME} listening` : `Enable ${FLEX_NAME} listening`}
                   </button>
                   <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-                    Music-friendly mode is on by default: Start does not open the microphone, so your phone music and Marcus can play together. Enable hands-free commands only when you want voice control; on some Android phones microphone listening can temporarily duck external music.
+                    Flex starts hands-free listening when you start or resume the workout so you can talk back and forth without another button. Stop listening here for music-only mode; on some Android phones microphone use can temporarily duck external music.
                   </p>
                   {voiceControl.heard && (
                     <p className="mt-1 text-[11px] text-cyan-200">
