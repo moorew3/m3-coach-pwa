@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from "react";
 import { COACH_REFERENCE } from "@/data/coach-identity";
+import { FLEX_NAME } from "@/lib/coach-persona";
 
 export function WorkoutOpeningScene({
   athletePortrait,
@@ -47,10 +48,10 @@ export function WorkoutOpeningScene({
               M3 Fitness · Mind / Body / Purpose
             </p>
             <h1 className="mt-2 text-[clamp(23px,5vw,44px)] font-black uppercase leading-none">
-              You + Your Coach
+              You + Flex
             </h1>
             <p className="mt-2 max-w-lg text-xs leading-relaxed text-white/60 sm:text-sm">
-              Your approved athlete. Your original coach. One uninterrupted session.
+              Your approved athlete. Flex beside you. One uninterrupted session.
             </p>
           </div>
         </div>
@@ -88,12 +89,12 @@ export function WorkoutOpeningScene({
           <div className="relative flex h-full max-h-[67dvh] min-h-0 flex-col justify-end overflow-hidden rounded-3xl border border-cyan-300/25 bg-[#10202a]">
             <img
               src={COACH_REFERENCE}
-              alt="The original approved M3 virtual coach"
+              alt="Flex, the approved M3 virtual coach"
               className="min-h-0 h-full w-full object-cover object-top"
               draggable={false}
             />
             <p className="absolute bottom-2 left-2 rounded-lg bg-black/75 px-2 py-1 text-[10px] font-black uppercase tracking-[.12em]">
-              M3 · Your Coach
+              M3 · ${FLEX_NAME}
             </p>
           </div>
         </div>
@@ -113,7 +114,7 @@ export function WorkoutOpeningScene({
             disabled={starting}
             className="min-h-12 shrink-0 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-[#071019]"
           >
-            {starting ? "Coach introduction…" : "Start workout"}
+            {starting ? `${FLEX_NAME} introduction…` : "Start workout"}
           </button>
         </div>
       </div>
