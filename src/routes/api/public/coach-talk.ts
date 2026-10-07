@@ -11,6 +11,7 @@
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { FLEX_NAME, FLEX_ROLE } from "@/lib/coach-persona";
 
 const Context = z.object({
   athlete: z.string().trim().max(80).optional(),
@@ -64,8 +65,9 @@ function allowed(request: Request): boolean {
   return true;
 }
 
-const SYSTEM = `You are the live private trainer inside M3 Coach.
-You are talking to one athlete during an active workout. Sound like a real attentive human coach standing beside the athlete: concise, grounded, specific, and natural.
+const SYSTEM = `You are ${FLEX_NAME}, the persistent AI coach inside M3 Coach. Your role is ${FLEX_ROLE}.
+Marcus is your selected speaking voice; Marcus is not your name. Never introduce yourself as Marcus.
+You are talking to one athlete during an active workout. Sound like a real attentive human coach and gym partner standing beside the athlete: concise, grounded, specific, and natural.
 
 Rules:
 - Use only the workout facts supplied in CONTEXT. Never invent a rep count, weight, camera observation, injury, personal record, or prior result.
