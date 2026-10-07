@@ -110,14 +110,6 @@ export const Route = createFileRoute("/api/public/coach-talk")({
           });
         }
 
-        const key = process.env["OPENAI_API_KEY"];
-        if (!key) {
-          return new Response(JSON.stringify({ message: "Live coach conversation is unavailable." }), {
-            status: 503,
-            headers: { "content-type": "application/json" },
-          });
-        }
-
         let parsed: z.infer<typeof Body>;
         try {
           parsed = Body.parse(await request.json());
@@ -126,6 +118,37 @@ export const Route = createFileRoute("/api/public/coach-talk")({
             status: 400,
             headers: { "content-type": "application/json" },
           });
+        }
+
+        const key = process.env["OPENAI_API_KEY"];
+        if (!key) {
+          const backend = process.env["FLEX_COACH_BACKEND_URL"]?.trim();
+          if (!backend) {
+            return new Response(JSON.stringify({ message: "Live coach conversation is unavailable." }), {
+              status: 503,
+              headers: { "content-type": "application/json" },
+            });
+          }
+          try {
+            const proxy = await fetch(`${backend.replace(/\/$/, "")}/api/public/coach-talk`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(parsed),
+            });
+            const body = await proxy.text();
+            return new Response(body, {
+              status: proxy.status,
+              headers: {
+                "content-type": proxy.headers.get("content-type") || "application/json",
+                "cache-control": "no-store",
+              },
+            });
+          } catch {
+            return new Response(JSON.stringify({ message: "Flex conversation backend is unavailable." }), {
+              status: 503,
+              headers: { "content-type": "application/json" },
+            });
+          }
         }
 
         const upstream = await fetch("https://api.openai.com/v1/responses", {
