@@ -9,6 +9,11 @@ await mkdir('public/media/approved', { recursive: true });
 let cursor = 0;
 const audit = [];
 
+const VIGGLE_VIDEO_ID = {
+  "../recovered/bulgarianSplitSquat": "anim_f92bd259-9d71-42db-b1bc-21cc18cc3ba9",
+  "../recovered/chestPress": "anim_6651c88c-06d3-4145-bda2-6681c88afad8",
+};
+
 function verify(source, bytes) {
   if (bytes.length < 1000 || !bytes.subarray(0, 48).includes(Buffer.from('ftyp'))) {
     throw new Error(`Approved motion ${source.key}: invalid MP4`);
@@ -50,6 +55,36 @@ async function fetchApproved(source) {
       failures.push(`${url} -> ${error instanceof Error ? error.message : String(error)}`);
     }
   }
+  const viggleId = VIGGLE_VIDEO_ID[source.key];
+  const viggleKey = process.env.VIGGLE_API_KEY;
+  if (viggleId && viggleKey) {
+    try {
+      const meta = await fetch(`https://apis.viggle.ai/v1/videos/${encodeURIComponent(viggleId)}`, {
+        headers: { Authorization: `Bearer ${viggleKey}` },
+        signal: AbortSignal.timeout(60000),
+      });
+      if (!meta.ok) {
+        failures.push(`Viggle ${viggleId} metadata -> HTTP ${meta.status}`);
+      } else {
+        const data = await meta.json();
+        if (data?.status !== "ready" || !data?.video_url) {
+          failures.push(`Viggle ${viggleId} -> not ready`);
+        } else {
+          const video = await fetch(data.video_url, { signal: AbortSignal.timeout(60000) });
+          if (!video.ok) {
+            failures.push(`Viggle ${viggleId} video -> HTTP ${video.status}`);
+          } else {
+            const bytes = Buffer.from(await video.arrayBuffer());
+            const sha256 = verify(source, bytes);
+            return { bytes, sha256, url: `viggle:${viggleId}` };
+          }
+        }
+      }
+    } catch (error) {
+      failures.push(`Viggle ${viggleId} -> ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   throw new Error(`Approved motion ${source.key} unavailable from verified sources: ${failures.join(' | ')}`);
 }
 
