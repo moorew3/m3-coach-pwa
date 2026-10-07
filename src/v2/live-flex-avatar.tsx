@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FlexPresenceState } from "@/v2/flex-presence";
+import { setLiveFlexController } from "@/v2/live-flex-bridge";
 
 type ConfigState = {
   configured: boolean;
@@ -16,6 +17,7 @@ type LiveSessionLike = {
   startListening: () => string;
   stopListening: () => string;
   interrupt: () => void;
+  repeat: (message: string) => string;
   on: (event: string, cb: (...args: any[]) => void) => unknown;
 };
 
@@ -57,6 +59,7 @@ export function LiveFlexAvatar({
   const stop = useCallback(async () => {
     const active = sessionRef.current;
     sessionRef.current = null;
+    setLiveFlexController(null);
     setStreamReady(false);
     setSessionState("inactive");
     if (active) {
@@ -103,12 +106,21 @@ export function LiveFlexAvatar({
       });
       session.on(sdk.SessionEvent.SESSION_DISCONNECTED, () => {
         sessionRef.current = null;
+        setLiveFlexController(null);
         setStreamReady(false);
         setSessionState("disconnected");
       });
 
       sessionRef.current = session;
       await session.start();
+      setLiveFlexController({
+        speakText: (text) => {
+          if (!sessionRef.current || !streamReady) return false;
+          session.repeat(text);
+          return true;
+        },
+        interrupt: () => session.interrupt(),
+      });
       if (videoRef.current) session.attach(videoRef.current);
     } catch (cause) {
       sessionRef.current = null;
