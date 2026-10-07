@@ -35,6 +35,7 @@ import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
 import { FLEX_PRESENCE_LABEL, resolveFlexPresence } from "@/v2/flex-presence";
 import { LiveFlexAvatar } from "@/v2/live-flex-avatar";
+import { interruptLiveFlex, speakThroughLiveFlex } from "@/v2/live-flex-bridge";
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
 import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
@@ -536,6 +537,7 @@ function V2Coach() {
       stopMarcusCue();
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
+      interruptLiveFlex();
 
       const metrics = metricsSnapshot();
       const boxer = exercise?.category === "boxing" ? latestBoxing.current : null;
@@ -581,7 +583,8 @@ function V2Coach() {
             `${FLEX_NAME}: ${line}`,
           ].slice(-8);
           setLiveCue(line);
-          if (voiceOn) speakDetailedExercise(line);
+          const spokenByLiveFlex = speakThroughLiveFlex(line);
+          if (voiceOn && !spokenByLiveFlex) speakDetailedExercise(line);
         })
         .finally(() => {
           coachTalkBusy.current = false;
