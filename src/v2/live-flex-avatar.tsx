@@ -101,6 +101,14 @@ export function LiveFlexAvatar({
       });
       session.on(sdk.SessionEvent.SESSION_STREAM_READY, () => {
         setStreamReady(true);
+        setLiveFlexController({
+          speakText: (text) => {
+            if (sessionRef.current !== session) return false;
+            session.repeat(text);
+            return true;
+          },
+          interrupt: () => session.interrupt(),
+        });
         const element = videoRef.current;
         if (element) session.attach(element);
       });
@@ -113,14 +121,6 @@ export function LiveFlexAvatar({
 
       sessionRef.current = session;
       await session.start();
-      setLiveFlexController({
-        speakText: (text) => {
-          if (!sessionRef.current || !streamReady) return false;
-          session.repeat(text);
-          return true;
-        },
-        interrupt: () => session.interrupt(),
-      });
       if (videoRef.current) session.attach(videoRef.current);
     } catch (cause) {
       sessionRef.current = null;
