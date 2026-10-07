@@ -11,6 +11,7 @@
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { FLEX_NAME, FLEX_ROLE } from "@/lib/coach-persona";
 
 const Context = z.object({
   athlete: z.string().trim().max(80).optional(),
@@ -37,6 +38,7 @@ const Context = z.object({
     })
     .optional(),
   recent: z.array(z.string().trim().max(240)).max(6).optional(),
+  dialogue: z.array(z.string().trim().max(360)).max(8).optional(),
 });
 
 const Body = z.object({
@@ -64,13 +66,15 @@ function allowed(request: Request): boolean {
   return true;
 }
 
-const SYSTEM = `You are the live private trainer inside M3 Coach.
-You are talking to one athlete during an active workout. Sound like a real attentive human coach standing beside the athlete: concise, grounded, specific, and natural.
+const SYSTEM = `You are ${FLEX_NAME}, the persistent AI coach inside M3 Coach. Your role is ${FLEX_ROLE}.
+Marcus is your selected speaking voice; Marcus is not your name. Never introduce yourself as Marcus.
+You are talking to one athlete during an active workout. Sound like a real attentive human coach and gym partner standing beside the athlete: concise, grounded, specific, and natural.
 
 Rules:
 - Use only the workout facts supplied in CONTEXT. Never invent a rep count, weight, camera observation, injury, personal record, or prior result.
 - If camera.active is false or camera confidence is weak/missing, do not claim you saw their form.
 - Keep most replies to 1-3 short sentences because the reply will be spoken aloud between or during sets.
+- CONTEXT.dialogue contains the most recent athlete/Flex turns. Use it for natural follow-ups such as "why?", "what do you mean?", "should I?", and "say that again"; never pretend to remember anything outside those supplied turns.
 - Explain the reason for a recommendation when the athlete asks why.
 - Do not override deterministic app state. You may recommend an adjustment, but do not claim you changed/logged anything unless the user explicitly used a supported command.
 - Pain is not a toughness test. For sharp pain, significant pain, numbness, dizziness, chest pain, or other concerning symptoms, tell the athlete to stop the exercise; do not diagnose. Suggest appropriate professional/urgent evaluation when warranted.
@@ -106,14 +110,6 @@ export const Route = createFileRoute("/api/public/coach-talk")({
           });
         }
 
-        const key = process.env["OPENAI_API_KEY"];
-        if (!key) {
-          return new Response(JSON.stringify({ message: "Live coach conversation is unavailable." }), {
-            status: 503,
-            headers: { "content-type": "application/json" },
-          });
-        }
-
         let parsed: z.infer<typeof Body>;
         try {
           parsed = Body.parse(await request.json());
@@ -122,6 +118,37 @@ export const Route = createFileRoute("/api/public/coach-talk")({
             status: 400,
             headers: { "content-type": "application/json" },
           });
+        }
+
+        const key = process.env["OPENAI_API_KEY"];
+        if (!key) {
+          const backend = process.env["FLEX_COACH_BACKEND_URL"]?.trim();
+          if (!backend) {
+            return new Response(JSON.stringify({ message: "Live coach conversation is unavailable." }), {
+              status: 503,
+              headers: { "content-type": "application/json" },
+            });
+          }
+          try {
+            const proxy = await fetch(`${backend.replace(/\/$/, "")}/api/public/coach-talk`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(parsed),
+            });
+            const body = await proxy.text();
+            return new Response(body, {
+              status: proxy.status,
+              headers: {
+                "content-type": proxy.headers.get("content-type") || "application/json",
+                "cache-control": "no-store",
+              },
+            });
+          } catch {
+            return new Response(JSON.stringify({ message: "Flex conversation backend is unavailable." }), {
+              status: 503,
+              headers: { "content-type": "application/json" },
+            });
+          }
         }
 
         const upstream = await fetch("https://api.openai.com/v1/responses", {
