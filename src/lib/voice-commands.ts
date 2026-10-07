@@ -5,10 +5,12 @@
  * / Edge). Nothing is uploaded by this module; it only turns recognised
  * phrases into app commands. Manual buttons keep working at all times.
  *
- * The coach's own voice is ignored: results that land while he is
- * speaking are dropped, so the app never answers itself.
+ * Flex's own voice is ignored by default so the app never answers itself.
+ * A deliberate name-addressed phrase ("Flex..." / "Hey Flex...") is the
+ * barge-in exception and is allowed through while he is speaking.
  */
 import { isCoachSpeaking } from "@/lib/coach-voice";
+import { FLEX_NAME } from "@/lib/coach-persona";
 import { recordedCoachSpeechActive } from "@/v2/recorded-coach-player";
 
 export type VoiceCommand =
@@ -232,7 +234,7 @@ export function setConversationHandler(fn: ((phrase: string) => void) | null) {
 function soundsDirectedAtCoach(phrase: string): boolean {
   const p = phrase.toLowerCase().trim();
   if (!p) return false;
-  if (/\bcoach\b/.test(p)) return true;
+  if (/\bcoach\b/.test(p) || p.includes(FLEX_NAME.toLowerCase())) return true;
   if (/^(why|how|what|should|can|could|do i|am i|is this|are we|when)\b/.test(p)) return true;
   if (/\b(feels?|felt|hurts?|pain|tight|heavy|light|tired|fatigued|easy|hard)\b/.test(p)) return true;
   return false;
@@ -256,8 +258,12 @@ export function startListening() {
       const res = e.results[n];
       if (!res.isFinal) continue;
       const phrase = res[0].transcript.trim();
-      // The coach's own line must never be treated as a user command.
-      if (isCoachSpeaking() || recordedCoachSpeechActive()) continue;
+      // Do not let Flex answer his own audio. A deliberate "Flex..." address
+      // is the exception so the athlete can interrupt him and take the turn.
+      if (isCoachSpeaking() || recordedCoachSpeechActive()) {
+        const directedToFlex = phrase.toLowerCase().includes(FLEX_NAME.toLowerCase());
+        if (!directedToFlex) continue;
+      }
       const cmd = matchCommand(phrase);
       set({ heard: phrase, lastCommand: cmd, error: null });
       if (cmd && handler) handler(cmd, phrase.toLowerCase());
