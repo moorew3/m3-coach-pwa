@@ -231,6 +231,14 @@ export function setConversationHandler(fn: ((phrase: string) => void) | null) {
   conversationHandler = fn;
 }
 
+/** Explicit typed/tapped conversation bypasses the room-speech intent filter. */
+export function submitCoachConversation(phrase: string): boolean {
+  const clean = phrase.trim();
+  if (!clean || !conversationHandler) return false;
+  conversationHandler(clean);
+  return true;
+}
+
 function soundsDirectedAtCoach(phrase: string): boolean {
   const p = phrase.toLowerCase().trim();
   if (!p) return false;
