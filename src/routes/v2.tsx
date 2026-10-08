@@ -796,7 +796,7 @@ function V2Coach() {
           <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
             <LiveFlexProvider
               presence={flexPresence}
-              visible={showCoach && !videoPlaying && session.phase !== "complete"}
+              visible={showCoach && session.phase !== "complete"}
             />
             {realTimeRigReady && <M3GymRenderer session={session} />}
             {showCoach && !realTimeRigReady && stageMedia && (
