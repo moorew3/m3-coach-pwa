@@ -88,14 +88,48 @@ export function DidFlexAvatar({
     setError(null);
     setState("connecting");
 
+    let describeDidFailure = (cause: unknown) =>
+      cause instanceof Error ? cause.message : "Live Flex could not connect.";
+
     try {
       const sdk = await import("@d-id/client-sdk");
+      describeDidFailure = (cause: unknown) => {
+        if (!sdk.isDIDError(cause)) {
+          return cause instanceof Error ? cause.message : "Live Flex could not connect.";
+        }
+        switch (cause.kind) {
+          case "HttpError":
+            if (cause.code === "InsufficientCreditsError") {
+              return "D-ID has no realtime credits available for this session.";
+            }
+            if (cause.status === 401 || cause.status === 403) {
+              return "D-ID rejected this Flex agent/client key for this website. Re-copy the Embed agent ID and client key after confirming this Railway domain is allowed.";
+            }
+            return `D-ID request failed (${cause.status}${cause.code ? ` · ${cause.code}` : ""}).`;
+          case "NetworkError":
+            if (cause.online === false) return "Your device appears to be offline.";
+            return `D-ID network connection failed${cause.endpoint ? ` at ${cause.endpoint}` : ""}.`;
+          case "StreamError":
+            return "D-ID reached Flex, but the live video stream failed.";
+          case "WSError":
+            return "D-ID reached Flex, but the live socket connection failed.";
+          case "ValidationError":
+            return cause.message;
+          case "ChatCreationFailed":
+            return "D-ID could not initialize the Flex session.";
+          case "ChatModeDowngraded":
+            return "D-ID started Flex in a limited mode without live video.";
+          default:
+            return cause.message || "Live Flex could not connect.";
+        }
+      };
       let manager!: AgentManagerLike;
 
       manager = await sdk.createAgentManager(config.agentId, {
         auth: { type: "key", clientKey: config.clientKey },
         mode: sdk.ChatMode.DirectPlayback,
         analytics: { enabled: false },
+        streamOptions: { compatibilityMode: "auto", streamWarmup: true },
         callbacks: {
           onSrcObjectReady(stream) {
             streamRef.current = stream;
@@ -133,7 +167,7 @@ export function DidFlexAvatar({
             }
           },
           onError(cause) {
-            setError(cause?.message || "D-ID could not render Flex.");
+            setError(describeDidFailure(cause));
           },
         },
       }) as unknown as AgentManagerLike;
@@ -176,7 +210,7 @@ export function DidFlexAvatar({
       setLiveFlexSpeaking(false);
       setConnected(false);
       setState("error");
-      setError(cause instanceof Error ? cause.message : "Live Flex could not connect.");
+      setError(describeDidFailure(cause));
       if (manager) {
         try { await manager.disconnect(); } catch { /* no-op */ }
       }
