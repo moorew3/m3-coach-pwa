@@ -1,11 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+function normalizeDidEmbedValue(raw: string | undefined, attribute: string) {
+  const value = raw?.trim() || "";
+  if (!value) return "";
+
+  // Accept either the bare value (preferred) or an accidentally pasted
+  // D-ID embed attribute such as data-agent-id="v2_agt_...".
+  const attributeMatch = value.match(
+    new RegExp(`\${attribute}\\s*=\\s*["']([^"']+)["']`, "i"),
+  );
+  if (attributeMatch?.[1]) return attributeMatch[1].trim();
+
+  return value.replace(/^["']|["']$/g, "").trim();
+}
+
 export const Route = createFileRoute("/api/public/live-flex-config")({
   server: {
     handlers: {
       GET: async () => {
-        const didAgentId = process.env["DID_AGENT_ID"]?.trim() || "";
-        const didClientKey = process.env["DID_CLIENT_KEY"]?.trim() || "";
+        const didAgentId = normalizeDidEmbedValue(
+          process.env["DID_AGENT_ID"],
+          "data-agent-id",
+        );
+        const didClientKey = normalizeDidEmbedValue(
+          process.env["DID_CLIENT_KEY"],
+          "data-client-key",
+        );
         const liveAvatarKey = process.env["LIVEAVATAR_API_KEY"]?.trim() || "";
         const liveAvatarId = process.env["LIVEAVATAR_AVATAR_ID"]?.trim() || "";
         const heygenApiKey = process.env["HEYGEN_API_KEY"]?.trim() || "";
