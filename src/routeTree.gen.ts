@@ -17,6 +17,7 @@ import { Route as PresentationRouteImport } from './routes/presentation'
 import { Route as NutritionRouteImport } from './routes/nutrition'
 import { Route as GlassesRouteImport } from './routes/glasses'
 import { Route as DisplayRouteImport } from './routes/display'
+import { Route as V2RouteImport } from './routes/v2'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkoutDayRouteImport } from './routes/workout.$day'
 import { Route as CoachDayRouteImport } from './routes/coach.$day'
@@ -62,6 +63,11 @@ const DisplayRoute = DisplayRouteImport.update({
   path: '/display',
   getParentRoute: () => rootRouteImport,
 } as any)
+const V2Route = V2RouteImport.update({
+  id: '/v2',
+  path: '/v2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -86,6 +92,7 @@ const ApiPublicCoachSpeechRoute = ApiPublicCoachSpeechRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/display': typeof DisplayRoute
+  '/v2': typeof V2Route
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
   '/presentation': typeof PresentationRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/display': typeof DisplayRoute
+  '/v2': typeof V2Route
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
   '/presentation': typeof PresentationRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/display': typeof DisplayRoute
+  '/v2': typeof V2Route
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
   '/presentation': typeof PresentationRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/display'
+    | '/v2'
     | '/glasses'
     | '/nutrition'
     | '/presentation'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/display'
+    | '/v2'
     | '/glasses'
     | '/nutrition'
     | '/presentation'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/display'
+    | '/v2'
     | '/glasses'
     | '/nutrition'
     | '/presentation'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DisplayRoute: typeof DisplayRoute
+  V2Route: typeof V2Route
   GlassesRoute: typeof GlassesRoute
   NutritionRoute: typeof NutritionRoute
   PresentationRoute: typeof PresentationRoute
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisplayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/v2': {
+      id: '/v2'
+      path: '/v2'
+      fullPath: '/v2'
+      preLoaderRoute: typeof V2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -278,6 +298,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DisplayRoute: DisplayRoute,
+  V2Route: V2Route,
   GlassesRoute: GlassesRoute,
   NutritionRoute: NutritionRoute,
   PresentationRoute: PresentationRoute,
