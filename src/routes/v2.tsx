@@ -34,8 +34,13 @@ import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
 import { FLEX_PRESENCE_LABEL, resolveFlexPresence } from "@/v2/flex-presence";
-import { LiveFlexAvatar } from "@/v2/live-flex-avatar";
-import { interruptLiveFlex, speakThroughLiveFlex } from "@/v2/live-flex-bridge";
+import { LiveFlexProvider } from "@/v2/live-flex-provider";
+import {
+  interruptLiveFlex,
+  liveFlexSpeaking,
+  speakThroughLiveFlex,
+  subscribeLiveFlexSpeaking,
+} from "@/v2/live-flex-bridge";
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
 import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
@@ -114,6 +119,11 @@ function V2Coach() {
   const recordedSpeechPlaying = useSyncExternalStore(
     subscribeRecordedCoachSpeech,
     recordedCoachSpeaking,
+    () => false,
+  );
+  const liveProviderSpeaking = useSyncExternalStore(
+    subscribeLiveFlexSpeaking,
+    liveFlexSpeaking,
     () => false,
   );
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
@@ -569,7 +579,7 @@ function V2Coach() {
       setFlexThinking(true);
       setLiveCue(`${FLEX_NAME} is thinking…`);
       void askLiveCoach(phrase, context)
-        .then((reply) => {
+        .then(async (reply) => {
           const observed = boxerReliable && boxer
             ? boxer.lastCorrection ||
               ("The camera recorded " + boxer.leadPunches + " completed lead-hand cycles and " +
@@ -583,7 +593,7 @@ function V2Coach() {
             `${FLEX_NAME}: ${line}`,
           ].slice(-8);
           setLiveCue(line);
-          const spokenByLiveFlex = speakThroughLiveFlex(line);
+          const spokenByLiveFlex = await speakThroughLiveFlex(line);
           if (voiceOn && !spokenByLiveFlex) speakDetailedExercise(line);
         })
         .finally(() => {
@@ -686,7 +696,7 @@ function V2Coach() {
   const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
   const flexPresence = resolveFlexPresence({
     thinking: flexThinking,
-    speaking: liveSpeechPlaying || recordedSpeechPlaying,
+    speaking: liveSpeechPlaying || recordedSpeechPlaying || liveProviderSpeaking,
     demonstrating: Boolean(stageMedia && videoPlaying),
     listening: voiceControl.listening,
   });
@@ -781,7 +791,7 @@ function V2Coach() {
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
-            <LiveFlexAvatar
+            <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && !videoPlaying && session.phase !== "complete"}
             />
