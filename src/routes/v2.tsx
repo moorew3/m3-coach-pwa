@@ -593,6 +593,9 @@ function V2Coach() {
             `${FLEX_NAME}: ${line}`,
           ].slice(-8);
           setLiveCue(line);
+          // The brain has finished its answer; provider callbacks now own the
+          // speaking state so the UI can transition Thinking → Speaking.
+          setFlexThinking(false);
           const spokenByLiveFlex = await speakThroughLiveFlex(line);
           if (voiceOn && !spokenByLiveFlex) speakDetailedExercise(line);
         })
