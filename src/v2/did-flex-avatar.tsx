@@ -31,6 +31,9 @@ export function DidFlexAvatar({
   presence: FlexPresenceState;
   visible: boolean;
 }) {
+  const plainDidDiagnostic =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("didPlain") === "1";
   const videoRef = useRef<HTMLVideoElement>(null);
   const managerRef = useRef<DidAgentManager | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -90,6 +93,23 @@ export function DidFlexAvatar({
       } catch { /* no-op */ }
     }
   }, []);
+
+  useEffect(() => {
+    if (!plainDidDiagnostic) return;
+
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = "https://agent.d-id.com/v2/index.js";
+    script.dataset.mode = "fabio";
+    script.dataset.clientKey = config.clientKey;
+    script.dataset.agentId = config.agentId;
+    script.dataset.name = "did-agent";
+    document.body.appendChild(script);
+
+    return () => {
+      try { script.remove(); } catch { /* no-op */ }
+    };
+  }, [config.agentId, config.clientKey, plainDidDiagnostic]);
 
   useEffect(() => () => {
     void stop();
@@ -214,6 +234,14 @@ export function DidFlexAvatar({
     if (presence !== "thinking") return;
     try { managerRef.current?.interrupt?.(true); } catch { /* safe no-op */ }
   }, [presence]);
+
+  if (plainDidDiagnostic) {
+    return (
+      <div className="absolute right-3 top-[104px] z-20 w-[min(42vw,240px)] rounded-2xl border border-cyan-300/30 bg-black/80 p-3 text-[10px] text-cyan-100">
+        Plain D-ID diagnostic mode is active. Use the D-ID floating widget to test the provider directly.
+      </div>
+    );
+  }
 
   return (
     <div
