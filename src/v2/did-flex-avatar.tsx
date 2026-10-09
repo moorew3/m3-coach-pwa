@@ -10,35 +10,17 @@ type DidConfig = {
   clientKey: string;
 };
 
-type DidEmbedApi = {
-  functions: {
-    speak: (payload: { type: "text" | "audio"; input: string }) => Promise<unknown>;
-    toggleMicState: (state?: boolean) => unknown;
-    toggleSpeakerState: (state?: boolean) => unknown;
-    interrupt: () => unknown;
-  };
-  configure: (options: Record<string, unknown>) => unknown;
-  events: {
-    on: (
-      event: "connection" | "agentActivity" | "error",
-      callback: (payload: any) => void,
-    ) => () => void;
+type DidAgentManager = {
+  connect: () => Promise<unknown>;
+  disconnect: () => Promise<unknown>;
+  speak: (payload: Record<string, unknown>) => Promise<unknown>;
+  interrupt?: (interrupt?: boolean) => unknown;
+  agent?: {
+    presenter?: {
+      idle_video?: string;
+    };
   };
 };
-
-function didApi() {
-  return (window as typeof window & { DID_AGENTS_API?: DidEmbedApi }).DID_AGENTS_API;
-}
-
-async function waitForDidApi(timeoutMs = 12000) {
-  const started = Date.now();
-  while (Date.now() - started < timeoutMs) {
-    const api = didApi();
-    if (api) return api;
-    await new Promise((resolve) => window.setTimeout(resolve, 100));
-  }
-  throw new Error("D-ID embed did not finish loading.");
-}
 
 export function DidFlexAvatar({
   config,
@@ -49,89 +31,93 @@ export function DidFlexAvatar({
   presence: FlexPresenceState;
   visible: boolean;
 }) {
-  const targetId = useRef(`did-flex-${Math.random().toString(36).slice(2)}`);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
-  const unsubscribersRef = useRef<Array<() => void>>([]);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const managerRef = useRef<DidAgentManager | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [state, setState] = useState("inactive");
   const [connected, setConnected] = useState(false);
   const [started, setStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const cleanupSubscriptions = useCallback(() => {
-    for (const unsubscribe of unsubscribersRef.current.splice(0)) {
-      try { unsubscribe(); } catch { /* no-op */ }
+  const showIdleVideo = useCallback(() => {
+    const video = videoRef.current;
+    const idle = managerRef.current?.agent?.presenter?.idle_video;
+    if (!video || !idle) return;
+    try {
+      video.srcObject = null;
+      video.src = idle;
+      void video.play().catch(() => undefined);
+    } catch {
+      // Idle video is optional; a transient media error should not break training.
     }
   }, []);
 
-  const stop = useCallback(() => {
-    const api = didApi();
-    try { api?.functions.interrupt(); } catch { /* no-op */ }
-    try { api?.functions.toggleMicState(true); } catch { /* no-op */ }
-    cleanupSubscriptions();
+  const showLiveStream = useCallback(() => {
+    const video = videoRef.current;
+    const stream = streamRef.current;
+    if (!video || !stream) return;
+    try {
+      video.removeAttribute("src");
+      video.srcObject = stream;
+      void video.play().catch(() => undefined);
+    } catch {
+      // Connection callbacks will surface the real transport state.
+    }
+  }, []);
+
+  const stop = useCallback(async () => {
+    const manager = managerRef.current;
+    managerRef.current = null;
     setLiveFlexController(null);
     setLiveFlexSpeaking(false);
     setConnected(false);
     setStarted(false);
     setState("inactive");
+    setError(null);
+    streamRef.current = null;
 
-    if (scriptRef.current) {
-      scriptRef.current.remove();
-      scriptRef.current = null;
+    if (manager) {
+      try { await manager.disconnect(); } catch { /* session may already be closed */ }
     }
-    const target = document.getElementById(targetId.current);
-    if (target) target.replaceChildren();
-  }, [cleanupSubscriptions]);
 
-  useEffect(() => () => stop(), [stop]);
+    const video = videoRef.current;
+    if (video) {
+      try {
+        video.pause();
+        video.srcObject = null;
+        video.removeAttribute("src");
+        video.load();
+      } catch { /* no-op */ }
+    }
+  }, []);
+
+  useEffect(() => () => {
+    void stop();
+  }, [stop]);
 
   const start = useCallback(async () => {
-    if (started) return;
+    if (started || managerRef.current) return;
+
     setError(null);
     setState("connecting");
     setStarted(true);
 
     try {
-      // The official Embed client owns WebRTC/session setup. M3 Coach still owns
-      // workout intelligence and the Marcus audio passed into speak().
-      const script = document.createElement("script");
-      script.type = "module";
-      script.src = "https://agent.d-id.com/v2/index.js";
-      script.dataset.mode = "full";
-      script.dataset.targetId = targetId.current;
-      script.dataset.clientKey = config.clientKey;
-      script.dataset.agentId = config.agentId;
-      script.dataset.name = "did-agent";
-      script.dataset.autoConnect = "true";
-      script.dataset.orientation = "vertical";
-      script.dataset.showRestartButton = "false";
-      script.dataset.showAgentName = "false";
-      script.dataset.track = "false";
-      scriptRef.current = script;
-      document.body.appendChild(script);
+      const sdk = await import("@d-id/client-sdk");
+      let manager: DidAgentManager | null = null;
 
-      const api = await waitForDidApi();
-
-      try {
-        api.configure({
-          openMode: "expanded",
-          showChatToggle: false,
-          showMicToggle: false,
-          showRestartButton: false,
-        });
-      } catch {
-        // Older embed builds may ignore some runtime appearance controls.
-      }
-
-      // D-ID is the face only. M3 Coach owns the listening/conversation loop.
-      try { api.functions.toggleMicState(true); } catch { /* safe no-op */ }
-      try { api.functions.toggleSpeakerState(false); } catch { /* safe no-op */ }
-
-      unsubscribersRef.current.push(
-        api.events.on("connection", ({ state: nextState }) => {
+      const callbacks = {
+        onSrcObjectReady(value: MediaStream) {
+          streamRef.current = value;
+          showLiveStream();
+          return value;
+        },
+        onConnectionStateChange(nextState: unknown) {
           const normalized = String(nextState || "").toLowerCase();
           setState(normalized || "connecting");
           const isConnected = normalized === "connected";
           setConnected(isConnected);
+
           if (
             normalized === "fail" ||
             normalized === "closed" ||
@@ -140,28 +126,47 @@ export function DidFlexAvatar({
             setLiveFlexController(null);
             setLiveFlexSpeaking(false);
           }
-        }),
-      );
+        },
+        onVideoStateChange(nextState: unknown) {
+          const normalized = String(nextState || "").toUpperCase();
+          const talking = normalized !== "STOP";
+          setLiveFlexSpeaking(talking);
+          if (talking) showLiveStream();
+          else showIdleVideo();
+        },
+        onError(nextError: unknown, errorData: unknown) {
+          const message =
+            nextError instanceof Error
+              ? nextError.message
+              : typeof nextError === "string"
+                ? nextError
+                : "D-ID could not connect Flex.";
+          const detail =
+            errorData && typeof errorData === "object"
+              ? JSON.stringify(errorData)
+              : "";
+          setError(detail ? `${message} · ${detail}` : message);
+        },
+      };
 
-      unsubscribersRef.current.push(
-        api.events.on("agentActivity", ({ state: activity }) => {
-          const normalized = String(activity || "").toUpperCase();
-          setLiveFlexSpeaking(normalized === "TALKING");
-        }),
-      );
+      manager = await sdk.createAgentManager(config.agentId, {
+        auth: {
+          type: "key",
+          clientKey: config.clientKey,
+        },
+        callbacks,
+        streamOptions: {
+          compatibilityMode: "auto",
+          streamWarmup: true,
+        },
+      }) as unknown as DidAgentManager;
 
-      unsubscribersRef.current.push(
-        api.events.on("error", ({ error: nextError }) => {
-          const code = nextError?.code || nextError?.type;
-          const message = nextError?.message || "D-ID embed could not connect Flex.";
-          setError(code ? `${message} (${code})` : message);
-        }),
-      );
+      managerRef.current = manager;
 
       setLiveFlexController({
         speakText: async (text) => {
-          const liveApi = didApi();
-          if (!liveApi) return false;
+          const active = managerRef.current;
+          if (!active || !connected) return false;
 
           const speechResponse = await fetch("/api/public/flex-speech", {
             method: "POST",
@@ -176,29 +181,38 @@ export function DidFlexAvatar({
             throw new Error(speech.message || "Marcus audio could not be generated.");
           }
 
-          await liveApi.functions.speak({
+          await active.speak({
             type: "audio",
-            input: speech.audioUrl,
+            audio_url: speech.audioUrl,
           });
           return true;
         },
         interrupt: () => {
-          try { didApi()?.functions.interrupt(); } catch { /* safe no-op */ }
+          try { managerRef.current?.interrupt?.(true); } catch { /* safe no-op */ }
         },
       });
+
+      await manager.connect();
+
+      // The connection callback is authoritative, but this keeps the UI useful
+      // if a browser delays the callback after connect() resolves.
+      setState((current) => current === "connecting" ? "connected" : current);
+      setConnected(true);
+      showLiveStream();
     } catch (cause) {
+      managerRef.current = null;
+      streamRef.current = null;
       setLiveFlexController(null);
       setLiveFlexSpeaking(false);
       setConnected(false);
       setState("error");
       setError(cause instanceof Error ? cause.message : "Live Flex could not connect.");
     }
-  }, [config.agentId, config.clientKey, started]);
+  }, [config.agentId, config.clientKey, connected, showIdleVideo, showLiveStream, started]);
 
   useEffect(() => {
-    if (presence === "thinking") {
-      try { didApi()?.functions.interrupt(); } catch { /* safe no-op */ }
-    }
+    if (presence !== "thinking") return;
+    try { managerRef.current?.interrupt?.(true); } catch { /* safe no-op */ }
   }, [presence]);
 
   return (
@@ -209,7 +223,15 @@ export function DidFlexAvatar({
       }`}
     >
       <div className="relative aspect-[3/4] bg-[#0a1118]">
-        <div id={targetId.current} className="h-full w-full overflow-hidden" />
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted={false}
+          className={`h-full w-full object-cover transition-opacity ${
+            connected ? "opacity-100" : "opacity-50"
+          }`}
+        />
 
         {!started && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0a1118] p-3 text-center">
@@ -249,7 +271,7 @@ export function DidFlexAvatar({
         {started && (
           <button
             type="button"
-            onClick={stop}
+            onClick={() => void stop()}
             className="rounded-md border border-white/15 px-2 py-1 font-bold text-white/60"
           >
             End
