@@ -45,6 +45,7 @@ export function DidFlexAvatar({
   const [state, setState] = useState("inactive");
   const [connected, setConnected] = useState(false);
   const [hasVisual, setHasVisual] = useState(false);
+  const [videoMode, setVideoMode] = useState<"idle" | "speaking">("idle");
   const [started, setStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // On an authorization failure, keep the approved coach and Marcus usable.
@@ -57,6 +58,7 @@ export function DidFlexAvatar({
       || managerRef.current?.agent?.presenter?.idle_video;
     if (!video) return;
     setHasVisual(false);
+    setVideoMode("idle");
     try {
       video.pause();
       video.srcObject = null;
@@ -94,6 +96,7 @@ export function DidFlexAvatar({
     setLiveFlexSpeaking(false);
     setConnected(false);
     setHasVisual(false);
+    setVideoMode("idle");
     setStarted(false);
     setState("inactive");
     setError(null);
@@ -172,8 +175,10 @@ export function DidFlexAvatar({
           const normalized = String(nextState || "").toUpperCase();
           const talking = normalized !== "STOP";
           setLiveFlexSpeaking(talking);
-          if (talking) showLiveStream();
-          else showIdleVideo();
+          if (talking) {
+            setVideoMode("speaking");
+            showLiveStream();
+          } else showIdleVideo();
         },
         onError(nextError: unknown, errorData: unknown) {
           const message =
@@ -381,7 +386,13 @@ export function DidFlexAvatar({
 
       <div className="flex items-center justify-between gap-2 border-t border-white/10 px-2 py-1.5 text-[10px]">
         <span className="font-black uppercase text-cyan-200">
-          {connected ? (hasVisual ? "Flex · Live video" : "Flex · Connected") : `Flex · ${state}`}
+          {connected
+            ? videoMode === "speaking" && hasVisual
+              ? "Flex · Live speaking"
+              : hasVisual
+                ? "Flex · Idle video"
+                : "Flex · Connected"
+            : `Flex · ${state}`}
         </span>
         {started && (
           <button
