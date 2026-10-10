@@ -36,6 +36,8 @@ export function DidFlexAvatar({
     new URLSearchParams(window.location.search).get("didPlain") === "1";
   const videoRef = useRef<HTMLVideoElement>(null);
   const managerRef = useRef<DidAgentManager | null>(null);
+  // Keep transport state current inside SDK callbacks and live speech handlers.
+  const connectedRef = useRef(false);
   const streamRef = useRef<MediaStream | null>(null);
   const [state, setState] = useState("inactive");
   const [connected, setConnected] = useState(false);
@@ -71,6 +73,7 @@ export function DidFlexAvatar({
   const stop = useCallback(async () => {
     const manager = managerRef.current;
     managerRef.current = null;
+    connectedRef.current = false;
     setLiveFlexController(null);
     setLiveFlexSpeaking(false);
     setConnected(false);
@@ -136,6 +139,7 @@ export function DidFlexAvatar({
           const normalized = String(nextState || "").toLowerCase();
           setState(normalized || "connecting");
           const isConnected = normalized === "connected";
+          connectedRef.current = isConnected;
           setConnected(isConnected);
 
           if (
@@ -186,7 +190,7 @@ export function DidFlexAvatar({
       setLiveFlexController({
         speakText: async (text) => {
           const active = managerRef.current;
-          if (!active || !connected) return false;
+          if (!active || !connectedRef.current) return false;
 
           const speechResponse = await fetch("/api/public/flex-speech", {
             method: "POST",
@@ -217,10 +221,12 @@ export function DidFlexAvatar({
       // The connection callback is authoritative, but this keeps the UI useful
       // if a browser delays the callback after connect() resolves.
       setState((current) => current === "connecting" ? "connected" : current);
+      connectedRef.current = true;
       setConnected(true);
       showLiveStream();
     } catch (cause) {
       managerRef.current = null;
+    connectedRef.current = false;
       streamRef.current = null;
       setLiveFlexController(null);
       setLiveFlexSpeaking(false);
@@ -228,7 +234,7 @@ export function DidFlexAvatar({
       setState("error");
       setError(cause instanceof Error ? cause.message : "Live Flex could not connect.");
     }
-  }, [config.agentId, config.clientKey, connected, showIdleVideo, showLiveStream, started]);
+  }, [config.agentId, config.clientKey, showIdleVideo, showLiveStream, started]);
 
   useEffect(() => {
     if (presence !== "thinking") return;
