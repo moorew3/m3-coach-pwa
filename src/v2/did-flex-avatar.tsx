@@ -16,7 +16,9 @@ type DidAgentManager = {
   disconnect: () => Promise<unknown>;
   speak: (payload: Record<string, unknown>) => Promise<unknown>;
   interrupt?: (interrupt?: boolean) => unknown;
+  getConnectionState?: () => unknown;
   agent?: {
+    idle_video?: string;
     presenter?: {
       idle_video?: string;
     };
@@ -42,6 +44,7 @@ export function DidFlexAvatar({
   const streamRef = useRef<MediaStream | null>(null);
   const [state, setState] = useState("inactive");
   const [connected, setConnected] = useState(false);
+  const [hasVisual, setHasVisual] = useState(false);
   const [started, setStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // On an authorization failure, keep the approved coach and Marcus usable.
@@ -49,14 +52,23 @@ export function DidFlexAvatar({
 
   const showIdleVideo = useCallback(() => {
     const video = videoRef.current;
-    const idle = managerRef.current?.agent?.presenter?.idle_video;
-    if (!video || !idle) return;
+    // v3 places idle_video directly on agent; presenter.idle_video is a legacy shape.
+    const idle = managerRef.current?.agent?.idle_video
+      || managerRef.current?.agent?.presenter?.idle_video;
+    if (!video) return;
+    setHasVisual(false);
     try {
+      video.pause();
       video.srcObject = null;
+      if (!idle) {
+        video.removeAttribute("src");
+        video.load();
+        return;
+      }
       video.src = idle;
       void video.play().catch(() => undefined);
     } catch {
-      // Idle video is optional; a transient media error should not break training.
+      // Approved still portrait remains visible if the provider has no idle media.
     }
   }, []);
 
@@ -64,6 +76,7 @@ export function DidFlexAvatar({
     const video = videoRef.current;
     const stream = streamRef.current;
     if (!video || !stream) return;
+    setHasVisual(false);
     try {
       video.removeAttribute("src");
       video.srcObject = stream;
@@ -80,6 +93,7 @@ export function DidFlexAvatar({
     setLiveFlexController(null);
     setLiveFlexSpeaking(false);
     setConnected(false);
+    setHasVisual(false);
     setStarted(false);
     setState("inactive");
     setError(null);
@@ -222,12 +236,17 @@ export function DidFlexAvatar({
 
       await manager.connect();
 
-      // The connection callback is authoritative, but this keeps the UI useful
-      // if a browser delays the callback after connect() resolves.
-      setState((current) => current === "connecting" ? "connected" : current);
+      // A resolved connect may race with a disconnect; do not claim live in that case.
+      const transportState = String(manager.getConnectionState?.() ?? "connected").toLowerCase();
+      if (transportState !== "connected") {
+        throw new Error("D-ID did not establish an active connection.");
+      }
+      setState("connected");
       connectedRef.current = true;
       setConnected(true);
-      showLiveStream();
+      // Show the provider's idle video until a talking stream arrives. If the
+      // idle asset is unavailable, the approved still portrait stays visible.
+      showIdleVideo();
     } catch (cause) {
       managerRef.current = null;
       connectedRef.current = false;
@@ -305,15 +324,29 @@ export function DidFlexAvatar({
       }`}
     >
       <div className="relative aspect-[3/4] bg-[#0a1118]">
+        <img
+          src={COACH_REFERENCE}
+          alt="Approved Flex coach portrait"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted={false}
-          className={`h-full w-full object-cover transition-opacity ${
-            connected ? "opacity-100" : "opacity-50"
+          poster={COACH_REFERENCE}
+          onLoadedData={() => setHasVisual(true)}
+          onPlaying={() => setHasVisual(true)}
+          onEmptied={() => setHasVisual(false)}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity ${
+            hasVisual ? "opacity-100" : "opacity-0"
           }`}
         />
+        {connected && !hasVisual && (
+          <div className="absolute inset-x-2 bottom-2 rounded-lg bg-black/80 px-2 py-1.5 text-center text-[10px] text-cyan-100">
+            Flex connected · waiting for video frames
+          </div>
+        )}
 
         {!started && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#0a1118] p-3 text-center">
@@ -348,7 +381,7 @@ export function DidFlexAvatar({
 
       <div className="flex items-center justify-between gap-2 border-t border-white/10 px-2 py-1.5 text-[10px]">
         <span className="font-black uppercase text-cyan-200">
-          {connected ? "Flex · Live" : `Flex · ${state}`}
+          {connected ? (hasVisual ? "Flex · Live video" : "Flex · Connected") : `Flex · ${state}`}
         </span>
         {started && (
           <button
