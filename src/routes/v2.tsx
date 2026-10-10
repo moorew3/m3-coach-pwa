@@ -808,7 +808,7 @@ function V2Coach() {
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
-                className="absolute inset-x-0 top-[92px] bottom-[196px] w-full"
+                className="absolute inset-x-0 top-[92px] bottom-[196px] w-full lg:top-[66px] lg:bottom-[155px]"
                 label={
                   stageUsesRecovered
                     ? `Motion demo of ${exercise?.name ?? "movement"}`
