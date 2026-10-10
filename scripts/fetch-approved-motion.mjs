@@ -100,7 +100,21 @@ await Promise.all(Array.from({ length: 4 }, async () => {
       continue;
     }
 
-    const fetched = await fetchApproved(source);
+    let fetched;
+    try {
+      fetched = await fetchApproved(source);
+    } catch (error) {
+      // These exact recovered exercise clips remain in the repository with
+      // independent hashes. Never relabel them as identity-approved footage
+      // when the separately audited source is unavailable.
+      if (source.key === '../recovered/bulgarianSplitSquat' ||
+          source.key === '../recovered/chestPress') {
+        console.warn(`Approved source unavailable for ${source.key}; retaining the recovered demo without substituting unverified footage.`);
+        audit.push({ key: source.key, status: 'source-unavailable', source: 'recovered-original-retained' });
+        continue;
+      }
+      throw error;
+    }
     await writeFile(file, fetched.bytes);
     audit.push({
       key: source.key,
