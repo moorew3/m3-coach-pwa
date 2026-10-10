@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FlexPresenceState } from "@/v2/flex-presence";
+import { COACH_REFERENCE } from "@/data/coach-identity";
 import {
   setLiveFlexController,
   setLiveFlexSpeaking,
@@ -43,6 +44,8 @@ export function DidFlexAvatar({
   const [connected, setConnected] = useState(false);
   const [started, setStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // On an authorization failure, keep the approved coach and Marcus usable.
+  const [recordedFallback, setRecordedFallback] = useState(false);
 
   const showIdleVideo = useCallback(() => {
     const video = videoRef.current;
@@ -170,6 +173,7 @@ export function DidFlexAvatar({
               ? JSON.stringify(errorData)
               : "";
           setError(detail ? `${message} · ${detail}` : message);
+          setRecordedFallback(true);
         },
       };
 
@@ -226,7 +230,8 @@ export function DidFlexAvatar({
       showLiveStream();
     } catch (cause) {
       managerRef.current = null;
-    connectedRef.current = false;
+      connectedRef.current = false;
+      setRecordedFallback(true);
       streamRef.current = null;
       setLiveFlexController(null);
       setLiveFlexSpeaking(false);
@@ -237,6 +242,12 @@ export function DidFlexAvatar({
   }, [config.agentId, config.clientKey, showIdleVideo, showLiveStream, started]);
 
   useEffect(() => {
+    if (!recordedFallback) return;
+    // Do not leave a failed D-ID transport holding audio/video resources.
+    void stop();
+  }, [recordedFallback, stop]);
+
+  useEffect(() => {
     if (presence !== "thinking") return;
     try { managerRef.current?.interrupt?.(true); } catch { /* safe no-op */ }
   }, [presence]);
@@ -245,6 +256,43 @@ export function DidFlexAvatar({
     return (
       <div className="absolute right-3 top-[104px] z-20 w-[min(42vw,240px)] rounded-2xl border border-cyan-300/30 bg-black/80 p-3 text-[10px] text-cyan-100">
         Plain D-ID diagnostic mode is active. Use the D-ID floating widget to test the provider directly.
+      </div>
+    );
+  }
+
+  if (recordedFallback) {
+    return (
+      <div
+        data-testid="live-flex-recorded-fallback"
+        className={`absolute right-3 top-[104px] z-20 w-[min(42vw,240px)] overflow-hidden rounded-2xl border border-cyan-300/30 bg-[#0a1118] shadow-2xl ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      >
+        <div className="relative aspect-[3/4] bg-[#0a1118]">
+          <video
+            src="/media/approved/boxingStance.mp4"
+            poster={COACH_REFERENCE}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            aria-label="Previously approved recorded Flex coach movement preview"
+            className="h-full w-full object-cover object-top"
+          />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent px-2 pb-2 pt-8">
+            <p className="text-[10px] font-black uppercase text-cyan-200">Flex · Marcus coach mode</p>
+            <p className="mt-1 text-[10px] leading-snug text-white/80">
+              D-ID live face is not authorized. Your actual workout demos, spoken coaching, and voice controls remain available.
+            </p>
+            <p className="mt-1 text-[9px] text-white/50">Recorded movement preview — not live lip-sync.</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setRecordedFallback(false)}
+          className="min-h-11 w-full border-t border-white/15 bg-white/5 px-2 text-[10px] font-bold uppercase text-cyan-200"
+        >
+          Check D-ID live face again
+        </button>
       </div>
     );
   }
