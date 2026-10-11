@@ -12,6 +12,7 @@
 import { isCoachSpeaking } from "@/lib/coach-voice";
 import { FLEX_NAME } from "@/lib/coach-persona";
 import { recordedCoachSpeechActive } from "@/v2/recorded-coach-player";
+import { coachReplySpeechActive } from "@/v2/coach-reply-speech";
 
 export type VoiceCommand =
   | "start"
@@ -217,6 +218,22 @@ let rec: Recognition | null = null;
 let handler: ((cmd: VoiceCommand, phrase: string) => void) | null = null;
 let conversationHandler: ((phrase: string) => void) | null = null;
 let wanted = false;
+let restartTimer: ReturnType<typeof setTimeout> | null = null;
+let resumeWatchInstalled = false;
+
+function scheduleRestart() {
+  if (!wanted || restartTimer || typeof window === "undefined") return;
+  if (document.hidden) return; // restart when the workout becomes visible again
+  restartTimer = window.setTimeout(() => {
+    restartTimer = null;
+    if (wanted && !rec) startListening();
+  }, 650);
+}
+
+function onWorkoutVisible() {
+  if (!document.hidden && wanted && !rec) scheduleRestart();
+}
+
 
 export function setCommandHandler(fn: ((cmd: VoiceCommand, phrase: string) => void) | null) {
   handler = fn;
@@ -239,6 +256,15 @@ export function submitCoachConversation(phrase: string): boolean {
   return true;
 }
 
+/** Questions take priority over ambiguous action words such as "start", "next"
+ * and "pause" inside a sentence. Never pause or skip a workout because
+ * someone asks "why should I pause?" or "how do I start a cable punch?".
+ */
+function soundsLikeAQuestion(phrase: string): boolean {
+  const withoutWakeWord = phrase.trim().replace(/^(?:(?:hey|okay|ok)\s+)?(?:flex|coach)[\s,.:!?-]*/i, "");
+  return /^(?:why|how|what|who|whose|when|where|which|can|could|would|should|do|does|did|is|are|am|explain|describe|tell me|help me understand)\b/i.test(withoutWakeWord);
+}
+
 function soundsDirectedAtCoach(phrase: string): boolean {
   const p = phrase.toLowerCase().trim();
   if (!p) return false;
@@ -255,6 +281,12 @@ export function startListening() {
     return false;
   }
   wanted = true;
+  if (!resumeWatchInstalled) {
+    document.addEventListener("visibilitychange", onWorkoutVisible);
+    window.addEventListener("focus", onWorkoutVisible);
+    resumeWatchInstalled = true;
+  }
+  if (restartTimer) { window.clearTimeout(restartTimer); restartTimer = null; }
   if (rec) return true;
   const r = new C();
   rec = r;
@@ -268,13 +300,15 @@ export function startListening() {
       const phrase = res[0].transcript.trim();
       // Do not let Flex answer his own audio. A deliberate "Flex..." address
       // is the exception so the athlete can interrupt him and take the turn.
-      if (isCoachSpeaking() || recordedCoachSpeechActive()) {
-        const directedToFlex = phrase.toLowerCase().includes(FLEX_NAME.toLowerCase());
+      if (isCoachSpeaking() || recordedCoachSpeechActive() || coachReplySpeechActive()) {
+        const directedToFlex = /^(?:hey\\s+)?flex\\b/i.test(phrase);
         if (!directedToFlex) continue;
       }
-      const cmd = matchCommand(phrase);
+      const ask = soundsLikeAQuestion(phrase) && soundsDirectedAtCoach(phrase);
+      const cmd = ask ? null : matchCommand(phrase);
       set({ heard: phrase, lastCommand: cmd, error: null });
-      if (cmd && handler) handler(cmd, phrase.toLowerCase());
+      if (ask && conversationHandler) conversationHandler(phrase);
+      else if (cmd && handler) handler(cmd, phrase.toLowerCase());
       else if (!cmd && conversationHandler && soundsDirectedAtCoach(phrase))
         conversationHandler(phrase);
     }
@@ -283,23 +317,19 @@ export function startListening() {
     const err = e?.error ?? "unknown";
     if (err === "not-allowed" || err === "service-not-allowed") {
       wanted = false;
-      set({ listening: false, error: "Microphone access was blocked for this site." });
+      set({ listening: false, error: "Microphone access was blocked for this site. Enable microphone permission and tap listening once." });
     } else if (err !== "no-speech" && err !== "aborted") {
       set({ error: `Listening error: ${err}` });
     }
   };
   r.onend = () => {
-    // Recognition stops itself constantly on Android — restart while wanted.
-    if (wanted) {
-      try {
-        r.start();
-        return;
-      } catch {
-        /* fall through */
-      }
-    }
+    if (rec !== r) return; // An older recognizer must not replace a newer one.
     rec = null;
     set({ listening: false });
+    // Android recognition often stops automatically after silence. Starting
+    // in the same onend callback fails with InvalidStateError; schedule a new
+    // instance instead and preserve the opted-in microphone session.
+    if (wanted) scheduleRestart();
   };
   try {
     r.start();
@@ -307,19 +337,24 @@ export function startListening() {
     return true;
   } catch {
     rec = null;
-    set({ listening: false, error: "Could not start listening." });
+    set({ listening: false, error: "Microphone could not start. Check Chrome site permissions." });
+    // A new explicit Start/Enable tap is needed if browser activation failed.
+    wanted = false;
     return false;
   }
 }
 
 export function stopListening() {
   wanted = false;
-  try {
-    rec?.stop();
-  } catch {
-    /* ignore */
+  if (restartTimer) { clearTimeout(restartTimer); restartTimer = null; }
+  if (resumeWatchInstalled) {
+    document.removeEventListener("visibilitychange", onWorkoutVisible);
+    window.removeEventListener("focus", onWorkoutVisible);
+    resumeWatchInstalled = false;
   }
+  const active = rec;
   rec = null;
+  try { active?.stop(); } catch { /* ignore */ }
   set({ listening: false });
 }
 
