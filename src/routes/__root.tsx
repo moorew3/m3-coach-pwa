@@ -162,7 +162,7 @@ function RootComponent() {
     pathname.startsWith("/glasses") ||
     pathname.startsWith("/presentation");
   // V2 is a dedicated direct-entry visual preview, not the old app's intro flow.
-  const v2Preview = pathname.startsWith("/v2");
+  const v2Preview = pathname.startsWith("/v2") || pathname.startsWith("/rig-qa");
   // The coached session keeps the bottom nav but goes full width on desktop.
   const wide = pathname.startsWith("/coach");
 
