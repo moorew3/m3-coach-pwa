@@ -1101,7 +1101,7 @@ function V2Coach() {
               </p>
               {replySpeaking && <p className="mt-2 text-xs font-bold text-cyan-200">Flex is answering aloud · temporary device voice</p>}
               {voiceOn && !canSpeakCoachReply() && !liveProviderSpeaking && <p className="mt-2 text-xs text-amber-200">Browser speech unavailable; answers will still appear on screen.</p>}
-              {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>
+              {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
                 <>
                   <button
