@@ -18,6 +18,7 @@ import { Route as NutritionRouteImport } from './routes/nutrition'
 import { Route as GlassesRouteImport } from './routes/glasses'
 import { Route as DisplayRouteImport } from './routes/display'
 import { Route as V2RouteImport } from './routes/v2'
+import { Route as RigQaRouteImport } from './routes/rig-qa'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkoutDayRouteImport } from './routes/workout.$day'
 import { Route as CoachDayRouteImport } from './routes/coach.$day'
@@ -68,6 +69,11 @@ const V2Route = V2RouteImport.update({
   path: '/v2',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RigQaRoute = RigQaRouteImport.update({
+  id: '/rig-qa',
+  path: '/rig-qa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/display': typeof DisplayRoute
   '/v2': typeof V2Route
+  '/rig-qa': typeof RigQaRoute
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
   '/presentation': typeof PresentationRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/display': typeof DisplayRoute
   '/v2': typeof V2Route
+  '/rig-qa': typeof RigQaRoute
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
   '/presentation': typeof PresentationRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/display': typeof DisplayRoute
   '/v2': typeof V2Route
+  '/rig-qa': typeof RigQaRoute
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
   '/presentation': typeof PresentationRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/'
     | '/display'
     | '/v2'
+    | '/rig-qa'
     | '/glasses'
     | '/nutrition'
     | '/presentation'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/display'
     | '/v2'
+    | '/rig-qa'
     | '/glasses'
     | '/nutrition'
     | '/presentation'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/display'
     | '/v2'
+    | '/rig-qa'
     | '/glasses'
     | '/nutrition'
     | '/presentation'
@@ -187,6 +199,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DisplayRoute: typeof DisplayRoute
   V2Route: typeof V2Route
+  RigQaRoute: typeof RigQaRoute
   GlassesRoute: typeof GlassesRoute
   NutritionRoute: typeof NutritionRoute
   PresentationRoute: typeof PresentationRoute
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof V2RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rig-qa': {
+      id: '/rig-qa'
+      path: '/rig-qa'
+      fullPath: '/rig-qa'
+      preLoaderRoute: typeof RigQaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -299,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DisplayRoute: DisplayRoute,
   V2Route: V2Route,
+  RigQaRoute: RigQaRoute,
   GlassesRoute: GlassesRoute,
   NutritionRoute: NutritionRoute,
   PresentationRoute: PresentationRoute,
