@@ -1,5 +1,6 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type * as THREE from "three";
 
 export const V2_COACH_MODEL_URL = "/v2/coach.glb";
@@ -15,16 +16,24 @@ function LoadedCoach({
 }) {
   const group = useRef<THREE.Group>(null);
   const { scene, animations } = useGLTF(V2_COACH_MODEL_URL);
+  // Skinned meshes must be cloned per mount. Sharing a GLTF scene across
+  // coach instances can make pose updates conflict or freeze the visible rig.
+  const coachScene = useMemo(() => cloneSkeleton(scene), [scene]);
   const { actions } = useAnimations(animations, group);
 
   useEffect(() => {
     const exact = actions[motionKey];
     const idle = actions.Idle ?? actions.idle;
-    const action = running ? exact ?? idle : idle ?? exact;
-    if (!action) return;
+    // CRITICAL: Never substitute Idle for an exercise while the timer runs.
+    // A missing exact motion must fail visibly during QA, not masquerade as a
+    // full-body animated coach standing still.
+    const action = running ? exact : idle;
+    if (!action) {
+      if (running) console.warn(`LIVE FLEX rig: missing exact animation "${motionKey}"`);
+      return;
+    }
 
     action.reset().fadeIn(0.25).play();
-    action.paused = !running && !idle;
     return () => {
       action.fadeOut(0.25);
     };
@@ -33,7 +42,7 @@ function LoadedCoach({
   return (
     <primitive
       ref={group}
-      object={scene}
+      object={coachScene}
       position={position}
       dispose={null}
       castShadow
