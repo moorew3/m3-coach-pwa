@@ -29,7 +29,8 @@ import {
 } from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
-import { playMarcusTrainer } from "@/v2/marcus-trainer-audio";
+import { playMarcusTrainer, stopMarcusTrainer } from "@/v2/marcus-trainer-audio";
+import { canSpeakCoachReply, coachReplySpeaking, speakCoachReply, stopCoachReply, subscribeCoachReplySpeech } from "@/v2/coach-reply-speech";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -130,6 +131,7 @@ function V2Coach() {
     liveFlexSpeaking,
     () => false,
   );
+  const replySpeaking = useSyncExternalStore(subscribeCoachReplySpeech, coachReplySpeaking, () => false);
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
   const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
 
@@ -427,6 +429,7 @@ function V2Coach() {
           setLiveCue("Workout resumed.");
           return;
         case "pause":
+          stopCoachReply();
           stopMarcusCue();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
@@ -520,6 +523,7 @@ function V2Coach() {
           return;
         }
         case "muteCoach":
+          stopCoachReply();
           setVoiceOn(false);
           stopMarcusCue();
           stopDetailedExerciseSpeech();
@@ -532,6 +536,7 @@ function V2Coach() {
           setLiveCue(`${FLEX_NAME}'s ${FLEX_VOICE_NAME} voice is on. Detailed coaching remains on screen.`);
           return;
         case "end":
+          stopCoachReply();
           stopMarcusCue();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
@@ -544,13 +549,15 @@ function V2Coach() {
       }
     });
     setConversationHandler((phrase) => {
-      if (coachTalkBusy.current) return;
+      if (coachTalkBusy.current) { setLiveCue("Flex is still answering the previous question."); return; }
 
       // A deliberate conversation turn takes priority over canned coaching.
       // Stop current Flex audio so he listens instead of talking over the athlete.
       stopMarcusCue();
+      stopMarcusTrainer();
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
+      stopCoachReply();
       interruptLiveFlex();
 
       const metrics = metricsSnapshot();
@@ -590,7 +597,7 @@ function V2Coach() {
               boxer.rearPunches + " rear-hand cycles. I cannot verify impact or hidden foot pivot.")
             : null;
           const line = reply || observed ||
-            "I cannot reliably judge your form from this view. Reposition the camera or use the on-screen workout controls.";
+            "The conversation service did not answer. Try asking again; workout commands and recorded instructions still work.";
           coachDialogue.current = [
             ...coachDialogue.current,
             `Athlete: ${phrase}`,
@@ -600,8 +607,12 @@ function V2Coach() {
           // The brain has finished its answer; provider callbacks now own the
           // speaking state so the UI can transition Thinking → Speaking.
           setFlexThinking(false);
-          const spokenByLiveFlex = await speakThroughLiveFlex(line);
-          if (voiceOn && !spokenByLiveFlex) speakDetailedExercise(line);
+          if (voiceOn) {
+            const spokenByLiveFlex = await speakThroughLiveFlex(line);
+            const spokenByDevice = !spokenByLiveFlex && speakCoachReply(line);
+            setVoiceError(spokenByLiveFlex || spokenByDevice ? null :
+              "Reply shown as text because this browser could not play speech.");
+          }
         })
         .finally(() => {
           coachTalkBusy.current = false;
@@ -620,6 +631,7 @@ function V2Coach() {
 
   const toggleVoice = async () => {
     if (voiceOn) {
+      stopCoachReply();
       stopMarcusCue();
       stopDetailedExerciseSpeech();
       stopFridayPremiumCue();
@@ -1085,9 +1097,11 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Flex uses your approved Marcus voice to teach each movement, repeat technique and breathing cues, guide recovery, and answer you during the workout. Your current set, reps and weight are shown below.
+                Marcus's approved recordings teach the workout. Live conversational replies use the device's free voice until Marcus lip-sync is connected; this is not the Marcus voice.
               </p>
-              {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
+              {replySpeaking && <p className="mt-2 text-xs font-bold text-cyan-200">Flex is answering aloud · temporary device voice</p>}
+              {voiceOn && !canSpeakCoachReply() && !liveProviderSpeaking && <p className="mt-2 text-xs text-amber-200">Browser speech unavailable; answers will still appear on screen.</p>}
+              {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>
               {voiceControlAvailable() ? (
                 <>
                   <button
@@ -1105,7 +1119,7 @@ function V2Coach() {
                     {voiceControl.listening ? `Stop ${FLEX_NAME} listening` : `Enable ${FLEX_NAME} listening`}
                   </button>
                   <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-                    Flex starts hands-free listening when you start or resume the workout so you can talk back and forth without another button. Stop listening here for music-only mode; on some Android phones microphone use can temporarily duck external music.
+                    Start or Resume enables hands-free listening with microphone permission. Ask “Flex, how do I do this?” Android recognition restarts after silence while the page is open; background listening depends on phone restrictions.
                   </p>
                   {voiceControl.heard && (
                     <p className="mt-1 text-[11px] text-cyan-200">
