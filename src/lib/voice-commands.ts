@@ -301,7 +301,7 @@ export function startListening() {
       // Do not let Flex answer his own audio. A deliberate "Flex..." address
       // is the exception so the athlete can interrupt him and take the turn.
       if (isCoachSpeaking() || recordedCoachSpeechActive() || coachReplySpeechActive()) {
-        const directedToFlex = /^(?:hey\\s+)?flex\\b/i.test(phrase);
+        const directedToFlex = /^(?:hey\s+)?flex\b/i.test(phrase);
         if (!directedToFlex) continue;
       }
       const ask = soundsLikeAQuestion(phrase) && soundsDirectedAtCoach(phrase);
