@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "start": "node .output/server/index.mjs"
+    "start": "node .output/server/index.mjs",
+    "audit:flex-rig": "node scripts/audit-flex-rig.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
