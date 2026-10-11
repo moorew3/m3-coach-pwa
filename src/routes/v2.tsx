@@ -733,6 +733,13 @@ function V2Coach() {
             <h1 className="mt-1 text-lg font-black">Interactive training</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <a
+              href="/rig-qa"
+              title="Separate full-body Flex test; does not change your actual workouts"
+              className="flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
+            >
+              Full-body Flex test
+            </a>
             <button
               type="button"
               onClick={() => {
