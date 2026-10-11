@@ -102,6 +102,10 @@ function V2Coach() {
     catch { /* session-only; do not block training */ }
   }, []);
   const [voiceOn, setVoiceOn] = useState(true);
+  // The actual moving full-body coach is the workout's primary trainer.
+  // Keep the D-ID speaking-head window optional so it cannot obscure form,
+  // steps or equipment. The provider/voice remains mounted in either mode.
+  const [showTalkingFace, setShowTalkingFace] = useState(false);
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
   const [flexQuestion, setFlexQuestion] = useState("");
@@ -738,7 +742,7 @@ function V2Coach() {
               title="Separate full-body Flex test; does not change your actual workouts"
               className="flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
             >
-              Full-body Flex test
+              3D lab · test only
             </a>
             <button
               type="button"
@@ -803,7 +807,7 @@ function V2Coach() {
           <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
             <LiveFlexProvider
               presence={flexPresence}
-              visible={showCoach && session.phase !== "complete"}
+              visible={showCoach && session.phase !== "complete" && (showTalkingFace || !stageMedia)}
             />
             {realTimeRigReady && <M3GymRenderer session={session} />}
             {showCoach && !realTimeRigReady && stageMedia && (
@@ -815,7 +819,7 @@ function V2Coach() {
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
-                className="absolute inset-x-0 top-[92px] bottom-[196px] w-full lg:top-[66px] lg:bottom-[155px]"
+                className="absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"
                 label={
                   stageUsesRecovered
                     ? `Motion demo of ${exercise?.name ?? "movement"}`
@@ -1036,6 +1040,20 @@ function V2Coach() {
               </section>
             )}
 
+            {showCoach && (
+              <section className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[.04] p-3">
+                <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Full-body trainer display</p>
+                <p className="mt-1 text-xs leading-relaxed text-white/65">Exercise demonstrations fill the stage. Marcus continues coaching either way.</p>
+                <button
+                  type="button"
+                  aria-pressed={showTalkingFace}
+                  onClick={() => setShowTalkingFace((shown) => !shown)}
+                  className={`mt-3 min-h-11 w-full rounded-xl border px-3 text-xs font-black ${showTalkingFace ? "border-cyan-300 bg-cyan-300/15 text-cyan-100" : "border-white/15 bg-black/40 text-white/80"}`}
+                >
+                  {showTalkingFace ? "Hide talking-face inset" : "Show optional talking-face inset"}
+                </button>
+              </section>
+            )}
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
               <button
                 type="button"
