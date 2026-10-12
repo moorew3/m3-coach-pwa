@@ -839,22 +839,6 @@ function V2Coach() {
                 }
               />
             )}
-            {showCoach && !realTimeRigReady && stableCoachFraming && stageMedia && (
-              <div className="pointer-events-none absolute left-3 top-3 z-[7] rounded-xl border border-cyan-300/40 bg-black/80 px-3 py-2 backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Stable leg curl</p>
-                <p className="mt-1 text-[11px] text-white/80">Hips down · torso pinned · slow return</p>
-              </div>
-            )}
-            {showCoach && !realTimeRigReady && stageUsesRecovered && recoveredMedia && (
-              <div className="pointer-events-none absolute bottom-[104px] right-3 z-[6] max-w-[58%] rounded-xl border border-amber-300/40 bg-black/80 px-3 py-2 text-right backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-200">
-                  Motion demo
-                </p>
-                <p className="mt-1 text-[10px] leading-relaxed text-white/65">
-                  Correct movement recovered from the original app. Follow the movement while your approved Virtual Coach provides the workout cues.
-                </p>
-              </div>
-            )}
             {showCoach && !realTimeRigReady && !stageMedia && (
               <div
                 className="absolute inset-0 bg-[#070c12]"
@@ -905,14 +889,6 @@ function V2Coach() {
               </div>
             </div>
 
-            {liveCue && (
-              <div
-                className="absolute bottom-[105px] left-3 right-3 z-[8] max-h-20 overflow-y-auto rounded-xl border border-cyan-300/40 bg-black/85 px-3 py-2 text-xs font-bold text-cyan-100"
-                aria-live="polite"
-              >
-                {liveCue}
-              </div>
-            )}
 
             <V2TrainingCamera
               session={session}
