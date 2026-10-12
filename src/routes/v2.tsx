@@ -752,7 +752,7 @@ function V2Coach() {
             <a
               href="/rig-qa"
               title="Separate full-body Flex test; does not change your actual workouts"
-              className="flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
+              className="hidden sm:flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
             >
               3D lab · test only
             </a>
@@ -776,7 +776,7 @@ function V2Coach() {
               dispatch({ type: "reset", workout: boxing });
               dispatch({ type: "set-mode", mode: "shadow" });
             }}
-            className="min-h-11 max-w-[48%] rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
+            className="min-h-11 rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
           >
             Boxing + Kickboxing
           </button>
@@ -789,9 +789,9 @@ function V2Coach() {
           className="mt-2 flex min-h-10 items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/35 px-3 text-xs"
         >
           <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
-          <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
+          <span className="text-white/50">{replySpeaking ? "Device voice · not Marcus" : `Recorded voice · ${FLEX_VOICE_NAME}`}</span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
+        <details className="mt-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3"><summary className="cursor-pointer text-xs font-black text-cyan-200">Original seven-day plan · tap to change workout</summary><div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-black text-cyan-200">Your original seven-day training plan is available here.</p>
             <p className="mt-1 text-xs text-white/65">Today's program: {originalWorkoutForToday().title}. Missing videos do not remove exercises.</p>
@@ -808,7 +808,7 @@ function V2Coach() {
           >
             Load today's FULL workout
           </button>
-        </div>
+        </div></details>
         {athleteError && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
@@ -816,7 +816,7 @@ function V2Coach() {
         )}
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
+          <section className="relative h-[62dvh] min-h-[360px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:h-[78dvh] sm:min-h-[520px]">
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && (showTalkingFace || !stageMedia)}
@@ -831,29 +831,13 @@ function V2Coach() {
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
-                className="absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"
+                className="absolute inset-x-0 top-[70px] bottom-[100px] w-full sm:top-[90px] sm:bottom-[124px] lg:top-[72px] lg:bottom-[118px]"
                 label={
                   stageUsesRecovered
                     ? `Motion demo of ${exercise?.name ?? "movement"}`
                     : `Approved coach demonstrating ${exercise?.name ?? "movement"}`
                 }
               />
-            )}
-            {showCoach && !realTimeRigReady && stableCoachFraming && stageMedia && (
-              <div className="pointer-events-none absolute left-3 top-3 z-[7] rounded-xl border border-cyan-300/40 bg-black/80 px-3 py-2 backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Stable leg curl</p>
-                <p className="mt-1 text-[11px] text-white/80">Hips down · torso pinned · slow return</p>
-              </div>
-            )}
-            {showCoach && !realTimeRigReady && stageUsesRecovered && recoveredMedia && (
-              <div className="pointer-events-none absolute bottom-[104px] right-3 z-[6] max-w-[58%] rounded-xl border border-amber-300/40 bg-black/80 px-3 py-2 text-right backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-200">
-                  Motion demo
-                </p>
-                <p className="mt-1 text-[10px] leading-relaxed text-white/65">
-                  Correct movement recovered from the original app. Follow the movement while your approved Virtual Coach provides the workout cues.
-                </p>
-              </div>
             )}
             {showCoach && !realTimeRigReady && !stageMedia && (
               <div
@@ -905,14 +889,6 @@ function V2Coach() {
               </div>
             </div>
 
-            {liveCue && (
-              <div
-                className="absolute bottom-[105px] left-3 right-3 z-[8] max-h-20 overflow-y-auto rounded-xl border border-cyan-300/40 bg-black/85 px-3 py-2 text-xs font-bold text-cyan-100"
-                aria-live="polite"
-              >
-                {liveCue}
-              </div>
-            )}
 
             <V2TrainingCamera
               session={session}
@@ -1053,7 +1029,7 @@ function V2Coach() {
             )}
 
             {showCoach && (
-              <section className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[.04] p-3">
+              <details className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[.04] p-3"><summary className="cursor-pointer text-xs font-black text-cyan-200">Trainer display options</summary><div className="mt-3">
                 <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Full-body trainer display</p>
                 <p className="mt-1 text-xs leading-relaxed text-white/65">Exercise demonstrations fill the stage. Marcus continues coaching either way.</p>
                 <button
@@ -1063,8 +1039,8 @@ function V2Coach() {
                   className={`mt-3 min-h-11 w-full rounded-xl border px-3 text-xs font-black ${showTalkingFace ? "border-cyan-300 bg-cyan-300/15 text-cyan-100" : "border-white/15 bg-black/40 text-white/80"}`}
                 >
                   {showTalkingFace ? "Hide talking-face inset" : "Show optional talking-face inset"}
-                </button>
-              </section>
+                </button></div>
+              </details>
             )}
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
               <button
