@@ -752,7 +752,7 @@ function V2Coach() {
             <a
               href="/rig-qa"
               title="Separate full-body Flex test; does not change your actual workouts"
-              className="flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
+              className="hidden sm:flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
             >
               3D lab · test only
             </a>
@@ -776,7 +776,7 @@ function V2Coach() {
               dispatch({ type: "reset", workout: boxing });
               dispatch({ type: "set-mode", mode: "shadow" });
             }}
-            className="min-h-11 max-w-[48%] rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
+            className="min-h-11 rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
           >
             Boxing + Kickboxing
           </button>
@@ -816,7 +816,7 @@ function V2Coach() {
         )}
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
+          <section className="relative h-[62dvh] min-h-[360px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12] sm:h-[78dvh] sm:min-h-[520px]">
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && (showTalkingFace || !stageMedia)}
@@ -831,7 +831,7 @@ function V2Coach() {
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
-                className="absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"
+                className="absolute inset-x-0 top-[70px] bottom-[100px] w-full sm:top-[90px] sm:bottom-[124px] lg:top-[72px] lg:bottom-[118px]"
                 label={
                   stageUsesRecovered
                     ? `Motion demo of ${exercise?.name ?? "movement"}`
