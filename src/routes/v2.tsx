@@ -789,9 +789,9 @@ function V2Coach() {
           className="mt-2 flex min-h-10 items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/35 px-3 text-xs"
         >
           <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
-          <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
+          <span className="text-white/50">{replySpeaking ? "Device voice · not Marcus" : `Recorded voice · ${FLEX_VOICE_NAME}`}</span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
+        <details className="mt-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3"><summary className="cursor-pointer text-xs font-black text-cyan-200">Original seven-day plan · tap to change workout</summary><div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-black text-cyan-200">Your original seven-day training plan is available here.</p>
             <p className="mt-1 text-xs text-white/65">Today's program: {originalWorkoutForToday().title}. Missing videos do not remove exercises.</p>
@@ -808,7 +808,7 @@ function V2Coach() {
           >
             Load today's FULL workout
           </button>
-        </div>
+        </div></details>
         {athleteError && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
@@ -1053,7 +1053,7 @@ function V2Coach() {
             )}
 
             {showCoach && (
-              <section className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[.04] p-3">
+              <details className="rounded-3xl border border-cyan-300/20 bg-cyan-300/[.04] p-3"><summary className="cursor-pointer text-xs font-black text-cyan-200">Trainer display options</summary><div className="mt-3">
                 <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Full-body trainer display</p>
                 <p className="mt-1 text-xs leading-relaxed text-white/65">Exercise demonstrations fill the stage. Marcus continues coaching either way.</p>
                 <button
@@ -1063,8 +1063,8 @@ function V2Coach() {
                   className={`mt-3 min-h-11 w-full rounded-xl border px-3 text-xs font-black ${showTalkingFace ? "border-cyan-300 bg-cyan-300/15 text-cyan-100" : "border-white/15 bg-black/40 text-white/80"}`}
                 >
                   {showTalkingFace ? "Hide talking-face inset" : "Show optional talking-face inset"}
-                </button>
-              </section>
+                </button></div>
+              </details>
             )}
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
               <button
