@@ -109,6 +109,10 @@ function V2Coach() {
   const [showTalkingFace, setShowTalkingFace] = useState(false);
   const voiceControl = useVoiceControl();
   const [liveCue, setLiveCue] = useState<string | null>(null);
+  // Conversation transcripts belong beside the workout, never as subtitles
+  // covering the moving coach. Preserve answers when an exercise cue changes.
+  const [lastCoachQuestion, setLastCoachQuestion] = useState<string | null>(null);
+  const [lastCoachAnswer, setLastCoachAnswer] = useState<string | null>(null);
   const [flexQuestion, setFlexQuestion] = useState("");
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [boxingStance, setBoxingStance] = useState<BoxingStance>("orthodox");
@@ -587,6 +591,8 @@ function V2Coach() {
         },
       };
       coachTalkBusy.current = true;
+      setLastCoachQuestion(phrase);
+      setLastCoachAnswer(null);
       setFlexThinking(true);
       setLiveCue(`${FLEX_NAME} is thinking…`);
       void askLiveCoach(phrase, context)
@@ -604,6 +610,7 @@ function V2Coach() {
             `${FLEX_NAME}: ${line}`,
           ].slice(-8);
           setLiveCue(line);
+          setLastCoachAnswer(line);
           // The brain has finished its answer; provider callbacks now own the
           // speaking state so the UI can transition Thinking → Speaking.
           setFlexThinking(false);
@@ -839,22 +846,6 @@ function V2Coach() {
                 }
               />
             )}
-            {showCoach && !realTimeRigReady && stableCoachFraming && stageMedia && (
-              <div className="pointer-events-none absolute left-3 top-3 z-[7] rounded-xl border border-cyan-300/40 bg-black/80 px-3 py-2 backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-cyan-200">Stable leg curl</p>
-                <p className="mt-1 text-[11px] text-white/80">Hips down · torso pinned · slow return</p>
-              </div>
-            )}
-            {showCoach && !realTimeRigReady && stageUsesRecovered && recoveredMedia && (
-              <div className="pointer-events-none absolute bottom-[104px] right-3 z-[6] max-w-[58%] rounded-xl border border-amber-300/40 bg-black/80 px-3 py-2 text-right backdrop-blur">
-                <p className="text-[10px] font-black uppercase tracking-[.18em] text-amber-200">
-                  Motion demo
-                </p>
-                <p className="mt-1 text-[10px] leading-relaxed text-white/65">
-                  Correct movement recovered from the original app. Follow the movement while your approved Virtual Coach provides the workout cues.
-                </p>
-              </div>
-            )}
             {showCoach && !realTimeRigReady && !stageMedia && (
               <div
                 className="absolute inset-0 bg-[#070c12]"
@@ -904,15 +895,6 @@ function V2Coach() {
                 </p>
               </div>
             </div>
-
-            {liveCue && (
-              <div
-                className="absolute bottom-[105px] left-3 right-3 z-[8] max-h-20 overflow-y-auto rounded-xl border border-cyan-300/40 bg-black/85 px-3 py-2 text-xs font-bold text-cyan-100"
-                aria-live="polite"
-              >
-                {liveCue}
-              </div>
-            )}
 
             <V2TrainingCamera
               session={session}
@@ -1097,8 +1079,27 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Marcus's approved recordings teach the workout. Live conversational replies use the device's free voice until Marcus lip-sync is connected; this is not the Marcus voice.
+                Marcus's approved recordings teach the workout. Live conversational replies use the device's available speech voice until synchronized Marcus is connected.
               </p>
+              {(flexThinking || lastCoachAnswer) && (
+                <div data-testid="flex-conversation-reply" aria-live="polite"
+                  className="mt-3 rounded-2xl border border-cyan-300/30 bg-black/55 px-3 py-3">
+                  <p className="text-[10px] font-black uppercase tracking-[.17em] text-cyan-200">
+                    {flexThinking ? "Flex · Thinking" : "Flex · Answer"}
+                  </p>
+                  {lastCoachQuestion && <p className="mt-2 text-[11px] text-white/50">You: {lastCoachQuestion}</p>}
+                  <p className="mt-2 text-sm leading-relaxed text-white/90">
+                    {flexThinking ? "Preparing your answer…" : lastCoachAnswer}
+                  </p>
+                  {!flexThinking && lastCoachAnswer && voiceOn && (
+                    <button type="button" onClick={() => void speakCoachReply(lastCoachAnswer)}
+                      aria-label="Replay Flex answer"
+                      className="mt-3 min-h-10 rounded-lg border border-cyan-300/25 px-3 text-xs font-bold text-cyan-100">
+                      Replay answer aloud
+                    </button>
+                  )}
+                </div>
+              )}
               {replySpeaking && <p className="mt-2 text-xs font-bold text-cyan-200">Flex is answering aloud · temporary device voice</p>}
               {voiceOn && !canSpeakCoachReply() && !liveProviderSpeaking && <p className="mt-2 text-xs text-amber-200">Browser speech unavailable; answers will still appear on screen.</p>}
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
