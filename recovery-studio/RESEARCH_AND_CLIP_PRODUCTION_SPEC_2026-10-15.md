@@ -127,3 +127,14 @@ The gentle cues still require consideration of medical restrictions/individual c
 - [ ] Exact validated media link checked before adding to app. Do not reuse a scene URL as a direct MP4 src.
 - [ ] Clinician clearance stays distinct from video visual approval.
 - [ ] No Google Flow credit spent on duplicates or unclear model/cost.
+
+
+## Production log — October 15, 2026 (after research; new video batches)
+
+- **Seated arm-only boxing**: Veo 3.1 Lite, 8s 720p vertical, original 9550.png ingredient; real existing scene generated and playback confirmed at https://flow.google.com/project/882f7957-65ac-4160-95f5-d370dcd6e855/edit/0341aa85-2f8e-43f0-8fac-814ddf9fc64d . UI price 10 Flow credits. **Needs rendered-motion and avatar/cast QC before acceptance**, not yet medical clearance. Added as REVIEW link in Equipment A and B.
+- **Supported palm-up dumbbell wrist flexion**: existing completed 8s scene at https://flow.google.com/project/882f7957-65ac-4160-95f5-d370dcd6e855/edit/f06cf5ed-bf43-4964-ba08-94b5906a7d99 . Source 9550.png attached. Flow was observed to revert from selected Veo 3.1 Lite to **Omni 1.1 Flash**; exact resulting credit charge was not confirmed. **Needs rendered form QC**, not approved; added REVIEW link in Equipment B.
+- **Seated bilateral front raises**: attempted, scene https://flow.google.com/project/882f7957-65ac-4160-95f5-d370dcd6e855/edit/dd8ab9b7-dc5d-47d5-bc87-750d7b805751 . Read-only playback inspection found a video, but motion appeared more like seated dumbbell CURLS, and identity/cast elevation could not be confirmed. Therefore **HOLD / INCORRECT OR UNVERIFIED FORM**. The video was explicitly REMOVED from the live workout entry, marked Redo. Do NOT accept as a front-raise demonstration. Job submitted from Agent/Omni mode despite intended Veo settings.
+- **No extra attempts or automatic retries** after model discrepancy discovered. Future generation is BLOCKED pending reliable VIDEO/Veo setting preservation and explicit per-generation price confirmation; never claim Omni and Veo are identical or billable at the same rate without checking.
+- **Integration verification**: Published clean app https://dochost.co/d/dlbx4ssb was browser-QA tested; Equipment A/B controls work, boxing and wrist curl link to exact real scenes, and front raise is marked Redo with no clip link. Full in-app hosted MP4 and real Marcus audio still missing. Preview hosting page may expire; saved code stays on the isolated feature branch.
+- **Biceps curls**: existing original video only one arm moving; don't spend to regenerate until model and credit gate reliable.
+- **INNSTAR and AMYCO**: remain blocked for device-specific production pending exact model/anchoring demonstration as above.
