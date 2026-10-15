@@ -58,7 +58,7 @@ h1{margin:0 0 4px;font-size:clamp(22px,6vw,30px);letter-spacing:-.03em}p{margin:
 <label><input type="checkbox" class="approvalCheck"/> Session duration and effort level approved.</label>
 <div id="medicalState" class="tiny">Training not cleared. Video previews are informational only.</div></section>
 <div class="safety"><strong>Protect the left ankle:</strong> No standing, weight-bearing, foot anchoring, twisting through the cast, or leg-powered resistance. Stop if pain, swelling or cast pressure increases. These demonstrations do not replace your orthopedic team's instructions.</div>
-<p class="footer">Actual Flex video only • Approved Marcus recordings only • Missing clips remain pending • M3 Coach V2 unchanged</p>
+<p class="footer">2 user-approved Flex motion samples (curl appearance + lateral raise) • Marcus-only voice • More clips in production • M3 Coach V2 unchanged</p>
 </main>
 <script>
 "use strict";
@@ -73,7 +73,7 @@ gentle:[
 A:[
 {name:"Seated dumbbell curls",equipment:"Your photographed dumbbells",clip:VIDEO,approvedAvatar:true,qa:"one-arm sample",cue:"Original Flex performs a seated one-arm dumbbell curl in this real video. The clip is a visual reference only and does not show the planned alternating/full sequence. Do not lift until explicitly cleared."},
 {name:"Seated dumbbell shrugs",equipment:"Your photographed dumbbells",cue:"After clinician clearance only: small deliberate shoulder elevations, arms hanging, no leg drive."},
-{name:"Seated lateral raises",equipment:"Your photographed dumbbells",cue:"After clinician clearance only: raise both arms sideways into a wide T and lower, NOT biceps curls. The earlier incorrect lateral-raise video was rejected."},
+{name:"Seated lateral raises",equipment:"Your photographed dumbbells",sceneUrl:"https://flow.google.com/project/882f7957-65ac-4160-95f5-d370dcd6e855/edit/475bb83c-9c3c-4e4a-aad2-d3d03b6a2dd1",userApproved:true,cue:"Your new Flex seated lateral-raise motion is approved. Move both arms sideways into a wide T and lower. This approved visual sample is still in your Google Flow account. Exercise only with orthopedic clearance."},
 {name:"Supported INNSTAR chest press",equipment:"Your pictured INNSTAR resistance system",cue:"Only if your exact device can route securely around upper back with no foot anchor, and your clinician approves. Otherwise omit."},
 {name:"Supported arm-only boxing",equipment:"No equipment",cue:"Only after approval: small forward punches without trunk rotation or leg drive."}
 ],
@@ -96,10 +96,10 @@ function render(){
  $("medical").classList.toggle("hide",mode==="gentle");
  $("prev").disabled=index===0;$("next").disabled=index===exercises.length-1;
  document.querySelectorAll(".pick").forEach(b=>{b.classList.toggle("on",b.dataset.mode===mode);b.setAttribute("aria-selected",b.dataset.mode===mode?"true":"false")});
- $("videoBox").classList.toggle("hide",!hasVideo);$("emptyBox").classList.toggle("hide",hasVideo);$("openOriginal").classList.toggle("hide",!hasVideo);
- $("emptyBox").innerHTML=mode==="gentle"?"<strong>Gentle movement</strong><span>No exercise video needed for this step. Only move if permitted by your doctor.</span>":"<strong>Flex clip coming</strong><span>Only the approved Flex avatar will appear here. No substitute footage.</span>";
+ $("videoBox").classList.toggle("hide",!hasVideo);$("emptyBox").classList.toggle("hide",hasVideo);$("openOriginal").classList.toggle("hide",!(hasVideo||!!item.sceneUrl));$("openOriginal").href=item.sceneUrl||"https://drive.google.com/file/d/1wLS6ufEZ2fe5ZiD_bloiYITPE65DoEy0/view";$("openOriginal").textContent=item.sceneUrl?"▶ Watch approved Flex clip in Flow":"▶ Play Flex video";
+ $("emptyBox").innerHTML=mode==="gentle"?"<strong>Gentle movement</strong><span>No exercise video needed for this step. Only move if permitted by your doctor.</span>":item.sceneUrl?"<strong>Flex motion approved ✓</strong><span>Tap the button below to play the real Flex clip in Google Flow. In-app MP4 hosting is pending.</span>":"<strong>Flex clip coming</strong><span>Only the approved Flex avatar will appear here. No substitute footage.</span>";
  const frame=$("approvedVideo");if(hasVideo&&frame.getAttribute("src")!==item.clip){frame.setAttribute("src",item.clip)}if(!hasVideo&&frame.hasAttribute("src")){frame.removeAttribute("src")}
- const list=$("moves");list.replaceChildren();exercises.forEach((e,i)=>{let b=document.createElement("button");b.type="button";b.className="move"+(i===index?" active":"");let num=document.createElement("span");num.className="index";num.textContent=String(i+1);let body=document.createElement("span");body.className="body";let name=document.createElement("div");name.className="name";name.textContent=e.name;let sub=document.createElement("div");sub.className="sub";sub.textContent=e.equipment;body.append(name,sub);let flag=document.createElement("span");flag.className="flag "+(e.clip?"":"pending");flag.textContent=e.clip?"▶ Clip":"Pending";b.append(num,body,flag);b.onclick=()=>{index=i;render()};list.append(b)});
+ const list=$("moves");list.replaceChildren();exercises.forEach((e,i)=>{let b=document.createElement("button");b.type="button";b.className="move"+(i===index?" active":"");let num=document.createElement("span");num.className="index";num.textContent=String(i+1);let body=document.createElement("span");body.className="body";let name=document.createElement("div");name.className="name";name.textContent=e.name;let sub=document.createElement("div");sub.className="sub";sub.textContent=e.equipment;body.append(name,sub);let flag=document.createElement("span");flag.className="flag "+((e.clip||e.sceneUrl)?"":"pending");flag.textContent=e.sceneUrl?"✓ Approved":e.clip?"▶ Clip":"Pending";b.append(num,body,flag);b.onclick=()=>{index=i;render()};list.append(b)});
 }
 document.querySelectorAll(".pick").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;index=0;render()});
 $("prev").onclick=()=>{if(index>0){index--;render()}};$("next").onclick=()=>{if(index<DATA[mode].length-1){index++;render()}};
