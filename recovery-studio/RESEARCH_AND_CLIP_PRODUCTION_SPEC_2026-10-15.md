@@ -4,6 +4,14 @@
 
 **User's fixed requirements:** original photorealistic Flex ONLY (same approved face, small cornrows, beard, tattoos, build, gym outfit/background); original approved male Marcus voice ONLY, never a substitute or browser default voice; only the exact home equipment photographed 2026-10-13; cast on LEFT lower leg, elevated on independent padded support and visually static; no foot/ankle bearing, bracing, pushing, twisting or standing; no third-party YouTube/FITTR media in the user-facing app; no new generations without explicit credit/cost control. Existing original M3 Coach V2 remains untouched. Materials derived from external instructors are for **private research and motion evaluation**, not copies of third-party video to redistribute.
 
+## Non-negotiable user approval lock — avatar and voice (2026-10-15)
+
+**Avatar identity: ONLY the user's previously approved ORIGINAL Flex reference** from this project's original `9550.png` asset. Preserve the same actual face, small cornrows, beard, tattoos, muscular proportions, outfit, and gym appearance throughout every frame. A generic male, substitute photorealistic model, default platform actor, recreated unrelated face, or other avatar is **NOT authorized**. Referencing the image in prompt text is insufficient; verify that the actual image ingredient is attached to the clip-generation run.
+
+**Voice identity: ONLY the user's approved MARCUS male coaching voice** from an actual verified approved recording/authorized voice source. NEVER allow platform default narration, alternate male/female voice, generic TTS, agent voice, or approximation. If the verified Marcus recording/source is not connected and the resulting audio cannot be verified as Marcus, create a **silent clip** (no speech/lip-sync), and mark coaching audio `pending`; do not pretend his voice exists or replace it.
+
+**Approval does not transfer** from one clip to another, and matching appearance does not constitute user approval of a newly generated exercise clip. Already-approved Equipment A #3 lateral raises and #5 seated boxing remain unchanged. New corrected shrugs clip is not yet user-approved. Never replace or relabel approved source video identity or source voice. Validate generated faces, hair, tattoos, cast, dumbbells and movement across the entire rendered video before linking; reject any identity drift. No background work, subscription upgrades, or duplicate credit spending without explicit direction. Original M3 Coach V2 remains untouched.
+
 ## Critical safety boundary
 
 Medical advice is not established by fitness tutorials or visual renders. The treating orthopedist must clarify whether EACH proposed arm-only, resisted, or aerobic movement is permitted while strict NWB, including transfers, safe limb elevation, resistance level, effort and duration. If this clearance is missing, keep resistance programs locked and do not describe any AI clip as rehabilitation or safe to imitate. Refer to:
