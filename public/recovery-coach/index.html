@@ -164,7 +164,7 @@ function render(){
  setMedia();cards();drawTimer();
 }
 async function playMedia(loop){
- if(phase!==1){const it=step();if(!it.voice)return true;audio.loop=loop;try{await audio.play();return true}catch(err){tell("Your phone blocked Marcus audio. Tap Enable audio & continue.");return false}}
+ if(phase!==1){const it=step();if(!it.voice)return true;audio.loop=false;try{await audio.play();return true}catch(err){tell("Your phone blocked Marcus audio. Tap Enable audio & continue.");return false}}
  const it=step();video.loop=loop;
  if(it.voice){video.muted=true;audio.loop=loop;}else video.muted=false;
  try{
