@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1521">
+<title>M3 Flex Recovery Coach | Guided Workout</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1521;--panel:#142536;--border:#315068;--fg:#edf5f9;--dim:#b2c7d3;--green:#c5f08c;--blue:#77b2d3;--danger:#ffccad}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--fg);font:15px/1.48 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.46}
+main{max-width:800px;padding:17px 14px 60px;margin:0 auto}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.brand{font-weight:950;letter-spacing:.07em;font-size:18px}.brand b{color:var(--green)}.version{font-size:11px;color:var(--dim)}
+h1{font-size:clamp(24px,5vw,34px);margin:6px 0 5px;line-height:1.15;letter-spacing:-.03em}.lead{color:var(--dim);font-size:14px;margin:0 0 13px}
+.trust{font-size:12px;display:flex;gap:6px;flex-wrap:wrap;margin:0 0 13px}.trust span{border:1px solid #436758;color:#c8ebae;border-radius:16px;padding:4px 9px}
+.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:15px 0}.phase{background:#20364a;color:#dbe9f0;border:1px solid #456075;border-radius:12px;padding:10px 2px;min-height:53px;text-align:center;font-weight:750;font-size:13px}
+.phase[aria-selected="true"]{border:2px solid var(--green);background:#2b4539;color:#f2ffe3}
+.player,.panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:15px;margin-top:12px}
+.eyebrow{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:12px;color:var(--green);text-transform:uppercase;letter-spacing:.045em;font-weight:850}
+h2{font-size:22px;line-height:1.2;margin:9px 0 5px}.muted{color:var(--dim)}.small{font-size:12px}.cue{font-size:14px;line-height:1.6;margin:11px 0;color:#dcebf3}
+.videoWrap{width:100%;max-width:360px;margin:12px auto 0;background:#04090d;border-radius:13px;overflow:hidden;display:flex;justify-content:center}
+.videoWrap video{display:block;width:100%;max-height:49vh;aspect-ratio:9/16;object-fit:contain;background:#030607}
+.guidePlaceholder{background:#182d3c;border:1px dashed #4d7380;border-radius:12px;margin-top:12px;padding:24px 18px;text-align:center;min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.guidePlaceholder strong{font-size:19px}.guidePlaceholder p{font-size:13px;color:var(--dim);max-width:360px;margin:0}
+.timer{text-align:center;margin:12px 0 0;padding:12px 7px;background:#0a1925;border:1px solid #294458;border-radius:12px}
+.clock{font-size:clamp(42px,12vw,62px);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.015em;margin:7px 0}
+#runState{color:var(--green);font-size:12px;font-weight:850;text-transform:uppercase}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.opts label{font-size:12px;color:var(--dim);font-weight:730}
+select{width:100%;margin-top:4px;border:1px solid #57768b;background:#263c4e;color:white;padding:9px;border-radius:9px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
+.btn{background:#263f54;color:white;border:1px solid #47637a;border-radius:11px;padding:12px 10px;min-height:45px;font-size:14px;font-weight:800}
+.btn.primary{background:var(--green);color:#112118;border-color:var(--green)}.btn.wide{grid-column:1/-1}
+.notice{font-size:12px;color:#e8e3b3;min-height:20px;line-height:1.55;margin:10px 0 0}
+.stepHeader{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:2px 0 12px;font-size:13px;color:var(--dim)}
+.steps{display:grid;gap:8px}.item{display:flex;align-items:center;text-align:left;width:100%;gap:10px;background:#1e3345;border:1px solid #36566a;color:#f0f6fa;border-radius:11px;padding:11px 10px}
+.item.selected{border:2px solid var(--green);background:#274338}.number{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:#354b60;font-weight:800;flex:none}
+.item-main{display:flex;flex-direction:column;flex:1;gap:3px}.item-main strong{font-size:14px}.item-main small{font-size:12px;color:var(--dim)}
+.status{font-size:11px;color:var(--green);white-space:nowrap}.panel h3{font-size:17px;margin:0 0 7px}.panel p{margin:7px 0}
+.approve{background:#182d36;border:1px solid #4f7260;padding:12px;border-radius:13px;margin-top:14px}
+.approve label{display:flex;align-items:flex-start;gap:10px;color:#dceaf0;font-size:13px;margin:9px 0}.approve input{accent-color:#b6e989;margin-top:4px;width:17px;height:17px;flex:none}
+.safety{font-size:12px;color:#f1dab6;line-height:1.6;margin:11px 1px}
+.future{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:9px}
+.future div{background:#203549;border-radius:11px;padding:12px}.future strong{font-size:14px}.future p{font-size:12px;color:var(--dim)}
+.tag{display:inline-block;color:#f6d6aa;font-size:11px;border:1px solid #655841;padding:2px 6px;border-radius:8px;margin-top:6px}
+details{margin:12px 0;color:var(--dim);font-size:12px}summary{cursor:pointer;font-weight:750}details a{color:#bedefd}
+footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
+.hidden{display:none!important}
+@media(min-width:680px){main{padding:30px 24px 70px}.future{grid-template-columns:1fr 1fr}.videoWrap video{max-height:440px}}
+</style></head><body><main>
+<header class="top"><div class="brand">M3 <b>FLEX</b></div><div class="version">Recovery Coach · Clean build v1</div></header>
+<h1>Your guided recovery workout</h1>
+<p class="lead">One simple session, using your five approved Flex videos and Marcus – Warm &amp; Friendly English coaching. No rejected clips or replacement avatars.</p>
+<div class="trust"><span>✓ 5 approved videos</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
+<nav class="phases" aria-label="Workout stages">
+<button class="phase" type="button" data-stage="0" aria-selected="true">1 · Before</button>
+<button class="phase" type="button" data-stage="1" aria-selected="false">2 · Workout</button>
+<button class="phase" type="button" data-stage="2" aria-selected="false">3 · After</button>
+</nav>
+<section class="player" aria-label="Current guided activity">
+<div class="eyebrow"><span id="phaseLabel">Before workout</span><span id="position">Step 1 / 3</span></div>
+<h2 id="moveTitle">Calm seated breathing</h2><div id="moveDetail" class="small muted">Gentle preparation · text guidance</div>
+<div class="videoWrap hidden" id="videoBox"><video id="coachVideo" playsinline preload="metadata" aria-label="Approved Flex demonstration"></video><audio id="coachVoice" preload="metadata"></audio></div>
+<div class="guidePlaceholder" id="textBox"><strong>Before your workout</strong><p>Prepare gently while keeping your injured left leg supported. No exercise video has been approved for this new warm-up yet.</p></div>
+<p class="cue" id="cue">Sit comfortably with the cast supported. Breathe slowly without forcing movement.</p>
+<div class="timer"><div class="small muted" id="runState">Ready</div><div class="clock" id="clock">00:30</div><div class="small muted" id="progressText">0 of 10 steps completed</div></div>
+<div class="opts">
+<label>Exercise time <select id="workDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></label>
+<label>Rest between exercises <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
+</div>
+<div class="controls">
+<button id="startPause" type="button" class="btn primary wide">▶ Start full session</button>
+<button id="preview" type="button" class="btn">▶ Preview with Marcus</button>
+<button id="next" type="button" class="btn">Next step →</button>
+<button id="reset" type="button" class="btn wide">↺ Restart session</button>
+</div>
+<p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance.</p>
+</section>
+<section class="panel"><div class="stepHeader"><strong id="listHeading">Before workout</strong><span id="listCounter">3 gentle steps</span></div><div class="steps" id="steps"></div></section>
+<section class="approve" id="clearance" aria-label="Medical clearance confirmation">
+<strong>Before starting an active workout</strong>
+<p class="muted small">Your treating clinician decides what is safe while you're wearing a cast. Previewing an exercise is not exercising.</p>
+<label><input type="checkbox" class="check">My treating clinician cleared these particular seated movements and resistance.</label>
+<label><input type="checkbox" class="check">My cast support, non-weight-bearing restrictions and transfers are cleared.</label>
+<label><input type="checkbox" class="check">My exercise duration and effort are cleared.</label>
+</section>
+<p class="safety">Keep the injured left leg supported and never use it to anchor bands or push against the floor. Stop if pain, swelling, dizziness, or cast pressure develops. Warm-up/cooldown steps are gentle text suggestions, not approved Flex videos.</p>
+<section class="panel"><h3>Next programs: Workout A &amp; Workout B</h3><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
+<div class="future">
+<div><strong>Workout A</strong><p>Next strength program: plan the exercises, produce correct Flex demonstrations, then approve each video.</p><span class="tag">Not yet built</span></div>
+<div><strong>Workout B</strong><p>Second program: build a separate exercise sequence with its own approved Flex and Marcus demonstrations.</p><span class="tag">Not yet built</span></div>
+</div>
+<p class="small muted">Both future programs will include a before-workout preparation and an after-workout cooldown. No unapproved video will be shown as finished.</p>
+</section>
+<details><summary>Owner's development archive</summary><p>Old Equipment A/B drafts, rejected videos, prior reviews, and the full pre-cleanup page source were archived before this cleanup.</p><a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Xe9pBlXGdC4jgKoAjMSQiPsBcd71-1MJPMAT0YJ0E0o/edit">Open archive in Google Drive</a></details>
+<footer>M3 Flex Recovery Coach · Original approved media retained · No new subscriptions</footer>
+</main>
+<script>
+"use strict";
+const base="https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/";
+const voices="https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/";
+const stages=[
+{label:"Before workout",subtitle:"Gentle preparation · text guidance (videos to be created later)",items:[
+{name:"Calm seated breathing",sec:30,note:"Keep the cast supported. Breathe normally and relax your hands and shoulders. No straining or leg movement.",text:true},
+{name:"Easy hand openings",sec:30,note:"With forearms supported if needed, gently open and close your hands. No weights; stay within your clinician's restrictions.",text:true},
+{name:"Unloaded shoulder mobility",sec:30,note:"If cleared, make small comfortable shoulder circles without weights. Keep the torso steady and injured leg fully supported.",text:true}
+]},
+{label:"Approved Flex workout",subtitle:"Five locked demonstrations · original Flex and Marcus",items:[
+{id:"C01-R3",name:"Seated dumbbell shrugs",video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",embedded:true,note:"Approved original black-tank-top shrug video with the white left cast. Lift shoulders under control; keep cast supported."},
+{id:"C02",name:"Seated hammer curls",video:base+"01a14462-bc16-778b-a773-db16e57aade7.mp4",voice:voices+"id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav",note:"Approved hammer curls. Palms face inward and elbows stay near the torso."},
+{id:"C03",name:"Seated front raises",video:base+"01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",voice:voices+"id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav",note:"Approved front raises. Raise arms forward, then lower smoothly."},
+{id:"C04-R2",name:"Alternating seated dumbbell curls",video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",embedded:true,note:"Approved alternating curls. Right leg down in shoe; left cast elevated."},
+{id:"C08-PRESS-R3",name:"Seated INNSTAR chest press",video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",embedded:true,note:"Approved forward chest press, using black handles with the INNSTAR center pad hidden between back and chair. No dumbbells in the chest-press demonstration."}
+]},
+{label:"After workout",subtitle:"Gentle recovery · text guidance (videos to be created later)",items:[
+{name:"Return to steady breathing",sec:45,note:"Set the weights aside safely and sit supported. Let breathing settle without bearing weight on the cast.",text:true},
+{name:"Relax shoulders and hands",sec:45,note:"Gently release shoulder and hand tension within comfortable limits. Avoid pulling on the injured leg or moving the cast.",text:true}
+]}];
+const $=x=>document.getElementById(x);
+const video=$("coachVideo"),audio=$("coachVoice");
+let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
+const elapsedState={phase:0,idx:0};
+function step(){return stages[phase].items[idx]}
+function total(){return stages.reduce((n,s)=>n+s.items.length,0)}
+function label(){return stages[phase].label}
+function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function duration(){return (phase===1?Number($("workDuration").value):step().sec)*1000}
+function clearTick(){if(interval!==null){clearInterval(interval);interval=null}}
+function stopMedia(rewind){video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
+function safetyOkay(){return [...document.querySelectorAll(".check")].every(c=>c.checked)}
+function tell(msg){$("note").textContent=msg}
+function setMode(m){mode=m;drawTimer()}
+function drawTimer(){
+$("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed"})[mode]||"Ready";
+$("progressText").textContent=completed.size+" of "+total()+" steps completed";
+$("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
+$("startPause").disabled=mode==="complete";
+$("preview").disabled=phase!==1||mode==="running"||mode==="rest";
+}
+function cards(){
+const box=$("steps");box.replaceChildren();
+stages[phase].items.forEach((it,i)=>{
+ const btn=document.createElement("button");btn.type="button";btn.className="item"+(i===idx?" selected":"");
+ const num=document.createElement("span");num.className="number";num.textContent=String(i+1);
+ const body=document.createElement("span");body.className="item-main";const h=document.createElement("strong");h.textContent=it.name;
+ const details=document.createElement("small");details.textContent=phase===1?"Approved Flex + Marcus":it.sec+" sec · gentle text guidance";
+ body.append(h,details);
+ const tag=document.createElement("span");tag.className="status";tag.textContent=completed.has(phase+":"+i)?"✓ Done":phase===1?"✓ Approved":(i===idx?"Current":"");
+ btn.append(num,body,tag);
+ btn.addEventListener("click",()=>{clearTick();stopMedia(true);phase=Number(phase);idx=i;mode="ready";secondsLeft=duration();render();});
+ box.append(btn);
+});
+}
+function setMedia(){
+ stopMedia(true);
+ const it=step();
+ video.removeAttribute("src");audio.removeAttribute("src");video.load();audio.load();
+ if(phase!==1)return;
+ video.src=it.video;video.loop=false;video.controls=false;video.muted=!!it.voice;video.defaultMuted=!!it.voice;video.volume=it.voice?0:1;
+ if(it.voice){audio.src=it.voice;audio.volume=1;audio.loop=false;}
+}
+function render(){
+ const it=step();$("phaseLabel").textContent=label();$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length;$("moveTitle").textContent=it.name;$("moveDetail").textContent=stages[phase].subtitle;$("cue").textContent=it.note;
+ $("videoBox").classList.toggle("hidden",phase!==1);$("textBox").classList.toggle("hidden",phase===1);
+ $("listHeading").textContent=label();$("listCounter").textContent=stages[phase].items.length+" steps";
+ document.querySelectorAll(".phase").forEach(b=>b.setAttribute("aria-selected",Number(b.dataset.stage)===phase?"true":"false"));
+ if(phase===0)$("textBox").innerHTML="<strong>Before the workout</strong><p>Follow these gentle, text-guided steps without moving the cast. New Flex demonstration videos will be produced later.</p>";
+ if(phase===2)$("textBox").innerHTML="<strong>After the workout</strong><p>Let your breathing settle, release shoulder tension, and keep the cast supported. New Flex videos will be produced later.</p>";
+ setMedia();cards();drawTimer();
+}
+async function playMedia(loop){
+ if(phase!==1)return true;
+ const it=step();video.loop=loop;
+ if(it.voice){video.muted=true;audio.loop=loop;}else video.muted=false;
+ try{
+  const outcomes=await Promise.allSettled([video.play(),it.voice?audio.play():Promise.resolve()]);
+  if(outcomes.some(o=>o.status==="rejected")){stopMedia(false);tell("Your phone blocked audio. Tap Enable audio & continue to resume; the timer is paused.");return false;}
+  return true;
+ }catch(e){stopMedia(false);return false}
+}
+function beginTicker(){clearTick();deadline=Date.now()+secondsLeft;interval=setInterval(()=>{
+ secondsLeft=Math.max(0,deadline-Date.now());
+ if(secondsLeft<=0){clearTick();if(mode==="rest")advanceAfterRest();else advanceAfterStep();return}
+ drawTimer();
+ },200);}
+async function runCurrent(){
+ if(!safetyOkay()){tell("Please confirm all three clinician-clearance checks before starting a timed session. Preview videos remain available.");$("clearance").scrollIntoView({behavior:"smooth",block:"center"});return}
+ if(mode==="ready"&&completed.size===0&&phase!==0){/* selected phase may start directly */}
+ mode="running";secondsLeft=duration();drawTimer();
+ if(phase===1){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
+ beginTicker();tell(phase===1?"Follow your approved Flex video and Marcus narration.":"Gentle text-guided step. Keep the cast supported.");
+}
+function advance(){
+ if(idx+1<stages[phase].items.length){idx++;return true}
+ if(phase<2){phase++;idx=0;return true}
+ mode="complete";tell("You completed your guided session. All five approved Flex videos remain available for your next workout.");return false;
+}
+function advanceAfterStep(){
+ stopMedia(true);completed.add(phase+":"+idx);
+ if(phase===1&&idx<stages[phase].items.length-1){
+   restNext={phase:1,idx:idx+1};mode="rest";secondsLeft=Number($("restDuration").value)*1000;
+   render();beginTicker();tell("Rest with the cast supported. Next: "+stages[1].items[idx+1].name);return
+ }
+ if(!advance()){render();return}
+ secondsLeft=duration();render();runCurrent();
+}
+function advanceAfterRest(){
+ if(restNext){phase=restNext.phase;idx=restNext.idx;restNext=null}
+ mode="ready";secondsLeft=duration();render();runCurrent();
+}
+function pause(){
+ if(mode!=="running"&&mode!=="rest")return;
+ secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);mode="paused";drawTimer();tell("Paused. Tap Resume when you're ready.");
+}
+async function resume(){
+ if(mode!=="paused"&&mode!=="waiting")return;
+ const wasWaiting=mode==="waiting";mode="running";
+ if(restNext){mode="rest";beginTicker();drawTimer();return}
+ if(phase===1){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
+ beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
+}
+function stopForNavigation(p,i){
+ clearTick();stopMedia(true);restNext=null;phase=p;idx=i;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
+}
+$("startPause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")pause();else if(mode==="paused"||mode==="waiting")resume();else if(mode==="ready")runCurrent()});
+$("preview").addEventListener("click",async()=>{
+ if(phase!==1)return;
+ clearTick();stopMedia(true);restNext=null;mode="preview";drawTimer();
+ const ok=await playMedia(false);
+ if(!ok){mode="ready";drawTimer();return}
+ tell("Previewing approved "+step().name+" with Marcus. This is not a timed workout.");
+});
+function endPreview(){
+ if(mode!=="preview")return;
+ stopMedia(false);mode="ready";drawTimer();tell("Preview complete. Ready to begin after clinician clearance.");
+}
+video.addEventListener("ended",()=>{if(mode==="preview"&&!step().voice)endPreview()});
+audio.addEventListener("ended",endPreview);
+$("next").addEventListener("click",()=>{
+ if(mode==="complete")return;
+ const continueSession=mode==="running"||mode==="rest";
+ clearTick();stopMedia(true);restNext=null;
+ const more=advance();
+ secondsLeft=mode==="complete"?0:duration();
+ render();
+ tell(mode==="complete"?"Session complete.": "Moved to "+step().name+".");
+ if(more&&continueSession){mode="ready";runCurrent().catch(()=>tell("Tap Start full session to resume."));}
+});
+$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
+document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
+for(const id of ["workDuration","restDuration"])$(id).addEventListener("change",()=>{if(mode==="ready")secondsLeft=duration();drawTimer()});
+secondsLeft=duration();render();
+</script></body></html>
