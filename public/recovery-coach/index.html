@@ -86,9 +86,24 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <div><strong>Workout B · INNSTAR and wrist equipment</strong><p>Preserve the approved seated INNSTAR press. Verify the exact AMYCO wrist exerciser and finish the separate band chest-fly demonstration before adding new exercises.</p><span class="tag">Additional demos pending</span></div>
 </div>
 <p class="small muted">Workout A and B will reuse Marcus-guided preparation and cooldown. They remain inactive until their videos, form, and audio are verified and approved.</p>
+<details><summary>Workout A — full production sequence</summary>
+<p><strong>Before:</strong> Marcus-guided breathing, hand openings, shoulder mobility. <strong>Warm-up:</strong> seated wrist circles and unloaded elbow bends — moving avatar clips missing.</p>
+<p><strong>Main:</strong> archived approved wrist curl (video export access needed), lateral raises (Flow export needed), C02 hammer curls (locked), C01-R3 shrugs (locked), seated boxing (Flow export needed).</p>
+<p><strong>Post:</strong> shoulder/arm stretching (animated Flex missing). <strong>Cooldown:</strong> existing Marcus breathing and hand relaxation (moving Flex videos missing).</p>
+<p class="small">Proposed 2 sets × 8 controlled reps for loaded movements, seated boxing 3 × 30 seconds; NOT ACTIVE or medically prescribed. Requires synchronized rep narration, media review and clinician clearance.</p></details>
+<details><summary>Workout B — full production sequence</summary>
+<p><strong>Before:</strong> same Marcus breathing/hand preparation. <strong>Warm-up:</strong> unloaded forward presses, elbow flexions (animated Flex missing).</p>
+<p><strong>Main:</strong> C08-PRESS-R3 INNSTAR press (locked), separate band fly (not final-approved), C03 front raises (locked), C04-R2 alternating curls (locked), AMYCO wrists (equipment technique unverified).</p>
+<p><strong>Post:</strong> chest/shoulder stretching (animated Flex missing). <strong>Cooldown:</strong> existing Marcus recordings (moving Flex videos missing).</p>
+<p class="small">Proposed 2 × 8 controlled reps for verified strength movements; AMYCO exercise cannot be activated before correct equipment testing. The program remains IN DEVELOPMENT.</p></details>
 </section>
-<details><summary>Owner's development archive</summary><p>Old Equipment A/B drafts, rejected videos, prior reviews, and the full pre-cleanup page source were archived before this cleanup.</p><a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Xe9pBlXGdC4jgKoAjMSQiPsBcd71-1MJPMAT0YJ0E0o/edit">Open archive in Google Drive</a></details>
-<footer>M3 Flex Recovery Coach · Original approved media retained · No new subscriptions</footer>
+<details><summary>Owner's development archive and QA</summary><p>Old Equipment A/B drafts, rejected videos, prior reviews, and the full pre-cleanup page source were archived before this cleanup.</p><a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Xe9pBlXGdC4jgKoAjMSQiPsBcd71-1MJPMAT0YJ0E0o/edit">Open archive in Google Drive</a></details>
+<details><summary>Complete exercise-by-exercise QA checklist</summary>
+<p>Five original Recovery Coach clips are OWNER APPROVED and protected; full lip sync, rep-count timing, and hands-free complete-session validation are NOT YET VERIFIED.</p>
+<p>The warm-up, mobility, stretching, rest, and cooldown sections have Marcus audio but are still MISSING approved moving Flex videos. This app does not substitute unrelated exercises or a static talking head.</p>
+<p>Workout A archived media exports require verification; Workout B equipment techniques and missing animations need production. Neither draft is active.</p>
+<p><a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">Open detailed QA matrix, production specs and Workbook A/B build sheets</a></p></details>
+<footer>M3 Flex Recovery Coach · Five original approved videos locked · Marcus English only</footer>
 </main>
 <script>
 "use strict";
@@ -113,6 +128,8 @@ const stages=[
 ]}];
 const $=x=>document.getElementById(x);
 const video=$("coachVideo"),audio=$("coachVoice");
+const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3";
+const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
 const elapsedState={phase:0,idx:0};
 function step(){return stages[phase].items[idx]}
@@ -122,6 +139,14 @@ function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floo
 function duration(){return (phase===1?Number($("workDuration").value):step().sec)*1000}
 function clearTick(){if(interval!==null){clearInterval(interval);interval=null}}
 function stopMedia(rewind){video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
+function playRestVoice(){
+ audio.pause();audio.src=REST_MARCUS;audio.loop=false;audio.currentTime=0;
+ audio.play().catch(()=>tell("Rest timer running. Tap Resume if your phone blocks automatic Marcus audio."));
+}
+function playCompleteVoice(){
+ audio.pause();audio.src=END_MARCUS;audio.loop=false;audio.currentTime=0;
+ audio.play().catch(()=>tell("Session finished. Tap Hear Marcus finish for the final coaching."));
+}
 function safetyOkay(){return [...document.querySelectorAll(".check")].every(c=>c.checked)}
 function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
@@ -130,7 +155,7 @@ $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Read
 $("progressText").textContent=completed.size+" of "+total()+" steps completed";
 $("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
 $("startPause").disabled=mode==="complete";
-$("preview").disabled=(phase!==1&&!step().voice)||mode==="running"||mode==="rest";$("preview").textContent=phase===1?"▶ Preview with Marcus":"▶ Hear Marcus";
+$("preview").disabled=(phase!==1&&!step().voice&&mode!=="complete")||mode==="running"||mode==="rest";$("preview").textContent=mode==="complete"?"▶ Hear Marcus finish":phase===1?"▶ Preview with Marcus":"▶ Hear Marcus";
 }
 function cards(){
 const box=$("steps");box.replaceChildren();
@@ -194,9 +219,9 @@ function advanceAfterStep(){
  stopMedia(true);completed.add(phase+":"+idx);
  if(phase===1&&idx<stages[phase].items.length-1){
    restNext={phase:1,idx:idx+1};mode="rest";secondsLeft=Number($("restDuration").value)*1000;
-   render();beginTicker();tell("Rest with the cast supported. Next: "+stages[1].items[idx+1].name);return
+   render();beginTicker();playRestVoice();tell("Marcus rest coaching. Keep the cast supported. Next: "+stages[1].items[idx+1].name);return
  }
- if(!advance()){render();return}
+ if(!advance()){render();playCompleteVoice();return}
  secondsLeft=duration();render();runCurrent();
 }
 function advanceAfterRest(){
@@ -210,7 +235,7 @@ function pause(){
 async function resume(){
  if(mode!=="paused"&&mode!=="waiting")return;
  const wasWaiting=mode==="waiting";mode="running";
- if(restNext){mode="rest";beginTicker();drawTimer();return}
+ if(restNext){mode="rest";beginTicker();audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
  if(phase===1||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
  beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
 }
@@ -219,6 +244,7 @@ function stopForNavigation(p,i){
 }
 $("startPause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")pause();else if(mode==="paused"||mode==="waiting")resume();else if(mode==="ready")runCurrent()});
 $("preview").addEventListener("click",async()=>{
+ if(mode==="complete"){audio.src=END_MARCUS;audio.currentTime=0;audio.play().catch(()=>tell("Please enable audio in Chrome."));return;}
  if(phase!==1&&!step().voice)return;
  clearTick();stopMedia(true);restNext=null;mode="preview";drawTimer();
  const ok=await playMedia(false);
@@ -231,14 +257,33 @@ function endPreview(){
 }
 video.addEventListener("ended",()=>{if(mode==="preview"&&!step().voice)endPreview()});
 audio.addEventListener("ended",endPreview);
+function playbackError(msg){
+ if(mode!=="running"||phase!==1)return;
+ secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);
+ mode="waiting";drawTimer();tell(msg+" Set NOT completed. Tap Enable audio & continue to retry.");
+}
+video.addEventListener("error",()=>playbackError("Approved Flex video failed to load."));
+audio.addEventListener("error",()=>{if(step().voice)playbackError("Marcus voice track failed.");});
+let mediaBufferCheck=null;
+video.addEventListener("waiting",()=>{
+ if(mode!=="running"||phase!==1)return;
+ if(mediaBufferCheck!==null)clearTimeout(mediaBufferCheck);
+ mediaBufferCheck=setTimeout(()=>{
+  mediaBufferCheck=null;
+  if(mode==="running"&&phase===1&&video.readyState<2)playbackError("Video buffering stopped.");
+ },2300);
+});
+video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&(mode==="running"||mode==="rest"))pause();});
 $("next").addEventListener("click",()=>{
  if(mode==="complete")return;
+ if(phase===2&&idx===stages[2].items.length-1){tell("Complete the last cooldown timer before the session can be marked complete.");return;}
  const continueSession=mode==="running"||mode==="rest";
  clearTick();stopMedia(true);restNext=null;
  const more=advance();
  secondsLeft=mode==="complete"?0:duration();
  render();
- tell(mode==="complete"?"Session complete.": "Moved to "+step().name+".");
+ tell(mode==="complete"?"Session complete.": "Moved to "+step().name+". Skipped steps do not count as completed.");
  if(more&&continueSession){mode="ready";runCurrent().catch(()=>tell("Tap Start full session to resume."));}
 });
 $("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
