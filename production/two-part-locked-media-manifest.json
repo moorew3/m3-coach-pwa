@@ -285,6 +285,27 @@
       "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a154f3-ef54-7546-8740-1c488df4c772.mp4",
       "generationId": "586d74c51f0b46b8a5b0b2c7bfbe6ccf",
       "note": "raw 5s unapproved; no validated Marcus coaching"
+    },
+    "C12-SEATED-SHOULDER-ROLLS-R1": {
+      "generationId": "967742f823ef4407919b80a2745f0d8a",
+      "status": "generation-submitted-awaiting-render-and-visual-owner-voice-review",
+      "intendedSceneId": "NEW_SHOULDER-MOBILITY",
+      "appliedTo": [
+        "Workout_A",
+        "Workout_B"
+      ],
+      "canonicalApprovedFlexReference": "fbc0d826660d479080f2c2ac5fbf5939",
+      "techniqueReference": "https://www.mskcc.org/cancer-care/patient-education/arm-exercise-program",
+      "requiredMovement": "Seated slow backward shoulder rolls; two full cycles, shoulders travel forward/up/back/down while cast and legs remain still and supported",
+      "renderTarget": {
+        "durationSeconds": 5,
+        "resolution": "480p",
+        "aspectRatio": "9:16",
+        "model": "heygen-video-1"
+      },
+      "audio": "SILENT CANDIDATE; approved Marcus voice must be separately matched; not yet a final exercise",
+      "protectedSourceRule": "Never touch the existing seven approved files; new candidate must be approved independently before active usage",
+      "note": "Different new exercise from C11 hand openings; never call a repeat review of C11 new work"
     }
   },
   "nonNegotiables": [
@@ -303,5 +324,6 @@
     "Actual device/biomechanical technique verified",
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
-  ]
+  ],
+  "currentProductionNextStep": "QA C12 exact face, physical shoulder motion, white LEFT cast and right shoe. Then pair existing approved Marcus shoulder mobility narration without modifying originals. Do not begin more paid generations without reviewing the new method."
 }
