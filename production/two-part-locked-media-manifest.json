@@ -393,7 +393,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Four archived legacy HeyGen motion entries rejected after visual audit; do not resurrect by title. Keep approved 7 unchanged. Build professionally edited, protected intros/rest transitions and recover accurate new cast-supported realistic movement using a verified motion guide before generating. Workout A/B remain incomplete.",
+  "currentProductionNextStep": "Review motion-based A/B intro candidates V3, not static V2. Preserve every approved original. If acceptable, author new Marcus Welcome audio and complete missing realistic Flex motions; neither full Workout A nor Workout B finished.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -465,7 +465,7 @@
     "approval": "None; do not substitute."
   },
   "newOpeningSequenceDrafts": {
-    "status": "TWO_NEW_STANDALONE_OWNER_REVIEW_VIDEO_ASSETS_NOT_APPROVED_NOT_DEPLOYED",
+    "status": "REJECTED_BY_OWNER_STATIC_PHOTO_DO_NOT_USE",
     "date": "2026-10-19",
     "files": {
       "A": {
@@ -483,6 +483,39 @@
         "sourcePhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
       }
     },
-    "notes": "Both separate source-independent editorial opening graphics use exact source photo with simple text overlays; no exercise video was created, overwritten, recut or replaced. Packaged as M3_FLEX_Workout_A_B_New_Openings_Review.zip in originating conversation; NOT yet in GitHub file bytes. Full A/B guided master MP4s remain incomplete. Do not treat unapproved draft intro as final client asset."
+    "notes": "Both separate source-independent editorial opening graphics use exact source photo with simple text overlays; no exercise video was created, overwritten, recut or replaced. Packaged as M3_FLEX_Workout_A_B_New_Openings_Review.zip in originating conversation; NOT yet in GitHub file bytes. Full A/B guided master MP4s remain incomplete. Do not treat unapproved draft intro as final client asset.",
+    "ownerRejectionDate": "2026-10-19",
+    "reason": "The opening is an inert still image and an unacceptable starting frame. Do not deploy or repeat this approach."
+  },
+  "movingOpeningReviewV3": {
+    "date": "2026-10-19",
+    "status": "TWO_NEW_MOTION_BASED_REVIEW_MP4S_NOT_OWNER_APPROVED_NOT_DEPLOYED",
+    "method": "Animated typography over derivatives excerpted from real approved moving Flex workout clips with existing Marcus coaching audio carried through, no still-photo animation, cartoon, stock athlete or newly generated trainer.",
+    "clips": {
+      "A": {
+        "name": "M3_FLEX_WORKOUT_A_MOVING_OPENING_REVIEW_V3.mp4",
+        "durationSeconds": 10.58,
+        "sizeBytes": 2783615,
+        "sha256": "fb08c431afe8743497fa1fe67e4d02820f751bd5388f8dfb3e0555ac409ac03a",
+        "scenes": [
+          "C02 hammer curls",
+          "C01-R3 seated shrugs"
+        ]
+      },
+      "B": {
+        "name": "M3_FLEX_WORKOUT_B_MOVING_OPENING_REVIEW_V3.mp4",
+        "durationSeconds": 10.58,
+        "sizeBytes": 2671224,
+        "sha256": "bdffcacf63969d6bfdbb91c40b7080d93dcc072957e9996b156305160e32d51d",
+        "scenes": [
+          "C08-PRESS-R3",
+          "C04-R2 alternating curls"
+        ]
+      }
+    },
+    "mediaStatus": "Files generated and verified in originating conversation /mnt/data; not yet uploaded to GitHub. User download links were provided in source chat; must not treat as checked-in assets.",
+    "originalProtection": "Work A/B existing composite review footage SHA-256 verified unchanged before/after. Seven owner-approved original scenes never opened for writing or regenerated. Only separate review derivative montage output created.",
+    "notes": "Already-approved exercise movements are reused as teaser shots; do NOT confuse with newly created missing exercise animations or completed workout videos. Marcus audio taken from approved source scenes is not a separate scripted opening greeting.",
+    "releaseGate": "Owner must approve visual arrangement and audio before future integration."
   }
 }
