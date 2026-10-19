@@ -80,3 +80,12 @@ GitHub source: moorew3/m3-coach-pwa/public/recovery-coach/index.html
 Archived pre-cleanup snapshot: Google Doc 1Xe9pBlXGdC4jgKoAjMSQiPsBcd71-1MJPMAT0YJ0E0o
 Clean app source backup: Google Doc 1EQfZ4cXPbzaGrWJTn4L6hxf5-JLJ7NAYxD7UwlFta3I
 Next approval gates: select and verify working media exports from Google Flow and Drive; fund only one proposed warm-up visual candidate for face/cast approval; build remaining missing transitions and stretching only after first candidate meets quality.
+
+## October 19, 2026 — Workout A/B source recovery and software development
+- New independent development player in `public/recovery-coach/programs/index.html`, linked from the live Recovery Coach. Workout A/B are not active training; previews use ONLY the five previously approved clips plus the existing five Marcus before/after audio tracks.
+- Recovered from connected Google Drive: `M3_Flex_Recovery_01_Seated_Curl_Test.mp4` (Drive file ID `1wLS6ufEZ2fe5ZiD_bloiYITPE65DoEy0`), 8.0 seconds, 720×1280. Frame inspection shows **SEATED DUMBBELL ARM CURLS**, not wrist curls. Prior notes identifying this file as an approved wrist curl source were inaccurate. This clip has NOT been integrated into Workout A or marked approved as wrist curls. Preserve it under its actual title for separate owner review.
+- No new verified lateral-raise or seated-boxing export located by Drive name search or HeyGen title search. Google Flow URLs identify editing projects, NOT approved playable video exports; source retrieval/approval still required.
+- Reused media in the new development player: Workout A C02 and C01-R3; Workout B C08-PRESS-R3, C03, C04-R2. All are isolated references to original immutable URLs, not copied or altered.
+- Moving Flex warm-up/cooldown videos, fresh arm/shoulder stretch clips, separate approved band fly and actual AMYCO device demonstration remain MISSING. Marcus before/after audio exists, but does NOT satisfy visual avatar completion.
+- Higgsfield primary workspace currently lists 10 credits on a free plan; this turn spent no generation credits. Do not start paid video batches based on a filename alone. Check requirements and obtain approval for substantive credit spending.
+- Production QA gate: verify the new development route in a mobile-size browser, including navigation, video mute for separate voice, embedded Marcus for approved files, disabled play for missing clips, and original Recovery Coach unchanged.
