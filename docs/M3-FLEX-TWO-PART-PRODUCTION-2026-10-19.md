@@ -33,3 +33,6 @@ Original media URLs and acceptance information are preserved in `docs/M3-FLEX-MA
 
 ## Present implementation status
 The approved footage exists at documented CDN URLs, but direct download into this ChatGPT editing container was unavailable on this turn. Therefore **no final two-part MP4s have been rendered**, and no changes to the live app or original video files were made. A local production kit with JSON manifest, CSV shot list, and guarded FFmpeg assembler was delivered separately. The assembler refuses incomplete release by design.
+
+## Rest and chapter timing addendum
+Both Part A and Part B must include a **reusable new Flex/Marcus rest-and-transition scene** between loaded exercises (production scene ID `NEW_REST-CUE`). This is not an approved asset yet. In Part A schedule it after lateral raises, C02 and C01-R3; in Part B after C08-PRESS-R3, new INNSTAR fly, C03, and C04-R2, with final rest placement determined by verified set timing and clinician clearance. Retain chapters and timestamp boundaries for pause/repeat/skip. Updated production kit now contains **18 A positions and 19 B positions**, including repeated rest cues. These are shot positions, not final approved repetitions or prescriptions.
