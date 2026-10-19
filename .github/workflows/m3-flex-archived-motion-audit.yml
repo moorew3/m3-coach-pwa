@@ -1,0 +1,58 @@
+name: M3 FLEX Archived Motion Candidates Audit
+on:
+  push:
+    branches:
+      - production/m3-flex-two-part-masters-2026-10-19
+    paths:
+      - .github/workflows/m3-flex-archived-motion-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-older-candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+      - name: Retrieve visual GIF proofs only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p archived-motion-review
+          declare -A CLIPS
+          CLIPS[C11-OLD-HAND-OPEN]=8d2ca8fce35935efe0453c1524b2494a
+          CLIPS[C12-OLD-SHOULDER-ROLL]=3ec419dbcb05b9f66819313952f4e782
+          CLIPS[C14-OLD-ELBOW-BEND]=c1c5c6c97ff87c9fe830dafb1922fd0d
+          CLIPS[C15-OLD-FORWARD-REACH]=3dbad600606d6d4827b5348e0f0d1706
+          for key in ${!CLIPS[@]}; do
+            id=${CLIPS[$key]}
+            url="https://resource2.heygen.ai/video/${id}/gif.gif"
+            echo "Checking ${key} (${id})"
+            if curl --fail --location --silent --show-error --retry 1 --max-time 90 "$url" -o "archived-motion-review/${key}.gif"; then
+              ffprobe -v error -show_entries format=duration,size -of default=nw=1 "archived-motion-review/${key}.gif" >> archived-motion-review/media-properties.txt || true
+              ffmpeg -hide_banner -loglevel error -y -i "archived-motion-review/${key}.gif" \
+                -vf 'fps=0.5,scale=240:-1,tile=6x1' -frames:v 1 "archived-motion-review/${key}-contact.jpg" || true
+            else
+              echo "${key} direct GIF access unavailable" >> archived-motion-review/media-properties.txt
+            fi
+          done
+          cat > archived-motion-review/README.txt <<'EOF'
+          M3 FLEX — archived candidates image motion QA; NOT NEW GENERATED EXERCISES.
+          C11-OLD-HAND-OPEN = 8d2ca8fce35935efe0453c1524b2494a
+          C12-OLD-SHOULDER-ROLL = 3ec419dbcb05b9f66819313952f4e782
+          C14-OLD-ELBOW-BEND = c1c5c6c97ff87c9fe830dafb1922fd0d
+          C15-OLD-FORWARD-REACH = 3dbad600606d6d4827b5348e0f0d1706
+          The archived original clips include Marcus voice, but GIF proofs cannot prove audio.
+          Assess exercise movement, correct original Flex identity, LEFT cast and RIGHT shoe.
+          No video is approved for inclusion merely because a GIF rendered.
+          Seven locked approved source assets and the live app have not been touched.
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-OLDER-MOTION-REVIEW-NOT-APPROVED
+          path: archived-motion-review/
+          retention-days: 14
