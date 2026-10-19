@@ -1,0 +1,307 @@
+{
+  "kind": "M3-FLEX-TWO-PART-MASTER-PRODUCTION",
+  "status": "draft-protected-only-not-cleared-not-deployed",
+  "created": "2026-10-19",
+  "lockedApprovedVideoIds": [
+    "C09-PRE-BREATH-R2",
+    "C10-POST-BREATH-R1",
+    "C01-R3",
+    "C02",
+    "C03",
+    "C04-R2",
+    "C08-PRESS-R3"
+  ],
+  "approvedAssets": {
+    "C09-PRE-BREATH-R2": {
+      "label": "Approved preparation breathing",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",
+      "embeddedMarcus": true
+    },
+    "C10-POST-BREATH-R1": {
+      "label": "Approved cooldown breathing",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",
+      "embeddedMarcus": true
+    },
+    "C01-R3": {
+      "label": "Seated dumbbell shrugs",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",
+      "embeddedMarcus": true
+    },
+    "C02": {
+      "label": "Seated hammer curls",
+      "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-bc16-778b-a773-db16e57aade7.mp4",
+      "embeddedMarcus": false,
+      "approvedMarcusAudio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav",
+      "note": "Approved Marcus audio outlasts short clip ~0.46 seconds. Resolve without changing original."
+    },
+    "C03": {
+      "label": "Seated front raises",
+      "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",
+      "embeddedMarcus": false,
+      "approvedMarcusAudio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav",
+      "note": "Approved Marcus audio outlasts short clip ~1.35 seconds. Resolve without changing original."
+    },
+    "C04-R2": {
+      "label": "Seated alternating curls",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",
+      "embeddedMarcus": true
+    },
+    "C08-PRESS-R3": {
+      "label": "INNSTAR seated chest press",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",
+      "embeddedMarcus": true
+    }
+  },
+  "voice": {
+    "name": "Marcus – Warm & Friendly English",
+    "id": "0fadce1e82af494a93873aa38ea8d106"
+  },
+  "avatar": {
+    "name": "Flex",
+    "approvedIdentityAsset": "fbc0d826660d479080f2c2ac5fbf5939"
+  },
+  "parts": {
+    "A": [
+      {
+        "id": "NEW_INTRO",
+        "label": "Workout intro",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C09-PRE-BREATH-R2",
+        "label": "Approved preparation breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "C11-HAND-OPEN",
+        "label": "Hand opening",
+        "status": "missing",
+        "reason": "New HeyGen candidate exists but not owner/technique/audio approved"
+      },
+      {
+        "id": "NEW_SHOULDER-MOBILITY",
+        "label": "Gentle seated shoulder mobility",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_WRIST-CIRCLES",
+        "label": "Unloaded wrist circles",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_ELBOW-BENDS",
+        "label": "Unloaded elbow bends",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_WRIST-CURL",
+        "label": "Seated wrist curl",
+        "status": "missing",
+        "reason": "Recovered Drive footage is ARM curl; accurate wrist-curl source not approved"
+      },
+      {
+        "id": "NEW_LATERAL-RAISE",
+        "label": "Seated lateral raise",
+        "status": "missing",
+        "reason": "Flow editor link only, verified direct export needed"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C02",
+        "label": "Seated hammer curls",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C01-R3",
+        "label": "Seated dumbbell shrugs",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "NEW_ARM-BOXING",
+        "label": "Seated arm-only boxing",
+        "status": "missing",
+        "reason": "Flow editor link only, verified direct export needed"
+      },
+      {
+        "id": "NEW_UPPER-STRETCH",
+        "label": "Gentle upper body stretch",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C10-POST-BREATH-R1",
+        "label": "Approved cooldown breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_HAND-SHOULDER-RELEASE",
+        "label": "Relax hand and shoulder",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_OUTRO",
+        "label": "Workout completion",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      }
+    ],
+    "B": [
+      {
+        "id": "NEW_INTRO",
+        "label": "Workout intro",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C09-PRE-BREATH-R2",
+        "label": "Approved preparation breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "C11-HAND-OPEN",
+        "label": "Hand opening",
+        "status": "missing",
+        "reason": "New HeyGen candidate exists but not owner/technique/audio approved"
+      },
+      {
+        "id": "NEW_SHOULDER-MOBILITY",
+        "label": "Gentle seated shoulder mobility",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_FORWARD-PRESS-WARMUP",
+        "label": "Unloaded seated press warmup",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_ELBOW-EXTENSION",
+        "label": "Seated elbow extension",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C08-PRESS-R3",
+        "label": "INNSTAR seated chest press",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "NEW_INNSTAR-FLY",
+        "label": "INNSTAR band chest fly",
+        "status": "missing",
+        "reason": "C07 demo is not approved"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C03",
+        "label": "Seated front raises",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C04-R2",
+        "label": "Seated alternating curls",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "NEW_AMYCO-WRIST",
+        "label": "AMYCO wrist apparatus",
+        "status": "missing",
+        "reason": "Verify actual device geometry and safe technique"
+      },
+      {
+        "id": "NEW_CHEST-STRETCH",
+        "label": "Gentle chest/shoulder stretch",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C10-POST-BREATH-R1",
+        "label": "Approved cooldown breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_HAND-SHOULDER-RELEASE",
+        "label": "Relax hand and shoulder",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_OUTRO",
+        "label": "Workout completion",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      }
+    ]
+  },
+  "candidates": {
+    "C11-HAND-OPEN-R1": {
+      "status": "generated-awaiting-visual-audio-owner-review",
+      "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a154f3-ef54-7546-8740-1c488df4c772.mp4",
+      "generationId": "586d74c51f0b46b8a5b0b2c7bfbe6ccf",
+      "note": "raw 5s unapproved; no validated Marcus coaching"
+    }
+  },
+  "nonNegotiables": [
+    "Never change or overwrite any approved original clip",
+    "New scenes need owner approval",
+    "Workout A and B must be full independent MP4s plus chapter tracking",
+    "Keep injured LEFT cast unloaded and obtain clinician clearance for injury-specific workouts",
+    "No further significant paid generation without approval",
+    "Do not activate incomplete workouts",
+    "New master files are derivatives; preserve source bytes unchanged"
+  ],
+  "qualityGates": [
+    "Original video hashes preserved",
+    "Every needed scene approved",
+    "Rep count and audio synchronization reviewed",
+    "Actual device/biomechanical technique verified",
+    "Full mobile end-to-end playback QA",
+    "Owner and clinician clearance where required"
+  ]
+}
