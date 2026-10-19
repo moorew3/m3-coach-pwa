@@ -15,8 +15,12 @@ jobs:
     steps:
       - name: Checkout draft production branch
         uses: actions/checkout@v4
-      - name: Verify media tools
+      - name: Install FFmpeg tools on lean runner
         run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+          command -v ffmpeg
+          command -v ffprobe
           ffmpeg -version | head -n 1
           ffprobe -version | head -n 1
       - name: Download raw C12 reference and PRE-03 approved Marcus audio
