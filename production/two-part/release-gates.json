@@ -1,0 +1,200 @@
+{
+  "schema": "m3-flex-two-part-release-gates-v1",
+  "status": "DRAFT_NOT_MEDICALLY_CLEARED_NO_CUSTOMER_DEPLOYMENT",
+  "approvedNewAssets": {},
+  "chapterTiming": {
+    "A:00:NEW_INTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:01:C09-PRE-BREATH-R2": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:02:C11-HAND-OPEN": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:03:NEW_SHOULDER-MOBILITY": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:04:NEW_WRIST-CIRCLES": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:05:NEW_ELBOW-BENDS": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:06:NEW_WRIST-CURL": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:07:NEW_LATERAL-RAISE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:08:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:09:C02": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:10:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:11:C01-R3": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:12:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:13:NEW_ARM-BOXING": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:14:NEW_UPPER-STRETCH": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:15:C10-POST-BREATH-R1": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:16:NEW_HAND-SHOULDER-RELEASE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:17:NEW_OUTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:00:NEW_INTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:01:C09-PRE-BREATH-R2": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:02:C11-HAND-OPEN": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:03:NEW_SHOULDER-MOBILITY": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:04:NEW_FORWARD-PRESS-WARMUP": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:05:NEW_ELBOW-EXTENSION": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:06:C08-PRESS-R3": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:07:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:08:NEW_INNSTAR-FLY": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:09:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:10:C03": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:11:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:12:C04-R2": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:13:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:14:NEW_AMYCO-WRIST": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:15:NEW_CHEST-STRETCH": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:16:C10-POST-BREATH-R1": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:17:NEW_HAND-SHOULDER-RELEASE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:18:NEW_OUTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    }
+  },
+  "releaseGate": {
+    "ownerFinalApproval": false,
+    "ownerApprovalRecord": "",
+    "clinicianClearanceConfirmed": false,
+    "clinicianClearanceRecord": "",
+    "androidEndToEndQAPassed": false,
+    "androidQARecord": ""
+  }
+}
