@@ -58,7 +58,29 @@
   },
   "avatar": {
     "name": "Flex",
-    "approvedIdentityAsset": "fbc0d826660d479080f2c2ac5fbf5939"
+    "approvedIdentityAsset": "fbc0d826660d479080f2c2ac5fbf5939",
+    "ownerApproval": "EXPLICITLY_RECONFIRMED_2026-10-19",
+    "approvedReferenceName": "9550.png",
+    "approvedReferenceSource": "User-attached canonical image in M3 FLEX project conversation",
+    "submittedImage": {
+      "filename": "9550.png",
+      "pixelWidth": 857,
+      "pixelHeight": 1536,
+      "actualEncoding": "JPEG (despite .png filename)",
+      "byteSize": 200048,
+      "sha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
+    },
+    "existingHeyGenAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
+    "existingHeyGenAssetLabel": "9550.png",
+    "approvedVisualAttributes": "Exact original face and facial structure; short cornrow hairstyle, neatly trimmed beard, muscular tattooed upper body and arms, black shorts, seated bench/gym presentation; white anatomical LEFT leg cast elevated/supported and RIGHT foot in black sneaker when recovery footage requires it.",
+    "identityRules": [
+      "Always use exact user-approved realistic Flex image as identity source. No generic/cartoon/different trainer/avatar.",
+      "Do not alter face, hairstyle, facial hair, tattoos, skin tone, physique, clothing appearance or approved cast/right shoe details without explicit owner authorization.",
+      "User-provided app screenshot (9483.jpg) is EXISTING APP reference, not an instruction to change existing workout cards, brand images or videos.",
+      "This avatar/photo approval does not certify any generated exercise movement. Every new exercise clip must separately pass biomechanics/identity/voice approval.",
+      "Never change or overwrite any of seven locked approved video/audio sources.",
+      "The two workout MP4s and mobile app remain incomplete/not released until full QC."
+    ]
   },
   "parts": {
     "A": [
@@ -371,5 +393,6 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "C13 explicitly rejected by owner. Stop generic/cartoon motion drivers and misleading previews. Proceed only with professionally realistic footage of exact Flex avatar; research real, correctly performed shoulder roll and validate technical/paid path before render. Two master videos are NOT completed."
+  "currentProductionNextStep": "C13 explicitly rejected by owner. Stop generic/cartoon motion drivers and misleading previews. Proceed only with professionally realistic footage of exact Flex avatar; research real, correctly performed shoulder roll and validate technical/paid path before render. Two master videos are NOT completed.",
+  "ownerIdentityApprovalDate": "2026-10-19"
 }
