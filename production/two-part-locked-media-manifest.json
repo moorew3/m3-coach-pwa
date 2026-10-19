@@ -319,7 +319,7 @@
       "nextAction": "Find motion-controlled verified reference or rig/mocap guide. DO NOT spend on identical image-only approach. Preserve approved originals."
     },
     "C13-SHOULDER-ROLLS-MOTION-DRIVER": {
-      "status": "ORIGINAL_FILE_VERIFIED_IN_SOURCE_CONVERSATION; NOT_YET_PRESENT_ON_GITHUB_BRANCH",
+      "status": "REJECTED_BY_OWNER_NOT_ACCEPTABLE",
       "type": "reference-motion-source",
       "durationSeconds": 7.5,
       "fps": 24,
@@ -345,7 +345,13 @@
       "height": 832,
       "reviewNote": "Original file was checked in source conversation's mounted /mnt/data. Other chat environments do not automatically mount it. Download and attach exact MP4 to the other conversation to transfer. Do not claim this original is already in GitHub.",
       "approvedProductionMedia": false,
-      "newGenerationAuthorized": false
+      "newGenerationAuthorized": false,
+      "ownerFeedbackDate": "2026-10-19",
+      "ownerFeedback": "Cartoon mannequin animation with on-screen instructional overlays is unacceptable. This is neither realistic approved Flex footage nor an acceptable reference for the production strategy. Do not present, reuse, transfer, or treat C13 as completed progress.",
+      "allowedAsProductionSource": false,
+      "doNotUseAsDrivingVideo": true,
+      "doNotGenerateFromThisReference": true,
+      "nextAction": "Use a credible, realistic, anatomically correct filmed movement guide, motion capture, or a genuinely rigged approved Flex character. Preserve seven approved videos unchanged. Do not spend generation credits before checking input readiness and cost."
     }
   },
   "nonNegotiables": [
@@ -365,5 +371,5 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Transfer verified existing C13 original MP4 to the shared production environment and compare SHA-256. Use it only as an original generic motion reference, never a completed Flex avatar scene. No new paid generation or approved-media replacement."
+  "currentProductionNextStep": "C13 explicitly rejected by owner. Stop generic/cartoon motion drivers and misleading previews. Proceed only with professionally realistic footage of exact Flex avatar; research real, correctly performed shoulder roll and validate technical/paid path before render. Two master videos are NOT completed."
 }
