@@ -1,0 +1,66 @@
+{
+  "schema": "m3-flex-approved-source-fingerprints-v1",
+  "createdAt": "2026-10-19",
+  "scope": "Read-only baseline downloaded from URLs in production/two-part-locked-media-manifest.json; never edits source files.",
+  "lockedSources": {
+    "C01-R3": {
+      "video": {
+        "bytes": 2107588,
+        "durationSeconds": 11.125,
+        "sha256": "853c590721d88b9a01c3dfdaa8c8c2ec23a261491cb8b444afb0db99e6dbd7b3"
+      }
+    },
+    "C02": {
+      "video": {
+        "bytes": 2075498,
+        "durationSeconds": 8.083,
+        "sha256": "a221c13afa88ba38d265447162a2f92cc07b8d0055737f655bfabb1c2fa25b1a"
+      },
+      "voice": {
+        "bytes": 273345,
+        "durationSeconds": 8.542,
+        "sha256": "43dda91cee7ea09e3f3628c4d8e8473234323c3a07ff0c2feb0479f9ce61b259"
+      }
+    },
+    "C03": {
+      "video": {
+        "bytes": 2065549,
+        "durationSeconds": 8.083,
+        "sha256": "ecfba8d3e856fcf321705eaf4508461c9bdcb35ada76f6cd89f33444ee2624db"
+      },
+      "voice": {
+        "bytes": 301766,
+        "durationSeconds": 9.43,
+        "sha256": "c5ff336589cc2cd330fe6b73c4c895a708c22d0dcaeadf562eef71bbeccd3341"
+      }
+    },
+    "C04-R2": {
+      "video": {
+        "bytes": 2529264,
+        "durationSeconds": 9.292,
+        "sha256": "6829b3a1b8f8501eeb14d68851b3130bf7534ba6e57092afb8d27a82f4f7791b"
+      }
+    },
+    "C08-PRESS-R3": {
+      "video": {
+        "bytes": 1622360,
+        "durationSeconds": 10.125,
+        "sha256": "f2674f6052e083209fd7c481d1ff8c6102c183b9c6260621efb97272da86a008"
+      }
+    },
+    "C09-PRE-BREATH-R2": {
+      "video": {
+        "bytes": 1023052,
+        "durationSeconds": 12.709,
+        "sha256": "9868fb3cd791e1242d7ad04c6e4004b9a7b885740505ea26736bd69fac75371f"
+      }
+    },
+    "C10-POST-BREATH-R1": {
+      "video": {
+        "bytes": 594281,
+        "durationSeconds": 5.25,
+        "sha256": "6f4c4407443dfb2e218f34d976485305eb5e94a2564e8ac025994ad1cfcbccb3"
+      }
+    }
+  }
+}
