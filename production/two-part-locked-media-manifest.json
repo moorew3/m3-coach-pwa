@@ -393,6 +393,59 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "C13 explicitly rejected by owner. Stop generic/cartoon motion drivers and misleading previews. Proceed only with professionally realistic footage of exact Flex avatar; research real, correctly performed shoulder roll and validate technical/paid path before render. Two master videos are NOT completed.",
-  "ownerIdentityApprovalDate": "2026-10-19"
+  "currentProductionNextStep": "A/B source-reel review cuts now exist, one each; complete missing professionally realistic approved-Flex animation scenes and final transitions to replace review interstitial structure and form full workouts. Do not mistake 48s/59s review MP4s for full sessions.",
+  "ownerIdentityApprovalDate": "2026-10-19",
+  "approvedReelReview": {
+    "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
+    "date": "2026-10-19",
+    "githubWorkflowRunId": 39317185636,
+    "githubArtifactId": 12218591149,
+    "githubArtifactName": "M3-FLEX-TWO-APPROVED-CLIP-ASSEMBLY-REVIEWS",
+    "githubArtifactUrl": "https://github.com/moorew3/m3-coach-pwa/actions/runs/39317185636/artifacts/12218591149",
+    "files": [
+      {
+        "part": "A",
+        "filename": "M3_FLEX_WORKOUT_A_APPROVED_FOOTAGE_REVIEW_NOT_FINAL.mp4",
+        "durationSeconds": 48.238,
+        "bytes": 7063027,
+        "sceneIds": [
+          "C09-PRE-BREATH-R2",
+          "C02",
+          "C01-R3",
+          "C10-POST-BREATH-R1"
+        ]
+      },
+      {
+        "part": "B",
+        "filename": "M3_FLEX_WORKOUT_B_APPROVED_FOOTAGE_REVIEW_NOT_FINAL.mp4",
+        "durationSeconds": 58.538,
+        "bytes": 8831130,
+        "sceneIds": [
+          "C09-PRE-BREATH-R2",
+          "C08-PRESS-R3",
+          "C03",
+          "C04-R2",
+          "C10-POST-BREATH-R1"
+        ]
+      }
+    ],
+    "confirmed": "Media downloads and checksum invariance verified in GitHub Actions. Both derivative MP4 outputs probed with H.264 video and AAC audio and 720x1280. Sample frames checked locally. No live app changes.",
+    "sourceIntegritySha256": {
+      "C03.mp4": "ecfba8d3e856fcf321705eaf4508461c9bdcb35ada76f6cd89f33444ee2624db",
+      "C02.mp4": "a221c13afa88ba38d265447162a2f92cc07b8d0055737f655bfabb1c2fa25b1a",
+      "C08-PRESS-R3.mp4": "f2674f6052e083209fd7c481d1ff8c6102c183b9c6260621efb97272da86a008",
+      "C10-POST-BREATH-R1.mp4": "6f4c4407443dfb2e218f34d976485305eb5e94a2564e8ac025994ad1cfcbccb3",
+      "C03.wav": "c5ff336589cc2cd330fe6b73c4c895a708c22d0dcaeadf562eef71bbeccd3341",
+      "C02.wav": "43dda91cee7ea09e3f3628c4d8e8473234323c3a07ff0c2feb0479f9ce61b259",
+      "C09-PRE-BREATH-R2.mp4": "9868fb3cd791e1242d7ad04c6e4004b9a7b885740505ea26736bd69fac75371f",
+      "C04-R2.mp4": "6829b3a1b8f8501eeb14d68851b3130bf7534ba6e57092afb8d27a82f4f7791b",
+      "C01-R3.mp4": "853c590721d88b9a01c3dfdaa8c8c2ec23a261491cb8b444afb0db99e6dbd7b3"
+    },
+    "restrictions": "Not completed workouts; must not be activated. The extra Marcus C02/C03 narration holds on the final frame in the derivative rather than cropping/altering locked original assets. Title interstitials are separate and not approved as final graphic treatment. All missing scenes must still be created, owner approved and medically cleared as applicable.",
+    "excluded": [
+      "C11 unapproved",
+      "C12 rejected",
+      "C13 rejected"
+    ]
+  }
 }
