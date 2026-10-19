@@ -288,7 +288,7 @@
     },
     "C12-SEATED-SHOULDER-ROLLS-R1": {
       "generationId": "967742f823ef4407919b80a2745f0d8a",
-      "status": "generation-submitted-awaiting-render-and-visual-owner-voice-review",
+      "status": "REJECTED_BY_VISUAL_MOTION_QA_DO_NOT_ACTIVATE",
       "intendedSceneId": "NEW_SHOULDER-MOBILITY",
       "appliedTo": [
         "Workout_A",
@@ -305,7 +305,18 @@
       },
       "audio": "SILENT CANDIDATE; approved Marcus voice must be separately matched; not yet a final exercise",
       "protectedSourceRule": "Never touch the existing seven approved files; new candidate must be approved independently before active usage",
-      "note": "Different new exercise from C11 hand openings; never call a repeat review of C11 new work"
+      "note": "Different new exercise from C11 hand openings; never call a repeat review of C11 new work",
+      "motionQa": "FAILED: contact-sheet shows lateral/raised arms, not backward shoulder rolls. No demonstrated shoulder rise -> back -> down cycles. Cast observed supported in samples; exact face continuity unverified.",
+      "ownerApproval": "not requested because motion QA failed",
+      "rawVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15565-a7a3-710c-9caf-e860fa57b0de.mp4",
+      "unapprovedReviewArtifact": {
+        "id": 12212715319,
+        "name": "M3-FLEX-C12-MARCUS-REVIEW-ONLY",
+        "workflowRun": 39302922714,
+        "durationSeconds": 12.76,
+        "notes": "Voice composite technically succeeded but candidate FAILS exercise movement; no production activation."
+      },
+      "nextAction": "Find motion-controlled verified reference or rig/mocap guide. DO NOT spend on identical image-only approach. Preserve approved originals."
     }
   },
   "nonNegotiables": [
@@ -325,5 +336,5 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "QA C12 exact face, physical shoulder motion, white LEFT cast and right shoe. Then pair existing approved Marcus shoulder mobility narration without modifying originals. Do not begin more paid generations without reviewing the new method."
+  "currentProductionNextStep": "Recover existing approved Drive/Flow sources and find an exact shoulder-roll motion reference; C12 image-only model failed. No new paid render until improved motion control validated."
 }
