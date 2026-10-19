@@ -32,16 +32,29 @@ footer{color:#acc2d2;text-align:center;font-size:11px;padding-top:16px}
 <p id="syncNote" class="warning" aria-live="polite"></p>
 <div class="directLinks"><a id="directVideo" target="_blank" rel="noopener noreferrer" hidden>Open approved video directly</a><a id="directAudio" target="_blank" rel="noopener noreferrer" hidden>Open approved Marcus audio directly</a><a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer" hidden>Open original reference source (not yet verified)</a></div>
 <p id="playback" class="warning" aria-live="polite">The full Workout A/B sessions are not active yet. This is a media inspection player only.</p></section>
-<section class="panel" id="C09-PRE-BREATH-R1" style="border-color:#b28c55">
+<section class="panel candidate-review" id="C09-PRE-BREATH-R2" style="border-color:#8caf80">
+<div class="caps">C09 · Improved breathing review · NOT active</div>
+<h2>C09-PRE-BREATH-R2 · Fixed Marcus ending</h2>
+<p class="note">The exact existing moving C09 Flex footage is preserved; only the ending of the embedded Marcus recording was shortened, so he finishes with “Keep both legs still” rather than spilling into the next exercise. No new AI render or generation credits were used. The original C09-R1 remains immediately below.</p>
+<video data-candidate="C09-PRE-BREATH-R2" controls playsinline preload="metadata" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4" aria-label="C09-R2 seated Flex breathing review video with corrected Marcus English ending"></video>
+<p class="warning"><b>Approval gate:</b> Check that this is the exact approved Flex face, tattoos, hair, white LEFT cast and RIGHT foot, with visible realistic breathing—not merely a still face. The recording uses Marcus only, but exact identity, speaking lip sync and movement are NOT verified as approved yet.</p>
+<p class="note"><a href="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4" target="_blank" rel="noopener noreferrer">Open C09-R2 directly on Android</a></p>
+<div class="actions">
+<button class="btn" type="button" id="copyC09Approve">Copy C09-R2 approval</button>
+<button class="btn" type="button" id="copyC09Correct">Copy C09-R2 correction request</button>
+</div>
+<p class="note" id="c09ApprovalHelp" role="status">These buttons copy feedback for your ChatGPT conversation. They do not approve or activate the video automatically.</p>
+</section>
+<section class="panel candidate-review" id="C09-PRE-BREATH-R1" style="border-color:#b28c55">
 <div class="caps" style="color:#ffdca0">New animation review · Awaiting owner approval</div>
 <h2>C09-PRE-BREATH-R1 · Seated breathing</h2>
 <p class="note">This first new Flex warm-up candidate uses your locked avatar photograph. The original AI-generated soundtrack has been removed; only Marcus – Warm &amp; Friendly English coaching is present. The 5-second breathing scene repeats during the 12.7-second spoken instructions. <strong>Not yet approved for active workouts.</strong></p>
-<video src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2bfeb119-a50d-445b-9762-4772be862212.mp4" controls playsinline preload="none" aria-label="Candidate breathing animation for owner review, with Marcus English coaching"></video>
+<video data-candidate="C09-PRE-BREATH-R1" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2bfeb119-a50d-445b-9762-4772be862212.mp4" controls playsinline preload="none" aria-label="Candidate breathing animation for owner review, with Marcus English coaching"></video>
 <p class="warning">Check the exact face, cornrows, tattoos, WHITE CAST on the left lower leg, right shoe, subtle breathing movement and Marcus audio. Lip synchronization and full movement form have not been certified.</p>
 <p class="note"><a href="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2bfeb119-a50d-445b-9762-4772be862212.mp4" target="_blank" rel="noopener noreferrer">Open C09 candidate directly</a>. No existing approved videos were changed. This preview is isolated from the live workout until you explicitly approve it.</p>
 </section>
 <section class="panel"><h2>Production rules</h2><p class="note">Every new movement must use the previously approved Flex face, tattoos, cornrows, white left cast and the exact Marcus – Warm &amp; Friendly English voice. No generated audio, wrong equipment, one-rep placeholders or stationary talking head.</p>
-<p class="warning">Both programs still require medical clearance for resistance, cast support and transitions. This preview is not an exercise prescription.</p><p class="note">Review the <a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">exercise QA and production sheets</a> for planned sequences and approval gates.</p></section>
+<p class="warning">Both programs still require medical clearance for resistance, cast support and transitions. This preview is not an exercise prescription.</p><p class="note">Review the <a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">exercise QA and production sheets</a> and the <a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-ANIMATION-REFERENCE-SHEET-2026-10-19.md" target="_blank" rel="noopener noreferrer">researched movement reference and exact-animation shot list</a> before generating any new exercise. Research material is not embedded as replacement media.</p></section>
 <footer>Workout A/B are in development · Five original approved clips remain locked and live separately.</footer>
 </main>
 <script>
@@ -96,6 +109,7 @@ $("sourceLink").hidden=!entry.url;if(entry.url)$("sourceLink").href=entry.url;
 $("playback").textContent=entry.status==="approved"?"Approved source reused, without changes.":"Awaiting the exact moving Flex animation or verified source. Do not count this as a complete workout exercise.";
 }
 $("play").onclick=async()=>{
+document.querySelectorAll("[data-candidate]").forEach(x=>x.pause());
 stop();if(!entry)return;
 if(entry.video){
  video.muted=!!entry.voice;video.volume=entry.voice?0:1;video.currentTime=0;
@@ -124,4 +138,22 @@ voice.onended=()=>{if(entry.voice)video.pause();playing=false;$("playback").text
 video.onerror=()=>{stop();$("playback").textContent="Video couldn't load. This clip needs source verification.";};
 voice.onerror=()=>{stop();$("playback").textContent="Marcus audio couldn't load. This clip needs source verification.";};
 display();
+document.querySelectorAll("[data-candidate]").forEach(v=>{
+ v.addEventListener("play",()=>{
+  stop();
+  document.querySelectorAll("[data-candidate]").forEach(other=>{if(other!==v)other.pause();});
+  $("playback").textContent="Owner review video playing; active Workout A/B preview stopped to prevent overlapping Marcus voices.";
+ });
+});
+async function copyC09(textValue){
+ const status=$("c09ApprovalHelp");
+ try{
+  await navigator.clipboard.writeText(textValue);
+  status.textContent="Feedback copied. Paste it into your ChatGPT conversation. No video was activated.";
+ }catch(err){
+  status.textContent="Copy unavailable in this browser. Send a message naming C09-PRE-BREATH-R2 and whether it is approved or what to correct.";
+ }
+}
+$("copyC09Approve").onclick=()=>copyC09("M3 FLEX C09-PRE-BREATH-R2 APPROVED — exact video and Marcus voice. Keep all previously approved clips untouched. Add C09 to active before-workout only after all required QA checks.");
+$("copyC09Correct").onclick=()=>copyC09("M3 FLEX C09-PRE-BREATH-R2 NEEDS CORRECTION — do not activate. I will describe what is wrong with face, cast, breathing movement, voice or timing.");
 </script></body></html>
