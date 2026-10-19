@@ -1,0 +1,116 @@
+name: M3 FLEX Protected A/B Review Cuts
+on:
+  push:
+    branches:
+      - production/m3-flex-two-part-masters-2026-10-19
+    paths:
+      - .github/workflows/m3-flex-approved-assembly.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-protected-reviews:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout production review branch
+        uses: actions/checkout@v4
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+          ffprobe -version | head -n 1
+      - name: Build two independent approved-clips-only MP4 review cuts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .review-m3/inputs .review-m3/render .review-m3/delivery
+          cat > .review-m3/build.py <<'PY'
+          import json, pathlib, subprocess, hashlib
+          import urllib.request, os
+          R=pathlib.Path('.review-m3')
+          inp=R/'inputs'; seg=R/'render'; out=R/'delivery'
+          approved=json.loads(pathlib.Path('production/two-part-locked-media-manifest.json').read_text())['approvedAssets']
+          expected={'C09-PRE-BREATH-R2','C10-POST-BREATH-R1','C01-R3','C02','C03','C04-R2','C08-PRESS-R3'}
+          assert set(approved)==expected, 'Unexpected locked media inventory; abort'
+          seq={'A':['C09-PRE-BREATH-R2','C02','C01-R3','C10-POST-BREATH-R1'],
+               'B':['C09-PRE-BREATH-R2','C08-PRESS-R3','C03','C04-R2','C10-POST-BREATH-R1']}
+          def run(*c):subprocess.run(c,check=True)
+          def duration(path):
+              return float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',str(path)]).strip())
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          for id,source in approved.items():
+              target=inp/(id+'.mp4')
+              run('curl','-fLsS','--retry','2','--max-time','150',source['video'],'-o',str(target))
+              assert target.stat().st_size>10000, 'Failed source MP4: '+id
+              duration(target)
+              if not source.get('embeddedMarcus',True):
+                  assert 'approvedMarcusAudio' in source, 'Missing voice'
+                  voice=inp/(id+'.wav')
+                  run('curl','-fLsS','--retry','2','--max-time','150',source['approvedMarcusAudio'],'-o',str(voice))
+                  assert voice.stat().st_size>10000, 'Failed Marcus voice: '+id
+                  duration(voice)
+          original_hashes={p.name:sha(p) for p in inp.iterdir()}
+          records={'approval_status':'REVIEW ONLY, NOT TWO COMPLETE WORKOUTS','sources_sha256':original_hashes,'parts':{},'excluded':['C11 not approved','C12 rejected','C13 rejected'],'live_app_changed':False}
+          # Re-encode derivatives only; never alter the original MP4 or WAV files.
+          def title(part,name,path,secs=2):
+              message='M3 FLEX - WORKOUT '+part if name=='INTRO' else name
+              message=message.replace(':',r'\:')
+              f='drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:text='+message+':fontcolor=white:fontsize=38:x=(w-text_w)/2:y=(h-text_h)/2'
+              run('ffmpeg','-hide_banner','-loglevel','error','-y','-f','lavfi','-i','color=c=0x101e2c:s=720x1280:r=30',
+                '-f','lavfi','-i','anullsrc=r=48000:cl=stereo','-vf',f,
+                '-t',str(secs),'-map','0:v:0','-map','1:a:0',
+                '-c:v','libx264','-preset','veryfast','-crf','21','-r','30','-pix_fmt','yuv420p',
+                '-c:a','aac','-b:a','160k','-ar','48000','-ac','2',str(path))
+          def scene(id,dest):
+              video=inp/(id+'.mp4')
+              voice=inp/(id+'.wav')
+              native=duration(video)
+              alen=duration(voice) if voice.exists() else 0
+              total=max(native,alen)
+              vf='scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2:0x101e2c,setsar=1,fps=30'
+              if alen>native+0.03: vf+=f',tpad=stop_mode=clone:stop_duration={alen-native+0.09}'
+              c=['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(video)]
+              if voice.exists(): c+=['-i',str(voice)]; aud='1:a:0'
+              else:
+                  info=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-of','json',str(video)]))
+                  if any(x['codec_type']=='audio' for x in info['streams']): aud='0:a:0'
+                  else: c+=['-f','lavfi','-i','anullsrc=r=48000:cl=stereo']; aud='1:a:0'
+              c+=['-map','0:v:0','-map',aud,'-vf',vf,'-af','aresample=async=1:first_pts=0,apad','-t',str(total),'-r','30',
+                  '-c:v','libx264','-preset','veryfast','-crf','21','-pix_fmt','yuv420p',
+                  '-c:a','aac','-b:a','160k','-ar','48000','-ac','2',str(dest)]
+              run(*c)
+              return {'id':id,'original_seconds':native,'Marcus_seconds':alen,'derived_seconds':total}
+          for part,clips in seq.items():
+              concat=[]
+              intro=seg/(part+'_intro.mp4')
+              title(part,'INTRO',intro,2.5);concat.append(intro)
+              descriptions=[]
+              for index,id in enumerate(clips):
+                  card=seg/(part+f'_{index:02}_label.mp4')
+                  title(part,id,card,1.3);concat.append(card)
+                  result=seg/(part+f'_{index:02}_scene.mp4')
+                  descriptions.append(scene(id,result));concat.append(result)
+              ending=seg/(part+'_end.mp4')
+              title(part,'REVIEW ONLY - INCOMPLETE',ending,3);concat.append(ending)
+              sequence=seg/(part+'_concat.txt')
+              sequence.write_text(''.join("file '"+str(p.resolve())+"'\n" for p in concat))
+              mp4=out/('M3_FLEX_WORKOUT_'+part+'_APPROVED_FOOTAGE_REVIEW_NOT_FINAL.mp4')
+              run('ffmpeg','-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',str(sequence),
+                  '-c','copy','-movflags','+faststart',str(mp4))
+              probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(mp4)]))
+              assert {'video','audio'} <= {s['codec_type'] for s in probe['streams']}, 'Missing review audio/video'
+              records['parts'][part]={'duration_seconds':float(probe['format']['duration']),'bytes':mp4.stat().st_size,'approvedScenes':descriptions,'mp4':mp4.name}
+          assert original_hashes=={p.name:sha(p) for p in inp.iterdir()}, 'Original footage changed; STOP'
+          (out/'ASSEMBLY_AUDIT.json').write_text(json.dumps(records,indent=2))
+          (out/'README.txt').write_text('M3 FLEX APPROVED-FOOTAGE ASSEMBLY REELS - REVIEW ONLY.\nThese are short scene demonstrations, NOT complete Workout A or B.\nNo missing scene, C11, rejected C12 or C13 has been included.\nSeven original approved files are preserved byte-for-byte.\nIf separately recorded Marcus narration outlasts short footage, derivative holds final frame; see audit.\nDo NOT publish to the live app; obtain owner and clinician clearances as appropriate.\n')
+          print(json.dumps(records['parts'],indent=2))
+          PY
+          python .review-m3/build.py
+      - name: Upload protected source assembly for manual review only
+        uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-TWO-APPROVED-CLIP-ASSEMBLY-REVIEWS
+          path: .review-m3/delivery/
+          retention-days: 14
