@@ -13,6 +13,8 @@
 .group{font-size:12px;font-weight:850;color:#b9d9e7;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.07em}
 video{display:block;width:100%;height:auto;max-height:48vh;aspect-ratio:9/16;background:#050a0e;object-fit:contain;border-radius:11px;margin:12px auto 0;max-width:340px}
 .btn{border-radius:11px;border:1px solid #5b7588;background:#294459;color:white;padding:11px 10px;min-height:45px;font-weight:800;cursor:pointer}.btn.primary{background:#c5f08c;color:#12251a;border-color:#c5f08c}.btn:disabled{opacity:.45}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}
+.directLinks{display:flex;flex-wrap:wrap;gap:9px 16px;margin:10px 0}.directLinks a{font-size:12px;text-decoration:underline}
+#syncNote:empty{display:none}.item:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:3px solid #c5f08c;outline-offset:2px}
 .note{font-size:13px;color:#d4e7ee;margin:9px 0}.warning{color:#ffd59f;font-size:12px}
 footer{color:#acc2d2;text-align:center;font-size:11px;padding-top:16px}
 </style></head><body><main>
@@ -24,8 +26,12 @@ footer{color:#acc2d2;text-align:center;font-size:11px;padding-top:16px}
 <div class="summary"><div class="num"><b id="approvedCount">0</b>Approved clips</div><div class="num"><b id="audioCount">0</b>Audio only</div><div class="num"><b id="blockedCount">0</b>Needs production</div></div><div id="steps"></div></section>
 <section class="panel"><div class="caps" id="sceneStatus">Select a step to inspect</div><h2 id="sceneTitle">Workout A — stage previews</h2><p class="note" id="sceneNote">Preview approved scenes without replacing them in your active Recovery Coach.</p>
 <video id="sceneVideo" playsinline preload="metadata" hidden></video><audio id="sceneAudio" preload="none"></audio><div class="actions">
-<button type="button" class="btn primary" id="play">▶ Play verified media</button><button type="button" class="btn" id="stop">■ Stop</button></div>
-<a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer" hidden>Open original reference source</a><p id="playback" class="warning" aria-live="polite">The full Workout A/B sessions are not active yet. This is a media inspection player only.</p></section>
+<button type="button" class="btn primary" id="play">▶ Play verified media</button><button type="button" class="btn" id="stop">■ Stop</button>
+<button type="button" class="btn" id="previous">← Previous step</button><button type="button" class="btn" id="next">Next step →</button></div>
+<p id="stepPosition" class="muted" style="text-align:center;font-size:12px">Step 1</p>
+<p id="syncNote" class="warning" aria-live="polite"></p>
+<div class="directLinks"><a id="directVideo" target="_blank" rel="noopener noreferrer" hidden>Open approved video directly</a><a id="directAudio" target="_blank" rel="noopener noreferrer" hidden>Open approved Marcus audio directly</a><a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer" hidden>Open original reference source (not yet verified)</a></div>
+<p id="playback" class="warning" aria-live="polite">The full Workout A/B sessions are not active yet. This is a media inspection player only.</p></section>
 <section class="panel"><h2>Production rules</h2><p class="note">Every new movement must use the previously approved Flex face, tattoos, cornrows, white left cast and the exact Marcus – Warm &amp; Friendly English voice. No generated audio, wrong equipment, one-rep placeholders or stationary talking head.</p>
 <p class="warning">Both programs still require medical clearance for resistance, cast support and transitions. This preview is not an exercise prescription.</p><p class="note">Review the <a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">exercise QA and production sheets</a> for planned sequences and approval gates.</p></section>
 <footer>Workout A/B are in development · Five original approved clips remain locked and live separately.</footer>
@@ -60,12 +66,20 @@ program.steps.forEach((x,i)=>{
 select();
 }
 function select(){
-entry=programs[active].steps[index];$("sceneTitle").textContent=entry.name;
+entry=programs[active].steps[index];
+$("stepPosition").textContent=programs[active].name+" · step "+(index+1)+" of "+programs[active].steps.length;
+$("previous").disabled=index===0;$("next").disabled=index===programs[active].steps.length-1;$("sceneTitle").textContent=entry.name;
 $("sceneStatus").textContent=readableStatus(entry);
 $("sceneNote").textContent=entry.note;
 stop();
 video.removeAttribute("src");voice.removeAttribute("src");video.load();voice.load();
 video.hidden=!entry.video;
+$("directVideo").hidden=!entry.video;
+$("directAudio").hidden=!(entry.voice||entry.audio);
+if(entry.video)$("directVideo").href=entry.video;else $("directVideo").removeAttribute("href");
+if(entry.voice||entry.audio)$("directAudio").href=entry.voice||entry.audio;else $("directAudio").removeAttribute("href");
+const timing=(entry.name.includes("C02")?"Approved C02 · video 8.08 s / Marcus 8.54 s. Voice outlasts motion by 0.46 s; full sync QA pending.":entry.name.includes("C03")?"Approved C03 · video 8.08 s / Marcus 9.43 s. Voice outlasts motion by 1.35 s; full sync QA pending.":"");
+$("syncNote").textContent=timing;
 if(entry.video){video.src=entry.video;video.muted=!!entry.voice;video.volume=entry.embedded?1:0;video.controls=false}
 if(entry.voice||entry.audio){voice.src=entry.voice||entry.audio;voice.volume=1}
 $("play").disabled=!entry.video&&!entry.audio;
@@ -88,9 +102,17 @@ try{
 }catch(e){stop();$("playback").textContent="Media not available for playback."}
 };
 $("stop").onclick=()=>{stop();$("playback").textContent="Stopped."};
+$("previous").onclick=()=>{if(index>0){stop();index--;display();}};
+$("next").onclick=()=>{if(index<programs[active].steps.length-1){stop();index++;display();}};
 document.querySelectorAll("[data-program]").forEach(b=>b.onclick=()=>{active=Number(b.dataset.program);index=0;stop();document.querySelectorAll("[data-program]").forEach(z=>z.setAttribute("aria-selected",String(z===b)));display()});
-video.onended=()=>{if(!entry.voice){playing=false;$("playback").textContent="Preview ended; this is not a certified full workout."}};
-voice.onended=()=>{if(entry.voice){video.pause();}playing=false;$("playback").textContent="Preview ended; this is not a certified full workout."};
+video.onended=()=>{
+ if(entry.voice){
+  $("playback").textContent="Visual demonstration finished; Marcus narration may continue briefly. Synchronization still requires final QA.";
+ }else{
+  playing=false;$("playback").textContent="Preview ended; this is not a certified full workout.";
+ }
+};
+voice.onended=()=>{if(entry.voice)video.pause();playing=false;$("playback").textContent="Preview ended. Original approved media preserved; this is not a certified full workout."};
 video.onerror=()=>{stop();$("playback").textContent="Video couldn't load. This clip needs source verification.";};
 voice.onerror=()=>{stop();$("playback").textContent="Marcus audio couldn't load. This clip needs source verification.";};
 display();
