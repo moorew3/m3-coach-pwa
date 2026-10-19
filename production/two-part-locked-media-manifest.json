@@ -319,7 +319,7 @@
       "nextAction": "Find motion-controlled verified reference or rig/mocap guide. DO NOT spend on identical image-only approach. Preserve approved originals."
     },
     "C13-SHOULDER-ROLLS-MOTION-DRIVER": {
-      "status": "ORIGINAL_MOTION_REFERENCE_CREATED_NOT_FLEX_VIDEO_NOT_SUBMITTED_TO_PROVIDER",
+      "status": "ORIGINAL_FILE_VERIFIED_IN_SOURCE_CONVERSATION; NOT_YET_PRESENT_ON_GITHUB_BRANCH",
       "type": "reference-motion-source",
       "durationSeconds": 7.5,
       "fps": 24,
@@ -336,7 +336,16 @@
       "content": "Custom authored reference animation only, generic illustrated subject. NOT the approved Flex face and NOT a deliverable workout video.",
       "desiredNextAction": "Pair driving-video (video role) with exact approved Flex reference still (image role) in one motion-transfer generation ONLY after confirmed upload and price approval; human QA then add already approved Marcus audio separately.",
       "license": "Original procedure-generated reference by M3 production, not third-party exercise video",
-      "priceGate": "Higgsfield paid model; both connected accounts have 0 free motion-control attempts; credits 10 and 2.5 respectively. No generation submitted."
+      "priceGate": "Higgsfield paid model; both connected accounts have 0 free motion-control attempts; credits 10 and 2.5 respectively. No generation submitted.",
+      "originalFileName": "C13_BACKWARD_SHOULDER_ROLLS_DRIVER.mp4",
+      "originalFileBytes": 1013994,
+      "sha256": "ed57c371af87e8f9f9a6f7e4f6c9cd168b67a6a32304fc3798dc22dddf2636e0",
+      "videoDurationSeconds": 7.5,
+      "width": 480,
+      "height": 832,
+      "reviewNote": "Original file was checked in source conversation's mounted /mnt/data. Other chat environments do not automatically mount it. Download and attach exact MP4 to the other conversation to transfer. Do not claim this original is already in GitHub.",
+      "approvedProductionMedia": false,
+      "newGenerationAuthorized": false
     }
   },
   "nonNegotiables": [
@@ -356,5 +365,5 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Driving motion guide is ready; provider motion-control test NOT submitted because linked accounts have 0 free runs and the generation tool requires a confirmed uploaded video UUID. Avoid another text/image-only render. Preserve all 7 approved originals and live app."
+  "currentProductionNextStep": "Transfer verified existing C13 original MP4 to the shared production environment and compare SHA-256. Use it only as an original generic motion reference, never a completed Flex avatar scene. No new paid generation or approved-media replacement."
 }
