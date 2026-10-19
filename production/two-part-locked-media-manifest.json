@@ -463,5 +463,26 @@
     "useInWorkoutA": false,
     "useInWorkoutB": false,
     "approval": "None; do not substitute."
+  },
+  "newOpeningSequenceDrafts": {
+    "status": "TWO_NEW_STANDALONE_OWNER_REVIEW_VIDEO_ASSETS_NOT_APPROVED_NOT_DEPLOYED",
+    "date": "2026-10-19",
+    "files": {
+      "A": {
+        "name": "M3_FLEX_WORKOUT_A_CINEMATIC_OPENING_REVIEW_V2.mp4",
+        "durationSeconds": 7.021,
+        "dimensions": "720x1280",
+        "audio": "silent AAC, approved Marcus soundtrack pending",
+        "sourcePhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
+      },
+      "B": {
+        "name": "M3_FLEX_WORKOUT_B_CINEMATIC_OPENING_REVIEW_V2.mp4",
+        "durationSeconds": 7.021,
+        "dimensions": "720x1280",
+        "audio": "silent AAC, approved Marcus soundtrack pending",
+        "sourcePhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
+      }
+    },
+    "notes": "Both separate source-independent editorial opening graphics use exact source photo with simple text overlays; no exercise video was created, overwritten, recut or replaced. Packaged as M3_FLEX_Workout_A_B_New_Openings_Review.zip in originating conversation; NOT yet in GitHub file bytes. Full A/B guided master MP4s remain incomplete. Do not treat unapproved draft intro as final client asset."
   }
 }
