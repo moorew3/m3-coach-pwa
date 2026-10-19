@@ -393,7 +393,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "A/B source-reel review cuts now exist, one each; complete missing professionally realistic approved-Flex animation scenes and final transitions to replace review interstitial structure and form full workouts. Do not mistake 48s/59s review MP4s for full sessions.",
+  "currentProductionNextStep": "Four archived legacy HeyGen motion entries rejected after visual audit; do not resurrect by title. Keep approved 7 unchanged. Build professionally edited, protected intros/rest transitions and recover accurate new cast-supported realistic movement using a verified motion guide before generating. Workout A/B remain incomplete.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -447,5 +447,21 @@
       "C12 rejected",
       "C13 rejected"
     ]
+  },
+  "archivedLegacyHeyGenAudit": {
+    "auditDate": "2026-10-19",
+    "status": "FOUR_LEGACY_CANDIDATES_REJECTED_BY_INTERNAL_MOTION_QA_NOT_USER_APPROVED",
+    "visualAuditWorkflowRun": 39318404157,
+    "reviewArtifactId": 12218409201,
+    "videoIds": {
+      "8d2ca8fce35935efe0453c1524b2494a": "C11 archived hand-opening title",
+      "3ec419dbcb05b9f66819313952f4e782": "Archived shoulder-roll title",
+      "c1c5c6c97ff87c9fe830dafb1922fd0d": "Archived seated elbow-bend title",
+      "3dbad600606d6d4827b5348e0f0d1706": "Archived supported forward-reach title"
+    },
+    "inspection": "Downloaded public GIF visual previews and reviewed multiple frames. All four actually show standing, shirtless/tattooed presenter with an on-screen motivational slogan, speaking/gesturing. The anatomical LEFT cast is absent, no chair, no seated position; no complete specified exercise cycle visible. These cannot be used as shoulder rolls, hand openings, elbow bends or seated reaches. Any title/Marcus voice does not establish the exercise.",
+    "useInWorkoutA": false,
+    "useInWorkoutB": false,
+    "approval": "None; do not substitute."
   }
 }
