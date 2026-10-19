@@ -317,6 +317,26 @@
         "notes": "Voice composite technically succeeded but candidate FAILS exercise movement; no production activation."
       },
       "nextAction": "Find motion-controlled verified reference or rig/mocap guide. DO NOT spend on identical image-only approach. Preserve approved originals."
+    },
+    "C13-SHOULDER-ROLLS-MOTION-DRIVER": {
+      "status": "ORIGINAL_MOTION_REFERENCE_CREATED_NOT_FLEX_VIDEO_NOT_SUBMITTED_TO_PROVIDER",
+      "type": "reference-motion-source",
+      "durationSeconds": 7.5,
+      "fps": 24,
+      "orientation": "9:16",
+      "dimensions": "480x832",
+      "cycles": 3,
+      "movement": "Both shoulders travel forward -> up -> back -> down while arms remain lowered, with head/hips/legs fixed; generic illustrated figure",
+      "productionAssets": [
+        "C13_BACKWARD_SHOULDER_ROLLS_DRIVER.mp4",
+        "C13_shoulder_motion_keyframes.csv",
+        "C13_motion_contact_sheet.png",
+        "README.txt"
+      ],
+      "content": "Custom authored reference animation only, generic illustrated subject. NOT the approved Flex face and NOT a deliverable workout video.",
+      "desiredNextAction": "Pair driving-video (video role) with exact approved Flex reference still (image role) in one motion-transfer generation ONLY after confirmed upload and price approval; human QA then add already approved Marcus audio separately.",
+      "license": "Original procedure-generated reference by M3 production, not third-party exercise video",
+      "priceGate": "Higgsfield paid model; both connected accounts have 0 free motion-control attempts; credits 10 and 2.5 respectively. No generation submitted."
     }
   },
   "nonNegotiables": [
@@ -336,5 +356,5 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Recover existing approved Drive/Flow sources and find an exact shoulder-roll motion reference; C12 image-only model failed. No new paid render until improved motion control validated."
+  "currentProductionNextStep": "Driving motion guide is ready; provider motion-control test NOT submitted because linked accounts have 0 free runs and the generation tool requires a confirmed uploaded video UUID. Avoid another text/image-only render. Preserve all 7 approved originals and live app."
 }
