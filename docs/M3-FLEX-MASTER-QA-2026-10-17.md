@@ -24,7 +24,7 @@ Scope: Recovery Coach extension in `public/recovery-coach/`, NOT an overhaul of 
 |Post 1 breathing|VOICE made, visual not approved|Marcus MP3 with text guidance|MISSING (moving approved Flex video)|Animated cooldown breathing|
 |Post 2 shoulder/hand release|VOICE made, visual not approved|Marcus MP3 with text guidance|MISSING (moving approved Flex video)|Animated gentle cooldown + cast supported|
 |Final completion|UI text only|Completion text is not an approved moving talking avatar|MISSING|New Flex outro + Marcus voice|
-|Workout A|NOT activated|Archived source links to wrist-curl Drive clip (HTTP 401), lateral-raise Flow edit project, boxing Flow edit project|NEEDS CORRECTION|Obtain playable source exports, verify original user approvals and voice; integrate separate program|
+|Workout A|NOT activated|Archived wrist-curl Drive clip was recovered on 2026-10-19: file M3_Flex_Recovery_01_Seated_Curl_Test.mp4 is a seated arm curl, NOT a wrist curl. Lateral raise and boxing remain Flow project links without verified direct exports|NEEDS CORRECTION|Locate correct wrist curl clip; export lateral-raise and boxing from Flow; verify face, cast, action and Marcus voice before activation|
 |Workout B|NOT activated|INNSTAR press available; AMYCO device demonstrated incorrectly/unfinished; chest fly not approved in main program|MISSING|Verify AMYCO device technique, create approved equipment sequences and Marcus coaching|
 
 **Meaning of status:** VERIFIED AND WORKING requires test of every applicable criterion on an actual running build. No full exercise is given that status solely because a video URL loads or the owner liked the appearance. Approved media = locked; independent QA = separate.
@@ -33,7 +33,7 @@ Scope: Recovery Coach extension in `public/recovery-coach/`, NOT an overhaul of 
 Exact order, all seated with left cast supported and no leg push. Set/reps/duration are proposed production defaults, NOT medical clearance. The existing 5 approved workout program remains separate and unchanged.
 1. PRE: seated breathing (30s), open/close hands (30s), small unloaded shoulder circles (30s). Each is Marcus audio-only today; Flex moving video MISSING.
 2. WARMUP: seated wrist circles 20s (new Flex video), unloaded elbow flex/extension 20s (new Flex video), light shoulder movement 20s (new Flex video). No weights until cleared.
-3. MAIN A1: seated wrist curl, 2 sets × 8 controlled reps (historically owner-approved visual, Drive access blocks verified video playback and Marcus mapping; DO NOT activate).
+3. MAIN A1: seated wrist curl, 2 sets × 8 controlled reps (the Drive video has been retrieved and visually inspected and actually demonstrates a seated arm curl, NOT a wrist curl; correct wrist-curl export remains missing; DO NOT activate).
 4. MAIN A2: seated lateral raise, 2 × 8 controlled reps (historically owner-approved visual, Flow edit link not exported/verified; DO NOT activate).
 5. MAIN A3: seated hammer curls C02, 2 × 8 controlled reps (locked video available).
 6. MAIN A4: seated dumbbell shrugs C01-R3, 2 × 8 controlled reps (locked video available).
@@ -89,3 +89,12 @@ Next approval gates: select and verify working media exports from Google Flow an
 - Moving Flex warm-up/cooldown videos, fresh arm/shoulder stretch clips, separate approved band fly and actual AMYCO device demonstration remain MISSING. Marcus before/after audio exists, but does NOT satisfy visual avatar completion.
 - Higgsfield primary workspace currently lists 10 credits on a free plan; this turn spent no generation credits. Do not start paid video batches based on a filename alone. Check requirements and obtain approval for substantive credit spending.
 - Production QA gate: verify the new development route in a mobile-size browser, including navigation, video mute for separate voice, embedded Marcus for approved files, disabled play for missing clips, and original Recovery Coach unchanged.
+
+## October 19, 2026 — next development review, new evidence
+- Recovery Coach and its five locked user-approved videos are live under the existing Railway service. An isolated A/B development preview now exists at `/recovery-coach/programs/` with only completed media enabled and all missing exercises blocked.
+- Google Drive file `M3_Flex_Recovery_01_Seated_Curl_Test.mp4`, ID `1wLS6ufEZ2fe5ZiD_bloiYITPE65DoEy0`, was retrieved and inspected. It shows a **seated dumbbell arm curl**, not a wrist curl. Do not relabel or activate as a wrist curl.
+- HeyGen connected video accounts have no title matches for `wrist`, `boxing`, or `lateral` in the tested libraries. This does not prove assets do not exist under other names.
+- HTTP Range checks succeeded with 206 status for locked C01-R3, C02, C03, C04-R2 and C08-PRESS-R3 videos, C02/C03 separate Marcus narration, and initial warm-up/cooldown Marcus files. Status 206 is media reachability, NOT synchronization or biomechanics approval.
+- Media duration checks: **C02 video 8.083s vs Marcus 8.542s** (audio outlasts motion by ~0.46s); **C03 video 8.083s vs Marcus 9.430s** (audio outlasts motion by ~1.35s). No original user-approved files were edited. Resolve sync only in a separately approved corrected version or player-level playback correction after thorough review.
+- The Workout A/B preview includes Previous/Next navigation, direct approved-media Android fallback links, and explicit media-duration synchronization warnings for C02/C03. Preview completion does not mark training completed.
+- Higgsfield primary connected workspace returned 10 available credits and zero Genjutsu free generation attempts in the October 19 check. Do not spend these generating a batch without approval.
