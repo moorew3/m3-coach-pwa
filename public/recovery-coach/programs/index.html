@@ -45,6 +45,16 @@ footer{color:#acc2d2;text-align:center;font-size:11px;padding-top:16px}
 </div>
 <p class="note" id="c09ApprovalHelp" role="status">These buttons copy feedback for your ChatGPT conversation. They do not approve or activate the video automatically.</p>
 </section>
+<section class="panel candidate-review" id="C10-POST-BREATH-R1" style="border-color:#74a5aa">
+<div class="caps">C10 · Cooldown breathing · AWAITING OWNER APPROVAL</div>
+<h2>C10-POST-BREATH-R1 · Recovery breathing</h2>
+<p class="note">This NEW review clip reuses the same moving Flex breathing source as C09—not a different avatar and not a new AI render. The approved Marcus English voice says: “Keep the cast supported and let your breathing settle.” The original render soundtrack has been excluded. No additional video-generation credits spent.</p>
+<video data-candidate="C10-POST-BREATH-R1" controls playsinline preload="metadata" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4" aria-label="C10 seated Flex cool down breathing preview with approved Marcus English narration"></video>
+<p class="warning"><b>Pending:</b> The source Flex face, hair, tattoos, white left cast, right shoe, breathing motion and lip sync still need owner and formal movement review. C09 approval does not automatically approve C10. Neither scene is active.</p>
+<p class="note"><a href="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4" target="_blank" rel="noopener noreferrer">Open C10 cooldown review directly on Android</a></p>
+<div class="actions"><button class="btn" type="button" id="copyC10Approve">Copy C10 approval</button><button class="btn" type="button" id="copyC10Correct">Copy C10 correction</button></div>
+<p class="note" id="c10ApprovalHelp" role="status">This is only a review. Copy approval or feedback and paste it into ChatGPT; the active workout remains unchanged.</p>
+</section>
 <section class="panel candidate-review" id="C09-PRE-BREATH-R1" style="border-color:#b28c55">
 <div class="caps" style="color:#ffdca0">New animation review · Awaiting owner approval</div>
 <h2>C09-PRE-BREATH-R1 · Seated breathing</h2>
@@ -156,4 +166,10 @@ async function copyC09(textValue){
 }
 $("copyC09Approve").onclick=()=>copyC09("M3 FLEX C09-PRE-BREATH-R2 APPROVED — exact video and Marcus voice. Keep all previously approved clips untouched. Add C09 to active before-workout only after all required QA checks.");
 $("copyC09Correct").onclick=()=>copyC09("M3 FLEX C09-PRE-BREATH-R2 NEEDS CORRECTION — do not activate. I will describe what is wrong with face, cast, breathing movement, voice or timing.");
+async function copyC10(value){
+ try{await navigator.clipboard.writeText(value);$("c10ApprovalHelp").textContent="Copied. Paste your feedback in ChatGPT; this does not activate the clip."}
+ catch(err){$("c10ApprovalHelp").textContent="Clipboard unavailable; send C10-POST-BREATH-R1 and your approval or required changes in ChatGPT."}
+}
+$("copyC10Approve").onclick=()=>copyC10("M3 FLEX C10-POST-BREATH-R1 APPROVED — exact moving seated breathing clip with Marcus English. Preserve all other approved assets and activate only after final playback and clinician-clearance checks.");
+$("copyC10Correct").onclick=()=>copyC10("M3 FLEX C10-POST-BREATH-R1 NEEDS CORRECTION — do not activate. I will describe the required face, cast, breathing motion or voice changes.");
 </script></body></html>
