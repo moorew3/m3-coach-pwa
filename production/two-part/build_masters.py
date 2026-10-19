@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 MANIFEST=ROOT/'production/two-part-locked-media-manifest.json'
 GATES=ROOT/'production/two-part/release-gates.json'
+HASHES=ROOT/'production/two-part/approved-originals-sha256.json'
 LOCKED={'C09-PRE-BREATH-R2','C10-POST-BREATH-R1','C01-R3','C02','C03','C04-R2','C08-PRESS-R3'}
 REJECTED={'C12-SEATED-SHOULDER-ROLLS-R1','C13-SHOULDER-ROLLS-MOTION-DRIVER'}
 
@@ -29,6 +30,9 @@ def hash_file(file):
 def load():
     manifest=json.loads(MANIFEST.read_text())
     gates=json.loads(GATES.read_text())
+    pinned=json.loads(HASHES.read_text())
+    if set(pinned.get('lockedSources',{}))!=LOCKED:
+        raise RuntimeError('Pinned SHA256 set does not match seven approved original videos')
     if manifest.get('status')!='draft-protected-only-not-cleared-not-deployed':
         raise RuntimeError('Protected draft manifest has unexpected release status.')
     if set(manifest.get('lockedApprovedVideoIds',[]))!=LOCKED or set(manifest.get('approvedAssets',{}))!=LOCKED:
@@ -99,17 +103,24 @@ def scene_source(scene,m,g):
     return {'video':new['video'],'approvedMarcusAudio':new.get('approvedMarcusAudio'),
             'embeddedMarcus':new.get('embeddedMarcus',False)}
 
-def normalize(video,audio,duration,out):
+def normalize(video,audio,duration,out,loop_motion=False):
     info=probe(video)
     if not any(x['codec_type']=='video' for x in info['streams']): raise RuntimeError('Missing video stream')
     if not audio and not any(x['codec_type']=='audio' for x in info['streams']):
         raise RuntimeError('No verified Marcus audio in approved scene')
-    cmd=['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(video)]
+    source_sec=float(info['format']['duration'])
+    if duration>source_sec+.25 and not loop_motion:
+        raise RuntimeError('Chapter extends beyond moving video: explicit motion-loop QA required')
+    # Loop motion ONLY after explicit cycle QA. Audio comes from a separate nonlooping input.
+    cmd=['ffmpeg','-hide_banner','-loglevel','error','-y']
+    if loop_motion:cmd+=['-stream_loop','-1']
+    cmd+=['-i',str(video)]
     if audio:cmd+=['-i',str(audio)]
+    elif loop_motion:cmd+=['-i',str(video)]
     # Letterbox rather than crop; keep visual pace unchanged. Freeze final frame if video
     # is shorter than the signed-off chapter length (never silently slow the motion).
-    vf='scale=480:832:force_original_aspect_ratio=decrease,pad=480:832:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=30,format=yuv420p,tpad=stop_mode=clone:stop_duration=600'
-    cmd+=['-vf',vf,'-map','0:v:0','-map','1:a:0' if audio else '0:a:0',
+    vf='scale=480:832:force_original_aspect_ratio=decrease,pad=480:832:(ow-iw)/2:(oh-ih)/2:black,setsar=1,fps=30,format=yuv420p'
+    cmd+=['-vf',vf,'-map','0:v:0','-map','1:a:0' if (audio or loop_motion) else '0:a:0',
           '-af','aresample=48000,apad','-t',f'{duration:.3f}',
           '-c:v','libx264','-preset','veryfast','-crf','19','-pix_fmt','yuv420p',
           '-c:a','aac','-ac','2','-b:a','192k','-movflags','+faststart',str(out)]
@@ -127,9 +138,16 @@ def compose(part,m,g,outdir,cache):
         slug=re.sub('[^A-Za-z0-9_-]','_',id)
         video=fetch(asset['video'],cache/(slug+'.mp4'))
         audio=fetch(asset['approvedMarcusAudio'],cache/(slug+'.voice')) if asset.get('approvedMarcusAudio') else None
-        duration=float(g['chapterTiming'][k]['durationSec'])
+        pinned=json.loads(HASHES.read_text())['lockedSources']
+        if id in LOCKED:
+            if hash_file(video)!=pinned[id]['video']['sha256']:
+                raise RuntimeError('IMMUTABLE ORIGINAL MP4 HASH MISMATCH: '+id)
+            if audio and hash_file(audio)!=pinned[id]['voice']['sha256']:
+                raise RuntimeError('APPROVED MARCUS AUDIO HASH MISMATCH: '+id)
+        timing=g['chapterTiming'][k]
+        duration=float(timing['durationSec'])
         outfile=part_dir/f'{i:02d}_{slug}.mp4'
-        length=normalize(video,audio,duration,outfile)
+        length=normalize(video,audio,duration,outfile,loop_motion=timing.get('motionLoopApproved') is True)
         chapters.append({'sceneId':id,'title':scene['label'],'startMs':round(running*1000),
                          'endMs':round((running+length)*1000),'originalSHA256':hash_file(video)})
         running+=length;clips.append(outfile)
