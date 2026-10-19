@@ -1,0 +1,71 @@
+name: M3 FLEX C12 Non-Production Review
+on:
+  push:
+    branches:
+      - production/m3-flex-two-part-masters-2026-10-19
+    paths:
+      - .github/workflows/m3-flex-c12-review.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prepare-c12-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout draft production branch
+        uses: actions/checkout@v4
+      - name: Verify media tools
+        run: |
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+      - name: Download raw C12 reference and PRE-03 approved Marcus audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p c12-review
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            'https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15565-a7a3-710c-9caf-e860fa57b0de.mp4' \
+            --output c12-review/C12_raw_candidate.mp4
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            'https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3' \
+            --output c12-review/Marcus_PRE03_unchanged.mp3
+          test -s c12-review/C12_raw_candidate.mp4
+          test -s c12-review/Marcus_PRE03_unchanged.mp3
+          ffprobe -v error -show_entries format=duration -of default=nokey=1:noprint_wrappers=1 c12-review/C12_raw_candidate.mp4
+          ffprobe -v error -show_entries format=duration -of default=nokey=1:noprint_wrappers=1 c12-review/Marcus_PRE03_unchanged.mp3
+      - name: Create separated voice and contact-sheet review files
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel error -y -stream_loop -1 \
+            -i c12-review/C12_raw_candidate.mp4 \
+            -i c12-review/Marcus_PRE03_unchanged.mp3 \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v libx264 -pix_fmt yuv420p -preset veryfast -crf 21 \
+            -c:a aac -b:a 192k -shortest -movflags +faststart \
+            c12-review/C12_MARCUS_REVIEW_ONLY_NOT_APPROVED.mp4
+          ffmpeg -hide_banner -loglevel error -y -i c12-review/C12_raw_candidate.mp4 \
+            -vf 'fps=1,scale=240:-1,tile=5x1' -frames:v 1 \
+            c12-review/C12_five_frame_contact_sheet.jpg
+          (cd c12-review && sha256sum C12_raw_candidate.mp4 Marcus_PRE03_unchanged.mp3 C12_MARCUS_REVIEW_ONLY_NOT_APPROVED.mp4 > SHA256SUMS.txt)
+          cat > c12-review/READ_ME_FIRST.txt <<'EOF'
+          M3 FLEX C12 — REVIEW ONLY; NOT OWNER APPROVED; NOT MEDICALLY CLEARED.
+          This artifact is NOT a complete workout and was NOT deployed to the app.
+          Source render: C12-SEATED-SHOULDER-ROLLS-R1 five-second raw candidate.
+          Audio: existing PRE-03 Marcus Warm & Friendly English recording used ONCE,
+          with source video's soundtrack excluded. Video loops to match narration.
+          Check whether PRE-03 speech specifically matches this exercise;
+          it may be general mobility guidance instead of shoulder-roll cues.
+          Inspect contact sheet and actual video for canonical face, hairstyle,
+          moving backward shoulder rolls, anatomical LEFT elevated cast,
+          RIGHT grounded foot, hands, anatomical continuity and no ghost limbs.
+          Candidate requires owner approval and clinician clearance before training.
+          Seven original approved clips are NOT downloaded, edited or overwritten.
+          EOF
+      - name: Upload unapproved C12 review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-C12-MARCUS-REVIEW-ONLY
+          path: c12-review/
+          retention-days: 14
