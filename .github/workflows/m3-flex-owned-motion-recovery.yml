@@ -87,3 +87,4 @@ jobs:
           name: M3-FLEX-EXISTING-OWNED-VIDEO-CONTACT-AUDIT
           path: .m3-owned-review/
           retention-days: 14
+          include-hidden-files: true
