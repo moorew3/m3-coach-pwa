@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Use ONLY seven original approved Flex clips and exact owner-approved Flex identity image. Do not use 32 historical unrelated Higgsfield videos or rejected C11/C12/C13/C16. The corrected motion-guided workflow still lacks an owner-accepted real movement driving video and an affordable authorized generation path. Do not incur new credits until both resolved.",
+  "currentProductionNextStep": "D-ID existing agent found in user screenshot: consider for coach narration/intro or interactive Q&A only, not precise exercise animation; do not spend to duplicate this avatar or treat standing no-cast as recovery footage. C16 shown again in 10-frame grid remains rejected (bent elbows, curled hands). Finish A/B using exact canonical approved Flex original videos + validated new biomechanical motion generated with an appropriate rig or true pose-controlled source. No automatic new paid generation.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -614,5 +614,21 @@
     "count": 32,
     "ownerInstruction": "These do not show approved Flex; do not use as reference or final footage.",
     "date": "2026-10-19"
+  },
+  "existingDIDAgentReference": {
+    "status": "OWNER_SUPPLIED_SCREENSHOT_OF_EXISTING_DID_AGENT_NOT_TESTED_OR_CONFIRMED_AS_APPROVED_WORKOUT_CLIP",
+    "source": "User image 8573.jpg screenshot of logged-in D-ID Studio > Agents showing a standing muscular tattooed male digital presenter visually resembling Flex, with dark shorts and black sneakers",
+    "accountIntegration": "D-ID account is accessed by user in browser, not connected as an available D-ID direct plugin here; exact agent ID, plan, voice and export capabilities not verified",
+    "intendedUse": "Possible speaking Flex host for welcoming participants, explaining exercises, resting, closing/interactive Q&A, only with separately verified approved Marcus voice and owner's approval",
+    "limitations": [
+      "Standing reference has no white LEFT cast or supporting bench. It is NOT the recovery workout full-body Flex demonstration.",
+      "D-ID's published agent/video workflows support speaking digital presenters and natural conversational gestures; they do not establish precise user-programmed multi-repetition exercise motion.",
+      "Do not turn this still screenshot into an exercise clip and claim biomechanical success.",
+      "Do not change visual identity on the seven locked approved scenes."
+    ],
+    "identityApproval": "Screenshot not in itself approval of a new variation; canonical seated approved photo and seven video originals remain authority.",
+    "userSourceImage": "8573.jpg",
+    "userC16ContactSheet": "9835.jpg",
+    "c16Observation": "User-supplied 10-frame C16 still sequence depicts bent-elbow forward motions with curled hands and seated LEFT white cast; this verifies earlier reasons for rejection as straight-arm controlled reaches."
   }
 }
