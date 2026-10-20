@@ -14,13 +14,18 @@ jobs:
     steps:
       - name: Checkout immutable reference branch
         uses: actions/checkout@v4
+      - name: Checkout older V2 production media in separate directory
+        uses: actions/checkout@v4
+        with:
+          ref: rebuild/m3-coach-v2
+          path: m3v2
       - name: Produce source-level video probe and contact sheets
         shell: bash
         run: |
           set -u
           mkdir -p audit
           command -v ffmpeg && command -v ffprobe
-          cp public/media/boxingFlow3.mp4 audit/boxingFlow3_EXISTING_REFERENCE.mp4
+          cp m3v2/public/media/boxingFlow3.mp4 audit/boxingFlow3_EXISTING_REFERENCE.mp4
           curl -L --fail --max-time 25 --retry 1 -A "M3-FLEX-QA/1.0" -o audit/lateralRaise_EXISTING_REFERENCE.mp4 'https://m3-coach-v2-visual-production.up.railway.app/media/approved/lateralRaise.mp4'             && echo 'Lateral raise remote source downloaded' || { rm -f audit/lateralRaise_EXISTING_REFERENCE.mp4; echo 'Lateral raise URL could not be fetched' | tee audit/lateralRaise_FETCH_FAILED.txt; }
           for f in audit/*.mp4; do
             [ -f "$f" ] || continue
