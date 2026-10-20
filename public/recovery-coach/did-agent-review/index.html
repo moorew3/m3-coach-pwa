@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M3 FLEX — Existing D-ID Agent Compatibility Review (Not Live)</title>
+<style>
+  :root {font-family:system-ui,Arial,sans-serif;color-scheme:dark;--bg:#0b1724;--panel:#14273a;--edge:#365167;--text:#f5f8fa;--muted:#becfda;--accent:#c9e99c}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}
+  main{max-width:790px;margin:auto;padding:24px 16px 80px}h1{font-size:27px;line-height:1.15;margin:0 0 14px}
+  h2{font-size:18px;margin:0 0 12px}p,li{line-height:1.5}a{color:var(--accent)}
+  .tag{font-size:12px;letter-spacing:.09em;font-weight:900;color:var(--accent);margin-bottom:12px}
+  .panel{background:var(--panel);border:1px solid var(--edge);border-radius:18px;padding:18px;margin:16px 0}
+  label{display:block;font-weight:700;font-size:13px;margin:12px 0 6px}
+  input{display:block;width:100%;background:#071320;color:var(--text);border:1px solid var(--edge);border-radius:9px;padding:13px;font-size:16px}
+  button{font:inherit;font-weight:800;background:var(--accent);color:#102122;border:0;border-radius:10px;padding:13px 16px;cursor:pointer;min-height:45px}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  .alt{background:#294357;color:#eef5f9}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .note{font-size:13px;color:var(--muted)}.warn{border-left:3px solid #ffcb78;padding:9px 12px;background:#2f2830}
+  #agentHost{width:100%;min-height:400px;border:1px dashed #61819a;border-radius:10px;display:grid;place-items:center;text-align:center;color:var(--muted);padding:18px}
+  #agentHost:has(iframe){display:block}#status{font-weight:700;color:var(--accent)}.checklist{padding-left:22px}
+</style>
+</head>
+<body>
+<main>
+<div class="tag">M3 FLEX / PRIVATE PRODUCTION TEST</div>
+<h1>Existing D-ID Flex speaking-agent test</h1>
+<p class="warn"><strong>Not part of Workout A or Workout B.</strong> This is an isolated compatibility harness on the draft production branch. It does not modify the seven original approved exercise videos or change the current player. D-ID session use may consume your existing D-ID credits.</p>
+<section class="panel">
+  <h2>Step 1 — Existing agent only</h2>
+  <p>In your already-created D-ID Studio agent, use <strong>Embed</strong> to obtain its <strong>Agent ID</strong> and a D-ID <strong>domain-scoped client key</strong>. This is a public *client* key, not your private D-ID API key. Limit its allowed domains to the actual review site.</p>
+  <label for="agentId">Existing Agent ID</label><input id="agentId" type="text" autocomplete="off" spellcheck="false" placeholder="Agent ID from D-ID Embed">
+  <label for="clientKey">D-ID domain-restricted client key</label><input id="clientKey" type="password" autocomplete="off" spellcheck="false" placeholder="Client key, not your account API password">
+  <div class="actions"><button id="load">Load my existing agent</button><a href="https://studio.d-id.com/" target="_blank" rel="noopener noreferrer">Open D-ID Studio</a></div>
+  <p class="note">Nothing is stored in the browser or sent to M3 FLEX servers. The client key is handed directly to the official D-ID embed script only after you press Load.</p>
+</section>
+<section class="panel">
+  <h2>Step 2 — Inspect the actual talking avatar</h2>
+  <div id="agentHost">Agent not loaded. No session has started.</div>
+  <p>Status: <span id="status" role="status" aria-live="polite">Not connected</span></p>
+  <div class="actions">
+    <button id="marcus" disabled>Play original Marcus audio through agent</button>
+    <button id="mute" class="alt" disabled>Mute microphone</button>
+    <button id="unmute" class="alt" disabled>Enable microphone</button>
+  </div>
+  <p class="note">The playback button uses the already-approved C02 Marcus WAV recording with no recreated text-to-speech. D-ID must be connected and able to retrieve its original URL. Text speech may select the D-ID agent's configured voice, so do not use it to certify Marcus.</p>
+</section>
+<section class="panel">
+  <h2>Step 3 — Confirm it meets the speaking-role standard</h2>
+  <ol class="checklist">
+    <li>Exactly the approved Flex face, hairstyle, beard, tattoos, and physique?</li>
+    <li>Talking head and lips visibly move in sync with the existing Marcus audio?</li>
+    <li>No different or substitute voice, no music and no other trainer?</li>
+    <li>Can the agent answer a short user question while preserving character identity?</li>
+    <li>Does interaction consume D-ID credits or require a paid plan?</li>
+  </ol>
+  <p class="note"><strong>Important:</strong> A standing no-cast D-ID presenter, even if approved for speaking intros, is not the white-LEFT-cast seated recovery-exercise demonstrator. No exercise rep should be accepted from this speaking test.</p>
+</section>
+<script>
+(() => {
+  "use strict";
+  const $ = id=>document.getElementById(id);
+  const MARCUS_APPROVED_C02 = "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav";
+  let loaded = false;
+  let status = $("status");
+  let connected = false;
+  function message(txt){status.textContent=txt}
+  function setConnected(value){
+    connected=!!value;
+    for(const id of ["marcus","mute","unmute"])$(id).disabled=!connected;
+  }
+  $("load").addEventListener("click", async ()=>{
+    if(loaded){message("Agent already loaded; use its connect control.");return}
+    const agent=$("agentId").value.trim();
+    const key=$("clientKey").value.trim();
+    if(!/^[a-zA-Z0-9_-]{6,160}$/.test(agent) || key.length<12 || key.length>2048 || /\s/.test(key)){
+      message("Enter the D-ID Embed Agent ID and its domain-restricted CLIENT key; do not enter your private D-ID API key.");return;
+    }
+    loaded=true;
+    $("load").disabled=true;
+    const host=$("agentHost");
+    host.textContent="";
+    message("D-ID script loading; connect using its on-screen control. Usage may incur D-ID credits.");
+    const script=document.createElement("script");
+    script.type="module";
+    script.src="https://agent.d-id.com/v2/index.js";
+    script.dataset.name="m3-flex-did-compatibility-review";
+    script.dataset.mode="full";
+    script.dataset.targetId="agentHost";
+    script.dataset.clientKey=key;
+    script.dataset.agentId=agent;
+    script.dataset.autoConnect="false";
+    script.dataset.track="false";
+    script.addEventListener("error",()=>message("Unable to load D-ID; verify network, account feature, or allowed domain."));
+    document.body.appendChild(script);
+    // Do not retain any copy of the client key in localStorage or a URL.
+    $("clientKey").value="";
+    const started=Date.now();
+    const ready=setInterval(()=>{
+      const api=window.DID_AGENTS_API;
+      if(api && api.events && typeof api.events.on==="function"){
+        clearInterval(ready);
+        message("D-ID loaded. Start the connection in the agent panel; the Marcus test will unlock after connection.");
+        api.events.on("connection",e=>{
+          const state=String(e?.state||"").toLowerCase();
+          const ok=state==="connected";
+          setConnected(ok);
+          message("D-ID connection: "+state+(ok?" — ready for Marcus audio QA":""));
+        });
+      } else if(Date.now()-started>20000){
+        clearInterval(ready);message("D-ID did not initialize. Check allowed origins and client key.");
+      }
+    },300);
+  });
+  $("marcus").addEventListener("click", async ()=>{
+    if(!connected)return;
+    const api=window.DID_AGENTS_API;
+    if(!api?.functions?.speak){message("Connected, but audio speak API isn't available on this agent.");return}
+    try{
+      message("Sending existing approved Marcus audio to the connected D-ID agent. Listen and verify identity/lip sync.");
+      await api.functions.speak({type:"audio",input:MARCUS_APPROVED_C02});
+      message("Audio request submitted. Check the speaking video and exact Marcus voice.");
+    }catch(e){message("Marcus audio playback failed; possible agent plan, media access, or embed mismatch.")}
+  });
+  $("mute").addEventListener("click",async ()=>{
+    try{await window.DID_AGENTS_API.functions.toggleMicState(true);message("Microphone muted by D-ID control.");}catch(e){message("Agent microphone control unavailable.")}
+  });
+  $("unmute").addEventListener("click",async ()=>{
+    try{await window.DID_AGENTS_API.functions.toggleMicState(false);message("D-ID microphone enabled; may request browser permission.");}catch(e){message("Agent microphone control unavailable.")}
+  });
+})();
+</script>
+</main></body></html>
