@@ -1,10 +1,7 @@
 name: M3 FLEX Recover Historic Owned Motion (No Generation)
+# Historic noncanonical avatar scan is retired per owner direction.
+# This workflow cannot run on push; retained for audit reproducibility only.
 on:
-  push:
-    branches:
-      - production/m3-flex-two-part-masters-2026-10-19
-    paths:
-      - .github/workflows/m3-flex-owned-motion-recovery.yml
   workflow_dispatch:
 permissions:
   contents: read
