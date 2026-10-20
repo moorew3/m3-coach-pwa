@@ -1,0 +1,41 @@
+name: M3 FLEX recovered motion audit (review only)
+on:
+  push:
+    branches: [production/m3-flex-two-part-masters-2026-10-19]
+    paths:
+      - .github/workflows/m3-flex-recovered-motion-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-existing-v2-motion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout immutable reference branch
+        uses: actions/checkout@v4
+      - name: Produce source-level video probe and contact sheets
+        shell: bash
+        run: |
+          set -u
+          mkdir -p audit
+          command -v ffmpeg && command -v ffprobe
+          cp public/media/boxingFlow3.mp4 audit/boxingFlow3_EXISTING_REFERENCE.mp4
+          curl -L --fail --max-time 25 --retry 1 -A "M3-FLEX-QA/1.0" -o audit/lateralRaise_EXISTING_REFERENCE.mp4 'https://m3-coach-v2-visual-production.up.railway.app/media/approved/lateralRaise.mp4'             && echo 'Lateral raise remote source downloaded' || { rm -f audit/lateralRaise_EXISTING_REFERENCE.mp4; echo 'Lateral raise URL could not be fetched' | tee audit/lateralRaise_FETCH_FAILED.txt; }
+          for f in audit/*.mp4; do
+            [ -f "$f" ] || continue
+            echo "Probing $f"
+            ffprobe -hide_banner -v error -show_format -show_streams -of json "$f" > "${f%.mp4}.ffprobe.json" || true
+            ffmpeg -hide_banner -loglevel error -y -i "$f" -t 18 -vf "fps=1,scale=320:-1,tile=5x4:padding=8:margin=8" -frames:v 1 "${f%.mp4}_contact.jpg" || true
+            ffmpeg -hide_banner -loglevel error -y -i "$f" -ss 1 -frames:v 1 -vf "scale=420:-1" "${f%.mp4}_first.jpg" || true
+            sha256sum "$f" >> audit/source_checksums.sha256
+          done
+          printf 'Historical video source / new derived QA previews only. Not approved for M3 FLEX Recovery Coach. No live changes.\n' > audit/README.txt
+      - name: Upload review-only source/frames
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-EXISTING-BOXING-LATERAL-SOURCE-QA-NOT-APPROVED
+          path: audit/
+          retention-days: 7
+          if-no-files-found: error
