@@ -384,6 +384,33 @@
       "doNotUseAsDrivingVideo": true,
       "doNotGenerateFromThisReference": true,
       "nextAction": "Use a credible, realistic, anatomically correct filmed movement guide, motion capture, or a genuinely rigged approved Flex character. Preserve seven approved videos unchanged. Do not spend generation credits before checking input readiness and cost."
+    },
+    "C16-CONTROLLED-ARM-REACHES-R1": {
+      "status": "GENERATING_PENDING_MOTION_QA_NOT_APPROVED",
+      "heygenVideoId": "5a9d47da598f47adbb63e024a81fcf17",
+      "submittedDate": "2026-10-19",
+      "promptGoal": "Exactly two complete forward and return arm reaches with hands EMPTY; fixed camera; realistic original approved Flex face/cornrows/beard/tattoos; anatomical LEFT white cast supported, RIGHT shoe grounded; silent actual body motion",
+      "productionMethod": "Approved C03 moving front raise supplied as motion reference ONLY, approved C09 seated cast footage supplied as posture reference, exact user approved HeyGen image asset fbc0d826660d479080f2c2ac5fbf5939 definitive identity.",
+      "inputApprovedClips": [
+        "C03",
+        "C09-PRE-BREATH-R2"
+      ],
+      "approvedClipsChanged": [],
+      "type": "New candidate only; never call approved based solely on successful model job.",
+      "resolution": "480p",
+      "durationSeconds": 5,
+      "engine": "HeyGen Video 1 reference-to-video",
+      "reviewGate": [
+        "Video render completes",
+        "Actual seated left-supported-cast image unchanged",
+        "At least two completed forward reaches, not weighted raises/arm waves",
+        "No dumbbells/bands or extra limbs",
+        "Marcus voice added only from approved prerecorded separate track after motion passes",
+        "Owner approval and clinician clearance before activation"
+      ],
+      "sourceDoc": "https://www.nth.nhs.uk/resources/balance-exercises/",
+      "ownerApproval": false,
+      "appDeployed": false
     }
   },
   "nonNegotiables": [
@@ -403,7 +430,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "C11 failed actual hand-opening motion QA and has been rejected internally; C12/C13 also rejected. Need one demonstrated correct movement with reference-video guidance and exact Flex identity. Draft branch's six TanStack createServerFn validators fixed and verified by GitHub Actions run 39359678848. Keep 7 approved clips locked and neither A/B completed.",
+  "currentProductionNextStep": "C16 new controlled forward arm reaches is processing in HeyGen; inspect frames and audit cast/empty hands/complete 2 reps when result is ready. Earlier C11 internally rejected after real visual QA, C12/C13 rejected. Draft branch TypeScript build check fixed/passed. No live deployment.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
