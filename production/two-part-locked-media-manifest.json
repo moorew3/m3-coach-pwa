@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Owner requested self-hosted AI animation to eliminate recurring paid-generation credits. Offline M3 FLEX Open Motion Studio starter built and tested; current PR contains planning/security gates. Next inspect Windows dedicated GPU VRAM/PC resources before attempting local ComfyUI Wan Animate 2 installation. Next real generation requires accurate consented filmed motion driving guide. No new Flex exercise or completed Workout A/B yet.",
+  "currentProductionNextStep": "Phone-first Comfy Cloud preparation completed: private Google Drive folder and five subfolders exist, approved Flex exact source uploaded, owner-only, starter ZIP uploaded. Comfy Cloud login/saved browser profile awaits user action. Next validate account's free runs and import official Wan Animate 2 only after sign-in; do not run until a real, approved correct exercise driving video exists. Protect 7 approved clips.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -699,5 +699,29 @@
     "statusNotes": "Actual photo SHA verified; offline motion processing pipeline tested; rejected C13 file blocked. No new animation generated, no D-ID speech affected, no credits spent.",
     "privacy": "Approved user photo included ONLY in user-controlled starter zip, not committed into shared GitHub repository",
     "protection": "All seven approved source videos immutable; no app merges or production deployments"
+  },
+  "comfyCloudSetup": {
+    "date": "2026-10-20",
+    "status": "GOOGLE_DRIVE_STUDIO_CREATED; CANONICAL_APPROVED_PHOTO_UPLOADED; CLOUD_ACCOUNT_LOGIN_OWNER_ACTION_PENDING; NO_AI_GENERATION",
+    "workspaceFolderId": "1tYbV8u5WMo4KExYYGou7D7DIRSn_56EQ",
+    "workspaceFolderUrl": "https://drive.google.com/drive/folders/1tYbV8u5WMo4KExYYGou7D7DIRSn_56EQ",
+    "approvedPhotoDriveFileId": "1igE_5RTHvRHbytHYq-ytHF2HM8x6_g0o",
+    "approvedPhotoDriveUrl": "https://drive.google.com/file/d/1igE_5RTHvRHbytHYq-ytHF2HM8x6_g0o/view?usp=drivesdk",
+    "originalPhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d",
+    "sourcePhotoPrivacy": "Photo has owner-only permissions, not shared, no modification; stored as correctly labeled JPEG.",
+    "folders": [
+      "01 - Approved Flex and Marcus",
+      "02 - Exercise Motion References",
+      "03 - AI Drafts for Review",
+      "04 - Approved Exercise Animations",
+      "05 - Workout A and B Masters"
+    ],
+    "starterZipDriveFileId": "1xv6JlKLOheavL6Gw4x8_MBVjCaGxch3n",
+    "platform": "Comfy Cloud (https://cloud.comfy.org/) with official Wan Animate 2 workflow",
+    "freeTrialEvidence": "Vendor's current Comfy Cloud product page states five free GPU runs without credit card; eligibility not verified for user's account.",
+    "cloudBrowserProfileName": "M3 FLEX — Comfy Cloud Animation",
+    "cloudSignIn": "User must sign in via separately supplied browser setup link and save profile; account is not yet authenticated and no account created by assistant.",
+    "generationPolicy": "Never queue an AI run until exact approved Flex image, rights-cleared correct driving video, model/workflow support, cost/credit and owner approval are checked. No paid new credits. Two final workouts not completed.",
+    "approvedOriginalsChanged": 0
   }
 }
