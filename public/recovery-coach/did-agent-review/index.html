@@ -35,6 +35,13 @@
   <p class="note">Nothing is stored in the browser or sent to M3 FLEX servers. The client key is handed directly to the official D-ID embed script only after you press Load.</p>
 </section>
 <section class="panel">
+  <h2>Test your original Marcus voice first — no D-ID call</h2>
+  <p>This is the exact approved Marcus &ndash; Warm &amp; Friendly English recording, not D-ID's female default or a substitute. It plays directly from the existing approved recording and does not start an AI session.</p>
+  <audio id="marcusDirectAudio" controls preload="none" playsinline aria-label="Approved original Marcus male voice recording"></audio>
+  <div class="actions"><button id="marcusDirectPlay" type="button">▶ Play my Marcus voice</button><button id="marcusDirectStop" type="button" class="alt">Stop</button></div>
+  <p class="note" id="marcusDirectStatus" role="status" aria-live="polite">This playback is verified only when it plays successfully on your device; it does not provide D-ID lip-sync.</p>
+</section>
+<section class="panel">
   <h2>Step 2 — Inspect the actual talking avatar</h2>
   <div id="agentHost">Agent not loaded. No session has started. The guest-share viewer independently stayed on “Looking for agent”; this SDK test is not certified as working.</div>
   <p>Status: <span id="status" role="status" aria-live="polite">Not connected</span></p>
@@ -61,6 +68,19 @@
   "use strict";
   const $ = id=>document.getElementById(id);
   const MARCUS_APPROVED_C02 = "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav";
+  const direct = $("marcusDirectAudio");
+  direct.src = MARCUS_APPROVED_C02;
+  direct.addEventListener("error",()=>{$("marcusDirectStatus").textContent="Original Marcus recording could not load. No other voice was substituted.";});
+  direct.addEventListener("ended",()=>{$("marcusDirectStatus").textContent="Approved Marcus recording completed.";});
+  $("marcusDirectPlay").addEventListener("click",()=>{
+    $("marcusDirectStatus").textContent="Playing original recorded Marcus; not D-ID's default speech.";
+    direct.currentTime=0;
+    void direct.play().catch(()=>{$("marcusDirectStatus").textContent="Audio playback blocked on this phone or source unreachable; tap the audio controls. No other voice was used.";});
+  });
+  $("marcusDirectStop").addEventListener("click",()=>{
+    direct.pause();direct.currentTime=0;
+    $("marcusDirectStatus").textContent="Marcus recording stopped.";
+  });
   let loaded = false;
   let status = $("status");
   let connected = false;
