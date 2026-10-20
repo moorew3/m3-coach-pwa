@@ -410,7 +410,14 @@
       ],
       "sourceDoc": "https://www.nth.nhs.uk/resources/balance-exercises/",
       "ownerApproval": false,
-      "appDeployed": false
+      "appDeployed": false,
+      "costObservation": {
+        "beforeHeyGenPremiumCredits": 267,
+        "afterHeyGenPremiumCredits": 256,
+        "observedDecreaseCredits": 11,
+        "notes": "Balance read immediately after single new clip submission; reported as observed consumption, no other generated videos submitted in this turn."
+      },
+      "generationPolicy": "No more candidate generations until C16 result is actually visually assessed and owner accepts method; do not assume success based on submitted job."
     }
   },
   "nonNegotiables": [
