@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Rights-reviewed C16 motion-driving video search did not locate visually verified exact freely reusable seated straight-forward open-hand two-cycle footage. Physitrack restricted; Pexels candidate assisted/unverified. New 12–16 second rights-cleared adult volunteer filming specification prepared in docs, Drive reference folder ready. Comfy Motion Transfer character image remains owner's original. No Comfy run spent. Need adult driver MP4 before generation; don't use wrong sample reference.",
+  "currentProductionNextStep": "Owner requested video references for ALL missing A/B clips to stop piecemeal searching. Created 17 distinct scene source matrix and mobile click-through catalog; stock videos include hand gestures, seated elbow bends, lateral raises, boxing mechanics, stretches, seated breathing/rest, but no fully verified exact character-transfer drivers, and no exact source for AMYCO/INNSTAR. Source catalog is in Drive and GitHub. Need actual video shot review and one valid driver before Comfy generation; original approved 7 protected.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -743,5 +743,104 @@
     "comfyRunsRemainingAsOfOwnerScreenshot": 5,
     "noComfyGenerationRun": true,
     "priorApprovedScenesModified": false
+  },
+  "referenceVideoCatalog": {
+    "date": "2026-10-20",
+    "githubDocument": "docs/M3-FLEX-ALL-EXERCISE-REFERENCE-VIDEO-CATALOG-2026-10-20.md",
+    "googleDriveFolder": "https://drive.google.com/drive/folders/1tYbV8u5WMo4KExYYGou7D7DIRSn_56EQ",
+    "googleDriveHtmlFileId": "14pjoNMtogmq7tjQfUaKPkiAZ57pWoltn",
+    "googleDriveJsonFileId": "1Nvp1BXGQddugVO_w0XwCMKTMNt8boSgG",
+    "uniqueMissingSceneTypes": 17,
+    "sceneTypes": [
+      {
+        "id": "NEW_INTRO",
+        "label": "Workout intro",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "C11-HAND-OPEN",
+        "label": "Hand opening",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_SHOULDER-MOBILITY",
+        "label": "Controlled arm reaches — seated and unloaded",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_WRIST-CIRCLES",
+        "label": "Unloaded wrist circles",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_ELBOW-BENDS",
+        "label": "Unloaded elbow bends",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_WRIST-CURL",
+        "label": "Seated wrist curl",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_LATERAL-RAISE",
+        "label": "Seated lateral raise",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_ARM-BOXING",
+        "label": "Seated arm-only boxing",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_UPPER-STRETCH",
+        "label": "Gentle upper body stretch",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_HAND-SHOULDER-RELEASE",
+        "label": "Relax hand and shoulder",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_OUTRO",
+        "label": "Workout completion",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_FORWARD-PRESS-WARMUP",
+        "label": "Unloaded seated press warmup",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_ELBOW-EXTENSION",
+        "label": "Seated elbow extension",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_INNSTAR-FLY",
+        "label": "INNSTAR band chest fly",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_AMYCO-WRIST",
+        "label": "AMYCO wrist apparatus",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_CHEST-STRETCH",
+        "label": "Gentle chest/shoulder stretch",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      }
+    ],
+    "sourcePolicy": "Pexels licensed videos: commercial adaptation allowed with limitations. Actual motion matching AND depicted-person consents for AI transfer need separate review. ZenithFits source video ownership unverified so DO NOT use in commercial motion transfer.",
+    "currentlyReadyValidatedExactDrivingClips": 0,
+    "generationRunsStartedByThisWork": 0,
+    "original7AssetFilesChanged": false
   }
 }
