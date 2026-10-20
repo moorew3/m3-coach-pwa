@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Phone-first Comfy Cloud preparation completed: private Google Drive folder and five subfolders exist, approved Flex exact source uploaded, owner-only, starter ZIP uploaded. Comfy Cloud login/saved browser profile awaits user action. Next validate account's free runs and import official Wan Animate 2 only after sign-in; do not run until a real, approved correct exercise driving video exists. Protect 7 approved clips.",
+  "currentProductionNextStep": "Rights-reviewed C16 motion-driving video search did not locate visually verified exact freely reusable seated straight-forward open-hand two-cycle footage. Physitrack restricted; Pexels candidate assisted/unverified. New 12–16 second rights-cleared adult volunteer filming specification prepared in docs, Drive reference folder ready. Comfy Motion Transfer character image remains owner's original. No Comfy run spent. Need adult driver MP4 before generation; don't use wrong sample reference.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -723,5 +723,25 @@
     "cloudSignIn": "User must sign in via separately supplied browser setup link and save profile; account is not yet authenticated and no account created by assistant.",
     "generationPolicy": "Never queue an AI run until exact approved Flex image, rights-cleared correct driving video, model/workflow support, cost/credit and owner approval are checked. No paid new credits. Two final workouts not completed.",
     "approvedOriginalsChanged": 0
+  },
+  "controlledArmReachReferenceSearch": {
+    "date": "2026-10-20",
+    "status": "NO_COMMERCIALLY_USABLE_TWO_CYCLE_SEATED_OPEN_HAND_FORWARD_REACH_DRIVER_VISUALLY_VERIFIED",
+    "doc": "docs/M3-FLEX-C16-CONTROLLED-ARM-REACHES-RIGHTS-AND-DRIVER-2026-10-20.md",
+    "rejectedThirdPartyReference": [
+      {
+        "title": "Physitrack grounded sitting balance arm reach",
+        "reason": "Outside-platform rights not licensed for M3 FLEX AI motion transfer."
+      },
+      {
+        "title": "Pexels 7517374 caregiver assists senior arms",
+        "reason": "Independence/two forward reach cycles unverified; likely assisted, browser Cloudflare blocked video inspection."
+      }
+    ],
+    "next": "Obtain rights-cleared consenting adult-original 12–16 second real seated two-rep shot; exact storyboard in linked documentation.",
+    "referenceDriveFolderUrl": "https://drive.google.com/drive/folders/1GLq90aPO8YmnRl-rGloAFHaLaRBoxhcv",
+    "comfyRunsRemainingAsOfOwnerScreenshot": 5,
+    "noComfyGenerationRun": true,
+    "priorApprovedScenesModified": false
   }
 }
