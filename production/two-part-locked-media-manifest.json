@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "D-ID existing agent's guest share page returns Flex metadata but interactive agent remains stuck 'Looking for agent'; no speaking/voice test possible. Agent ID stored, guest share key intentionally NOT persisted. Need debug D-ID agent readiness or permitted embed client key before D-ID speaking integration. Prioritize existing 7 approved workout clips; two complete MP4s still missing.",
+  "currentProductionNextStep": "D-ID owner confirmed existing Flex agent speaks and apparently lip-syncs, but produces WRONG FEMALE voice. Inspect existing agent Language & Voice editor. Original approved Marcus recordings may be supplied for scripted speaking clips through D-ID agent audio API, but live conversational use of the HeyGen Marcus voice ID is not confirmed or interchangeable. Do not overwrite agent/voice or seven approved workout clips. A/B full workout masters remain incomplete.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -664,6 +664,17 @@
       "inspection": "Read-only guest browser check on 2026-10-19 (Mountain time). Spun for at least ~25 seconds; entire bounded inspection ~99 sec; agent never became ready."
     },
     "nextStep": "In D-ID Studio open existing Flex agent -> View as guest; if same loading loop, inspect agent availability and sharing settings or D-ID support. For embed testing obtain separately generated domain-scoped client key via D-ID Embed (not guest share URL key) and approve test origin; never store credentials in GitHub.",
-    "release": "Not validated for Marcus, lip-sync, motion, pricing. No live app integration; no session started."
+    "release": "Not validated for Marcus, lip-sync, motion, pricing. No live app integration; no session started.",
+    "liveOwnerTest": {
+      "date": "2026-10-20",
+      "status": "SPEAKING_AND_APPARENT_LIPSYNC_CONFIRMED_BY_OWNER_BUT_WRONG_VOICE",
+      "ownerObserved": "The mouth moves and seems synchronized, but the voice is FEMALE instead of the approved Marcus Warm & Friendly English male voice.",
+      "voiceApproval": false,
+      "lipSyncOwnerObservation": "appeared synchronized",
+      "avatarApprovedForWorkout": false,
+      "preserveCharacter": true,
+      "testingNote": "Do not confuse interactive agent's currently configured female TTS with owner-approved HeyGen voice ID 0fadce1e82af494a93873aa38ea8d106.",
+      "next": "Inspect Language & Voice settings of existing D-ID Flex agent; exact approved Marcus may require using existing recorded audio through D-ID agent speak audio API, and conversational TTS voice availability remains unverified. Do not select arbitrary male replacement or change agent yet."
+    }
   }
 }
