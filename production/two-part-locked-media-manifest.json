@@ -303,10 +303,20 @@
   },
   "candidates": {
     "C11-HAND-OPEN-R1": {
-      "status": "generated-awaiting-visual-audio-owner-review",
+      "status": "REJECTED_BY_INTERNAL_MOTION_QA_NOT_OWNER_APPROVED",
       "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a154f3-ef54-7546-8740-1c488df4c772.mp4",
       "generationId": "586d74c51f0b46b8a5b0b2c7bfbe6ccf",
-      "note": "raw 5s unapproved; no validated Marcus coaching"
+      "note": "raw 5s unapproved; no validated Marcus coaching",
+      "renderId": "586d74c51f0b46b8a5b0b2c7bfbe6ccf",
+      "renderLengthSeconds": 5,
+      "frameAuditRunId": 39359965854,
+      "frameAuditArtifactId": 12236493977,
+      "frameAuditArtifactName": "M3-FLEX-C11-FRAME-MOTION-QA-REVIEW-ONLY",
+      "motionQaResult": "FAILED: Full-video 2-fps contact sheet plus enlarged hand-area frames show hands held on thighs with slight shifts; no distinguishable fully opened fingers -> fist/closed fingers -> open cycle, much less 2 complete deliberate cycles. Lip/head motion visible, but that is not the required exercise. Do not treat as correct hand openings.",
+      "castAppearance": "White cast on LEFT lower leg looks supported in sample frames, RIGHT shoe grounded; passing this condition does not override movement failure.",
+      "approved": false,
+      "active": false,
+      "regeneration": "Do not reuse the ineffective reference method; do not ask owner to review a clip that fails biomechanics before further changes."
     },
     "C12-SEATED-SHOULDER-ROLLS-R1": {
       "generationId": "967742f823ef4407919b80a2745f0d8a",
@@ -393,7 +403,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Review motion-based A/B intro candidates V3, not static V2. Preserve every approved original. If acceptable, author new Marcus Welcome audio and complete missing realistic Flex motions; neither full Workout A nor Workout B finished.",
+  "currentProductionNextStep": "C11 failed actual hand-opening motion QA and has been rejected internally; C12/C13 also rejected. Need one demonstrated correct movement with reference-video guidance and exact Flex identity. Draft branch's six TanStack createServerFn validators fixed and verified by GitHub Actions run 39359678848. Keep 7 approved clips locked and neither A/B completed.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -528,5 +538,12 @@
     ],
     "motionTechnique": "Seated on fixed bench, torso stable; one arm or both reach forward gently within pain-free range, return to rest fully, repeat twice; no weights. LEFT white cast elevated at all times. Safe range follows clinician guidance.",
     "stage": "Reference technique prepared; new correctly moving Flex footage still needed."
+  },
+  "typecheckFix": {
+    "date": "2026-10-19",
+    "commit": "8b481c426e01e4fa02ecd0d0c9736e0b17eceee9",
+    "buildRun": 39359678848,
+    "result": "PRODUCTION_BUILD_AND_TYPECHECK_SUCCESS",
+    "scope": "Draft production branch only; six .inputValidator usages migrated to .validator in src/lib/cloud.functions.ts; no live deployment"
   }
 }
