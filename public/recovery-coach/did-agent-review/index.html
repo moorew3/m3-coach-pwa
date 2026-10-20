@@ -29,14 +29,14 @@
 <section class="panel">
   <h2>Step 1 — Existing agent only</h2>
   <p>In your already-created D-ID Studio agent, use <strong>Embed</strong> to obtain its <strong>Agent ID</strong> and a D-ID <strong>domain-scoped client key</strong>. This is a public *client* key, not your private D-ID API key. Limit its allowed domains to the actual review site.</p>
-  <label for="agentId">Existing Agent ID</label><input id="agentId" type="text" autocomplete="off" spellcheck="false" placeholder="Agent ID from D-ID Embed">
+  <label for="agentId">Existing Agent ID</label><input id="agentId" type="text" autocomplete="off" spellcheck="false" value="v2_agt_u9mkY4Wb" placeholder="Agent ID from D-ID Embed">
   <label for="clientKey">D-ID domain-restricted client key</label><input id="clientKey" type="password" autocomplete="off" spellcheck="false" placeholder="Client key, not your account API password">
-  <div class="actions"><button id="load">Load my existing agent</button><a href="https://studio.d-id.com/" target="_blank" rel="noopener noreferrer">Open D-ID Studio</a></div>
+  <p class="note">The Flex Agent ID has been identified from your shared page. The <strong>key in a guest Share URL is not a substitute for the domain-scoped Embed client key</strong>. Never paste a private account API key here.</p><div class="actions"><button id="load">Load my existing agent</button><a href="https://studio.d-id.com/" target="_blank" rel="noopener noreferrer">Open D-ID Studio</a></div>
   <p class="note">Nothing is stored in the browser or sent to M3 FLEX servers. The client key is handed directly to the official D-ID embed script only after you press Load.</p>
 </section>
 <section class="panel">
   <h2>Step 2 — Inspect the actual talking avatar</h2>
-  <div id="agentHost">Agent not loaded. No session has started.</div>
+  <div id="agentHost">Agent not loaded. No session has started. The guest-share viewer independently stayed on “Looking for agent”; this SDK test is not certified as working.</div>
   <p>Status: <span id="status" role="status" aria-live="polite">Not connected</span></p>
   <div class="actions">
     <button id="marcus" disabled>Play original Marcus audio through agent</button>
