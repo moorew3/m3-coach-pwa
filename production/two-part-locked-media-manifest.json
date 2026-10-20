@@ -103,9 +103,9 @@
       },
       {
         "id": "NEW_SHOULDER-MOBILITY",
-        "label": "Gentle seated shoulder mobility",
+        "label": "Controlled arm reaches — seated and unloaded",
         "status": "missing",
-        "reason": "Needs newly produced approved Flex and Marcus footage"
+        "reason": "User-required controlled arm reaches, not shoulder rolls. Need actual realistic Flex two-cycle movement with left cast supported, right foot grounded, hands empty, no swinging or loading. Clinician clearance/owner review pending."
       },
       {
         "id": "NEW_WRIST-CIRCLES",
@@ -209,9 +209,9 @@
       },
       {
         "id": "NEW_SHOULDER-MOBILITY",
-        "label": "Gentle seated shoulder mobility",
+        "label": "Controlled arm reaches — seated and unloaded",
         "status": "missing",
-        "reason": "Needs newly produced approved Flex and Marcus footage"
+        "reason": "User-required controlled arm reaches, not shoulder rolls. Need actual realistic Flex two-cycle movement with left cast supported, right foot grounded, hands empty, no swinging or loading. Clinician clearance/owner review pending."
       },
       {
         "id": "NEW_FORWARD-PRESS-WARMUP",
@@ -517,5 +517,16 @@
     "originalProtection": "Work A/B existing composite review footage SHA-256 verified unchanged before/after. Seven owner-approved original scenes never opened for writing or regenerated. Only separate review derivative montage output created.",
     "notes": "Already-approved exercise movements are reused as teaser shots; do NOT confuse with newly created missing exercise animations or completed workout videos. Marcus audio taken from approved source scenes is not a separate scripted opening greeting.",
     "releaseGate": "Owner must approve visual arrangement and audio before future integration."
+  },
+  "nextExerciseFocus": {
+    "sceneId": "NEW_SHOULDER-MOBILITY",
+    "exerciseName": "Controlled arm reaches",
+    "rejectedAlternatives": [
+      "C12 incorrectly simulated shoulder rolls",
+      "C13 rejected cartoon guide",
+      "older video called Gentle Shoulder Rolls is actually standing presenter"
+    ],
+    "motionTechnique": "Seated on fixed bench, torso stable; one arm or both reach forward gently within pain-free range, return to rest fully, repeat twice; no weights. LEFT white cast elevated at all times. Safe range follows clinician guidance.",
+    "stage": "Reference technique prepared; new correctly moving Flex footage still needed."
   }
 }
