@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "No newly generated exercise is approved. C16 rendered but failed open-hand/full-arm biomechanics and embedded unwanted audio; it is REJECTED and documented. Do not waste credits on the same reference-to-video method. For next realistic new clip, secure a licensed/owned real person demonstration video with correct seated unloaded arm reaching and genuine pose-preserving motion transfer (rather than image-video loose references), quote charges, and preserve 7 original clips.",
+  "currentProductionNextStep": "Use ONLY seven original approved Flex clips and exact owner-approved Flex identity image. Do not use 32 historical unrelated Higgsfield videos or rejected C11/C12/C13/C16. The corrected motion-guided workflow still lacks an owner-accepted real movement driving video and an affordable authorized generation path. Do not incur new credits until both resolved.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -608,5 +608,11 @@
     "buildRun": 39359678848,
     "result": "PRODUCTION_BUILD_AND_TYPECHECK_SUCCESS",
     "scope": "Draft production branch only; six .inputValidator usages migrated to .validator in src/lib/cloud.functions.ts; no live deployment"
+  },
+  "historicHiggsfieldVideoAudit": {
+    "status": "EXCLUDED_NONCANONICAL_AVATAR",
+    "count": 32,
+    "ownerInstruction": "These do not show approved Flex; do not use as reference or final footage.",
+    "date": "2026-10-19"
   }
 }
