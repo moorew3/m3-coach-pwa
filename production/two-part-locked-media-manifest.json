@@ -386,7 +386,7 @@
       "nextAction": "Use a credible, realistic, anatomically correct filmed movement guide, motion capture, or a genuinely rigged approved Flex character. Preserve seven approved videos unchanged. Do not spend generation credits before checking input readiness and cost."
     },
     "C16-CONTROLLED-ARM-REACHES-R1": {
-      "status": "GENERATING_PENDING_MOTION_QA_NOT_APPROVED",
+      "status": "REJECTED_BY_VISUAL_MOTION_QA_DO_NOT_ACTIVATE",
       "heygenVideoId": "5a9d47da598f47adbb63e024a81fcf17",
       "submittedDate": "2026-10-19",
       "promptGoal": "Exactly two complete forward and return arm reaches with hands EMPTY; fixed camera; realistic original approved Flex face/cornrows/beard/tattoos; anatomical LEFT white cast supported, RIGHT shoe grounded; silent actual body motion",
@@ -417,7 +417,27 @@
         "observedDecreaseCredits": 11,
         "notes": "Balance read immediately after single new clip submission; reported as observed consumption, no other generated videos submitted in this turn."
       },
-      "generationPolicy": "No more candidate generations until C16 result is actually visually assessed and owner accepts method; do not assume success based on submitted job."
+      "generationPolicy": "No more candidate generations until C16 result is actually visually assessed and owner accepts method; do not assume success based on submitted job.",
+      "modelJobStatus": "completed",
+      "rawVideoUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1572f-71b2-7966-91e8-4b1995fe477d.mp4",
+      "frameAuditRunId": 39361266752,
+      "frameAuditArtifactId": 12236863589,
+      "frameAuditStatus": "passed technical extraction, failed exercise technique",
+      "motionFinding": "Two forward-raise patterns occur with seated Flex in left cast and right shoe; however elbows remain markedly flexed, hands curled/partially clenched, arms do not extend forward fully to target. Not a valid demonstration of two controlled forward arm reaches with empty OPEN hands. Some mouth movement; audio/voice not approved.",
+      "positiveFindings": [
+        "Photorealistic approved Flex-like identity on seated gym bench",
+        "Anatomical LEFT white cast supported on beige foot bench, RIGHT black shoe grounded",
+        "No visible handheld dumbbell or resistance band"
+      ],
+      "primaryFailures": [
+        "Both elbows substantially bent during the raised phase",
+        "Hands remain curled instead of comfortably open/fingers extended",
+        "Movement resembles forward arm pumping, not controlled reach and full return, so no two correct repetitions"
+      ],
+      "active": false,
+      "reportedPremiumCreditsUsed": 11,
+      "doNotAttachMarcus": true,
+      "nextAction": "Do not regenerate from same loose image/video reference prompt. Require actual anatomically correct, licensed/owned motion-driving clip and motion-transfer tool supporting frame/pose fidelity, with cost quote and owner approval before any paid run."
     }
   },
   "nonNegotiables": [
@@ -437,7 +457,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "C16 new controlled forward arm reaches is processing in HeyGen; inspect frames and audit cast/empty hands/complete 2 reps when result is ready. Earlier C11 internally rejected after real visual QA, C12/C13 rejected. Draft branch TypeScript build check fixed/passed. No live deployment.",
+  "currentProductionNextStep": "C16 COMPLETED but REJECTED after verified 10-frame and 5-frame video audit; face/left cast are good but movement incorrect. No new animated exercise passed. Both Workout A/B incomplete; 7 original videos locked; need motion controlled physically verified reference, don't spend on same image/video prompt method.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
