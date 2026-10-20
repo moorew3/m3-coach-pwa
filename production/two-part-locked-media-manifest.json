@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "D-ID existing agent found in user screenshot: consider for coach narration/intro or interactive Q&A only, not precise exercise animation; do not spend to duplicate this avatar or treat standing no-cast as recovery footage. C16 shown again in 10-frame grid remains rejected (bent elbows, curled hands). Finish A/B using exact canonical approved Flex original videos + validated new biomechanical motion generated with an appropriate rig or true pose-controlled source. No automatic new paid generation.",
+  "currentProductionNextStep": "D-ID speaker compatibility test page is COMMITTED TO DRAFT branch only, not deployed. Official D-ID embed supports preapproved Marcus audio_url input, but user's exact agent ID, client key, visual identity, lip sync, feature entitlements and actual streaming session unverified. Request existing Agent Share/View-as-guest link for owner account-safe validation, not API key. Seven approved videos remain locked and A/B masters unfinished.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -616,7 +616,7 @@
     "date": "2026-10-19"
   },
   "existingDIDAgentReference": {
-    "status": "OWNER_SUPPLIED_SCREENSHOT_OF_EXISTING_DID_AGENT_NOT_TESTED_OR_CONFIRMED_AS_APPROVED_WORKOUT_CLIP",
+    "status": "DID_SPEAKING_COMPATIBILITY_HARNESS_COMMITTED_NOT_TESTED_NO_DEPLOYMENT",
     "source": "User image 8573.jpg screenshot of logged-in D-ID Studio > Agents showing a standing muscular tattooed male digital presenter visually resembling Flex, with dark shorts and black sneakers",
     "accountIntegration": "D-ID account is accessed by user in browser, not connected as an available D-ID direct plugin here; exact agent ID, plan, voice and export capabilities not verified",
     "intendedUse": "Possible speaking Flex host for welcoming participants, explaining exercises, resting, closing/interactive Q&A, only with separately verified approved Marcus voice and owner's approval",
@@ -629,6 +629,22 @@
     "identityApproval": "Screenshot not in itself approval of a new variation; canonical seated approved photo and seven video originals remain authority.",
     "userSourceImage": "8573.jpg",
     "userC16ContactSheet": "9835.jpg",
-    "c16Observation": "User-supplied 10-frame C16 still sequence depicts bent-elbow forward motions with curled hands and seated LEFT white cast; this verifies earlier reasons for rejection as straight-arm controlled reaches."
+    "c16Observation": "User-supplied 10-frame C16 still sequence depicts bent-elbow forward motions with curled hands and seated LEFT white cast; this verifies earlier reasons for rejection as straight-arm controlled reaches.",
+    "officialCapabilities": {
+      "embeddedSpeakingAgent": "Documented D-ID Agents Embed SDK; agent ID and domain-restricted client key required",
+      "originalMarcusAudio": "Official D-ID Agents Embed speak({type:'audio',input:'https://...wav/mp3'}) supports playing existing externally hosted prerecorded audio, subject to plan/media accessibility; original approved C02 Marcus WAV is prepared in the review harness",
+      "motionLimitation": "No documented precise user-scripted exercise-joint kinetics or cast-supported exercise reps; don't use talking-agent gestures as exercises"
+    },
+    "draftHarness": "public/recovery-coach/did-agent-review/index.html",
+    "sourceAudioId": "C02 owner-approved Marcus WAV exact source",
+    "consentAndCost": "No session auto-starts; script loads only on user click, D-ID session and voice use may incur plan charges; do not test or deploy without owner's action and actual D-ID permitted domain",
+    "verificationGates": [
+      "Receive user-approved existing D-ID guest/Share URL or scoped embed Agent ID, never ask for private API key",
+      "Confirm the existing agent's face, tattoos, hair and talking lip sync rather than assume screenshot verifies live",
+      "Confirm original Marcus WAV audio_url is playable by D-ID as the audio source",
+      "Check account plan costs before sustained conversational use",
+      "Do not enable D-ID in customer app unless owner approves",
+      "Do not use standing D-ID agent for white cast seated recovery reps"
+    ]
   }
 }
