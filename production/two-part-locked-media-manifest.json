@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "D-ID speaker compatibility test page is COMMITTED TO DRAFT branch only, not deployed. Official D-ID embed supports preapproved Marcus audio_url input, but user's exact agent ID, client key, visual identity, lip sync, feature entitlements and actual streaming session unverified. Request existing Agent Share/View-as-guest link for owner account-safe validation, not API key. Seven approved videos remain locked and A/B masters unfinished.",
+  "currentProductionNextStep": "D-ID existing agent's guest share page returns Flex metadata but interactive agent remains stuck 'Looking for agent'; no speaking/voice test possible. Agent ID stored, guest share key intentionally NOT persisted. Need debug D-ID agent readiness or permitted embed client key before D-ID speaking integration. Prioritize existing 7 approved workout clips; two complete MP4s still missing.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -645,6 +645,25 @@
       "Check account plan costs before sustained conversational use",
       "Do not enable D-ID in customer app unless owner approves",
       "Do not use standing D-ID agent for white cast seated recovery reps"
-    ]
+    ],
+    "sharedAgentId": "v2_agt_u9mkY4Wb",
+    "sharedPageMetadata": "Share link user supplied. Page metadata title Flex and D-ID avatar preview OG image available.",
+    "guestViewerInspection": {
+      "status": "PAGE_LOADS_BUT_AGENT_NEVER_INITIALIZES",
+      "userProvidedLinkContainsAccessKey": true,
+      "accessKeyRecorded": false,
+      "guestTitleObserved": "AI Agent Video Chat",
+      "uiMessage": "Looking for agent — Finding an available agent for you",
+      "observableAvatar": false,
+      "startCallVisible": false,
+      "microphoneControlsVisible": false,
+      "loginPrompt": false,
+      "paywallOrExplicitError": false,
+      "testConversationStarted": false,
+      "actualMarcusVoiceTested": false,
+      "inspection": "Read-only guest browser check on 2026-10-19 (Mountain time). Spun for at least ~25 seconds; entire bounded inspection ~99 sec; agent never became ready."
+    },
+    "nextStep": "In D-ID Studio open existing Flex agent -> View as guest; if same loading loop, inspect agent availability and sharing settings or D-ID support. For embed testing obtain separately generated domain-scoped client key via D-ID Embed (not guest share URL key) and approve test origin; never store credentials in GitHub.",
+    "release": "Not validated for Marcus, lip-sync, motion, pricing. No live app integration; no session started."
   }
 }
