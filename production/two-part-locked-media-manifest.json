@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Confirmed prior historical method was app-side direct playback of approved Marcus audio, NOT changing D-ID Studio female default. Original Marcus C02 WAV replay added to isolated D-ID review page on draft branch only. No claim that user-facing D-ID guest call voice is changed; to sync agent with Marcus need D-ID domain-scoped Embed client key and functioning connection. Do not touch approved seven workouts or generate new voice.",
+  "currentProductionNextStep": "Owner requested self-hosted AI animation to eliminate recurring paid-generation credits. Offline M3 FLEX Open Motion Studio starter built and tested; current PR contains planning/security gates. Next inspect Windows dedicated GPU VRAM/PC resources before attempting local ComfyUI Wan Animate 2 installation. Next real generation requires accurate consented filmed motion driving guide. No new Flex exercise or completed Workout A/B yet.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -687,5 +687,17 @@
       "extraGenerationCreditsSpent": 0,
       "approvedOriginalsEdited": 0
     }
+  },
+  "openMotionStudio": {
+    "date": "2026-10-20",
+    "status": "OFFLINE_LOCAL_MOTION_PREPARATION_STARTER_BUILT_TESTED; AI_MODEL_UNINSTALLED_AND_NO_NEW_SCENE_RENDERED",
+    "doc": "docs/M3-FLEX-SELF-HOSTED-OPEN-MOTION-STUDIO-2026-10-20.md",
+    "starterZip": "M3_FLEX_Open_Motion_Studio_Starter.zip, owner download only in conversation",
+    "starterZipSha256": "39c7d215ce14b2bd3f854a042e18e5ac262446997b4930b2c388b86b6f56ed28",
+    "model": "Wan-Animate-2, free Apache-2.0 source, with local ComfyUI workflow",
+    "requirementsUnknown": "User's Windows computer GPU name, dedicated VRAM, RAM, free storage unknown; GPU capabilities NOT established, do not buy anything yet",
+    "statusNotes": "Actual photo SHA verified; offline motion processing pipeline tested; rejected C13 file blocked. No new animation generated, no D-ID speech affected, no credits spent.",
+    "privacy": "Approved user photo included ONLY in user-controlled starter zip, not committed into shared GitHub repository",
+    "protection": "All seven approved source videos immutable; no app merges or production deployments"
   }
 }
