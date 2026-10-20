@@ -1,0 +1,47 @@
+name: M3 FLEX protected chest press motion review
+on:
+  push:
+    branches: [production/m3-flex-two-part-masters-2026-10-19]
+    paths: [.github/workflows/m3-flex-approved-press-motion-review.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  approved-press-motion-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ffmpeg for review
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+      - name: Download READ ONLY verified original and inspect motion frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit
+          curl -L --fail --max-time 40 --retry 1 -o audit/C08_APPROVED_ORIGINAL_DO_NOT_MODIFY.mp4 'https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4'
+          sha256sum audit/C08_APPROVED_ORIGINAL_DO_NOT_MODIFY.mp4 > audit/C08_SOURCE_SHA256.txt
+          ffprobe -hide_banner -v error -show_format -show_streams -of json audit/C08_APPROVED_ORIGINAL_DO_NOT_MODIFY.mp4 > audit/C08.ffprobe.json
+          ffmpeg -hide_banner -loglevel error -y -i audit/C08_APPROVED_ORIGINAL_DO_NOT_MODIFY.mp4 -t 18 -vf 'fps=2,scale=320:-1,tile=4x5:padding=6:margin=8' -frames:v 1 audit/C08_APPROVED_ORIGINAL_2FPS_CONTACT.jpg
+          ffmpeg -hide_banner -loglevel error -y -i audit/C08_APPROVED_ORIGINAL_DO_NOT_MODIFY.mp4 -an -c:v libx264 -preset fast -crf 25 -pix_fmt yuv420p audit/C08_DERIVED_SILENT_REVIEW_NOT_RELEASED.mp4
+          mkdir -p docs/motion-audits/2026-10-20
+          cp audit/C08_APPROVED_ORIGINAL_2FPS_CONTACT.jpg audit/C08.ffprobe.json audit/C08_SOURCE_SHA256.txt docs/motion-audits/2026-10-20/
+          printf 'REVIEW ONLY. This is a motion-quality audit of the existing owner-approved C08 PRESS R3 source. Original video/audio kept immutable; silent derivative is NOT an approved new exercise.\n' > docs/motion-audits/2026-10-20/C08_README.txt
+          git config user.name "m3-flex-motion-audit"
+          git config user.email "m3-flex-motion-audit@users.noreply.github.com"
+          git add docs/motion-audits/2026-10-20
+          git commit -m "Audit protected INNSTAR chest press motion as possible unloaded B-warmup pose driver"
+          git push origin HEAD:production/m3-flex-two-part-masters-2026-10-19
+      - name: Retain silent derivative for audit (not committed or deployed)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-C08-SILENT-MOTION-QA-REVIEW-NOT-APPROVED
+          path: |
+            audit/C08_APPROVED_ORIGINAL_2FPS_CONTACT.jpg
+            audit/C08_DERIVED_SILENT_REVIEW_NOT_RELEASED.mp4
+            audit/C08.ffprobe.json
+          if-no-files-found: warn
+          retention-days: 7
