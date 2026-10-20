@@ -437,7 +437,16 @@
       "active": false,
       "reportedPremiumCreditsUsed": 11,
       "doNotAttachMarcus": true,
-      "nextAction": "Do not regenerate from same loose image/video reference prompt. Require actual anatomically correct, licensed/owned motion-driving clip and motion-transfer tool supporting frame/pose fidelity, with cost quote and owner approval before any paid run."
+      "nextAction": "Do not regenerate from same loose image/video reference prompt. Require actual anatomically correct, licensed/owned motion-driving clip and motion-transfer tool supporting frame/pose fidelity, with cost quote and owner approval before any paid run.",
+      "audioQa": {
+        "result": "FAILED",
+        "embeddedAudio": "AAC non-silent",
+        "meanVolumeDb": -28.5,
+        "maxPeakDb": 0,
+        "sourceClipDurationSeconds": 5.258344,
+        "rule": "New exercise footage should be silent; if technically suitable later, strip unapproved generated soundtrack and overlay original Marcus separately. But do NOT salvage/relabel C16 motion."
+      },
+      "qaReport": "docs/M3-FLEX-C16-MOTION-QA-REJECTED-2026-10-19.md"
     }
   },
   "nonNegotiables": [
@@ -457,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "C16 COMPLETED but REJECTED after verified 10-frame and 5-frame video audit; face/left cast are good but movement incorrect. No new animated exercise passed. Both Workout A/B incomplete; 7 original videos locked; need motion controlled physically verified reference, don't spend on same image/video prompt method.",
+  "currentProductionNextStep": "No newly generated exercise is approved. C16 rendered but failed open-hand/full-arm biomechanics and embedded unwanted audio; it is REJECTED and documented. Do not waste credits on the same reference-to-video method. For next realistic new clip, secure a licensed/owned real person demonstration video with correct seated unloaded arm reaching and genuine pose-preserving motion transfer (rather than image-video loose references), quote charges, and preserve 7 original clips.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
