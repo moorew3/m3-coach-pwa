@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "D-ID owner confirmed existing Flex agent speaks and apparently lip-syncs, but produces WRONG FEMALE voice. Inspect existing agent Language & Voice editor. Original approved Marcus recordings may be supplied for scripted speaking clips through D-ID agent audio API, but live conversational use of the HeyGen Marcus voice ID is not confirmed or interchangeable. Do not overwrite agent/voice or seven approved workout clips. A/B full workout masters remain incomplete.",
+  "currentProductionNextStep": "Confirmed prior historical method was app-side direct playback of approved Marcus audio, NOT changing D-ID Studio female default. Original Marcus C02 WAV replay added to isolated D-ID review page on draft branch only. No claim that user-facing D-ID guest call voice is changed; to sync agent with Marcus need D-ID domain-scoped Embed client key and functioning connection. Do not touch approved seven workouts or generate new voice.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -675,6 +675,17 @@
       "preserveCharacter": true,
       "testingNote": "Do not confuse interactive agent's currently configured female TTS with owner-approved HeyGen voice ID 0fadce1e82af494a93873aa38ea8d106.",
       "next": "Inspect Language & Voice settings of existing D-ID Flex agent; exact approved Marcus may require using existing recorded audio through D-ID agent speak audio API, and conversational TTS voice availability remains unverified. Do not select arbitrary male replacement or change agent yet."
+    },
+    "approvedMarcusPlaybackRestoration": {
+      "status": "DIRECT_RECORDING_PLAYER_COMMITTED_ON_DRAFT_BRANCH_NOT_DEPLOYED",
+      "method": "Same previously used app-side DirectPlayback of original approved Marcus WAV; no browser TTS, no D-ID Emma, no new generated TTS.",
+      "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+      "source": "C02 approved Marcus WAV already linked in GitHub source",
+      "page": "public/recovery-coach/did-agent-review/index.html",
+      "userControl": "Play my Marcus voice / Stop, click-to-play for Android",
+      "limitation": "Existing user-facing standalone D-ID Studio Start Call still has female Emma until the D-ID agent's conversational TTS is changed. Direct playback does NOT cause D-ID standalone guest viewer to lip-sync. D-ID SDK speak({type:'audio',input:URL}) can lip sync on a connected embed with domain-scoped client key, but not yet live tested.",
+      "extraGenerationCreditsSpent": 0,
+      "approvedOriginalsEdited": 0
     }
   }
 }
