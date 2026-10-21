@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-10-21",
+  "purpose": "Provenance and recovery references for reusing M3 Coach V2 assets while producing existing M3 FLEX Workout A/B masters. No runtime changes or approved-asset edits.",
+  "source": {
+    "repository": "moorew3/m3-coach-pwa",
+    "branch": "rebuild/m3-coach-v2",
+    "app": "https://m3-coach-v2-visual-production.up.railway.app/v2",
+    "runtimeUrlNotVerifiedInCurrentAudit": true
+  },
+  "destination": {
+    "repository": "moorew3/m3-coach-pwa",
+    "branch": "production/m3-flex-two-part-masters-2026-10-19",
+    "existingMasterBuilder": "production/two-part/build_masters.py",
+    "existingProgramPlayer": "public/recovery-coach/programs/index.html"
+  },
+  "rules": [
+    "Locked seven approved Flex originals remain immutable. No promotion of V2 media into final master merely from filename or prior use.",
+    "Original V2 coach actor may differ from cast-wearing approved Flex variant. Recovered media may have different actors. Reference is not an identity- or injury-safe approval.",
+    "Keep original 7-day V2 program unchanged. Two separate recovery master videos A/B remain the only deliverables.",
+    "Do not replay standing, leg-driven, or pivoting video as a seated cast-protected exercise. All recovery movements require treating clinician clearance.",
+    "V2 audio may illustrate coaching but is not a verified substitute for the approved Marcus – Warm & Friendly English voice. All reused audio requires source, voice, license and sync checks.",
+    "No copying/re-hosting external Vimeo source media outside permitted embeds; preserve licenses and credits. No paid rendering without authorization."
+  ],
+  "v2Code": {
+    "exerciseCatalog": "src/v2/catalog.ts",
+    "originalSevenDayAdapter": "src/v2/original-week-workouts.ts",
+    "sessionReducer": "src/v2/session.ts",
+    "approvedMotionResolver": "src/v2/approved-coach-media.ts",
+    "recoveredMediaRegistry": "src/v2/recovered-motion-media.ts",
+    "approvedLegacyCoachClipMap": "src/data/coach-identity.ts",
+    "coachAudioRegistry": "src/v2/marcus-trainer-recordings.ts",
+    "coachAudioPlayer": "src/v2/recorded-coach-player.ts",
+    "voiceCues": "src/v2/marcus-cue-audio.ts",
+    "trainingInstructions": "src/v2/exercise-coaching.ts",
+    "boxingForm": "src/v2/boxing-form.ts",
+    "v2PlayerRoute": "src/routes/v2.tsx"
+  },
+  "trackedRepoFiles": {
+    "recoveredVideoMedia": [
+      {
+        "key": "battleRopeFinisher",
+        "path": "public/media/recovered/battleRopeFinisher.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "bulgarianSplitSquat",
+        "path": "public/media/recovered/bulgarianSplitSquat.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "cablePunch",
+        "path": "public/media/recovered/cablePunch.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "chestPress",
+        "path": "public/media/recovered/chestPress.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "chestSupportedRow",
+        "path": "public/media/recovered/chestSupportedRow.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "dumbbellCurl",
+        "path": "public/media/recovered/dumbbellCurl.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "easyWalkV3",
+        "path": "public/media/recovered/easyWalkV3.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "farmerMarch",
+        "path": "public/media/recovered/farmerMarch.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "legPress",
+        "path": "public/media/recovered/legPress.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "medBallChestPass",
+        "path": "public/media/recovered/medBallChestPass.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "rearDeltFly",
+        "path": "public/media/recovered/rearDeltFly.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "reverseStepRow",
+        "path": "public/media/recovered/reverseStepRow.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "squatToCurl",
+        "path": "public/media/recovered/squatToCurl.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "stepAltCurl",
+        "path": "public/media/recovered/stepAltCurl.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "stepShoulderPress",
+        "path": "public/media/recovered/stepShoulderPress.mp4",
+        "classification": "motion-reference-only",
+        "fileIndexed": true,
+        "bytesCopied": false
+      }
+    ],
+    "boxingSequences": [
+      {
+        "key": "boxingCombo1",
+        "path": "public/media/boxingCombo1.mp4",
+        "classification": "standing/footwork-reference-only-until-seated-reformulation",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "boxingCombo2",
+        "path": "public/media/boxingCombo2.mp4",
+        "classification": "standing/footwork-reference-only-until-seated-reformulation",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "boxingFlow3",
+        "path": "public/media/boxingFlow3.mp4",
+        "classification": "standing/footwork-reference-only-until-seated-reformulation",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "boxingFlow60",
+        "path": "public/media/boxingFlow60.mp4",
+        "classification": "standing/footwork-reference-only-until-seated-reformulation",
+        "fileIndexed": true,
+        "bytesCopied": false
+      }
+    ],
+    "coachingAudio": [
+      {
+        "key": "bulgarianSplitSquat",
+        "path": "public/media/coaching/bulgarianSplitSquat.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "chestPress",
+        "path": "public/media/coaching/chestPress.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "dumbbellCurl",
+        "path": "public/media/coaching/dumbbellCurl.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "easyWalk",
+        "path": "public/media/coaching/easyWalk.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "gluteBridge",
+        "path": "public/media/coaching/gluteBridge.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "hamstringCurl",
+        "path": "public/media/coaching/hamstringCurl.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "lateralRaise",
+        "path": "public/media/coaching/lateralRaise.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "legPress",
+        "path": "public/media/coaching/legPress.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "lowerBodyMobility",
+        "path": "public/media/coaching/lowerBodyMobility.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "romanianDeadlift",
+        "path": "public/media/coaching/romanianDeadlift.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "seatedRow",
+        "path": "public/media/coaching/seatedRow.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "squat",
+        "path": "public/media/coaching/squat.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "suitcaseCarry",
+        "path": "public/media/coaching/suitcaseCarry.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "trapBarDeadlift",
+        "path": "public/media/coaching/trapBarDeadlift.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      },
+      {
+        "key": "tricepsPressdown",
+        "path": "public/media/coaching/tricepsPressdown.mp3",
+        "classification": "audio-reference-not-new-Marcus-approval",
+        "fileIndexed": true,
+        "bytesCopied": false
+      }
+    ]
+  },
+  "motionCatalogReferences": [
+    {
+      "key": "lateralRaise",
+      "sourceRegistry": "src/data/coach-identity.ts",
+      "sourceUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4",
+      "status": "reference only; seated identity/cast not yet certified"
+    },
+    {
+      "key": "seatedRow",
+      "sourceRegistry": "src/data/coach-identity.ts",
+      "sourceUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fb904bbb-9853-486a-997f-cae8fd811e93/seatedRowV3.mp4",
+      "status": "reference only; seated posture and cast not yet certified"
+    },
+    {
+      "key": "controlledShoulderWork",
+      "sourceRegistry": "src/data/coach-identity.ts",
+      "sourceUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/bd8c08f2-f0f7-41a6-8286-0714fb017645/controlledShoulderWork.mp4",
+      "status": "reference only; not automatically controlled arm reaches"
+    },
+    {
+      "key": "tricepsPressdown",
+      "sourceRegistry": "src/data/coach-identity.ts",
+      "sourceUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
+      "status": "reference only; cast safety and equipment not verified"
+    },
+    {
+      "key": "shoulderMobility",
+      "sourceRegistry": "src/data/coach-identity.ts",
+      "sourceUrl": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ac623364-1584-4306-acef-c8460c3e2cdb/shoulderMobility.mp4",
+      "status": "reference only; compare exact request"
+    }
+  ],
+  "reuseForRecoveryMasters": {
+    "A": [
+      {
+        "target": "C09 preparation breathing",
+        "method": "use already approved locked Flex clip",
+        "source": "C09-PRE-BREATH-R2"
+      },
+      {
+        "target": "seated controlled arm reaches",
+        "method": "reference motion only",
+        "v2Key": "controlledShoulderWork"
+      },
+      {
+        "target": "seated lateral raises",
+        "method": "reference motion only",
+        "v2Key": "lateralRaise"
+      },
+      {
+        "target": "seated curls",
+        "method": "use approved locked Flex clip",
+        "source": "C02"
+      },
+      {
+        "target": "seated shrugs",
+        "method": "use approved locked Flex clip",
+        "source": "C01-R3"
+      },
+      {
+        "target": "seated boxing",
+        "method": "reference punch path only; remove footwork and torso loading",
+        "v2VideoPath": "public/media/boxingFlow60.mp4"
+      },
+      {
+        "target": "wrist curls",
+        "method": "still blocked; dumbbell curls are not wrist curls"
+      }
+    ],
+    "B": [
+      {
+        "target": "INNSTAR seated chest press",
+        "method": "use approved locked Flex clip",
+        "source": "C08-PRESS-R3",
+        "v2Alternative": "V2 chestPress is different equipment; reference only"
+      },
+      {
+        "target": "seated rows",
+        "method": "reference motion only",
+        "v2Key": "seatedRow"
+      },
+      {
+        "target": "seated front raises",
+        "method": "use approved locked Flex clip",
+        "source": "C03"
+      },
+      {
+        "target": "seated alternating curls",
+        "method": "use approved locked Flex clip",
+        "source": "C04-R2"
+      },
+      {
+        "target": "triceps pressdown",
+        "method": "reference motion only",
+        "v2Key": "tricepsPressdown"
+      },
+      {
+        "target": "AMYCO wrist device",
+        "method": "blocked until exact device and form verified"
+      },
+      {
+        "target": "chest fly",
+        "method": "existing review clip not yet approved to join Workout B"
+      },
+      {
+        "target": "C10 post breathing",
+        "method": "use already approved locked Flex clip",
+        "source": "C10-POST-BREATH-R1"
+      }
+    ]
+  },
+  "integrity": {
+    "status": "indexed-source-only",
+    "videoBytesTransferred": 0,
+    "liveSitesModified": false,
+    "masterMp4Rendered": false,
+    "clinicianClearanceVerified": false,
+    "ownerApprovalForUnapprovedMedia": false
+  }
+}
