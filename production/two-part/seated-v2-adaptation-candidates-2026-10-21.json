@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "TWO_OWNER_APPROVED_CANDIDATES_PLUS_FOUR_NEW_PROCESSING_UNAPPROVED_CANDIDATES",
+  "status": "FOUR_OWNER_APPROVED_NEW_CANDIDATES__LAT_PDOWN_REVISION_REQUIRED__ROW_PENDING_REVIEW",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -70,8 +70,8 @@
       "durationSec": 5,
       "notes": "Exact previous full-body band pull-apart action transformed from standing to seated, with cast elevated; two complete open/close reps",
       "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
-      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
-      "ownerApproved": false,
+      "status": "OWNER_APPROVED_PENDING_TECHNICAL_AND_MEDICAL_QA",
+      "ownerApproved": true,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
       "appActive": false,
@@ -83,7 +83,9 @@
         "At least two complete cycles of the exact intended exercise",
         "No unrelated speech, soundtrack, or captions",
         "Review full clip before adding to A/B master"
-      ]
+      ],
+      "ownerApprovalRecorded": "2026-10-21",
+      "ownerApprovalBasis": "User: \"I approve the band pull apart and the seated shadow Boxing.\""
     },
     {
       "exercise": "Supported seated cable row",
@@ -94,7 +96,7 @@
       "durationSec": 5,
       "notes": "Two complete seated row reps; no leg bracing, supported white left cast, stable upright trunk",
       "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
-      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
+      "status": "PENDING_OWNER_REVIEW",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -118,8 +120,8 @@
       "durationSec": 5,
       "notes": "Two jab-cross combinations from original coach demo with no hip or foot pivots, cast independently supported",
       "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
-      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
-      "ownerApproved": false,
+      "status": "OWNER_APPROVED_PENDING_TECHNICAL_AND_MEDICAL_QA",
+      "ownerApproved": true,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
       "appActive": false,
@@ -131,7 +133,9 @@
         "At least two complete cycles of the exact intended exercise",
         "No unrelated speech, soundtrack, or captions",
         "Review full clip before adding to A/B master"
-      ]
+      ],
+      "ownerApprovalRecorded": "2026-10-21",
+      "ownerApprovalBasis": "User: \"I approve the band pull apart and the seated shadow Boxing.\""
     },
     {
       "exercise": "Seated lat pulldowns",
@@ -142,7 +146,7 @@
       "durationSec": 5,
       "notes": "Two complete lat pull reps on plausible overhead cable, legs stationary, approved seated reference identity",
       "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
-      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
+      "status": "REVISION_REQUIRED_OWNER_ORIENTATION_CORRECTION",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -155,12 +159,15 @@
         "At least two complete cycles of the exact intended exercise",
         "No unrelated speech, soundtrack, or captions",
         "Review full clip before adding to A/B master"
-      ]
+      ],
+      "userCorrection": "Coach must remain seated FACING the pulldown machine/bar; normal front-facing lat pulldown position with bar clearly overhead/in front, not turned away or side-on.",
+      "supersededByVideoId": null
     }
   ],
   "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
   "safety": "Visual exercise clips are not medical advice or approval to load the injured leg. Never edit original approved source media.",
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
-  "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically."
+  "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
+  "latestOwnerFeedback": "Band pull-aparts and seated shadowboxing explicitly approved. Lat pulldown needs corrected seated orientation facing the pulldown bar. Other four locked originals and previously approved new lateral/triceps remain unchanged."
 }
