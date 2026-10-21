@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Owner CONFIRMED Tony Gentilcore Vimeo 1082610274 has correct seated lateral raise movement, unlike Pexels 5319088 (standing) and 6548005 (seated wrong exercise), both rejected. Mark Vimeo technique reference approved for visual form only. Do NOT upload Vimeo footage to Comfy or generate until legal reuse rights or an original licensed equivalent is secured; approved seven remain protected.",
+  "currentProductionNextStep": "Review and send saved Gmail draft to original Vimeo creator requesting explicit AI motion transfer use of Tony Gentilcore seated dumbbell lateral raise source. Do not download/use until rights granted. Otherwise commission/record original seated demonstrator under model release. Approved original seven protected; no free GPU run used.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -850,7 +850,13 @@
       "creator": "Tony Gentilcore",
       "dateConfirmed": "2026-10-20",
       "reuseRights": "NOT VERIFIED: Vimeo publisher permission or an applicable commercial derivative license must be obtained before using as Wan motion-transfer input",
-      "notProductionReady": true
+      "notProductionReady": true,
+      "permissionRequestStatus": "DRAFT_PREPARED_NOT_SENT",
+      "licensingEvidence": [
+        "Vimeo demonstration owner-approved technique, not cleared for motion transfer.",
+        "Exercise Animatic exact $1 video is NOT eligible: publisher explicitly prohibits uploading any clips to AI platform even under paid commercial license: https://www.exerciseanimatic.com/copy-of-license",
+        "Permission-request email draft saved in connected Gmail, not sent; requires owner's review and sending."
+      ]
     }
   }
 }
