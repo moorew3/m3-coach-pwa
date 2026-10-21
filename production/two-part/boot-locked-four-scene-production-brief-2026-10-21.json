@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "title": "M3 FLEX — Real Black Orthopedic Boot Corrective Production Brief",
   "createdDate": "2026-10-21",
-  "status": "SOURCE_REFERENCES_LOCKED__FOUR_VIDEO_REMENDERS_NOT_YET_BOOT_CORRECTED",
+  "status": "FOUR_BOOT_SCENES_RENDERED_SILENT__OWNER_REVIEW_PENDING_CLINICAL_RELEASE_BLOCKED",
   "supersedesForNewScenes": "Earlier instruction describing white plaster-style cast. Current user has supplied two actual photos showing black removable orthopedic walking boot with blue-grey rigid lateral side frame and multiple black straps. Do not alter previously approved original media, even if they depict an older cast.",
   "userBootReference": {
     "sideAssetId": "0ca843ef55c249aea712b13439f63d86",
@@ -80,5 +80,78 @@
   "workingMethod": "First build a clean individual scene first-frame WITHOUT infographics, split panels, text or inset pictures. Reject if left black boot rests on floor or is missing. Only then animate a five-second trial from that same single first frame and inspect sequential frames for consistent face/tattoos, real reps and cast/boot stillness. Do not generate paid motion clips from four-panel collage sheets.",
   "currentOwnerPreview": "https://dochost.co/d/s77gmbhk",
   "originalSevenProtected": true,
-  "medicalReleaseGate": "DRAFT_NOT_MEDICALLY_CLEARED_NO_CUSTOMER_DEPLOYMENT"
+  "medicalReleaseGate": "DRAFT_NOT_MEDICALLY_CLEARED_NO_CUSTOMER_DEPLOYMENT",
+  "updatedDate": "2026-10-21",
+  "referenceAssetPhotos": [
+    "0ca843ef55c249aea712b13439f63d86",
+    "55489f572c93405d8bd1b9db06d4bcc8"
+  ],
+  "sourceFrameCreation": "Image-generated black boot 2x2 four-scene layout cleanly cropped into four individual landscape first frames (no textual panels); each first frame inspected for user's black walking boot on separate padded support.",
+  "newMotionReview": [
+    {
+      "exercise": "Seated dumbbell lateral raises",
+      "sourceFrameName": "01_lateral_raise.png",
+      "frameHeyGenAssetId": "939441398a164feb905377be838f0473",
+      "heyGenId": "95800a74b7384f5eb70f9aeb6ae040d7",
+      "originalVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fd9-46c0-7ac6-89c8-d53bfe7ef773.mp4",
+      "silentUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b3f851f2-7a27-44b3-b20f-4f17afb9e03e.mp4",
+      "mediaId": "b3f851f2-7a27-44b3-b20f-4f17afb9e03e",
+      "qaNote": "Visual contact sheet inspected at 0.5-sec intervals; no detected hard scene changes; arms appear to perform real lateral raise movements, but repetition count and identity likeness remain subject to full owner QA.",
+      "clipStatus": "MOTION_REVIEW_ONLY",
+      "durationSec": 5.25,
+      "silentCopyVerified": true,
+      "ownerApproved": false,
+      "clinicianCleared": false,
+      "addedToProductionMaster": false
+    },
+    {
+      "exercise": "Seated cable triceps pressdowns",
+      "sourceFrameName": "02_triceps_pressdown.png",
+      "frameHeyGenAssetId": "a75e0050c3dd4925888ab5f23b327904",
+      "heyGenId": "1ad07c03955e42cd83cca0d206ad3aa4",
+      "originalVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fdb-4b2a-739d-a6dd-2c6a56cad329.mp4",
+      "silentUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/bf13a217-7460-4df4-9a02-3c126d1b37c2.mp4",
+      "mediaId": "bf13a217-7460-4df4-9a02-3c126d1b37c2",
+      "qaNote": "Visual contact sheet sampled at 0.5-sec intervals. Rope and arm motion visible, complete mechanics/identity require manual review. No detected hard scene cuts.",
+      "clipStatus": "MOTION_REVIEW_ONLY",
+      "durationSec": 5.25,
+      "silentCopyVerified": true,
+      "ownerApproved": false,
+      "clinicianCleared": false,
+      "addedToProductionMaster": false
+    },
+    {
+      "exercise": "Seated resistance band pull-aparts",
+      "sourceFrameName": "03_band_pull_apart.png",
+      "frameHeyGenAssetId": "b7662d793e9e49f7b2bc9d57837f0229",
+      "heyGenId": "569a6c4abd94498385d723bafc01f16f",
+      "originalVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fdb-cc41-72ab-a905-b44486c4fb2e.mp4",
+      "silentUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/cca8ec08-f314-4ac2-97a3-576de4fb3723.mp4",
+      "mediaId": "cca8ec08-f314-4ac2-97a3-576de4fb3723",
+      "qaNote": "Arm motion and band visible in sampled frames, no hard detected scene cuts; physical elasticity and user face/tattoos need full approval.",
+      "clipStatus": "MOTION_REVIEW_ONLY",
+      "durationSec": 5.25,
+      "silentCopyVerified": true,
+      "ownerApproved": false,
+      "clinicianCleared": false,
+      "addedToProductionMaster": false
+    },
+    {
+      "exercise": "Seated arm-only shadow boxing",
+      "sourceFrameName": "04_shadow_boxing.png",
+      "frameHeyGenAssetId": "5c7b4e32c71141d88a95be74af20b791",
+      "heyGenId": "3b714b9cb396468a91fb555d6b0087a0",
+      "originalVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fdc-742f-762c-83e2-1f87e2ea1fb4.mp4",
+      "silentUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d6f5fc7d-69ab-497e-88e7-615baf9ddd66.mp4",
+      "mediaId": "d6f5fc7d-69ab-497e-88e7-615baf9ddd66",
+      "qaNote": "Moving guard/punch arms in 0.5-second visual samples; no detected hard cuts, full punch repetitions and avatar identity still require owner signoff.",
+      "clipStatus": "MOTION_REVIEW_ONLY",
+      "durationSec": 5.25,
+      "silentCopyVerified": true,
+      "ownerApproved": false,
+      "clinicianCleared": false,
+      "addedToProductionMaster": false
+    }
+  ],
+  "latestReleaseGate": "Sampled video is not sufficient for exact-identity or true two-rep acceptance. Owner must review all four silent clips. Real black boot stays on padded foot support and no loading; clinician must clear actual exercise activity."
 }
