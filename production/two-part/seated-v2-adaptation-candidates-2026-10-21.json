@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "FOUR_OWNER_APPROVED_NEW_CANDIDATES__LAT_PDOWN_REVISION_REQUIRED__ROW_PENDING_REVIEW",
+  "status": "FOUR_NEW_OWNER_APPROVED_TWO_NOT_YET_APPROVED_PLUS_SUPERSEDED_PDOWN",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -146,7 +146,7 @@
       "durationSec": 5,
       "notes": "Two complete lat pull reps on plausible overhead cable, legs stationary, approved seated reference identity",
       "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
-      "status": "REVISION_REQUIRED_OWNER_ORIENTATION_CORRECTION",
+      "status": "SUPERSEDED_UNAPPROVED_WRONG_MACHINE_ORIENTATION",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -161,7 +161,33 @@
         "Review full clip before adding to A/B master"
       ],
       "userCorrection": "Coach must remain seated FACING the pulldown machine/bar; normal front-facing lat pulldown position with bar clearly overhead/in front, not turned away or side-on.",
-      "supersededByVideoId": null
+      "supersededByVideoId": "0f49627d9536416e9d5cef37d559a2ac"
+    },
+    {
+      "exercise": "Seated front-facing lat pulldown (corrected)",
+      "destinationPart": "B",
+      "sceneId": "NEW_SEATED-LAT-PULLDOWN-R2",
+      "supersedesVideoId": "0a01df6eacb3424191b4a599602e0749",
+      "providerVideoId": "0f49627d9536416e9d5cef37d559a2ac",
+      "submittedDate": "2026-10-21",
+      "referenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
+      "durationSec": 5,
+      "method": "Reference-to-video with original coach upper-body lat pulldown, existing approved seated Flex identity; corrected seated position aligned toward machine",
+      "status": "SUBMITTED_PROCESSING_OWNER_ORIENTATION_CORRECTION",
+      "ownerApproved": false,
+      "technicalQaVerified": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "qualityChecklist": [
+        "Seated and facing the lat pulley machine/bar, not camera at expense of bar orientation",
+        "Overhead bar physically mounted in FRONT; arms pull down toward upper chest for two complete cycles",
+        "Approved Flex identity/hair/tattoos unchanged",
+        "LEFT white cast on stable supported stool, no injured-foot weight bearing or machine thigh pad pressure",
+        "RIGHT foot still, no bracing, rocking or standing",
+        "No generated music/dialogue, plausible cable and bar geometry",
+        "User reviews revised clip before owner approval"
+      ]
     }
   ],
   "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
@@ -169,5 +195,6 @@
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
   "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
-  "latestOwnerFeedback": "Band pull-aparts and seated shadowboxing explicitly approved. Lat pulldown needs corrected seated orientation facing the pulldown bar. Other four locked originals and previously approved new lateral/triceps remain unchanged."
+  "latestOwnerFeedback": "User explicitly approved seated band pull-apart and shadow boxing, requested pulldown correction: \"just help him sitting facing the pull down bar\"; new version submitted for review.",
+  "newLatPullRevisionDate": "2026-10-21"
 }
