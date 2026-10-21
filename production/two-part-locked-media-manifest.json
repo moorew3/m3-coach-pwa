@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "User rejected seeking creator permission and filming anyone. An original procedural illustrated-motion driver of seated dumbbell lateral raises, two full repetitions, with anatomical left cast supported and right foot grounded, was created and uploaded to M3 FLEX reference folder (file 1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C). It is experimental, may not be compatible with human-video Wan Animate 2. For next step download driver from Drive on phone and choose in Comfy Cloud Input Video, preserving approved Flex photo; verify model and generation-credit costs before Run. Seven protected original clips unchanged. No Comfy run spent.",
+  "currentProductionNextStep": "Stop rerunning. Owner REJECTED first Comfy result: static Flex photograph + superimposed cartoon. 5->4 free runs. Correct design choice is motion transfer (Wan Animate 2: Motion Transfer or native Wan2.2 Animate Move) instead of auto character replace (Mix). Experimental cartoon driver lacks realistic human-pose suitability. Evaluate graph and input, validate with preflight no Run. Original approved 7 assets unchanged.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -872,5 +872,21 @@
     "qaCaveat": "Illustrated humanoid may fail Wan Animate 2's human motion interpretation; must validate output; do not represent as approved Flex footage.",
     "originalApprovedVideosAltered": false,
     "comfyCloudGenerationsUsedByThisTrial": 0
+  },
+  "firstComfyCloudAnimationTrial": {
+    "date": "2026-10-21",
+    "scene": "NEW_LATERAL-RAISE",
+    "status": "REJECTED_BY_OWNER__CARTOON_OVERLAY_NO_REAL_FLEX_MOTION",
+    "input": "8 sec synthetic illustrated seated lateral raises two repetitions; Flex_Approved_9550_original.jpg",
+    "template": "template_purz_wan22_animate_auto_character_replace",
+    "outputObserved": "Illustrated character overlays original unmoving approved Flex gym photograph; subject identity and full-body motion transfer fail",
+    "gpuFreeRunsObservedBefore": 5,
+    "gpuFreeRunsObservedAfter": 4,
+    "approvedVideoAssetsModified": false,
+    "correctiveAction": "Stop all runs. Review Wan 2.2 Animate Mix vs Move or dedicated Wan Animate 2 Motion Transfer blueprint. Mix is subject replacement in driver video; Move transfers motion onto reference photo. Procedural cartoon driver is not reliable human pose source. Do not spend another run until appropriate graph mode and real/humanlike authorized driver are verified.",
+    "sourceLinks": [
+      "https://github.com/Comfy-Org/ComfyUI/blob/master/blueprints/Motion%20Transfer%20%28Wan%20Animate%202%29.json",
+      "https://github.com/deanhowe/comfyui-docs/blob/main/tutorials/video/wan/wan2-2-animate.mdx"
+    ]
   }
 }
