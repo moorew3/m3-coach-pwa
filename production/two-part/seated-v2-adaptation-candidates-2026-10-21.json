@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "FOUR_NEW_OWNER_APPROVED_TWO_NOT_YET_APPROVED_PLUS_SUPERSEDED_PDOWN",
+  "status": "FOUR_OWNER_APPROVED_NEW_CLIPS_LAT_PDOWN_R3_PROCESSING_ROW_PENDING",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -174,7 +174,7 @@
       "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
       "durationSec": 5,
       "method": "Reference-to-video with original coach upper-body lat pulldown, existing approved seated Flex identity; corrected seated position aligned toward machine",
-      "status": "SUBMITTED_PROCESSING_OWNER_ORIENTATION_CORRECTION",
+      "status": "SUPERSEDED_UNAPPROVED_WRONG_CAMERA_AND_INITIAL_DUMBBELLS",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -204,7 +204,49 @@
       "specificOwnerTechnique": "Set seated trainer facing the actual high-pulley station; hands overhead gripping the bar in front of face. Pull toward upper chest (never behind neck), elbows down/back, chest lifted and torso almost stationary; control return. Three-quarter front/side camera must show the machine, face, full cast support, arms and bar. If machine pads would press on the injured left leg, position the leg free of pads and support it independently; do not show otherwise physically impossible machine access.",
       "ownerRefSubmitted": "2026-10-21",
       "referenceReviewStatus": "VIDEO_LINK_RESOLVED_REFERENCE_DOCUMENTED__R2_OUTPUT_NOT_YET_REINSPECTED",
-      "newRenderPermission": "Do not incur additional generation credits solely because a reference was shared. Review current R2 before re-rendering."
+      "newRenderPermission": "Do not incur additional generation credits solely because a reference was shared. Review current R2 before re-rendering.",
+      "supersededByVideoId": "430e4c608e3e4c6dbadbc9232d9061ea"
+    },
+    {
+      "exercise": "Seated lat pulldown: side view, facing machine, no dumbbells",
+      "destinationPart": "B",
+      "sceneId": "NEW_SEATED-LAT-PULLDOWN-R3",
+      "providerVideoId": "430e4c608e3e4c6dbadbc9232d9061ea",
+      "supersedesVideoId": "0f49627d9536416e9d5cef37d559a2ac",
+      "submittedDate": "2026-10-21",
+      "referenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
+      "userScreenshotAssetId": "711e2fc11516475798faff9a9e7199ee",
+      "userScreenshotSource": "Screenshot_20261021_071624_YouTube.jpg",
+      "screenshotPurpose": "Camera and machine angle/layout reference ONLY, not face or attire identity",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
+      "thirdPartyReference": {
+        "linkProvidedByOwner": "https://share.google/ZtQ3sbJrB3kskyqyH",
+        "resolvedReferenceUrl": "https://www.youtube.com/watch?v=AOpi-p0cJkc",
+        "referenceTitle": "Beginner's Guide: Lat Pulldown",
+        "publisher": "SilverSneakers",
+        "publicationDate": "2017-04-18",
+        "relationship": "Owner-supplied visual orientation/form reference ONLY — not a licensed video source or generation upload",
+        "useRights": "Not verified; do not upload the third-party YouTube content as an AI motion driver or republish.",
+        "verifiedPageMetadata": "Shortlink resolved to Google video result identifying SilverSneakers YouTube video; full video motion not frame-by-frame audited."
+      },
+      "method": "Reference-to-video with approved seated coach identity + screenshot of side-view machine geometry + original V2 exercise motion",
+      "durationSec": 5,
+      "status": "SUBMITTED_PROCESSING_OWNER_REVIEW_REQUIRED",
+      "ownerApproved": false,
+      "technicalQaVerified": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "qualityChecklist": [
+        "Camera must show side profile as in user's screenshot",
+        "Coach seated facing high-pulley machine",
+        "First frame: gripping overhead lat bar, absolutely no dumbbells or weights in either hand",
+        "Bar lowers in front of face toward upper chest and returns overhead",
+        "Both hands always on attached bar with realistic cables/pulley",
+        "Exact approved M3 FLEX coach face/hair/tattoos; never adopt screenshot person's identity",
+        "LEFT white cast stays unloaded and independently supported",
+        "No voice, music, captions, shifting orientation, extra limbs, or broken equipment",
+        "Never use before owner approval, visual movement QA and clinician clearance"
+      ]
     }
   ],
   "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
@@ -212,6 +254,6 @@
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
   "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
-  "latestOwnerFeedback": "Owner supplied reference https://share.google/ZtQ3sbJrB3kskyqyH for seated lat-pulldown orientation. Resolved to SilverSneakers YouTube AOpi-p0cJkc (2017). Technique reference and copyright limits documented for R2; no new video generated or clips promoted.",
+  "latestOwnerFeedback": "User supplied screenshot of side-view lat pulldown and clarified no dumbbells at start. Screenshot imported to existing HeyGen creator workspace and supplied as geometry/camera reference only for new R3. Prior lat R2 superseded and not owner approved. Protect original seven and four approved seated candidates.",
   "newLatPullRevisionDate": "2026-10-21"
 }
