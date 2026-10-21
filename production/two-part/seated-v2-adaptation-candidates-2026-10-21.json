@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "FOUR_OWNER_APPROVED_NEW_EXERCISES__R2_10_REPS_EDIT_READY_FOR_REVIEW__OTHERS_PENDING",
+  "status": "FOUR_OWNER_APPROVED_NEW_CLIPS__LAT_PDOWN_LOOP_REJECTED_OWNER_SAYS_WRONG_AVATAR__ROW_PENDING",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -174,7 +174,7 @@
       "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
       "durationSec": 5,
       "method": "Reference-to-video with original coach upper-body lat pulldown, existing approved seated Flex identity; corrected seated position aligned toward machine",
-      "status": "SUPERSEDED_UNAPPROVED_WRONG_CAMERA_AND_INITIAL_DUMBBELLS",
+      "status": "USER_REJECTED_FOR_IDENTITY_DRIFT_REQUIRES_NEW_SOURCE",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -224,8 +224,29 @@
         "ownerApproved": false,
         "finalMasterApproved": false,
         "appActive": false,
-        "status": "READY_FOR_OWNER_REVIEW__LOOPED_DEMONSTRATION_NOT_MARCUS_SYNCED",
-        "createdDate": "2026-10-21"
+        "status": "REJECTED_BY_OWNER__LOOP_SEAM_AND_AVATAR_IDENTITY_DRIFT__DO_NOT_USE",
+        "createdDate": "2026-10-21",
+        "technicalQaVerified": false,
+        "ownerRejection": "User: \"It has a weird glitch to it. And it also isn't exactly. My avatar goes from being my avatar to something else.\"",
+        "motionInspection": {
+          "auditDate": "2026-10-21",
+          "sourceClipSecs": 5.258344,
+          "selectedSourceStartsAtSec": 0.98,
+          "repeatedSegments": 10,
+          "reportedSourceSegmentDurationSec": 2.875,
+          "detectedHardCutsSecsFirstLoops": [
+            0.125,
+            2.875,
+            3,
+            5.75,
+            5.875,
+            8.625,
+            8.75
+          ],
+          "defect": "Original selected 2.875-sec section includes shifting camera presentation/identity in generated R2 and jumps abruptly when each repetition restarts. Scene-change detection near every 2.875-second loop boundary confirms repetitive glitches. These are not removable solely by trimming/crossfading: original AI render did not preserve approved avatar identity continuously.",
+          "action": "Permanently disqualify this video from any customer-facing or owner workout playback; no local smoothing or face morph is acceptable. Rebuild correct exercise only from a motion-driven sequence with reference-locked approved avatar and supervised visual QA.",
+          "sourceIntegrity": "Original R2 source untouched SHA256 ee91bc4a866c379bb286132caa3bdf06ea9fbaa5a4bffe7957f571e54d9e2d62"
+        }
       }
     },
     {
@@ -252,7 +273,7 @@
       },
       "method": "Reference-to-video with approved seated coach identity + screenshot of side-view machine geometry + original V2 exercise motion",
       "durationSec": 5,
-      "status": "SUBMITTED_PROCESSING_OWNER_REVIEW_REQUIRED",
+      "status": "NOT_AUTO_APPROVED__MUST_INDEPENDENTLY_CHECK_IDENTITY_AND_MOTION",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -275,6 +296,6 @@
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
   "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
-  "latestOwnerFeedback": "Owner explicitly reselected R2 despite R3 generation and requested first dumbbell seconds trimmed with one or two complete sets. An R2-derived 10-rep repeated motion MP4 now exists for review; older source and all originals protected. Do not automatically claim biomechanical QA or user approval.",
+  "latestOwnerFeedback": "Owner rejected lat pulldown derived cut for visible glitches and face/body identity drift. Quarantine looped derivative and R2 source as unusable; preserve originals and four approved new candidate clips. Do not re-render with same defective reference pattern or use additional credits before a identity-locked technique method is verified.",
   "newLatPullRevisionDate": "2026-10-21"
 }
