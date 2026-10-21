@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Owner requested video references for ALL missing A/B clips to stop piecemeal searching. Created 17 distinct scene source matrix and mobile click-through catalog; stock videos include hand gestures, seated elbow bends, lateral raises, boxing mechanics, stretches, seated breathing/rest, but no fully verified exact character-transfer drivers, and no exact source for AMYCO/INNSTAR. Source catalog is in Drive and GitHub. Need actual video shot review and one valid driver before Comfy generation; original approved 7 protected.",
+  "currentProductionNextStep": "Owner CONFIRMED Tony Gentilcore Vimeo 1082610274 has correct seated lateral raise movement, unlike Pexels 5319088 (standing) and 6548005 (seated wrong exercise), both rejected. Mark Vimeo technique reference approved for visual form only. Do NOT upload Vimeo footage to Comfy or generate until legal reuse rights or an original licensed equivalent is secured; approved seven remain protected.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -842,5 +842,15 @@
     "currentlyReadyValidatedExactDrivingClips": 0,
     "generationRunsStartedByThisWork": 0,
     "original7AssetFilesChanged": false
+  },
+  "confirmedTechniqueReferences": {
+    "NEW_LATERAL-RAISE": {
+      "status": "OWNER_CONFIRMED_EXACT_SEATED_LATERAL_RAISE_TECHNIQUE_VIDEO",
+      "url": "https://vimeo.com/1082610274",
+      "creator": "Tony Gentilcore",
+      "dateConfirmed": "2026-10-20",
+      "reuseRights": "NOT VERIFIED: Vimeo publisher permission or an applicable commercial derivative license must be obtained before using as Wan motion-transfer input",
+      "notProductionReady": true
+    }
   }
 }
