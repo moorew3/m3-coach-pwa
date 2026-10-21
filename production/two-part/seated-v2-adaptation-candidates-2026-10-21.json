@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "FOUR_OWNER_APPROVED_NEW_CLIPS_LAT_PDOWN_R3_PROCESSING_ROW_PENDING",
+  "status": "FOUR_OWNER_APPROVED_NEW_EXERCISES__R2_10_REPS_EDIT_READY_FOR_REVIEW__OTHERS_PENDING",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -205,7 +205,28 @@
       "ownerRefSubmitted": "2026-10-21",
       "referenceReviewStatus": "VIDEO_LINK_RESOLVED_REFERENCE_DOCUMENTED__R2_OUTPUT_NOT_YET_REINSPECTED",
       "newRenderPermission": "Do not incur additional generation credits solely because a reference was shared. Review current R2 before re-rendering.",
-      "supersededByVideoId": "430e4c608e3e4c6dbadbc9232d9061ea"
+      "supersededByVideoId": "430e4c608e3e4c6dbadbc9232d9061ea",
+      "userRequestedRestoration": "Owner selected ORIGINAL R2 HeyGen generation as preferred source. Remove first ~0.98 seconds showing dumbbells; create one or two complete sets via repetition of complete source movement; keep actual original face/scene unchanged.",
+      "derivedReviewCut": {
+        "filename": "M3_FLEX_Lat_Pulldown_R2_10_Reps_Trimmed_Review.mp4",
+        "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/3064f0c1-6f13-4ae0-ab1d-c8931280dab5.mp4",
+        "higgsfieldMediaId": "3064f0c1-6f13-4ae0-ab1d-c8931280dab5",
+        "ownerSourceVideoId": "0f49627d9536416e9d5cef37d559a2ac",
+        "originalSha256": "ee91bc4a866c379bb286132caa3bdf06ea9fbaa5a4bffe7957f571e54d9e2d62",
+        "originalDurationSec": 5.258344,
+        "trimStartSec": 0.98,
+        "selectedCycleDurationSec": 2.85,
+        "iterations": 10,
+        "outputDurationSec": 28.75,
+        "outputSha256": "c15d0cfdefdc1148ebd28e1372bcb39108ccbab18fa3c724c6e73723c",
+        "audio": "removed",
+        "editingMethod": "FFmpeg clipped first 0.98 sec from original R2 then repeated a real source up/down/up cycle 10 times. No new hand/body motion generated; no source changed.",
+        "ownerApproved": false,
+        "finalMasterApproved": false,
+        "appActive": false,
+        "status": "READY_FOR_OWNER_REVIEW__LOOPED_DEMONSTRATION_NOT_MARCUS_SYNCED",
+        "createdDate": "2026-10-21"
+      }
     },
     {
       "exercise": "Seated lat pulldown: side view, facing machine, no dumbbells",
@@ -254,6 +275,6 @@
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
   "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
-  "latestOwnerFeedback": "User supplied screenshot of side-view lat pulldown and clarified no dumbbells at start. Screenshot imported to existing HeyGen creator workspace and supplied as geometry/camera reference only for new R3. Prior lat R2 superseded and not owner approved. Protect original seven and four approved seated candidates.",
+  "latestOwnerFeedback": "Owner explicitly reselected R2 despite R3 generation and requested first dumbbell seconds trimmed with one or two complete sets. An R2-derived 10-rep repeated motion MP4 now exists for review; older source and all originals protected. Do not automatically claim biomechanical QA or user approval.",
   "newLatPullRevisionDate": "2026-10-21"
 }
