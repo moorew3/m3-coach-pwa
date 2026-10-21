@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "TWO_NEW_CLIPS_OWNER_APPROVED__TECHNICAL_QA_AND_RELEASE_BLOCKED",
+  "status": "TWO_OWNER_APPROVED_CANDIDATES_PLUS_FOUR_NEW_PROCESSING_UNAPPROVED_CANDIDATES",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -60,9 +60,107 @@
       "ownerApprovalRecorded": "2026-10-21",
       "ownerApprovalBasis": "Direct user message: I approve both of them. Please keep going.",
       "technicalQaVerified": false
+    },
+    {
+      "exercise": "Seated resistance band pull-aparts",
+      "destinationPart": "B",
+      "sceneId": "NEW_SEATED-BAND-PULL-APART",
+      "providerVideoId": "31570149e9fe4a729c2de629da5eff46",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
+      "durationSec": 5,
+      "notes": "Exact previous full-body band pull-apart action transformed from standing to seated, with cast elevated; two complete open/close reps",
+      "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
+      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
+      "ownerApproved": false,
+      "technicalQaVerified": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "audioQa": "No original Marcus audio added; silent requested. Must verify generated embedded audio does not contain unapproved speech/music.",
+      "qualityChecklist": [
+        "Approved Flex face/hair/tattoos preserved",
+        "LEFT white cast supported with no weight bearing",
+        "Remains fully seated with realistic equipment and mechanics",
+        "At least two complete cycles of the exact intended exercise",
+        "No unrelated speech, soundtrack, or captions",
+        "Review full clip before adding to A/B master"
+      ]
+    },
+    {
+      "exercise": "Supported seated cable row",
+      "destinationPart": "A and B",
+      "sceneId": "NEW_SUPPORTED-SEATED-ROW",
+      "providerVideoId": "8fb5206fa5d141be9dcabbb07ad0fa5b",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/fb904bbb-9853-486a-997f-cae8fd811e93/seatedRowV3.mp4",
+      "durationSec": 5,
+      "notes": "Two complete seated row reps; no leg bracing, supported white left cast, stable upright trunk",
+      "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
+      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
+      "ownerApproved": false,
+      "technicalQaVerified": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "audioQa": "No original Marcus audio added; silent requested. Must verify generated embedded audio does not contain unapproved speech/music.",
+      "qualityChecklist": [
+        "Approved Flex face/hair/tattoos preserved",
+        "LEFT white cast supported with no weight bearing",
+        "Remains fully seated with realistic equipment and mechanics",
+        "At least two complete cycles of the exact intended exercise",
+        "No unrelated speech, soundtrack, or captions",
+        "Review full clip before adding to A/B master"
+      ]
+    },
+    {
+      "exercise": "Seated arm-only jab-cross boxing",
+      "destinationPart": "A",
+      "sceneId": "NEW_ARM-BOXING",
+      "providerVideoId": "94be7d7f3b894ef5bbdecdb3734f7120",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/4a42a4f8-dc38-44ee-93fa-b62815263ebd/jabCrossV2.mp4",
+      "durationSec": 5,
+      "notes": "Two jab-cross combinations from original coach demo with no hip or foot pivots, cast independently supported",
+      "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
+      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
+      "ownerApproved": false,
+      "technicalQaVerified": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "audioQa": "No original Marcus audio added; silent requested. Must verify generated embedded audio does not contain unapproved speech/music.",
+      "qualityChecklist": [
+        "Approved Flex face/hair/tattoos preserved",
+        "LEFT white cast supported with no weight bearing",
+        "Remains fully seated with realistic equipment and mechanics",
+        "At least two complete cycles of the exact intended exercise",
+        "No unrelated speech, soundtrack, or captions",
+        "Review full clip before adding to A/B master"
+      ]
+    },
+    {
+      "exercise": "Seated lat pulldowns",
+      "destinationPart": "B",
+      "sceneId": "NEW_SEATED-LAT-PULLDOWN",
+      "providerVideoId": "0a01df6eacb3424191b4a599602e0749",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/221d6f61-2d31-41f6-9287-15db32b16996/latPulldownV2.mp4",
+      "durationSec": 5,
+      "notes": "Two complete lat pull reps on plausible overhead cable, legs stationary, approved seated reference identity",
+      "method": "Motion reference from user-owned V2 workout + approved Flex seated image",
+      "status": "SUBMITTED_PROCESSING_NOT_YET_REVIEWED",
+      "ownerApproved": false,
+      "technicalQaVerified": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "audioQa": "No original Marcus audio added; silent requested. Must verify generated embedded audio does not contain unapproved speech/music.",
+      "qualityChecklist": [
+        "Approved Flex face/hair/tattoos preserved",
+        "LEFT white cast supported with no weight bearing",
+        "Remains fully seated with realistic equipment and mechanics",
+        "At least two complete cycles of the exact intended exercise",
+        "No unrelated speech, soundtrack, or captions",
+        "Review full clip before adding to A/B master"
+      ]
     }
   ],
   "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
   "safety": "Visual exercise clips are not medical advice or approval to load the injured leg. Never edit original approved source media.",
-  "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips."
+  "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
+  "latestBatchCreatedDate": "2026-10-21",
+  "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically."
 }
