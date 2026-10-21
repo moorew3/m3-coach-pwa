@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "project": "M3 FLEX",
+  "date": "2026-10-21",
+  "purpose": "Actual image-to-video motion candidates from four user-requested braided avatar stills, not final approved Flex recovery footage.",
+  "status": "FOUR_RENDERED_REVIEW_ONLY__RELEASE_BLOCKED",
+  "startingPortrait": {
+    "ownerProvided": "10042.png multi-angle face/braids/tattoo collage",
+    "constraints": [
+      "Same face, braided cornrows and beard in every frame",
+      "Tattoos and muscular build retained",
+      "White left-leg cast ELEVATED and unloaded for real recovery video",
+      "Fixed camera per exercise with physically correct repetitive motion",
+      "Original seven locked clips never replaced"
+    ]
+  },
+  "blockingQualityIssue": "All four input keyframes from prior image-generation turn depict black lower-leg brace and both feet planted on floor, NOT approved white cast on independently elevated support. This is visible first-frame evidence and must be corrected before any use in released workout. Movement, hands, cable/band mechanics and frame-by-frame tattoo/face continuity need owner QA.",
+  "lockedOriginalVideoIds": [
+    "C01-R3",
+    "C02",
+    "C03",
+    "C04-R2",
+    "C08-PRESS-R3",
+    "C09-PRE-BREATH-R2",
+    "C10-POST-BREATH-R1"
+  ],
+  "videoGenerator": "HeyGen image_to_video, existing Creator workspace, 480p, 5s, no new subscription",
+  "previewUrl": "https://dochost.co/d/s77gmbhk",
+  "tests": [
+    {
+      "exercise": "Seated dumbbell lateral raise",
+      "programs": [
+        "A"
+      ],
+      "stillAssetId": "a24fe0dc783c45f4b687ba88d3c5a37f",
+      "videoId": "ad59ad97886e4f6a997885d759bb717a",
+      "url": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fbd-3f8a-7b37-be3d-eb445d014024.mp4",
+      "qa": "Sampled ten frames showing two plausible raising/lowering arm cycles, no obvious scene change; body/face detail and approved white cast not fully verified",
+      "ownerApproval": false,
+      "status": "REVIEW_ONLY_NOT_IN_MASTER",
+      "clinicalClearanceVerified": false,
+      "readyForRelease": false
+    },
+    {
+      "exercise": "Seated cable triceps pressdown",
+      "programs": [
+        "A",
+        "B"
+      ],
+      "stillAssetId": "783247ad9bf74b30a02255f0feb7c960",
+      "videoId": "8157f7c1aaae41cd8de2b100a0b419d5",
+      "url": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fbf-4f10-7bea-8f33-046da42f501e.mp4",
+      "qa": "Sampled 10 frames; apparent arm/rope motion; elbow and resistance-path biomechanics not verified, not approved",
+      "ownerApproval": false,
+      "status": "REVIEW_ONLY_NOT_IN_MASTER",
+      "clinicalClearanceVerified": false,
+      "readyForRelease": false
+    },
+    {
+      "exercise": "Seated resistance band pull-aparts",
+      "programs": [
+        "B"
+      ],
+      "stillAssetId": "6779141f337a4365a0df602821f79a6e",
+      "videoId": "8c213ef853214bb7939653cbd7a9a943",
+      "url": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fbf-c3a8-7088-b2e4-4cfef1009bac.mp4",
+      "qa": "Sampled ten frames showing arm movement; red band geometry and body/face continuity require full review; wrong cast",
+      "ownerApproval": false,
+      "status": "REVIEW_ONLY_NOT_IN_MASTER",
+      "clinicalClearanceVerified": false,
+      "readyForRelease": false
+    },
+    {
+      "exercise": "Seated arm-only shadow boxing",
+      "programs": [
+        "A"
+      ],
+      "stillAssetId": "e79db05b0e2e417293655ba6f07e67b4",
+      "videoId": "aa757eab395d42978baaac9b89697774",
+      "url": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fc0-212c-78dc-b0a8-e7a24cf3aba5.mp4",
+      "qa": "Sampled ten frames showing alternating guarded fists and punches; anatomy, identity and lower leg posture require full review",
+      "ownerApproval": false,
+      "status": "REVIEW_ONLY_NOT_IN_MASTER",
+      "clinicalClearanceVerified": false,
+      "readyForRelease": false
+    }
+  ],
+  "releaseGates": [
+    "Correct the first-frame avatar white cast and independent leg elevation before animation; never turn the brace into a cast mid-video",
+    "Fix any exercise that visually changes subject identity between frames",
+    "Review authentic repetitions and end-to-start continuity—do not loop a flawed shot",
+    "Use Marcus male voice from approved sources only after motion QA and owner sign-off",
+    "Protect approved seven original clip URLs/hash provenance",
+    "No production/Android publishing before supervised release gates"
+  ]
+}
