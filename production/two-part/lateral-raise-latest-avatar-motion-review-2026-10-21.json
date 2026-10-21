@@ -8,7 +8,7 @@
   "silentEditedVideoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/06074cef-4f28-4568-9873-1715e9289a22.mp4",
   "silentMediaId": "06074cef-4f28-4568-9873-1715e9289a22",
   "durationSeconds": 5.25,
-  "stage": "DRAFT_MOTION_RENDERED_NOT_OWNER_APPROVED_DO_NOT_RELEASE",
+  "stage": "SHARP_FACE_R2_SILENT_VIDEO_RENDERED__OWNER_REVIEW_ONLY__BOOT_SIDE_WRONG",
   "inspection": {
     "videoMotion": "Real dumbbell raising and lowering observed in ten-frame sampled contact sheet; fixed camera; no obvious abrupt hard cut in samples.",
     "issue": "The first-frame image supplied to video generator has the black medical boot on coach's RIGHT leg (viewer's left), while the owner's actual injury and approved new-video requirement specifies LEFT leg. This must be corrected in a clean still before another moving workout production render.",
@@ -17,5 +17,25 @@
   "preservedOriginalMedia": true,
   "ownerApproved": false,
   "medicalClearanceVerified": false,
-  "masterInclusionAllowed": false
+  "masterInclusionAllowed": false,
+  "latestSharperFaceCandidate": {
+    "createdDate": "2026-10-21",
+    "sourceFirstFrameAssetId": "ad4fe180af9d44969935c71c124d9fd1",
+    "sourceDescription": "User's latest sharp-faced seated braided avatar with dumbbells, black orthopedic walking boot and foot support",
+    "heygenId": "0a7179fba1a04f57a8fd134c48e509f2",
+    "heygenVideoPage": "https://app.heygen.com/videos/0a7179fba1a04f57a8fd134c48e509f2",
+    "originalVideoUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a160d0-a174-7305-bd5b-4403203fdfe2.mp4",
+    "silentReviewVideoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/40f35cb6-c7cc-4242-bafe-c36e553acbde.mp4",
+    "silentReviewMediaId": "40f35cb6-c7cc-4242-bafe-c36e553acbde",
+    "videoDimensions": "768x1152",
+    "durationSeconds": 5.25,
+    "frameSampling": "10 frames across 0 to 4.5 sec and six facial crops across 0 to 4.9 seconds",
+    "visualInspection": "Both arms move laterally with dumbbells; no obvious hard scene cuts or major face swap in sampled frames; full repetition form and detailed tattoo identity still require owner inspection",
+    "hardBlock": "Source sharp-faced still depicts medical boot on COACH'S RIGHT LEG (viewer's left), but owner requires black boot on LEFT leg (viewer's right). This has not been corrected. Do not release or label final.",
+    "audio": "Generated audio removed by video-stream copy in separate review MP4",
+    "ownerApproved": false,
+    "clinicalClearanceVerified": false,
+    "appActive": false,
+    "releaseGate": "REVIEW_ONLY__BOOT_LATERALITY_WRONG"
+  }
 }
