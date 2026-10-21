@@ -1,0 +1,243 @@
+{
+  "kind": "M3-FLEX-WORKOUT-A-B-STRENGTH-CONTINUITY-DRAFT",
+  "date": "2026-10-21",
+  "status": "PROGRAMMING-DRAFT-NOT-CLINICALLY-CLEARED-NOT-RELEASED",
+  "purpose": "Continue upper-body hypertrophy, supported pressing/pulling strength, arm endurance, and conditioning while non-weight-bearing in a left-leg cast; avoid falsely representing in-progress videos as completed.",
+  "goals": {
+    "bodyWeightTargetLb": 180,
+    "bodyFatTargetPercent": 12,
+    "benchPressLongTermLb": 285,
+    "squatLongTermLb": 386,
+    "interpretation": "Upper-body training can help preserve muscle and pressing strength. Squat progression and leg loading are paused until orthopedic weight-bearing and rehabilitation clearance; don't promise that cast-safe work maintains maximal squat ability."
+  },
+  "schedule": {
+    "pattern": "2 or 3 nonconsecutive sessions weekly as individually cleared; alternate A and B; never train a loaded movement through injury pain.",
+    "example": "Week 1: A–B–A; Week 2: B–A–B; at least 48 hours between upper-body lifting days when working hard.",
+    "relativeEffort": "After medical clearance, start lighter than pre-injury weights, finish with 2–3 good reps left, progress gradually without leg drive."
+  },
+  "safety": {
+    "weightBearing": "strictly no load, pressure, pushing, or band anchor through the left cast/foot",
+    "position": "stable nonrolling back-supported chair with injured left cast elevated and independently supported",
+    "gear": "dumbbells, safely anchored bands/cables, INNSTAR back pad only in its approved chair position; no unstable anchor or neck routing",
+    "noGo": "standing, stepping, treadmill, leg loading, hard torso twisting, lifting a weight that requires foot bracing, transfer without support",
+    "medicalGate": "treating clinician must approve upper-body resistance, session duration, and non-weight-bearing transfers",
+    "stop": "new leg pain/swelling, chest pain, dizziness, shortness of breath or sharp shoulder pain: stop and seek appropriate medical care"
+  },
+  "programs": [
+    {
+      "id": "A",
+      "title": "Workout A · Shoulders, Arms & Conditioning",
+      "targetMinutes": "45–55 (when completed and medically approved)",
+      "chapters": [
+        {
+          "phase": "Pre",
+          "name": "Supported breathing",
+          "prescription": "1 × 60 sec",
+          "media": "C09-PRE-BREATH-R2",
+          "availability": "owner-approved source, final QA pending",
+          "priority": "approved"
+        },
+        {
+          "phase": "Warm-up",
+          "name": "Controlled arm reaches (unloaded)",
+          "prescription": "2 × 10",
+          "media": "NEW_SHOULDER-MOBILITY",
+          "availability": "new Flex scene pending",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Warm-up",
+          "name": "Gentle hand/wrist preparation",
+          "prescription": "2 min",
+          "media": "C11-HAND-OPEN, NEW_WRIST-CIRCLES",
+          "availability": "moving scene pending",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated lateral dumbbell raises",
+          "prescription": "3 × 10–12 · rest 60 s",
+          "media": "NEW_LATERAL-RAISE",
+          "reference": "V2 lateralRaise movement and existing coaching",
+          "availability": "V2 reference only; Flex recovery video not approved",
+          "priority": "reference"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated hammer curls",
+          "prescription": "3 × 8–12 · rest 60–75 s",
+          "media": "C02",
+          "availability": "owner-approved clip; coach timing QA pending",
+          "priority": "approved"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated dumbbell shrugs",
+          "prescription": "3 × 12–15 · rest 60 s",
+          "media": "C01-R3",
+          "availability": "owner-approved clip; coach timing QA pending",
+          "priority": "approved"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated rear-delt fly (light)",
+          "prescription": "3 × 10–12 · rest 60 s",
+          "reference": "V2 rearDeltFly.mp4 (actor differs)",
+          "availability": "V2 reference only; Flex cast-safe scene not approved",
+          "priority": "reference"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated row, supported without foot bracing",
+          "prescription": "3 × 8–12 · rest 75–90 s",
+          "reference": "original seatedRow motion and V2 audio",
+          "availability": "V2 reference only; foot bracing and setup must be reviewed",
+          "priority": "reference"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated cable/band triceps pressdown",
+          "prescription": "3 × 10–12 · rest 60 s",
+          "reference": "original tricepsPressdown motion and V2 audio",
+          "availability": "V2 reference only; safe seat/anchor and Flex animation unapproved",
+          "priority": "reference"
+        },
+        {
+          "phase": "Conditioning",
+          "name": "Seated arm-only boxing",
+          "prescription": "4 × 45 sec · rest 45 sec",
+          "media": "NEW_ARM-BOXING",
+          "reference": "V2 boxingFlow60.mp4 includes standing actions—not usable as-is",
+          "availability": "adapted cast-safe motion and clinician approval pending",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Post",
+          "name": "Gentle supported cool-down and breathing",
+          "prescription": "3–4 min",
+          "media": "C10-POST-BREATH-R1",
+          "availability": "approved breathing source; additional stretches pending",
+          "priority": "approved"
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "Workout B · Chest, Back & Arms",
+      "targetMinutes": "45–55 (when completed and medically approved)",
+      "chapters": [
+        {
+          "phase": "Pre",
+          "name": "Supported breathing",
+          "prescription": "1 × 60 sec",
+          "media": "C09-PRE-BREATH-R2",
+          "availability": "owner-approved source, final QA pending",
+          "priority": "approved"
+        },
+        {
+          "phase": "Warm-up",
+          "name": "Controlled arm reaches (unloaded)",
+          "prescription": "2 × 10",
+          "media": "NEW_SHOULDER-MOBILITY",
+          "availability": "Flex scene pending",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Warm-up",
+          "name": "Unloaded forward presses and hand openings",
+          "prescription": "2 min",
+          "media": "NEW_FORWARD-PRESS-WARMUP, C11-HAND-OPEN",
+          "availability": "Flex scene pending",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated INNSTAR forward chest press",
+          "prescription": "4 × 8–12 · rest 75–90 s",
+          "media": "C08-PRESS-R3",
+          "availability": "owner-approved exact INNSTAR cast-safe visual (medical loading clearance pending)",
+          "priority": "approved"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated supported cable/band row",
+          "prescription": "4 × 8–12 · rest 75–90 s",
+          "reference": "original seatedRow motion and V2 source",
+          "availability": "V2 reference only; no foot-plate bracing",
+          "priority": "reference"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated dumbbell front raises",
+          "prescription": "3 × 10–12 · rest 60 s",
+          "media": "C03",
+          "availability": "approved video and Marcus audio separate; sync QA pending",
+          "priority": "approved"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated alternating dumbbell curls",
+          "prescription": "3 × 8–12 · rest 60–75 s",
+          "media": "C04-R2",
+          "availability": "approved clip; sync QA pending",
+          "priority": "approved"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated light band pull-aparts",
+          "prescription": "2 × 12–15 · rest 60 s",
+          "reference": "original bandPullApart reference",
+          "availability": "new Flex seated cast-safe visual not approved",
+          "priority": "reference"
+        },
+        {
+          "phase": "Strength",
+          "name": "Seated cable/band triceps pressdown",
+          "prescription": "3 × 10–12 · rest 60 s",
+          "reference": "original tricepsPressdown motion, V2 coaching",
+          "availability": "reference only, equipment anchor safety and cast-safe form unapproved",
+          "priority": "reference"
+        },
+        {
+          "phase": "Optional (not included in base duration)",
+          "name": "INNSTAR chest fly",
+          "prescription": "HOLD: no active sets",
+          "media": "NEW_INNSTAR-FLY",
+          "availability": "review-only C07 clip; not approved as a program exercise",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Optional (not included in base duration)",
+          "name": "AMYCO wrist device",
+          "prescription": "HOLD: no active sets",
+          "media": "NEW_AMYCO-WRIST",
+          "availability": "correct manual and motion unverified",
+          "priority": "blocked"
+        },
+        {
+          "phase": "Post",
+          "name": "Gentle supported cooldown breathing",
+          "prescription": "3–4 min",
+          "media": "C10-POST-BREATH-R1",
+          "availability": "approved breathing source; stretch scene pending",
+          "priority": "approved"
+        }
+      ]
+    }
+  ],
+  "progression": {
+    "measurement": "Track sets, reps, weight/resistance and perceived effort. No need to count clicks in the app while training; guided player must do time/chapters once completed.",
+    "rule": "Only after medical clearance: when all sets at the top rep limit are controlled on two separate sessions and cast remains unloaded, increase the smallest available amount next time; never force reps or chase old loading during injury.",
+    "cardio": "Seated boxing requires clearance and must eliminate foot pivots or bracing."
+  },
+  "preserve": [
+    "C01-R3",
+    "C02",
+    "C03",
+    "C04-R2",
+    "C08-PRESS-R3",
+    "C09-PRE-BREATH-R2",
+    "C10-POST-BREATH-R1"
+  ],
+  "implementation": "Use as proposed extension plan for production master builder; do not automatically mark missing scenes completed or publish training release."
+}
