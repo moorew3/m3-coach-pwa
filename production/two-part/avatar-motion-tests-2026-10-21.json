@@ -3,7 +3,7 @@
   "project": "M3 FLEX",
   "date": "2026-10-21",
   "purpose": "Actual image-to-video motion candidates from four user-requested braided avatar stills, not final approved Flex recovery footage.",
-  "status": "FOUR_RENDERED_REVIEW_ONLY__RELEASE_BLOCKED",
+  "status": "FOUR_RENDERED_REVIEW_ONLY__CURRENT_BOOT_PHOTOS_IMPORTED__NO_NEW_CORRECTED_VIDEO_YET",
   "startingPortrait": {
     "ownerProvided": "10042.png multi-angle face/braids/tattoo collage",
     "constraints": [
@@ -14,7 +14,7 @@
       "Original seven locked clips never replaced"
     ]
   },
-  "blockingQualityIssue": "All four input keyframes from prior image-generation turn depict black lower-leg brace and both feet planted on floor, NOT approved white cast on independently elevated support. This is visible first-frame evidence and must be corrected before any use in released workout. Movement, hands, cable/band mechanics and frame-by-frame tattoo/face continuity need owner QA.",
+  "blockingQualityIssue": "The four old motion tests do not show the correct owner's exact black medical boot supported off the floor. They were made before new photo evidence. All still review-only. Each corrected first frame must be validated before creating new AI videos; do not use montage or generic white cast.",
   "lockedOriginalVideoIds": [
     "C01-R3",
     "C02",
@@ -86,11 +86,20 @@
     }
   ],
   "releaseGates": [
-    "Correct the first-frame avatar white cast and independent leg elevation before animation; never turn the brace into a cast mid-video",
+    "Actual owner black boot images are source of truth for new generated scenes; keep LEFT leg supported above floor and unloaded (no white plaster cast).",
+    "Correct the first-frame avatar actual black walking boot and independent leg elevation before animation; never turn the brace into a cast mid-video",
     "Fix any exercise that visually changes subject identity between frames",
     "Review authentic repetitions and end-to-start continuity—do not loop a flawed shot",
     "Use Marcus male voice from approved sources only after motion QA and owner sign-off",
     "Protect approved seven original clip URLs/hash provenance",
     "No production/Android publishing before supervised release gates"
-  ]
+  ],
+  "newOwnerActualBootReferences": {
+    "assetIdSide": "0ca843ef55c249aea712b13439f63d86",
+    "assetIdTop": "55489f572c93405d8bd1b9db06d4bcc8",
+    "realEquipment": "Dark padded medical walking boot with rigid dark grey/blue side frame, multiple Velcro straps, high ankle/foot coverage",
+    "currentDirection": "Use actual black medical boot rather than previously instructed white cast for future generation. Preserve original seven sources unchanged.",
+    "legPlacement": "Boot on LEFT leg, elevated onto separate support, with no floor contact or weight bearing.",
+    "detailedBriefPath": "production/two-part/boot-locked-four-scene-production-brief-2026-10-21.json"
+  }
 }
