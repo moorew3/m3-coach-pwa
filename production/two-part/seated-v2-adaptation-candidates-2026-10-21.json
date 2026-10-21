@@ -186,8 +186,25 @@
         "LEFT white cast on stable supported stool, no injured-foot weight bearing or machine thigh pad pressure",
         "RIGHT foot still, no bracing, rocking or standing",
         "No generated music/dialogue, plausible cable and bar geometry",
-        "User reviews revised clip before owner approval"
-      ]
+        "User reviews revised clip before owner approval",
+        "Machine geometry and torso alignment consistent with SilverSneakers seated front-facing demonstration",
+        "Never position cable behind neck or bar behind head",
+        "No lap/thigh pad compressing left cast or requiring injured-leg stabilization"
+      ],
+      "exerciseTechniqueReference": {
+        "linkProvidedByOwner": "https://share.google/ZtQ3sbJrB3kskyqyH",
+        "resolvedReferenceUrl": "https://www.youtube.com/watch?v=AOpi-p0cJkc",
+        "referenceTitle": "Beginner's Guide: Lat Pulldown",
+        "publisher": "SilverSneakers",
+        "publicationDate": "2017-04-18",
+        "relationship": "Owner-supplied visual orientation/form reference ONLY — not a licensed video source or generation upload",
+        "useRights": "Not verified; do not upload the third-party YouTube content as an AI motion driver or republish.",
+        "verifiedPageMetadata": "Shortlink resolved to Google video result identifying SilverSneakers YouTube video; full video motion not frame-by-frame audited."
+      },
+      "specificOwnerTechnique": "Set seated trainer facing the actual high-pulley station; hands overhead gripping the bar in front of face. Pull toward upper chest (never behind neck), elbows down/back, chest lifted and torso almost stationary; control return. Three-quarter front/side camera must show the machine, face, full cast support, arms and bar. If machine pads would press on the injured left leg, position the leg free of pads and support it independently; do not show otherwise physically impossible machine access.",
+      "ownerRefSubmitted": "2026-10-21",
+      "referenceReviewStatus": "VIDEO_LINK_RESOLVED_REFERENCE_DOCUMENTED__R2_OUTPUT_NOT_YET_REINSPECTED",
+      "newRenderPermission": "Do not incur additional generation credits solely because a reference was shared. Review current R2 before re-rendering."
     }
   ],
   "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
@@ -195,6 +212,6 @@
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
   "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
-  "latestOwnerFeedback": "User explicitly approved seated band pull-apart and shadow boxing, requested pulldown correction: \"just help him sitting facing the pull down bar\"; new version submitted for review.",
+  "latestOwnerFeedback": "Owner supplied reference https://share.google/ZtQ3sbJrB3kskyqyH for seated lat-pulldown orientation. Resolved to SilverSneakers YouTube AOpi-p0cJkc (2017). Technique reference and copyright limits documented for R2; no new video generated or clips promoted.",
   "newLatPullRevisionDate": "2026-10-21"
 }
