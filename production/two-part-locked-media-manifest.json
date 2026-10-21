@@ -888,5 +888,111 @@
       "https://github.com/Comfy-Org/ComfyUI/blob/master/blueprints/Motion%20Transfer%20%28Wan%20Animate%202%29.json",
       "https://github.com/deanhowe/comfyui-docs/blob/main/tutorials/video/wan/wan2-2-animate.mdx"
     ]
+  },
+  "v2ProtectedReuse": {
+    "created": "2026-10-21",
+    "state": "ORIGINAL_V2_MEDIA_COPIED_AND_LINKED_FOR_REVIEW_ONLY",
+    "originalBranch": "rebuild/m3-coach-v2",
+    "referenceGallery": "public/recovery-coach/programs/v2-source-preview.html",
+    "sourceFiles": [
+      {
+        "key": "boxingFlow60",
+        "path": "public/recovery-coach/programs/v2-sources/boxingFlow60.mp4",
+        "blobSha": "0e3c8b9cb45324dfb5cbcd8e81f070942702f776",
+        "role": "original existing V2 boxing motion - standing/footwork not cast cleared"
+      },
+      {
+        "key": "chestPress",
+        "path": "public/recovery-coach/programs/v2-sources/chestPress.mp4",
+        "blobSha": "0648ce54638ef396fc3b4b4dbac498c67c627e98",
+        "role": "different actor/equipment; cannot substitute locked INNSTAR"
+      },
+      {
+        "key": "dumbbellCurl",
+        "path": "public/recovery-coach/programs/v2-sources/dumbbellCurl.mp4",
+        "blobSha": "3c5548821bba420fc4e9794462778d744b83295d",
+        "role": "arm curl reference only; never relabel wrist curl"
+      },
+      {
+        "key": "rearDeltFly",
+        "path": "public/recovery-coach/programs/v2-sources/rearDeltFly.mp4",
+        "blobSha": "ca71cb6a395320a47f223df0a5096124f1a41038",
+        "role": "reference only; identity, position and cast still unverified"
+      },
+      {
+        "key": "chestPressV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/chestPress.mp3",
+        "blobSha": "ce76c0d9f55aa45adafd0949d1de722c9df6e592",
+        "role": "old V2 coaching audio; voice/content/timing not certified for recovery"
+      },
+      {
+        "key": "curlV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/dumbbellCurl.mp3",
+        "blobSha": "e63de4c6f5090c63fa1fd6e6cc00bb4313837a43",
+        "role": "old V2 coaching audio; not the locked Flex Marcus clip"
+      },
+      {
+        "key": "lateralRaiseV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/lateralRaise.mp3",
+        "blobSha": "c28b433efb93e81e279cc41aa09bb6c6eff96805",
+        "role": "old V2 coaching audio; voice/content/timing pending review"
+      },
+      {
+        "key": "seatedRowV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/seatedRow.mp3",
+        "blobSha": "4e44a3771c6081b6345ff1083de0d9b841b41735",
+        "role": "old V2 coaching audio; bracing instruction may be unsafe with cast"
+      },
+      {
+        "key": "tricepsV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/tricepsPressdown.mp3",
+        "blobSha": "0b36f96e6b8aec64b5b7fb41268b77b219bdbdb7",
+        "role": "old V2 coaching audio; may require seated adaptation"
+      }
+    ],
+    "chapterStudyMapping": {
+      "NEW_ARM-BOXING": {
+        "from": "boxingFlow60",
+        "purpose": "punch path and timing reference",
+        "blockedBecause": "standing footwork must be removed, left cast support and clinician clearance unverified"
+      },
+      "NEW_LATERAL-RAISE": {
+        "from": "original V2 coach-identity.ts lateralRaise motion and V2 lateralRaise coaching audio",
+        "purpose": "movement reference and coaching phrasing",
+        "blockedBecause": "standing vs seated, face/left cast, exact voice/timing and clinician clearance"
+      },
+      "NEW_SHOULDER-MOBILITY": {
+        "from": "original V2 coach-identity.ts controlledShoulderWork motion",
+        "purpose": "compare for exact controlled arm reaches",
+        "blockedBecause": "not established as the exact controlled arm reaches"
+      },
+      "NEW_REST-CUE": {
+        "from": "src/v2/marcus-cue-audio.ts",
+        "purpose": "reuse segmentation and session-event wiring without new voice generation",
+        "blockedBecause": "live playable cue audio source and recovery phrasing/timing not recovered and certified"
+      },
+      "NEW_FORWARD-PRESS-WARMUP": {
+        "from": "chestPress",
+        "purpose": "reference only to arm extension",
+        "blockedBecause": "V2 chest press is equipment-specific, not an approved unloaded warm-up"
+      }
+    },
+    "playerAndVoiceLogic": {
+      "workoutSessionEngine": "src/v2/session.ts",
+      "recordedVoiceRegistry": "src/v2/marcus-trainer-recordings.ts",
+      "approvedVoiceId": "0fadce1e82af494a93873aa38ea8d106",
+      "v2VoiceMediaCaveat": "The V2 trainer registry points to /media/marcus-trainer/*.mp3 which are NOT present in the inspected V2 public/media tree. Five separate /media/coaching/*.mp3 files were copied; do not mislabel them as newly certified Marcus trainer recordings.",
+      "masterBuilder": "production/two-part/build_masters.py",
+      "releaseGates": "production/two-part/release-gates.json"
+    },
+    "activationGates": {
+      "videoVoiceIdentityConfirmed": false,
+      "seatedCastSafeTechniqueConfirmed": false,
+      "ownerNewClipApproval": false,
+      "treatingClinicianClearance": false,
+      "androidPlaybackVerified": false,
+      "mastersReleased": false
+    },
+    "protection": "reference-only paths must never be resolved by production assembler as approved media; existing seven lockedApprovedVideoIds, all approvedAssets, chapter statuses and release gates remain unchanged"
   }
 }
