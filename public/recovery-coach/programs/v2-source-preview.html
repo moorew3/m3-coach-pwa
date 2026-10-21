@@ -36,9 +36,20 @@
 <p class="small">The original M3 Coach V2 also maps lateral raises, seated rows, triceps pressdowns and shoulder mobility. These are source references, not added chapters, until playback, licensing and seated-form review.</p>
 <a href="https://github.com/moorew3/m3-coach-pwa/blob/rebuild/m3-coach-v2/src/data/coach-identity.ts" target="_blank" rel="noopener noreferrer">Inspect original motion registry</a>
 </section>
+<section class="card">
+<div class="bar">Recovered original V2 coaching · Listen and verify</div>
+<h2>Reuse the existing coaching tracks</h2>
+<p class="warn">These five tracks were copied exactly from Workout App V2. Their voice identity, phrasing, standing instructions and timing have not been approved for the seated recovery program. They do not automatically replace Marcus's seven approved Flex recordings.</p>
+<div id="sourceAudio"></div>
+</section>
 <p class="warn">Do not follow along with any movements here while injured. Wait for your clinician to clear the exact seated exercise. No workouts, sets or progress are recorded on this page.</p>
 </main>
 <script>
+const recoveredVoiceNames=["Chest press","Dumbbell curls","Lateral raises","Seated row","Triceps pressdown"];
+const recoveredVoiceKeys=["chestPress","dumbbellCurl","lateralRaise","seatedRow","tricepsPressdown"];
+const audioWrap=document.getElementById("sourceAudio");
+recoveredVoiceKeys.forEach((key,i)=>{const label=document.createElement("label");label.className="small muted";label.style.display="block";label.style.marginTop="13px";label.textContent=recoveredVoiceNames[i]+" · V2 audio source";
+const clip=document.createElement("audio");clip.controls=true;clip.preload="none";clip.src="./v2-sources/audio/"+key+".mp3";clip.style.width="100%";clip.setAttribute("aria-label",label.textContent);audioWrap.append(label,clip);});
 const vids=[...document.querySelectorAll("video")];
 vids.forEach(v=>{v.addEventListener("play",()=>vids.forEach(other=>{if(other!==v)other.pause()}));v.addEventListener("error",()=>{const msg=document.createElement("p");msg.className="warn";msg.textContent="Source video could not load in this browser; this is not verified playback.";v.after(msg)},{once:true})});
 </script></body></html>
