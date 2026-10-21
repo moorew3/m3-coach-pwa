@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "created": "2026-10-21",
   "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
-  "status": "FOUR_OWNER_APPROVED_NEW_CLIPS__LAT_PDOWN_LOOP_REJECTED_OWNER_SAYS_WRONG_AVATAR__ROW_PENDING",
+  "status": "FOUR_OWNER_APPROVED_NEW_CLIPS__ALL_PDOWN_GENERATIONS_UNAPPROVED_OR_REJECTED__ROW_PENDING",
   "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
   "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
   "protectedOriginals": [
@@ -273,7 +273,7 @@
       },
       "method": "Reference-to-video with approved seated coach identity + screenshot of side-view machine geometry + original V2 exercise motion",
       "durationSec": 5,
-      "status": "NOT_AUTO_APPROVED__MUST_INDEPENDENTLY_CHECK_IDENTITY_AND_MOTION",
+      "status": "REJECTED_BY_INTERNAL_MOTION_IDENTITY_QA__DO_NOT_ACTIVATE",
       "ownerApproved": false,
       "technicalQaVerified": false,
       "clinicianClearanceVerified": false,
@@ -288,7 +288,29 @@
         "LEFT white cast stays unloaded and independently supported",
         "No voice, music, captions, shifting orientation, extra limbs, or broken equipment",
         "Never use before owner approval, visual movement QA and clinician clearance"
-      ]
+      ],
+      "qa20261021": {
+        "reviewedSourceVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15e9e-f220-70b6-a26a-54046b842857.mp4",
+        "videoDurationSec": 5.258344,
+        "framesInspectedSec": [
+          0,
+          0.7,
+          1.4,
+          2,
+          2.4,
+          3.1,
+          4,
+          4.8
+        ],
+        "observations": [
+          "Frames 0–0.7 show coach seated with hand weights (dumbbells), violating user's mandatory no-dumbbells first-frame requirement.",
+          "Framing switches from a gym side or angled seat position to a full frontal lat-pull posture near 1.4 sec; this does not satisfy single fixed side-view machine-facing camera.",
+          "Large change in composition/body continuity across the change in framing means owner-approved avatar identity cannot be assured throughout.",
+          "Later frames contain up/down lat bar movement but do not cure incorrect starting pose or camera/identity discontinuity."
+        ],
+        "rejectionRule": "No video with sudden face/body/scene changes, dumbbells opening, incorrect side angle, or motion-cycle seam is allowed in M3 FLEX.",
+        "remediation": "Require properly captured/rigged video with exact approved Flex avatar appearance and controlled human kinematics, physically correct side-facing lat machine, no dumbbells. Preflight a single 2-rep moving master and inspect full motion before editing longer sets. Do not spend HeyGen credits by recycling the R2/R3 generations as motion drivers."
+      }
     }
   ],
   "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
@@ -296,6 +318,6 @@
   "ownerNote": "Owner approved the displayed pair; no additional instruction to bypass technical identity/cast/motion QA or clinician clearance. Do not alter seven locked source clips.",
   "latestBatchCreatedDate": "2026-10-21",
   "newCandidateApprovalRule": "Original exercise approved ≠ new seated adaptation approved. New four require motion, cast and identity QA, plus separate owner acceptance. Do not promote automatically.",
-  "latestOwnerFeedback": "Owner rejected lat pulldown derived cut for visible glitches and face/body identity drift. Quarantine looped derivative and R2 source as unusable; preserve originals and four approved new candidate clips. Do not re-render with same defective reference pattern or use additional credits before a identity-locked technique method is verified.",
+  "latestOwnerFeedback": "User rejected looped original R2 for glitches and coach identity changes. Verified R2 edit has repeated hard scene transitions; separate R3 also fails approved start pose, fixed side-view camera and identity QA. Neither may be used as new video source. Focus on true controlled motion transfer rather than more prompt-only attempts.",
   "newLatPullRevisionDate": "2026-10-21"
 }
