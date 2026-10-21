@@ -466,7 +466,7 @@
     "Full mobile end-to-end playback QA",
     "Owner and clinician clearance where required"
   ],
-  "currentProductionNextStep": "Review and send saved Gmail draft to original Vimeo creator requesting explicit AI motion transfer use of Tony Gentilcore seated dumbbell lateral raise source. Do not download/use until rights granted. Otherwise commission/record original seated demonstrator under model release. Approved original seven protected; no free GPU run used.",
+  "currentProductionNextStep": "User rejected seeking creator permission and filming anyone. An original procedural illustrated-motion driver of seated dumbbell lateral raises, two full repetitions, with anatomical left cast supported and right foot grounded, was created and uploaded to M3 FLEX reference folder (file 1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C). It is experimental, may not be compatible with human-video Wan Animate 2. For next step download driver from Drive on phone and choose in Comfy Cloud Input Video, preserving approved Flex photo; verify model and generation-credit costs before Run. Seven protected original clips unchanged. No Comfy run spent.",
   "ownerIdentityApprovalDate": "2026-10-19",
   "approvedReelReview": {
     "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
@@ -858,5 +858,19 @@
         "Permission-request email draft saved in connected Gmail, not sent; requires owner's review and sending."
       ]
     }
+  },
+  "syntheticMotionDriverTrial": {
+    "scene": "NEW_LATERAL-RAISE",
+    "status": "DRIVER_CREATED_AND_UPLOADED__NOT_TESTED_IN_COMFY",
+    "type": "original procedurally animated fictional seated adult with two complete lateral-raise motion cycles; no filmed person, no stock media, no borrowed creator footage",
+    "durationSeconds": 8,
+    "resolution": "540x960",
+    "fps": 20,
+    "license": "Original tool-produced demonstration footage; no third-party source footage used.",
+    "driveFileId": "1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C",
+    "driveUrl": "https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view",
+    "qaCaveat": "Illustrated humanoid may fail Wan Animate 2's human motion interpretation; must validate output; do not represent as approved Flex footage.",
+    "originalApprovedVideosAltered": false,
+    "comfyCloudGenerationsUsedByThisTrial": 0
   }
 }
