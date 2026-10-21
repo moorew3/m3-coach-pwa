@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-10-21",
+  "purpose": "New seated versions of user-owned original M3 Coach V2 standing exercises using existing motion footage and the already approved seated M3 FLEX avatar image. Neither is owner approved or clinician cleared.",
+  "status": "TWO_CANDIDATE_GENERATIONS_SUBMITTED_PENDING_VISUAL_QA",
+  "account": "Connected existing paid HeyGen Creator workspace; generation may consume prepaid credits. No new subscription was created.",
+  "approvedReferenceImageAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
+  "protectedOriginals": [
+    "C01-R3",
+    "C02",
+    "C03",
+    "C04-R2",
+    "C08-PRESS-R3",
+    "C09-PRE-BREATH-R2",
+    "C10-POST-BREATH-R1"
+  ],
+  "candidates": [
+    {
+      "exercise": "Seated dumbbell lateral raises",
+      "destinationPart": "A",
+      "sceneId": "NEW_LATERAL-RAISE",
+      "providerVideoId": "c7d7d4c7264b402fb69768df042e2df8",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4",
+      "method": "Existing approved moving motion as reference video + approved seated image as identity and posture reference",
+      "durationSec": 5,
+      "status": "SUBMITTED_UNVERIFIED",
+      "ownerApproved": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "qualityChecklist": [
+        "Correct original face, cast on LEFT, no leg load",
+        "Sits throughout; never standing",
+        "Two full outward lateral dumbbell raise/lower cycles (not forward raises)",
+        "No floating equipment, anatomical motion and no extra limbs",
+        "No unapproved soundtrack; existing approved Marcus must be sourced and synced separately"
+      ]
+    },
+    {
+      "exercise": "Seated cable triceps pressdown",
+      "destinationPart": "A and B",
+      "sceneId": "NEW_SEATED-TRICEPS-PRESSDOWN",
+      "providerVideoId": "0682811783264435ab1ba6ac589eabdd",
+      "sourceMotionVideo": "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/98e24436-bee9-42d3-9916-97abc73942a7/tricepsPressdown.mp4",
+      "method": "Existing approved moving motion as reference video + approved seated image as identity and posture reference",
+      "durationSec": 5,
+      "status": "SUBMITTED_UNVERIFIED",
+      "ownerApproved": false,
+      "clinicianClearanceVerified": false,
+      "appActive": false,
+      "qualityChecklist": [
+        "Original face, hairstyle, tattoos, LEFT white cast and foot support",
+        "Sits with stable torso and RIGHT foot motionless",
+        "Two full elbow extensions, shoulder position neutral",
+        "Cable anchor, handle path and seat physically plausible",
+        "No unapproved soundtrack; use only verified Marcus recording after motion approval"
+      ]
+    }
+  ],
+  "nextStep": "When the generation players show completed, review the full video motion. Reject if any cast, identity, exercise mechanics or audio condition fails; never auto-promote source references. If both accepted, add only newly approved derivative URLs through release gates with owner record and clinician clearance. Approved original files stay unchanged.",
+  "safety": "Visual exercise clips are not medical advice or approval to load the injured leg. Never edit original approved source media."
+}
