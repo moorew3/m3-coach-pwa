@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-21",
+  "project": "M3 FLEX",
+  "exercise": "Seated dumbbell lateral raises",
+  "request": "Animate user-selected latest seated coach still as the identical moving avatar",
+  "originalHeyGenVideoId": "99556651263b4fd691b7de17a0a4bc7c",
+  "originalHeyGenUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15fee-e1c3-7768-9fb2-787965308932.mp4",
+  "silentEditedVideoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/06074cef-4f28-4568-9873-1715e9289a22.mp4",
+  "silentMediaId": "06074cef-4f28-4568-9873-1715e9289a22",
+  "durationSeconds": 5.25,
+  "stage": "DRAFT_MOTION_RENDERED_NOT_OWNER_APPROVED_DO_NOT_RELEASE",
+  "inspection": {
+    "videoMotion": "Real dumbbell raising and lowering observed in ten-frame sampled contact sheet; fixed camera; no obvious abrupt hard cut in samples.",
+    "issue": "The first-frame image supplied to video generator has the black medical boot on coach's RIGHT leg (viewer's left), while the owner's actual injury and approved new-video requirement specifies LEFT leg. This must be corrected in a clean still before another moving workout production render.",
+    "additionalReview": "Must verify identity/tattoos and true complete two reps in full video. Do not claim clinical clearance."
+  },
+  "preservedOriginalMedia": true,
+  "ownerApproved": false,
+  "medicalClearanceVerified": false,
+  "masterInclusionAllowed": false
+}
