@@ -84,6 +84,16 @@ The original V2 plan's `Exercise.rest` (seconds) is preserved for normal working
 - **Controls:** the existing V2 coach route retains remaining-rest countdown and +15/-15 second adjustments. Counts pause while the session is paused; work-set video/audio remains separated from rest.
 - **Verification:** 19 isolated source-derived logic tests passed in the current development session (grouped order, no-pair straight mode, source-set totals, 60-second single set, 75-second partner rest, end-of-exercise rest, before-cooldown rest, and section safety). Repeatable test committed as `scripts/qa-coach-rest-policy.mjs`; command `npm run test:coach-rests`. The actual compiled app and Galaxy Fold playback remain **untested** because Railway remains unavailable. No deployment or purchase.
 
+## Workout A/B staged prescriptions and checks
+
+The new `src/data/recovery/m3-flex-workouts-ab-staging.json` references all 11 owner-approved motion sources by ID (without copying, overwriting or generating the footage). It contains **proposed** injury-aware, fully seated recovery schedules: Workout A 16 working sets, Workout B 15 working sets, plus opening and closing breathing. These prescriptions are NOT yet approved by a clinician, and the file is **NOT wired into the deployed V2 app**. The original live program and historical logs are untouched.
+
+Optional pairings: Workout A seated hammer curls + seated triceps pressdowns; Workout B seated front raises + alternating curls and seated band pull-aparts + triceps pressdowns. A paired round moves A1 → B1 without a recovery countdown, then rests according to its pair's `restSec`. If a pair has unequal prescribed set totals, the extra set completes alone and still gets its own rest countdown. After the final working set, a rest countdown precedes the cooldown chapter.
+
+Additional checks: `npm run test:m3-flex-recovery` exercises 19 deterministic scenarios covering source media approval, exact set totals, normal/set-pair transitions, optional pairs, no internal pair rest, unequal sets, and cooldown entry. Together with `npm run test:coach-rests`, **38 focused logic checks** passed in source-driven evaluation. This is not a TypeScript/Vite build, real-time avatar-rep demonstration, Android audio test, medical clearance or production deployment.
+
+Real release blockers remain: identity reconciliation (older V2 short-hair coach vs approved recovery avatar with braids and elevated anatomical left boot), full 8–15-rep action footage, synchronized Marcus voice for every coached rep/rest period, permission-based form observation if required, safe physical positioning, actual V2 end-to-end browser tests and owner-approved release after Railway recovery.
+
 ## Staging status
 - GitHub changes: **created; NOT DEPLOYED**.
 - Rails/Railway source verification: **BLOCKED BY PLATFORM AUTH/OUTAGE**.
