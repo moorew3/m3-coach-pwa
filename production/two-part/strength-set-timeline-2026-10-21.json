@@ -130,13 +130,16 @@
           "set": 1,
           "of": 3,
           "repsUpper": 12,
-          "mediaStatus": "missing-final-Flex-motion",
-          "sourceId": null,
+          "mediaStatus": "owner-approved-source-only-not-final-full-set",
+          "sourceId": "C12-LATERAL-R3",
           "strictlyNotPlayableUntilClinicianAndTimingApproved": true,
           "plannedPrescription": "3 × 10–12 · rest 60 s",
           "startSec": 400,
           "durationSec": 48,
-          "endSec": 448
+          "endSec": 448,
+          "sourceAssetDurationSec": 5.167,
+          "sourcePlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+          "sourceOwnerApproved": true
         },
         {
           "kind": "between-sets-rest",
@@ -156,13 +159,16 @@
           "set": 2,
           "of": 3,
           "repsUpper": 12,
-          "mediaStatus": "missing-final-Flex-motion",
-          "sourceId": null,
+          "mediaStatus": "owner-approved-source-only-not-final-full-set",
+          "sourceId": "C12-LATERAL-R3",
           "strictlyNotPlayableUntilClinicianAndTimingApproved": true,
           "plannedPrescription": "3 × 10–12 · rest 60 s",
           "startSec": 508,
           "durationSec": 48,
-          "endSec": 556
+          "endSec": 556,
+          "sourceAssetDurationSec": 5.167,
+          "sourcePlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+          "sourceOwnerApproved": true
         },
         {
           "kind": "between-sets-rest",
@@ -182,13 +188,16 @@
           "set": 3,
           "of": 3,
           "repsUpper": 12,
-          "mediaStatus": "missing-final-Flex-motion",
-          "sourceId": null,
+          "mediaStatus": "owner-approved-source-only-not-final-full-set",
+          "sourceId": "C12-LATERAL-R3",
           "strictlyNotPlayableUntilClinicianAndTimingApproved": true,
           "plannedPrescription": "3 × 10–12 · rest 60 s",
           "startSec": 616,
           "durationSec": 48,
-          "endSec": 664
+          "endSec": 664,
+          "sourceAssetDurationSec": 5.167,
+          "sourcePlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+          "sourceOwnerApproved": true
         },
         {
           "kind": "transition",
@@ -1316,5 +1325,5 @@
       ]
     }
   },
-  "releaseGate": "Existing build_masters.py still blocks final release. This storyboard does not override its seven-source hash checks, owner/clinical approval or Android QA."
+  "releaseGate": "Existing build_masters.py still blocks final release. This storyboard does not override its seven-source hash checks, owner/clinical approval or Android QA. Owner-approved R3 source is shorter than the set prescription; cannot count as 10-12 repetitions, replay loop or cleared actual workout."
 }
