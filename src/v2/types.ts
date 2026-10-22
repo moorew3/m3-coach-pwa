@@ -26,6 +26,10 @@ export type V2Exercise = {
   repRange?: [number, number];
   seconds?: number;
   restSeconds: number;
+  /** Optional same-round partner group for true A1/B1 -> rest supersets. */
+  supersetId?: string;
+  /** Rest after LAST movement in a completed paired round. */
+  supersetRestSeconds?: number;
   equipment?: string[];
   motionKey: string;
   cues: string[];
@@ -38,6 +42,8 @@ export type V2Workout = {
   id: string;
   title: string;
   focus: string;
+  /** Supersets opt-in; existing workouts remain straight by default. */
+  useSupersets?: boolean;
   exercises: V2Exercise[];
 };
 
