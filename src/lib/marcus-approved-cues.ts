@@ -52,7 +52,7 @@ export function playMarcusWorkCue(stepKey: string, mirror: string | undefined, s
   element.onloadedmetadata = () => {
     try { if (element.currentTime < clip.start) element.currentTime = clip.start; } catch { /* browser not seekable yet */ }
   };
-  element.currentTime = clip.start;
+  try { element.currentTime = clip.start; } catch { /* seek when metadata loads */ }
   const session = { stepKey, element, end: clip.end };
   active = session;
   element.ontimeupdate = () => {
