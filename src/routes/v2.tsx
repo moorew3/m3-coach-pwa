@@ -93,6 +93,13 @@ function V2Coach() {
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [experience, setExperience] = useState<"coach-session" | "demonstrations">("coach-session");
   const coachCheckpoint = useRef<V2Session | null>(null);
+  const [stagePlayback, setStagePlayback] = useState({ key: "", playing: false });
+  const stageStepKey = [session.workout.id, session.exerciseIndex, session.setIndex, session.phase].join(":");
+  const actualWorkVideoPlaying = stagePlayback.playing && stagePlayback.key === stageStepKey;
+  const needsVisibleWorkVideo =
+    experience === "coach-session" && session.phase === "work" &&
+    (session.mode === "coach" || session.mode === "shadow") &&
+    !hasApprovedRealTimeCoach(session.workout.exercises[session.exerciseIndex]?.motionKey);
   const [hydrated, setHydrated] = useState(false);
   const [showOpening, setShowOpening] = useState(false);
   const [openingStarting, setOpeningStarting] = useState(false);
@@ -241,10 +248,11 @@ function V2Coach() {
   }, [session, hydrated, experience]);
 
   useEffect(() => {
-    if (!session.running || experience === "demonstrations") return;
+    if (!session.running || experience === "demonstrations" ||
+        (needsVisibleWorkVideo && !actualWorkVideoPlaying)) return;
     const timer = window.setInterval(() => dispatch({ type: "tick" }), 1000);
     return () => window.clearInterval(timer);
-  }, [session.running, experience]);
+  }, [session.running, experience, needsVisibleWorkVideo, actualWorkVideoPlaying]);
 
   useEffect(() => {
     setLiveCue(null);
@@ -883,6 +891,16 @@ function V2Coach() {
                 rate={videoRate}
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
+                onPlaybackChange={(playing) => {
+                  setStagePlayback({ key: stageStepKey, playing });
+                  if (!playing) {
+                    stopMarcusTrainer();
+                    stopMarcusCue();
+                    stopFridayPremiumCue();
+                    stopDetailedExerciseSpeech();
+                    lastDirectedCue.current = "";
+                  }
+                }}
                 preloadUrl={stagePreloadUrl}
                 className="absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"
                 label={
