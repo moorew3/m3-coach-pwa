@@ -218,7 +218,7 @@ let rec: Recognition | null = null;
 let handler: ((cmd: VoiceCommand, phrase: string) => void) | null = null;
 let conversationHandler: ((phrase: string) => void) | null = null;
 let wanted = false;
-let restartTimer: ReturnType<typeof setTimeout> | null = null;
+let restartTimer: number | null = null; // window.setTimeout yields a browser timer id
 let resumeWatchInstalled = false;
 
 function scheduleRestart() {
