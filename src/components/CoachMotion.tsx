@@ -68,8 +68,12 @@ export function CoachMotion({
     previousCycle.current = cycleKey;
     const video = videoRef.current;
     if (!video) return;
+    // A new set of the SAME exercise must fire a fresh playback transition;
+    // resetting currentTime alone does not necessarily fire "playing".
+    if (syncSessionVoice) { video.pause(); updateCoachWorkVideo(url, cycleKey, "paused"); pauseMarcusWorkCue(); }
     try { video.currentTime = 0; } catch { /* wait for loaded metadata */ }
-  }, [cycleKey, url]);
+    if (playing && syncSessionVoice) void video.play().catch(() => undefined);
+  }, [cycleKey, url, playing, syncSessionVoice]);
 
   useEffect(() => {
     const video = videoRef.current;
