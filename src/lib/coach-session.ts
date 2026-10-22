@@ -29,6 +29,7 @@ import {
   speak,
   stopSpeech,
   requirePlayingWorkVideoForSpeech,
+  setMarcusOnlySession,
   unlockVoice,
   useVoiceStatus,
   estimateSpeechSeconds,
@@ -229,6 +230,11 @@ export function useCoachEngine(
   const state = useApp();
   const voiceOn = state.settings.coachVoice !== false;
   const videoPlayback = useCoachWorkVideo();
+  useEffect(() => {
+    if (!opts.requireWorkVideo) return;
+    setMarcusOnlySession(true);
+    return () => setMarcusOnlySession(false);
+  }, [opts.requireWorkVideo]);
   const [isLeader, setIsLeader] = useState(false);
   const voiceStatus = useVoiceStatus();
   const spoken = useRef("");
