@@ -52,9 +52,9 @@ export function CoachMotion({
   callbackRef.current = onLayerChange;
 
   useEffect(() => {
-    if (syncSessionVoice) updateCoachWorkVideo(url, "paused");
-    return () => { if (syncSessionVoice) { releaseCoachWorkVideo(url); stopSpeech(); } };
-  }, [syncSessionVoice, url]);
+    if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "paused");
+    return () => { if (syncSessionVoice) { releaseCoachWorkVideo(url, cycleKey ?? url); stopSpeech(); } };
+  }, [syncSessionVoice, url, cycleKey]);
 
   useEffect(() => {
     setFailed(false);
@@ -78,7 +78,7 @@ export function CoachMotion({
     if (!playing) {
       video.pause();
       setIsPlaying(false);
-      if (syncSessionVoice) { updateCoachWorkVideo(url, "paused"); stopSpeech(); }
+      if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); }
       return;
     }
 
@@ -145,16 +145,16 @@ export function CoachMotion({
               callbackRef.current?.(0, "transition");
               if (playing) void event.currentTarget.play().catch(() => undefined);
             }}
-            onPlaying={() => { setIsPlaying(true); if (syncSessionVoice) updateCoachWorkVideo(url, "playing"); }}
-            onPause={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "paused"); stopSpeech(); } }}
-            onWaiting={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "buffering"); stopSpeech(); } }}
-            onStalled={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "buffering"); stopSpeech(); } }}
-            onEnded={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "paused"); stopSpeech(); } }}
+            onPlaying={() => { setIsPlaying(true); if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "playing"); }}
+            onPause={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); } }}
+            onWaiting={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); } }}
+            onStalled={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); } }}
+            onEnded={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); } }}
             onError={() => {
               setFailed(true);
               setLoaded(false);
               setIsPlaying(false);
-              if (syncSessionVoice) { updateCoachWorkVideo(url, "failed"); stopSpeech(); }
+              if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "failed"); stopSpeech(); }
             }}
             className={`absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
