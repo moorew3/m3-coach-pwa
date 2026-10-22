@@ -849,9 +849,15 @@ export function buildCoachScript(
         // The previous ACTIVE exercise owns this round's timer. Do not start
         // it after A1 when A2 follows. In standalone mode never borrow the
         // longer supersetRest value from the original exercise.
+        // A few legacy/optional finisher records omit a rest value.
+        // Never write NaN into a CoachStep.seconds countdown.
+        const validRest = (seconds: number | undefined) =>
+          typeof seconds === "number" && Number.isFinite(seconds) && seconds >= 0
+            ? seconds
+            : 0;
         const prescribedRest = isSuperset
-          ? Math.max(...block.map((item) => item.supersetRest ?? item.rest))
-          : e.rest;
+          ? Math.max(...block.map((item) => validRest(item.supersetRest ?? item.rest)))
+          : validRest(e.rest);
         const minimumRest = section === "Warm-up" ? 15 : 30;
         // Even after the final working exercise, pause before cooldown.
         // The complete chapter itself does not get a pointless rest timer.
