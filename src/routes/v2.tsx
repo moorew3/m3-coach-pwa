@@ -301,12 +301,12 @@ function V2Coach() {
     (cue: string) => {
       setLiveCue(cue);
       const now = Date.now();
-      if (!voiceOn || !session.running || cue === lastSpokenFeedback.current.text ||
+      if (!voiceOn || !session.running || !actualWorkVideoPlaying || cue === lastSpokenFeedback.current.text ||
           now - lastSpokenFeedback.current.at < 12_000 || recordedCoachAudioBusy() ||
           (typeof window !== "undefined" && window.speechSynthesis?.speaking)) return;
       if (speakDetailedExercise(cue)) lastSpokenFeedback.current = { text: cue, at: now };
     },
-    [voiceOn, session.running],
+    [voiceOn, session.running, actualWorkVideoPlaying],
   );
 
   const captureReps = useCallback(
@@ -339,7 +339,8 @@ function V2Coach() {
   // frame. Observed form feedback remains separate and confidence-gated.
   useEffect(() => {
     if ((!session.running && session.phase !== "complete") ||
-        !exercise || session.phase === "ready") return;
+        !exercise || session.phase === "ready" ||
+        (needsVisibleWorkVideo && !actualWorkVideoPlaying)) return;
     const eventKey = [
       session.workout.id, session.exerciseIndex, session.setIndex, session.phase,
     ].join(":");
@@ -371,16 +372,15 @@ function V2Coach() {
 
     if (message) {
       setLiveCue(message);
-      if (voiceOn) {
+      // No substitute voice, and NO Marcus audio before exact video playback.
+      // Rest and transition remain visible countdown text until approved
+      // speaking/presence footage exists for those chapters.
+      if (voiceOn && session.phase === "work" && actualWorkVideoPlaying) {
         let cancelled = false;
         const announce = async () => {
-          const started = session.phase === "work"
-            ? await playMarcusTrainer(exercise.motionKey)
-            : session.phase === "transition"
-              ? await playMarcusTrainer(exercise.motionKey, "name")
-              : await speakDetailedExerciseWhenReady(message);
+          const started = await playMarcusTrainer(exercise.motionKey);
           if (cancelled) return;
-          setVoiceError(started ? null : "Coach audio could not play. Tap Replay exercise coaching or enable the voice again.");
+          setVoiceError(started ? null : "This movement has no playable Marcus recording. No substitute voice will be used.");
         };
         void announce();
         return () => {
@@ -394,6 +394,7 @@ function V2Coach() {
   }, [
     session.workout.id, session.exerciseIndex, session.setIndex,
     session.phase, session.running, voiceOn, exercise?.id,
+    needsVisibleWorkVideo, actualWorkVideoPlaying,
   ]);
 
   // Brief reminders during the set; never infer unseen reps or form.
@@ -426,12 +427,12 @@ function V2Coach() {
     // Let the initial instruction finish; reminders must never double-talk.
     if (recordedCoachAudioBusy() || (typeof window !== "undefined" && window.speechSynthesis?.speaking)) return;
     setLiveCue(message);
-    if (voiceOn) {
+    if (voiceOn && session.phase === "work" && actualWorkVideoPlaying) {
       if (checkpoint.startsWith("form:")) {
         void playMarcusTrainer(exercise.motionKey, Math.floor(elapsed / 30) % 2 === 0 ? "movement" : "breathing");
       } else speakDetailedExercise(message);
     }
-  }, [session.elapsedSeconds, session.running, session.phaseSecondsLeft, session.phase, session.setIndex, session.exerciseIndex, session.workout.id, exercise, voiceOn]);
+  }, [session.elapsedSeconds, session.running, session.phaseSecondsLeft, session.phase, session.setIndex, session.exerciseIndex, session.workout.id, exercise, voiceOn, actualWorkVideoPlaying]);
 
   // The existing speech recognizer manages Android microphone restarts and
   // ignores the coach's own spoken responses. Workout state remains authoritative.
@@ -995,7 +996,8 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "complete-set" })}
-                      disabled={experience === "demonstrations" || session.phase !== "work"}
+                      disabled={experience === "demonstrations" || session.phase !== "work" ||
+                        (needsVisibleWorkVideo && !actualWorkVideoPlaying)}
                       className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
                       aria-label="Complete set and advance"
                     >
