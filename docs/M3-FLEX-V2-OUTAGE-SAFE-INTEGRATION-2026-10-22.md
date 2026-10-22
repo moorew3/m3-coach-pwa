@@ -1,3 +1,34 @@
+## October 22 original V2 build and phone-sized browser QA — latest
+
+**Repository branch:** `work/m3-flex-v2-two-modes-oct22-offline`. **Production:** NO Railway deploy, merge, approved-media overwrite or new subscription.
+
+The source now modifies the **original `/v2` screen**, not merely `/coach/$day` or the temporary HTML preview:
+
+- `src/v2/set-sequence.ts`, `src/v2/session.ts`, `src/v2/types.ts`: deterministic regular sets with prescribed rest before the next set or different exercise. Optional grouped supersets perform A1 → B1 without a rest timer, then one rest countdown after B1; unequal group set totals preserve the unmatched extra set. Completing a rest phase cannot falsely mark a set done. `useSupersets` defaults off and old session-log structure remains compatible.
+- `src/routes/v2.tsx`: in-app **Coach Session** and **Exercise Demonstrations** controls. Demonstrations pause the actual session, disable Start/Complete/Reset, permit video browsing, and preserve the user's exact workout checkpoint and remaining rest on return. Buttons wait for hydration before becoming enabled.
+- `src/components/CoachMotion.tsx`: reports actual playing/paused/waiting/stalled/failed video events; original `/v2` session clock and automatic Marcus work audio require a **matching, visibly playing** stage clip. Audio stops when video stops/buffers; absent clips cannot silently advance or complete work. Rest text uses the actual `phaseSecondsLeft` value rather than the upcoming exercise's unrelated prescription. Rest/transition display text remains silent until its own approved trainer footage/audio exists.
+- `package.json`: declares existing HeyGen LiveAvatar SDK's required **open-source** `livekit-client@2.15.7` and developer typings `@types/three@0.186.0`. Two preexisting TypeScript callback/timer type mismatches were corrected. No paid service was purchased.
+
+**Verified in isolated cloud checkout of THIS branch, October 22:**
+1. `npm install --no-audit --no-fund --ignore-scripts` completed.
+2. `npx tsc --noEmit` **passed with zero errors**.
+3. `npm run build:dev` **passed** (Vite/Nitro production-style build, with non-blocking third-party module directive warnings).
+4. `npm run test:coach-rests`: **19/19** pass.
+5. `npm run test:m3-flex-recovery`: **19/19** pass. These seated A/B plans are proposed staging data, NOT live.
+6. `npm run test:v2-flow`: **21/21** pass against the actual V2 reducer, including regular rests, optional nonadjacent partner grouping, uneven set totals, preserving exactly completed sets, paused rest, no false rest-time logging.
+7. Playwright headless Chromium at 420px mobile viewport on locally served `/v2`: **4/4** experience-switch smoke checks passed (two buttons, demonstration navigation, disabled logging during demos, return to coach controls).
+8. Playwright video fault test: blocked all MP4 playback; the V2 work timer held at **0:00** and completing a set was disabled.
+9. Playwright media play/pause/resume test: substituted a small **internal test MP4 in the test browser only**, not an owner video. Workout clock advanced to 0:02 while playing, remained at 0:02 when paused, then continued to 0:03 on resume.
+10. Playwright checkpoint continuity: after the first completed set, demo browsing and returning preserved the existing rest phase, next exercise, logged set count and exact **30-second** remaining rest.
+
+**Not yet verified / release remains BLOCKED:**
+- A React hydration error (#418) appeared during the mobile-sized browser run. This needs root-cause investigation and a real Android Galaxy Fold acceptance test. Browser fixture media does not validate owner video behavior or real device audio output.
+- Some V2 media URLs returned 404 in the isolated preview. The protected 11 recovery video records remain a staging manifest; the old V2 short-haired coach registry conflicts with the newer owner's approved braided recovery avatar and elevated anatomical LEFT boot. Do not swap clips or claim identity approval.
+- Continuous fully performed coach-repetition video footage, first-set versus later-set spoken Marcus over the WHOLE exercise, realistic rest/handoff cues with matching presence video, reliable lip-sync and free-form coach question answering remain **unfinished**. The approved Marcus voice ID is `0fadce1e82af494a93873aa38ea8d106`; never substitute a browser or unrelated synthetic voice.
+- Injury-safe Workout A/B proposals are **not activated**, have no treating clinician clearance recorded and must keep the left boot supported/unloaded. Existing original weekly workouts can include unsafe standing/leg-loading movements and are not a substitute.
+- Railway's deployed source/branch/configuration and authorization remain unverified while the platform reconnect issue is unresolved. Owner review, explicit permission, and full media/audio tests are required BEFORE deploying or merging.
+
+
 # M3 FLEX V2 — outage-safe development and integration checklist
 Date: 2026-10-22
 
