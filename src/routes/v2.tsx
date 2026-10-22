@@ -31,7 +31,7 @@ import {
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { playMarcusTrainer, stopMarcusTrainer } from "@/v2/marcus-trainer-audio";
-import { canSpeakCoachReply, coachReplySpeaking, speakCoachReply, stopCoachReply, subscribeCoachReplySpeech } from "@/v2/coach-reply-speech";
+import { stopCoachReply } from "@/v2/coach-reply-speech";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
@@ -40,7 +40,6 @@ import { LiveFlexProvider } from "@/v2/live-flex-provider";
 import {
   interruptLiveFlex,
   liveFlexSpeaking,
-  speakThroughLiveFlex,
   subscribeLiveFlexSpeaking,
 } from "@/v2/live-flex-bridge";
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
@@ -145,7 +144,6 @@ function V2Coach() {
     liveFlexSpeaking,
     () => false,
   );
-  const replySpeaking = useSyncExternalStore(subscribeCoachReplySpeech, coachReplySpeaking, () => false);
   const receiveBoxing = useCallback((snapshot: BoxingSnapshot) => { latestBoxing.current = snapshot; }, []);
   const reportRound = useCallback((report: string) => { setRoundFeedback(report); }, []);
 
@@ -624,15 +622,13 @@ function V2Coach() {
           ].slice(-8);
           setLiveCue(line);
           setLastCoachAnswer(line);
-          // The brain has finished its answer; provider callbacks now own the
-          // speaking state so the UI can transition Thinking → Speaking.
+          // Never substitute another speaker for owner-approved Marcus.
+          // Until real-time Marcus is verifiably configured, natural-language
+          // answers are text only; existing recorded training cues are intact.
           setFlexThinking(false);
-          if (voiceOn) {
-            const spokenByLiveFlex = await speakThroughLiveFlex(line);
-            const spokenByDevice = !spokenByLiveFlex && speakCoachReply(line);
-            setVoiceError(spokenByLiveFlex || spokenByDevice ? null :
-              "Reply shown as text because this browser could not play speech.");
-          }
+          setVoiceError(voiceOn
+            ? "Answer displayed in text. Live spoken replies require the approved Marcus voice connection."
+            : null);
         })
         .finally(() => {
           coachTalkBusy.current = false;
@@ -1150,7 +1146,7 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Marcus's approved recordings teach the workout. Live conversational replies use the device's available speech voice until synchronized Marcus is connected.
+                Marcus's approved recordings teach the workout. Live questions currently receive text answers; no unapproved device voice is substituted for Marcus.
               </p>
               {(flexThinking || lastCoachAnswer) && (
                 <div data-testid="flex-conversation-reply" aria-live="polite"
@@ -1162,17 +1158,9 @@ function V2Coach() {
                   <p className="mt-2 text-sm leading-relaxed text-white/90">
                     {flexThinking ? "Preparing your answer…" : lastCoachAnswer}
                   </p>
-                  {!flexThinking && lastCoachAnswer && voiceOn && (
-                    <button type="button" onClick={() => void speakCoachReply(lastCoachAnswer)}
-                      aria-label="Replay Flex answer"
-                      className="mt-3 min-h-10 rounded-lg border border-cyan-300/25 px-3 text-xs font-bold text-cyan-100">
-                      Replay answer aloud
-                    </button>
-                  )}
                 </div>
               )}
-              {replySpeaking && <p className="mt-2 text-xs font-bold text-cyan-200">Flex is answering aloud · temporary device voice</p>}
-              {voiceOn && !canSpeakCoachReply() && !liveProviderSpeaking && <p className="mt-2 text-xs text-amber-200">Browser speech unavailable; answers will still appear on screen.</p>}
+              {voiceOn && <p className="mt-2 text-xs text-white/55">Your questions appear as text until approved Marcus real-time speech is connected. No substitute device voice.</p>}
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
                 <>
