@@ -256,7 +256,7 @@ MOTIV.addEventListener("timeupdate",()=>{
 
 
 const TECHNIQUE_SEGMENTS={lateral:[0,7.82],hammer:[8.42,13.50],shrugs:[13.95,18.47],triceps:[19.30,25.04],boxing:[25.57,31.88],chest:[32.44,40.20],front:[40.92,46.49],curls:[47.13,51.70],band:[51.73,58.15],breath:[58.48,62.70],cool:[63.17,68.76]};
-let explainedExercises=new Set(),introClip=null,introEnd=0,introAwaiting=false,setHasPlayed=false,videoBuffering=false;
+let explainedExercises=new Set(),introClip=null,introEnd=0,introAwaiting=false,setHasPlayed=false,videoBuffering=false;let coachDelayedTimers=new Set();function coachAfterDelay(fn,ms){const t=setTimeout(()=>{coachDelayedTimers.delete(t);fn();},ms);coachDelayedTimers.add(t);return t;}
 function startRepClock(){
  if(!active||!current||COACHVID.paused||interval)return;
  const ex=current.ex;
@@ -265,7 +265,7 @@ function startRepClock(){
  interval=setInterval(()=>{
   if(COACHVID.paused||COACHVID.seeking||videoBuffering||document.hidden)return;
   if(ex.timed){elapsed++;$("m3CoachRep").textContent=String(elapsed);if(elapsed>=ex.max){clearInterval(interval);interval=null;COACHVID.pause();msg("Timed stage complete. Log your ACTUAL seconds before moving on.");}}
-  else{coached++;$("m3CoachRep").textContent=String(coached);speak(coached);if(coached===Math.floor(ex.max/2)){setTimeout(()=>{if(active&&!COACHVID.paused&&coached<ex.max)speakMotiv("half");},800);}if(coached>=ex.max){clearInterval(interval);interval=null;setTimeout(()=>{if(active&&!COACHVID.paused)speakMotiv("logged",()=>{COACHVID.pause();msg("Set "+current.set+" complete. Log the actual reps you performed before the next set.");});},850);}}
+  else{coached++;$("m3CoachRep").textContent=String(coached);speak(coached);if(coached===Math.floor(ex.max/2)){coachAfterDelay(()=>{if(active&&!COACHVID.paused&&coached<ex.max)speakMotiv("half");},800);}if(coached>=ex.max){clearInterval(interval);interval=null;coachAfterDelay(()=>{if(active&&!COACHVID.paused)speakMotiv("logged",()=>{COACHVID.pause();msg("Set "+current.set+" complete. Log the actual reps you performed before the next set.");});},850);}}
  },rate);
 }
 FORMGUIDE.addEventListener("timeupdate",()=>{
@@ -291,13 +291,13 @@ COACHVID.addEventListener("playing",()=>{
 function pauseMarcusOnVideoStop(){AUDIO.pause();FORMGUIDE.pause();MOTIV.pause();}
 ["pause","waiting","stalled","ended","seeking"].forEach(type=>COACHVID.addEventListener(type,()=>{videoBuffering=(type!=="pause");pauseMarcusOnVideoStop();}));
 document.addEventListener("visibilitychange",()=>{if(document.hidden){COACHVID.pause();pauseMarcusOnVideoStop();}});
-COACHVID.addEventListener("playing",()=>{videoBuffering=false;if(active&&current)setHasPlayed=true;if(active){document.querySelectorAll("video").forEach(v=>{if(v!==COACHVID&&!v.paused)v.pause();});document.querySelectorAll("audio").forEach(a=>{if(a!==AUDIO&&a!==FORMGUIDE&&!a.paused)a.pause();});}});
+COACHVID.addEventListener("playing",()=>{videoBuffering=false;if(active&&current)setHasPlayed=true;if(active){document.querySelectorAll("video").forEach(v=>{if(v!==COACHVID&&!v.paused)v.pause();});document.querySelectorAll("audio").forEach(a=>{if(a!==AUDIO&&a!==FORMGUIDE&&a!==MOTIV&&!a.paused)a.pause();});}});
 
 function pairRender(){let w=$("m3WorkoutPick").value;const arr=PAIRS[w];$("m3PairBox").innerHTML='<b class="m3hint">Optional supersets (OFF by default)</b>'+arr.map((p,i)=>'<label class="m3choice"><input type="checkbox" class="m3Pair" data-pair="'+i+'"> Pair '+P[w].find(x=>x.id===p[0]).name+' + '+P[w].find(x=>x.id===p[1]).name+' (alternate sets, then rest)</label>').join('')+'<p class="m3warn">Supersets require clearance and equipment within safe seated reach. Never stand, move the injured foot, or rush transitions. Turning them on changes the instructor sequence and rest timing; it does NOT add sets.</p>'}
 function build(){const part=$("m3WorkoutPick").value,items=P[part];const selected=[...root.querySelectorAll(".m3Pair:checked")].map(x=>PAIRS[part][+x.dataset.pair]);const used=new Set(),q=[];for(const ex of items){if(used.has(ex.id))continue;const group=selected.find(p=>p.includes(ex.id));if(group){const a=items.find(x=>x.id===group[0]),b=items.find(x=>x.id===group[1]);if(!a||!b)throw Error("Invalid superset pair");used.add(a.id);used.add(b.id);const common=Math.min(a.sets,b.sets);for(let k=1;k<=common;k++){q.push({ex:a,set:k,partner:b.name,superset:true,rest:0});q.push({ex:b,set:k,partner:a.name,superset:true,rest:Math.max(a.rest,b.rest)});}for(let k=common+1;k<=a.sets;k++)q.push({ex:a,set:k,partner:null,superset:false,rest:a.rest});for(let k=common+1;k<=b.sets;k++)q.push({ex:b,set:k,partner:null,superset:false,rest:b.rest});}else{used.add(ex.id);for(let k=1;k<=ex.sets;k++)q.push({ex,set:k,partner:null,superset:false,rest:ex.rest});}}
 return q;}
-function persist(){safeWrite(RUNKEY,{active,queue:queue.map(q=>({id:q.ex.id,set:q.set,superset:q.superset,partner:q.partner,rest:q.rest})),at,sessionId,sessionDate,records,part:$("m3WorkoutPick").value})}
-function stopTimers(){if(interval)clearInterval(interval);if(restInterval)clearInterval(restInterval);interval=restInterval=null;setHasPlayed=false;clipStop=null;introAwaiting=false;introClip=null;motStop=null;motDone=null;AUDIO.pause();FORMGUIDE.pause();MOTIV.pause();$("m3CoachVideo").pause();}
+function persist(){safeWrite(RUNKEY,{active,queue:queue.map(q=>({id:q.ex.id,set:q.set,superset:q.superset,partner:q.partner,rest:q.rest})),at,sessionId,sessionDate,records,explained:[...explainedExercises],part:$("m3WorkoutPick").value})}
+function stopTimers(){if(interval)clearInterval(interval);if(restInterval)clearInterval(restInterval);for(const t of coachDelayedTimers)clearTimeout(t);coachDelayedTimers.clear();interval=restInterval=null;setHasPlayed=false;clipStop=null;introAwaiting=false;introClip=null;motStop=null;motDone=null;AUDIO.pause();FORMGUIDE.pause();MOTIV.pause();$("m3CoachVideo").pause();}
 function finish(){stopTimers();active=false;$("m3ActivePanel").hidden=true;$("m3End").disabled=true;$("m3Begin").disabled=false;$("m3WorkoutPick").disabled=false;root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=false);$("m3Resume").hidden=true;persist();msg("Session saved: "+records.length+" logged sets. Export CSV/JSON for a backup. This was a coached preview, not a completed full video master.");renderLogs();}
 function video(ex){const el=$("m3CoachVideo");el.pause();el.removeAttribute("src");el.load();if(!ex)return;el.src=VIDEO[ex.id];el.muted=true;el.loop=true;el.load()}
 function step(){stopTimers();if(!active)return;if(at>=queue.length){finish();return}current=queue[at];coached=0;elapsed=0;restRemaining=0;const q=current,ex=q.ex;
@@ -371,7 +371,7 @@ if(saved&&saved.active&&Array.isArray(saved.queue)&&saved.at<saved.queue.length)
    if(!ex)throw Error("Missing approved exercise in saved session");
    return{ex,set:item.set,superset:!!item.superset,partner:item.partner||null,rest:item.rest||0};
   });
-  at=saved.at;sessionId=saved.sessionId;sessionDate=saved.sessionDate;records=Array.isArray(saved.records)?saved.records:[];
+  at=saved.at;sessionId=saved.sessionId;sessionDate=saved.sessionDate;records=Array.isArray(saved.records)?saved.records:[];explainedExercises=new Set(Array.isArray(saved.explained)?saved.explained:[]);
   active=true;$("m3ActivePanel").hidden=false;$("m3Begin").disabled=true;$("m3End").disabled=false;$("m3WorkoutPick").disabled=true;
   root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=true);$("m3Resume").hidden=true;step();msg("Resumed the next unfinished set. Start the video to hear Marcus; unfinished reps are not credited.");
  };
