@@ -90,13 +90,13 @@ check("Workout B two superset pairs work with unequal band/triceps sets",()=>{
  assert.equal(steps.filter(x=>dayId(enabled,x)==="recovery-triceps").length,3);
 });
 check("original V2 week is preserved ahead of opt-in recovery previews",()=>{
- assert.match(route,/\\.\\.\\.ORIGINAL_WEEK_WORKOUTS, \\.\\.\\.V2_WORKOUTS, \\.\\.\\.RECOVERY_PREVIEW_WORKOUTS/);
+ assert.ok(route.includes("...ORIGINAL_WEEK_WORKOUTS, ...V2_WORKOUTS, ...RECOVERY_PREVIEW_WORKOUTS"));
 });
 check("new recovery media cannot override old identity-approved V2 source",()=>{
- assert.match(route,/isRecoveryPreviewWorkout\\(session\\.workout\\.id\\) \\? undefined : approvedCoachMedia\\(exercise\\)/);
+ assert.ok(route.includes("isRecoveryPreviewWorkout(session.workout.id) ? undefined : approvedCoachMedia(exercise)"));
 });
 check("optional superset switch cannot erase logged workout sets",()=>{
- assert.match(route,/session\\.phase !== "ready" \\|\\| session\\.completedSetIds\\.length > 0/);
+ assert.ok(route.includes('session.phase !== "ready" || session.completedSetIds.length > 0'));
 });
 check("staging status and approval remain explicit",()=>{
  assert.equal(media.allReleaseBlocked,true);
