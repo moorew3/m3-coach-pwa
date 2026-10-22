@@ -518,6 +518,35 @@ function repCues(cu: ResolvedCues, n: number, last: boolean): LiveCue[] {
 
 /* ------------------------------ the script ----------------------------- */
 
+/**
+ * Keep each optional superset adjacent when it is enabled, even when the
+ * original plan lists a non-paired exercise between A1 and A2.
+ * Never pull a warm-up into a main-work superset (or vice versa).
+ * Return a new list: exercise prescriptions and recorded set counts are untouched.
+ */
+export function groupedCoachedExercises(plan: DayPlan, exercises: Exercise[], useSupersets: boolean): Exercise[] {
+  if (!useSupersets)
+    return exercises.map((e) => ({ ...e, superset: undefined, supersetSlot: undefined, supersetRest: undefined }));
+
+  const consumed = new Set<number>();
+  const ordered: Exercise[] = [];
+  exercises.forEach((e, i) => {
+    if (consumed.has(i)) return;
+    consumed.add(i);
+    ordered.push(e);
+    if (!e.superset) return;
+    for (let j = i + 1; j < exercises.length; j++) {
+      const candidate = exercises[j];
+      if (consumed.has(j) || candidate.superset !== e.superset ||
+          sectionFor(plan, candidate) !== sectionFor(plan, e)) continue;
+      consumed.add(j);
+      ordered.push(candidate);
+    }
+  });
+  return ordered;
+}
+
+
 /** Speech-led steps: the fallback clock is the estimated line length + a beat. */
 const paced = (say: string, pad = 2) => Math.max(4, Math.ceil(estimateSpeechSeconds(say)) + pad);
 
@@ -563,7 +592,7 @@ export function buildCoachScript(
         cooldown: plan.type === "boxing" ? [COOL_WALK, COOL_SHOULDER] : [COOL_WALK],
       }
     : coachingFor(plan);
-  const list = options.exercises ?? orderedExercises(day, useSupersets);
+  const list = groupedCoachedExercises(plan, options.exercises ?? orderedExercises(day, useSupersets), useSupersets);
   const perf = options.perf;
   const steps: CoachStep[] = [];
   const first = list[0];
@@ -730,7 +759,8 @@ export function buildCoachScript(
           const handoff = `Straight over to ${cu.label} — set ${r + 1} of ${total}, ${reps}. ${rotate(cu.form, r + 1)}`;
           steps.push({
             id: `${e.id}-handoff-${r}`,
-            kind: "rest",
+            // This is a brief A→B changeover, NOT a rest countdown.
+            kind: "brief",
             chapter,
             section,
             title: `Straight into ${e.name}`,
@@ -815,13 +845,18 @@ export function buildCoachScript(
 
         /* 7 · rest / 8 · exact next-movement transition */
         const blockDone = lastRound || block.every((x) => r >= Math.max(1, setsFor(x)) - 1);
-        const rest =
-          blockDone && !nextEx
-            ? 0
-            : blockDone
-              ? (lastEx.supersetRest ?? lastEx.rest)
-              : (e.supersetRest ?? e.rest);
-        if (rest <= 0) return;
+        const isSuperset = block.length > 1;
+        // The previous ACTIVE exercise owns this round's timer. Do not start
+        // it after A1 when A2 follows. In standalone mode never borrow the
+        // longer supersetRest value from the original exercise.
+        const prescribedRest = isSuperset
+          ? Math.max(...block.map((item) => item.supersetRest ?? item.rest))
+          : e.rest;
+        const minimumRest = section === "Warm-up" ? 15 : 30;
+        // Even after the final working exercise, pause before cooldown.
+        // The complete chapter itself does not get a pointless rest timer.
+        const rest = Math.max(minimumRest, prescribedRest);
+        if (blockDone && !nextEx && !c.cooldown.length) return;
 
         const nextCu = nextEx ? movementCues(nextEx) : null;
         const nextIsLastMain =
@@ -877,13 +912,15 @@ export function buildCoachScript(
         steps.push({
           id: `${e.id}-rest-${r}`,
           kind: "rest",
+          // The rest clock begins only after this stand-alone set or the
+          // FINAL active exercise in the current superset round.
           chapter,
           section,
           title: blockDone
-            ? `Rest — then ${nextEx?.name ?? "cooldown"}`
-            : block.length > 1
-              ? `Rest — round ${r + 2} of ${rounds}`
-              : `Rest — ${roundWord.toLowerCase()} ${r + 2} of ${total}`,
+            ? `${isSuperset ? "Superset rest" : "Rest"} — then ${nextEx?.name ?? "cooldown"}`
+            : isSuperset
+              ? `Superset rest — round ${r + 2} of ${rounds}`
+              : `Rest — ${roundWord.toLowerCase()} ${r + 2} of ${total}`
           detail: blockDone
             ? nextEx
               ? `Coming up: ${nextEx.name} · ${nextEx.target} · ${setsFor(nextEx)} × ${nextEx.reps}`
