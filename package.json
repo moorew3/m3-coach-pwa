@@ -13,7 +13,8 @@
     "start": "node .output/server/index.mjs",
     "audit:flex-rig": "node scripts/audit-flex-rig.mjs",
     "test:coach-rests": "node scripts/qa-coach-rest-policy.mjs",
-    "test:m3-flex-recovery": "node scripts/qa-m3-flex-recovery-workouts.mjs"
+    "test:m3-flex-recovery": "node scripts/qa-m3-flex-recovery-workouts.mjs",
+    "test:v2-flow": "node scripts/qa-v2-session-flow.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -75,7 +76,8 @@
     "@react-three/fiber": "^9.8.1",
     "@react-three/drei": "^10.7.9",
     "@heygen/liveavatar-web-sdk": "0.0.19",
-    "@d-id/client-sdk": "3.0.3"
+    "@d-id/client-sdk": "3.0.3",
+    "livekit-client": "2.15.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
@@ -94,6 +96,7 @@
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "@types/three": "0.186.0"
   }
 }
