@@ -21,6 +21,14 @@ import { getCoachWorkVideoSnapshot } from "@/lib/coach-work-video";
 
 export type VoiceStatus = "unsupported" | "locked" | "ready" | "blocked";
 
+/** Strict in the staging V2 Coach Session: never swap Marcus for another TTS voice. */
+let marcusOnlySession = false;
+export function setMarcusOnlySession(enabled: boolean) {
+  if (marcusOnlySession === enabled) return;
+  marcusOnlySession = enabled;
+  if (enabled) stopSpeech();
+}
+
 /** Emotional delivery phase — drives the TTS style prompt. */
 export type CoachTone =
   | "calm"
@@ -475,6 +483,7 @@ async function fetchMp3(text: string, tone: CoachTone): Promise<string | null> {
 const prefetchQueue: { text: string; tone: CoachTone }[] = [];
 let prefetching = false;
 export function prefetchSpeech(lines: { text: string; tone: CoachTone }[]) {
+  if (marcusOnlySession) return;
   if (status !== "ready" || diag.path === "browser" || diag.path === "stream") return;
   for (const l of lines) {
     if (!l.text) continue;
@@ -969,6 +978,17 @@ export function unlockVoice(
   confirmation = "Coach audio on. Let's begin.",
   tone: CoachTone = "calm",
 ): Promise<VoiceStatus> {
+  if (marcusOnlySession) {
+    // A tap unlocks the device sound channel; approved Marcus clips are
+    // delivered by marcus-approved-cues, not by generic browser/Onyx speech.
+    const c = ensureContext();
+    if (c && c.state === "suspended") void c.resume().catch(() => {});
+    unlockElements();
+    playTone(660, 140);
+    note({ unlocked: true, path: "none", fallbackFired: null });
+    setStatus("ready");
+    return Promise.resolve("ready");
+  }
   if (!voiceAvailable()) {
     setStatus("unsupported");
     return Promise.resolve("unsupported");
@@ -1085,6 +1105,9 @@ export function requirePlayingWorkVideoForSpeech(required: boolean, stepKey?: st
 }
 
 export function speak(text: string, enabled: boolean, opts: SpeakOptions = {}) {
+  // The V2 runtime has not connected live HeyGen Marcus; do not play an
+  // unapproved synthetic speaker for introductions, countdowns or rests.
+  if (marcusOnlySession) return;
   const playback = getCoachWorkVideoSnapshot();
   if (workVideoRequiredForSpeech && (playback.status !== "playing" || playback.stepKey !== requiredWorkStepKey)) return;
   const tone = opts.tone ?? "assertive";
