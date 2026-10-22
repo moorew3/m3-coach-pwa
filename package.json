@@ -16,7 +16,8 @@
     "test:m3-flex-recovery": "node scripts/qa-m3-flex-recovery-workouts.mjs",
     "test:v2-flow": "node scripts/qa-v2-session-flow.mjs",
     "test:v2-demos": "node scripts/qa-v2-demo-library.mjs",
-    "test:v2-marcus-only": "node scripts/qa-v2-marcus-only.mjs"
+    "test:v2-marcus-only": "node scripts/qa-v2-marcus-only.mjs",
+    "test:v2-recovery-adapter": "node scripts/qa-v2-recovery-adapter.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
