@@ -760,6 +760,19 @@ function V2Coach() {
     listening: voiceControl.listening,
   });
 
+  // The first server render and first browser render MUST match. Restore the
+  // existing saved session in effects before mounting stateful coach/media UI.
+  // This prevents early-tap races and intermittent production hydration faults.
+  if (!hydrated) return (
+    <main className="grid min-h-dvh place-items-center bg-[#080b0f] p-5 text-white" aria-busy="true">
+      <section role="status" aria-label="Preparing M3 FLEX" className="w-full max-w-md rounded-3xl border border-cyan-300/25 bg-[#111820] p-6 text-center">
+        <p className="text-xs font-black uppercase tracking-[.25em] text-cyan-300">M3 COACH V2</p>
+        <h1 className="mt-3 text-xl font-black">Preparing your workout</h1>
+        <p className="mt-2 text-sm text-white/60">Restoring your saved sets and loading approved exercises. No workout timer has started.</p>
+      </section>
+    </main>
+  );
+
   return (
     <main className="min-h-dvh bg-[#080b0f] text-white">
       <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5">
