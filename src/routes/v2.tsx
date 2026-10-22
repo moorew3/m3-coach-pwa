@@ -803,6 +803,7 @@ function V2Coach() {
                 setShowOpening(true);
                 if (voiceOn) void playMarcusCue("intro");
               }}
+              disabled={!hydrated || experience === "demonstrations"}
               className="min-h-11 rounded-xl border border-white/20 bg-white/5 px-3 text-xs font-black text-white/85"
             >
               Opening scene
@@ -816,6 +817,7 @@ function V2Coach() {
               dispatch({ type: "reset", workout: boxing });
               dispatch({ type: "set-mode", mode: "shadow" });
             }}
+            disabled={!hydrated || experience === "demonstrations"}
             className="min-h-11 max-w-[48%] rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
           >
             Boxing + Kickboxing
@@ -867,6 +869,7 @@ function V2Coach() {
               dispatch({ type: "reset", workout: day });
               setLiveCue("Original " + day.title + " workout loaded. Press Start when ready.");
             }}
+            disabled={!hydrated || experience === "demonstrations"}
             className="min-h-11 rounded-xl bg-cyan-300 px-4 text-xs font-black text-black"
           >
             Load today's FULL workout
@@ -989,7 +992,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={toggleWorkout}
-                      disabled={experience === "demonstrations" || session.phase === "complete"}
+                      disabled={!hydrated || experience === "demonstrations" || session.phase === "complete"}
                       className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-black disabled:opacity-35"
                       aria-label={session.running ? "Pause workout" : "Start workout"}
                     >
@@ -999,7 +1002,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "complete-set" })}
-                      disabled={experience === "demonstrations" || session.phase !== "work" ||
+                      disabled={!hydrated || experience === "demonstrations" || session.phase !== "work" ||
                         (needsVisibleWorkVideo && !actualWorkVideoPlaying)}
                       className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
                       aria-label="Complete set and advance"
@@ -1235,6 +1238,7 @@ function V2Coach() {
                 Workout
                 <select
                   value={workoutId}
+                  disabled={!hydrated || experience === "demonstrations"}
                   onChange={(event) => {
                     const nextWorkout = ALL_V2_WORKOUTS.find((w) => w.id === event.target.value) ??
                       originalWorkoutForToday();
