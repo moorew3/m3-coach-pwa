@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import { releaseCoachWorkVideo, updateCoachWorkVideo } from "@/lib/coach-work-video";
 import { stopSpeech } from "@/lib/coach-voice";
+import { pauseMarcusWorkCue } from "@/lib/marcus-approved-cues";
 
 export function CoachMotion({
   url,
@@ -53,7 +54,7 @@ export function CoachMotion({
 
   useEffect(() => {
     if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "paused");
-    return () => { if (syncSessionVoice) { releaseCoachWorkVideo(url, cycleKey ?? url); stopSpeech(); } };
+    return () => { if (syncSessionVoice) { releaseCoachWorkVideo(url, cycleKey ?? url); stopSpeech(); pauseMarcusWorkCue(); } };
   }, [syncSessionVoice, url, cycleKey]);
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export function CoachMotion({
     if (!playing) {
       video.pause();
       setIsPlaying(false);
-      if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); }
+      if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); }
       return;
     }
 
@@ -146,15 +147,15 @@ export function CoachMotion({
               if (playing) void event.currentTarget.play().catch(() => undefined);
             }}
             onPlaying={() => { setIsPlaying(true); if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "playing"); }}
-            onPause={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); } }}
-            onWaiting={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); } }}
-            onStalled={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); } }}
-            onEnded={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); } }}
+            onPause={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onWaiting={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onStalled={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onEnded={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
             onError={() => {
               setFailed(true);
               setLoaded(false);
               setIsPlaying(false);
-              if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "failed"); stopSpeech(); }
+              if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "failed"); stopSpeech(); pauseMarcusWorkCue(); }
             }}
             className={`absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
