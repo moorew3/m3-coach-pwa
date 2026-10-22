@@ -21,6 +21,7 @@ import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
 import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
+import { RECOVERY_PREVIEW_WORKOUTS, isRecoveryPreviewWorkout, recoveryPreviewMediaFor } from "@/v2/recovery-training-workouts";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import {
   unlockRecordedCoachAudio,
@@ -63,7 +64,7 @@ export const Route = createFileRoute("/v2")({
 
 const V2_LOCAL_SAVE = "m3-coach-v2-local-session-v1";
 // Full original week first; keep every existing V2 workout including improved boxing.
-const ALL_V2_WORKOUTS = [...ORIGINAL_WEEK_WORKOUTS, ...V2_WORKOUTS];
+const ALL_V2_WORKOUTS = [...ORIGINAL_WEEK_WORKOUTS, ...V2_WORKOUTS, ...RECOVERY_PREVIEW_WORKOUTS];
 
 const modeIcon: Record<V2Mode, typeof Eye> = {
   coach: UserRound,
@@ -266,8 +267,9 @@ function V2Coach() {
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
-  const media = approvedCoachMedia(exercise);
-  const recoveredMedia = media ? undefined : recoveredMotionFor(exercise);
+  // Preview workouts have separate owner-approved footage; never borrow the old identity registry.
+  const media = isRecoveryPreviewWorkout(session.workout.id) ? undefined : approvedCoachMedia(exercise);
+  const recoveredMedia = recoveryPreviewMediaFor(exercise) ?? (media ? undefined : recoveredMotionFor(exercise));
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   useEffect(() => {
     if (!hydrated) return;
@@ -734,7 +736,8 @@ function V2Coach() {
     : session.phase === "rest" ? "Rest / get ready" : exercise?.name ?? "";
   const showCoach = session.mode === "coach" || session.mode === "shadow";
   const glasses = session.mode === "glasses";
-  const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
+  const isFighterMovement = !isRecoveryPreviewWorkout(session.workout.id) &&
+    (exercise?.category === "boxing" || exercise?.category === "kickboxing");
   const guardClip = isFighterMovement ? coachMotionFor("guardReset") : undefined;
   const stageMedia = session.phase === "rest" && guardClip ? guardClip : (media ?? recoveredMedia);
   const stableCoachFraming = exercise?.motionKey === "hamstringCurl";
@@ -1022,12 +1025,16 @@ function V2Coach() {
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
               <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 p-2">
                 <div className="flex items-center gap-2">
-                  <img src={COACH_REFERENCE} alt="Approved M3 coach" className="size-11 rounded-xl border border-cyan-300/25 object-cover object-top" />
+                  {!isRecoveryPreviewWorkout(session.workout.id) && (
+                    <img src={COACH_REFERENCE} alt="Original V2 coach" className="size-11 rounded-xl border border-cyan-300/25 object-cover object-top" />
+                  )}
                   {athletePortrait && (
                     <img src={athletePortrait} alt="Your approved athlete avatar" className="size-11 rounded-xl border border-white/20 object-cover object-top" />
                   )}
                   <p className="max-w-28 text-[10px] font-black leading-tight text-white/75">
-                    {athletePortrait ? "Your coach + your athlete" : "Original M3 coach"}
+                    {isRecoveryPreviewWorkout(session.workout.id)
+                        ? "Owner-approved recovery preview · final identity review pending"
+                        : athletePortrait ? "Your coach + your athlete" : "Original M3 coach"}
                   </p>
                 </div>
                 <button
@@ -1243,6 +1250,23 @@ function V2Coach() {
                 </select>
               </label>
               <p className="mt-2 text-xs text-white/50">{workout.focus}</p>
+              {isRecoveryPreviewWorkout(session.workout.id) && (
+                <div className="mt-3 rounded-xl border border-amber-300/35 bg-amber-300/10 p-3 text-xs text-amber-100" role="status">
+                  <p className="font-black">Owner-test recovery workout · NOT MEDICALLY CLEARED</p>
+                  <p className="mt-1">Proposed seated-only program. Keep the anatomical LEFT boot elevated and unloaded.
+                    These short approved video previews are not complete follow-along set performances.</p>
+                  <button type="button" disabled={session.phase !== "ready"}
+                    aria-pressed={Boolean(session.workout.useSupersets)}
+                    onClick={() => dispatch({ type: "reset", workout: {
+                      ...session.workout, useSupersets: !session.workout.useSupersets,
+                    } })}
+                    className="mt-3 min-h-11 w-full rounded-xl border border-amber-200/45 bg-black/30 px-3 text-left font-bold disabled:opacity-50">
+                    Optional supersets: {session.workout.useSupersets ? "ON" : "OFF"}
+                    {" · "}A1 → B1 → rest after B1
+                  </button>
+                  <p className="mt-1 text-[11px] text-amber-100/70">Toggle before starting. The original seven-day program remains unchanged.</p>
+                </div>
+              )}
               {session.workout.exercises.some((item) => !approvedCoachMedia(item) && !recoveredMotionFor(item)) && (
                 <p role="status" className="mt-2 text-xs text-amber-200">
                   Moving demos still missing: {session.workout.exercises
