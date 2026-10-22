@@ -390,7 +390,7 @@ function CoachSession() {
         });
       }
     }
-  });
+  }, { requireWorkVideo: true });
   const { step, i, left, lead, running, mirrored, progress } = engine;
   const move = mirrorFor(step?.mirror);
   const pattern = patternFor(step?.exerciseId);
@@ -1387,7 +1387,9 @@ function CoachSession() {
   })();
   const trainerMedia = resolveTrainerMedia({
     step,
-    lead,
+    // Keep the approved exact movement on-screen during the 3-2-1 lead-in,
+    // so Marcus never counts over a static photo in coached work sets.
+    lead: step.kind === "work" && coachClip ? null : lead,
     left,
     speaking: engine.speaking,
     exactMotion: coachClip,
@@ -1777,6 +1779,7 @@ function CoachSession() {
             decision={trainerMedia}
             preloadMotion={preloadClip}
             mirrored={mirrored}
+            syncSessionVoice={step.kind === "work" && trainerMedia.mode === "motion"}
             playing={running}
             rate={previewing ? 1 : coachRate(tempo)}
             label={
