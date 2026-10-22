@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "start": "node .output/server/index.mjs",
     "audit:flex-rig": "node scripts/audit-flex-rig.mjs",
-    "test:coach-rests": "node scripts/qa-coach-rest-policy.mjs"
+    "test:coach-rests": "node scripts/qa-coach-rest-policy.mjs",
+    "test:m3-flex-recovery": "node scripts/qa-m3-flex-recovery-workouts.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
