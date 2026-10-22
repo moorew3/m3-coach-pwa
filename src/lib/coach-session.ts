@@ -17,6 +17,7 @@
  */
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import type { CoachStep } from "@/lib/coach-script";
+import { useCoachWorkVideo } from "@/lib/coach-work-video";
 import { beep, logIntervalFromCoach, markSetFromCoach, useApp, type SetEntry } from "@/lib/store";
 import {
   dropPending,
@@ -26,6 +27,7 @@ import {
   prefetchSpeech,
   speak,
   stopSpeech,
+  requirePlayingWorkVideoForSpeech,
   unlockVoice,
   useVoiceStatus,
   estimateSpeechSeconds,
@@ -219,12 +221,13 @@ export function useCoachEngine(
   day: number,
   script: CoachStep[],
   onFinishWork: (step: CoachStep, info: FinishInfo) => void,
-  opts: { passive?: boolean } = {},
+  opts: { passive?: boolean; requireWorkVideo?: boolean } = {},
 ) {
   const passive = !!opts.passive;
   const session = useCoachSession();
   const state = useApp();
   const voiceOn = state.settings.coachVoice !== false;
+  const videoPlayback = useCoachWorkVideo();
   const [isLeader, setIsLeader] = useState(false);
   const voiceStatus = useVoiceStatus();
   const spoken = useRef("");
@@ -323,6 +326,17 @@ export function useCoachEngine(
   }, [day, session.day]);
 
   const step: CoachStep | undefined = script[session.i];
+  const videoRequired = Boolean(opts.requireWorkVideo && step?.kind === "work");
+  const videoAudible = !videoRequired || videoPlayback.status === "playing";
+
+  useEffect(() => {
+    requirePlayingWorkVideoForSpeech(videoRequired);
+    if (videoRequired && !videoAudible) {
+      stopSpeech();
+      spoken.current = ""; // Re-introduce this set when its video resumes.
+    }
+    return () => requirePlayingWorkVideoForSpeech(false);
+  }, [videoRequired, videoAudible, step?.id]);
 
   const resetCountdown = useCallback((stepId: string) => {
     countdownStep.current = stepId;
@@ -372,7 +386,7 @@ export function useCoachEngine(
 
   /* narration — leader only, and re-fires the moment audio is unlocked */
   useEffect(() => {
-    if (!step || !isLeader) return;
+    if (!step || !isLeader || !videoAudible) return;
     if (!voiceOn) {
       stopSpeech();
       spoken.current = "";
@@ -395,7 +409,7 @@ export function useCoachEngine(
         }
       },
     });
-  }, [step, isLeader, voiceOn, voiceStatus, epoch]);
+  }, [step, isLeader, voiceOn, voiceStatus, epoch, videoAudible]);
 
   /* PRE-BUFFER: this step's live cues and the next two openers, so every
      transition plays instantly instead of waiting on the network. */
@@ -423,7 +437,7 @@ export function useCoachEngine(
   /* LIVE CUES — spaced coaching inside a step, so the coach stays with the
      user through the set instead of going silent after the opening line. */
   useEffect(() => {
-    if (!step || !isLeader || !voiceOn || !session.running) return;
+    if (!step || !isLeader || !voiceOn || !session.running || !videoAudible) return;
     const cues = step.liveCues;
     if (!cues?.length) return;
     // A screen that takes the voice mid-set joins where the clock already
@@ -441,7 +455,7 @@ export function useCoachEngine(
       if (fired >= cues.length) clearInterval(t);
     }, 1000);
     return () => clearInterval(t);
-  }, [step, isLeader, voiceOn, session.running]);
+  }, [step, isLeader, voiceOn, session.running, videoAudible]);
 
   useEffect(() => () => stopSpeech(), []);
 
@@ -499,7 +513,7 @@ export function useCoachEngine(
      speaking state is deliberately ignored: countdown speech itself changes
      that state and must never cancel/re-arm its own progression timer. */
   useEffect(() => {
-    if (!step || !isLeader || !session.running || session.lead !== 3) return;
+    if (!step || !isLeader || !session.running || session.lead !== 3 || !videoAudible) return;
     if (countdownStep.current !== step.id || countdownStarted.current) return;
     if (holding) {
       const t = setTimeout(recheck, 500); // re-evaluate the hold
@@ -507,13 +521,13 @@ export function useCoachEngine(
     }
     countdownStarted.current = true;
     startCountdown();
-  }, [step, isLeader, session.lead, session.running, holding]);
+  }, [step, isLeader, session.lead, session.running, holding, videoAudible]);
 
   /* 3 · 2 · 1 · GO — one monotonic timer per lead value. This effect does
      not depend on `speaking`, `holding`, or voice status, so TTS start/end
      callbacks cannot clean up a pending decrement. */
   useEffect(() => {
-    if (!step || !isLeader || session.lead === null || !session.running) return;
+    if (!step || !isLeader || session.lead === null || !session.running || !videoAudible) return;
     if (snap.lead !== session.lead) return; // stale render — the store already moved on
     if (countdownStep.current !== step.id) return;
     if (session.lead === 3 && !countdownStarted.current) return;
@@ -539,11 +553,11 @@ export function useCoachEngine(
     // Voice settings are intentionally captured for this tick. Changing them
     // must not restart or cancel a countdown already in flight.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step?.id, isLeader, session.lead, session.running, countdownEpoch]);
+  }, [step?.id, isLeader, session.lead, session.running, countdownEpoch, videoAudible]);
 
   /* the single countdown driving work, rest, briefs and cooldowns */
   useEffect(() => {
-    if (!isLeader || !session.running || session.left === null || session.lead !== null || !step)
+    if (!isLeader || !session.running || !videoAudible || session.left === null || session.lead !== null || !step)
       return;
     // The arm effect above may have just re-armed this step in the same
     // commit; never act on a clock value the store has already replaced.
@@ -577,6 +591,7 @@ export function useCoachEngine(
     state.settings,
     voiceOn,
     holding,
+    videoAudible,
   ]);
 
   return {
