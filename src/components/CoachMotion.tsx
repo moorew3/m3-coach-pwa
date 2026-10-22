@@ -19,6 +19,7 @@ export function CoachMotion({
   cycleKey,
   stableFraming = false,
   syncSessionVoice = false,
+  onPlaybackChange,
   className = "",
   label,
   onLayerChange,
@@ -38,6 +39,8 @@ export function CoachMotion({
   stableFraming?: boolean;
   /** Only the active coached work-set video; never previews or ambient clips. */
   syncSessionVoice?: boolean;
+  /** Reports actual moving-video state to the original V2 session timer. */
+  onPlaybackChange?: (playing: boolean) => void;
   className?: string;
   label?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
@@ -83,6 +86,7 @@ export function CoachMotion({
     if (!playing) {
       video.pause();
       setIsPlaying(false);
+      onPlaybackChange?.(false);
       if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); }
       return;
     }
@@ -150,15 +154,16 @@ export function CoachMotion({
               callbackRef.current?.(0, "transition");
               if (playing) void event.currentTarget.play().catch(() => undefined);
             }}
-            onPlaying={() => { setIsPlaying(true); if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "playing"); }}
-            onPause={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
-            onWaiting={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
-            onStalled={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
-            onEnded={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onPlaying={() => { setIsPlaying(true); onPlaybackChange?.(true); if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "playing"); }}
+            onPause={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onWaiting={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onStalled={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
+            onEnded={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
             onError={() => {
               setFailed(true);
               setLoaded(false);
               setIsPlaying(false);
+              onPlaybackChange?.(false);
               if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "failed"); stopSpeech(); pauseMarcusWorkCue(); }
             }}
             className={`absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
