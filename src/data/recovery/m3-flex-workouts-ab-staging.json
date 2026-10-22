@@ -1,7 +1,7 @@
 {
   "schema": "m3-flex-v2-recovery-program-staging-v1",
   "date": "2026-10-22",
-  "status": "PROPOSED_OWNER_REVIEW__NOT_ACTIVATED__CLINICIAN_CLEARANCE_REQUIRED",
+  "status": "PROPOSED_OWNER_REVIEW__NOT_ACTIVATED_IN_PRODUCTION__WIRED_FOR_V2_DEVELOPMENT_OWNER_TEST_ONLY__CLINICIAN_CLEARANCE_REQUIRED",
   "source": "Owner-approved M3 FLEX video inventory and previously drafted Workout A/B preview prescription; not a medically approved treatment plan",
   "safety": {
     "injuredLeg": "LEFT",
@@ -207,5 +207,6 @@
     "exercisePrescriptionApproval": false,
     "productionIntegration": false,
     "productionDeploy": false
-  }
+  },
+  "lastIntegrationCheck": "V2 adapter verified 16/15 working sets, 2 breathing chapters each and optional final-pair rests; no production deploy"
 }
