@@ -41,10 +41,9 @@ function timeline(workoutKey, pairIds = []) {
         if(index+1<active.length)steps.push({type:"handoff",from:ex.id,to:active[index+1].id});
       });
       // A real timer begins only after the final active exercise of the round.
-      const isLastBlock=blocks.indexOf(block)===blocks.length-1;
-      const finalRound=n===rounds;
       const seconds=active.length===2 ? pair.restSec : active[active.length-1].restSec;
-      if(!isLastBlock||!finalRound)steps.push({type:"rest",seconds,after:active[active.length-1].id});
+      // Cooldown begins only after the final recovery interval as well.
+      steps.push({type:"rest",seconds,after:active[active.length-1].id});
     }
   }
   steps.push({type:"cooldown"});
@@ -72,7 +71,7 @@ for(const key of ["A","B"]) {
   const steps=timeline(key,selected);
   verify(name+" no prescribed set skipped",()=>{
     assert.equal(steps.filter(s=>s.type==="set").length,day.workingSets);
-    assert.equal(steps[0].type,"preparation");assert.equal(steps.at(-1).type,"cooldown");
+    assert.equal(steps[0].type,"preparation");assert.equal(steps.at(-1).type,"cooldown");assert.equal(steps.at(-2).type,"rest");
     for(const ex of day.exercises){
       assert.deepEqual(steps.filter(s=>s.type==="set"&&s.ex===ex.id).map(s=>s.set),
         Array.from({length:ex.sets},(_,i)=>i+1),ex.id);
