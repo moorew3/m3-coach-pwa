@@ -362,7 +362,7 @@ function V2Coach() {
         : (session.setIndex % 2 === 1 ? movementCue : breathingCue);
       message = `${exercise.name}. Set ${session.setIndex + 1} of ${exercise.sets}. Target: ${exercise.reps ?? `${exercise.seconds ?? 30} seconds`}.${targetWeight > 0 ? ` Working weight: ${targetWeight} pounds.` : ""} ${setupCue} ${focusedCue}${exercise.seconds ? "" : " When your prescribed reps are finished, tap complete set or say complete set with hands-free commands on."}`;
     } else if (session.phase === "rest") {
-      message = `Rest ${exercise.restSeconds} seconds. Reset your breathing and prepare for set ${session.setIndex + 1}.`;
+      message = `Rest ${session.phaseSecondsLeft ?? exercise.restSeconds} seconds. Reset your breathing and prepare for ${exercise.name}, set ${session.setIndex + 1}.`;
     } else if (session.phase === "transition") {
       const setWord = exercise.sets === 1 ? "set" : "sets";
       message = `Next: ${exercise.name}. ${exercise.sets} ${setWord}, ${exercise.reps ?? `${exercise.seconds ?? 30} seconds`}. ${setupCue}`;
