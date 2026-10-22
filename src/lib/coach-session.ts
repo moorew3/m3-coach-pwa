@@ -327,10 +327,10 @@ export function useCoachEngine(
 
   const step: CoachStep | undefined = script[session.i];
   const videoRequired = Boolean(opts.requireWorkVideo && step?.kind === "work");
-  const videoAudible = !videoRequired || videoPlayback.status === "playing";
+  const videoAudible = !videoRequired || (videoPlayback.status === "playing" && videoPlayback.stepKey === step?.id);
 
   useEffect(() => {
-    requirePlayingWorkVideoForSpeech(videoRequired);
+    requirePlayingWorkVideoForSpeech(videoRequired, step?.id);
     if (videoRequired && !videoAudible) {
       stopSpeech();
       spoken.current = ""; // Re-introduce this set when its video resumes.
