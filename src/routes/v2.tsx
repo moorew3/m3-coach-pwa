@@ -91,6 +91,8 @@ function V2Coach() {
     [workoutId],
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
+  const [experience, setExperience] = useState<"coach-session" | "demonstrations">("coach-session");
+  const coachCheckpoint = useRef<V2Session | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [showOpening, setShowOpening] = useState(false);
   const [openingStarting, setOpeningStarting] = useState(false);
@@ -230,18 +232,19 @@ function V2Coach() {
         version: 2,
         savedOn: mountainDayKey(),
         workoutId: session.workout.id,
-        session: { ...session, running: false },
+        // Demo browsing never overwrites the paused coach checkpoint.
+        session: { ...(experience === "demonstrations" && coachCheckpoint.current ? coachCheckpoint.current : session), running: false },
       }));
     } catch {
       // Private-browsing/storage restrictions must never prevent training.
     }
-  }, [session, hydrated]);
+  }, [session, hydrated, experience]);
 
   useEffect(() => {
-    if (!session.running) return;
+    if (!session.running || experience === "demonstrations") return;
     const timer = window.setInterval(() => dispatch({ type: "tick" }), 1000);
     return () => window.clearInterval(timer);
-  }, [session.running]);
+  }, [session.running, experience]);
 
   useEffect(() => {
     setLiveCue(null);
@@ -665,6 +668,27 @@ function V2Coach() {
     );
   };
 
+  const chooseExperience = (next: "coach-session" | "demonstrations") => {
+    if (experience === next) return;
+    stopMarcusCue();
+    stopFridayPremiumCue();
+    stopDetailedExerciseSpeech();
+    stopMarcusTrainer();
+    stopCoachReply();
+    stopListening();
+    if (next === "demonstrations") {
+      // Preserve all logged sets and the exact work cursor when browsing demos.
+      coachCheckpoint.current = { ...session, running: false };
+      dispatch({ type: "pause" });
+      dispatch({ type: "set-mode", mode: "coach" });
+    } else if (coachCheckpoint.current) {
+      setWorkoutId(coachCheckpoint.current.workout.id);
+      dispatch({ type: "restore", session: coachCheckpoint.current });
+      coachCheckpoint.current = null;
+    }
+    setExperience(next);
+  };
+
   const toggleWorkout = () => {
     if (session.running) {
       stopMarcusCue();
@@ -712,7 +736,7 @@ function V2Coach() {
   const stagePreloadUrl = isFighterMovement
     ? session.phase === "rest" ? media?.url : guardClip?.url
     : preload?.url;
-  const videoPlaying = session.running && (session.phase === "work" ||
+  const videoPlaying = experience === "demonstrations" || session.running && (session.phase === "work" ||
     (session.phase === "rest" && isFighterMovement && Boolean(guardClip)));
   // Full 6s technique demonstrations play seven complete guard-to-guard
   // cycles within the 40s bell. The full-length combo is nearly 1:1.
