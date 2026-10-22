@@ -1008,7 +1008,7 @@ function V2Coach() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => dispatch({ type: "reset", workout })}
+                      onClick={() => dispatch({ type: "reset", workout: session.workout })}
                       disabled={experience === "demonstrations"}
                       className="grid size-11 place-items-center rounded-xl bg-white/15"
                       aria-label="Reset workout"
