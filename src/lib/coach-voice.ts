@@ -1074,15 +1074,19 @@ export interface SpeakOptions {
 }
 
 let workVideoRequiredForSpeech = false;
+let requiredWorkStepKey: string | null = null;
 
-/** In the V2 Coach Session only, no work-set audio without moving video. */
-export function requirePlayingWorkVideoForSpeech(required: boolean) {
+/** In the V2 Coach Session only, no work-set speech without the EXACT playing set. */
+export function requirePlayingWorkVideoForSpeech(required: boolean, stepKey?: string) {
   workVideoRequiredForSpeech = required;
-  if (required && getCoachWorkVideoSnapshot().status !== "playing") stopSpeech();
+  requiredWorkStepKey = required ? (stepKey ?? null) : null;
+  const playback = getCoachWorkVideoSnapshot();
+  if (required && (playback.status !== "playing" || playback.stepKey !== requiredWorkStepKey)) stopSpeech();
 }
 
 export function speak(text: string, enabled: boolean, opts: SpeakOptions = {}) {
-  if (workVideoRequiredForSpeech && getCoachWorkVideoSnapshot().status !== "playing") return;
+  const playback = getCoachWorkVideoSnapshot();
+  if (workVideoRequiredForSpeech && (playback.status !== "playing" || playback.stepKey !== requiredWorkStepKey)) return;
   const tone = opts.tone ?? "assertive";
   const interrupt = opts.interrupt ?? true;
   if (!enabled || !text) return;
