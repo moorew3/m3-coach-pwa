@@ -17,6 +17,7 @@ export function TrainerStageMedia({
   rate,
   label,
   syncSessionVoice = false,
+  cycleKey,
 }: {
   decision: TrainerMediaDecision;
   preloadMotion?: { url: string; poster?: string };
@@ -25,6 +26,7 @@ export function TrainerStageMedia({
   rate: number;
   label: string;
   syncSessionVoice?: boolean;
+  cycleKey?: string;
 }) {
   const motion = decision.mode === "motion" ? decision.motion : undefined;
   const ambient = motion ? undefined : decision.ambient;
@@ -64,6 +66,7 @@ export function TrainerStageMedia({
           playing={playing}
           rate={rate}
           syncSessionVoice={syncSessionVoice}
+          cycleKey={cycleKey}
           preloadUrl={preloadMotion?.url}
           className="h-full w-full"
           label={label}
