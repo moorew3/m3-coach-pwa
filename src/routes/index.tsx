@@ -171,6 +171,13 @@ function Today() {
         <p className="mt-2 text-sm text-muted-foreground">{plan.summary}</p>
 
         <div className="mt-4 grid gap-2">
+          {(plan.type === "measure" || list.length === 0) && (
+            <section aria-label="M3 FLEX exercise demonstrations" className="rounded-xl border border-accent/40 bg-elevated/60 p-3">
+              <p className="mb-2 text-sm font-bold">Exercise Demonstrations</p>
+              <p className="mb-3 text-xs text-muted-foreground">No coached working sets are scheduled here today. You can still open your exercise demonstrations without starting or logging a workout.</p>
+              <ExerciseLibraryButton label="Exercise Demonstrations — browse only" />
+            </section>
+          )}
           <Link
             to="/glasses"
             search={{ day }}
