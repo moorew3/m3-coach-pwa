@@ -57,10 +57,20 @@
           "phase": "Strength",
           "name": "Seated lateral dumbbell raises",
           "prescription": "3 × 10–12 · rest 60 s",
-          "media": "NEW_LATERAL-RAISE",
+          "media": "C12-LATERAL-R3",
           "reference": "V2 lateralRaise movement and existing coaching",
           "availability": "V2 reference only; Flex recovery video not approved",
-          "priority": "reference"
+          "priority": "approved",
+          "clipStatus": "OWNER_APPROVED_SOURCE_PREVIEW_ONLY__NOT_CLINICALLY_CLEARED",
+          "ownerApproved": true,
+          "originalHeyGenId": "4ab71f91e4ac4e45a9865c903b5304b2",
+          "ownerApprovedSourceUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16100-d6cd-7c36-9a68-80fb30e2246a.mp4",
+          "reviewPlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+          "soundtrack": "Silent source; Marcus male narration pending",
+          "seatedBoot": "Left foot black medical walking boot elevated",
+          "releaseReady": false,
+          "medicalClearanceVerified": false,
+          "fullSetMotionCompleted": false
         },
         {
           "phase": "Strength",
@@ -239,5 +249,12 @@
     "C09-PRE-BREATH-R2",
     "C10-POST-BREATH-R1"
   ],
-  "implementation": "Use as proposed extension plan for production master builder; do not automatically mark missing scenes completed or publish training release."
+  "implementation": "Use as proposed extension plan for production master builder; do not automatically mark missing scenes completed or publish training release.",
+  "ownerApprovedPreviewAddition": {
+    "program": "A",
+    "chapter": "Seated lateral dumbbell raises",
+    "sceneId": "C12-LATERAL-R3",
+    "approvedOn": "2026-10-21",
+    "restrictions": "Do not use to perform prescribed sets until clinician clearance; no final master's Marcus track/timing yet."
+  }
 }
