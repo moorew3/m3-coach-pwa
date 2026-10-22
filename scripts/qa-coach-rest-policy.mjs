@@ -27,7 +27,8 @@ const groupCode = extract("export function groupedCoachedExercises(", "/** Speec
   .replace("new Set<number>()", "new Set()")
   .replace("const ordered: Exercise[] = [];", "const ordered = [];");
 const group = new Function("sectionFor", groupCode + "\nreturn groupedCoachedExercises;")(sectionFor);
-const restSource = extract("const blockDone = lastRound", "const nextCu = nextEx");
+const restSource = extract("const blockDone = lastRound", "const nextCu = nextEx")
+  .replace("(seconds: number | undefined)", "(seconds)");
 const restDuration = new Function(
   "lastRound", "block", "r", "setsFor", "nextEx", "c", "section", "e",
   restSource + "\nreturn rest;",
@@ -69,4 +70,14 @@ test("warmup zero-rest prescriptions still transition with at least 15 seconds",
   assert.equal(rest([e("warm", 2, undefined, 0)], 0, false, e("curl", 3), "Warm-up"), 15));
 test("solo set ignores the separate supersetRest field", () =>
   assert.equal(rest([e("curl", 3, undefined, 60, 120)], 2, true, e("press", 3)), 60));
+test("legacy optional movement missing rest cannot freeze the countdown", () =>
+  assert.equal(rest([{ id: "legacy", sets: 3, rest: undefined }], 0, false, e("press", 3)), 30));
+test("warmup lacking a rest prescription safely defaults to 15 seconds", () =>
+  assert.equal(rest([{ id: "wu", sets: 3, rest: undefined }], 0, false, e("press", 3), "Warm-up"), 15));
+test("invalid NaN rest value cannot enter the coach clock", () =>
+  assert.equal(rest([{ id: "legacy", sets: 3, rest: Number.NaN }], 0, false, e("press", 3)), 30));
+test("superset uses longest prescribed post-pair rest", () =>
+  assert.equal(rest([e("curl", 3, "B", 60, 75), e("triceps", 3, "B", 45, 120)], 0, false, e("press", 3)), 120));
+test("no unnecessary rest after final block without cooldown", () =>
+  assert.equal(rest([e("curl", 3)], 2, true, undefined, "Main work", []), undefined));
 console.log("PASSED", passed, "rest-policy checks. This is NOT a compiled app or phone video/audio test.");
