@@ -1,0 +1,151 @@
+{
+  "schema": "m3-flex-v2-approved-media-staging-v1",
+  "date": "2026-10-22",
+  "sourceBranch": "production/m3-flex-two-part-masters-2026-10-19",
+  "purpose": "Approval-preserving media inventory for integrating into original V2 without replacing the original coach identity registry or live runtime",
+  "integrationState": "MANIFEST_ONLY_NOT_WIRED_INTO_V2",
+  "allReleaseBlocked": true,
+  "voice": {
+    "ownerRequired": "Marcus – Warm & Friendly English",
+    "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+    "sourceVideoAudio": "Use silent originals/preview versions and synchronize separate Marcus track; never alternate to female or browser synthetic voice"
+  },
+  "safety": {
+    "leftLeg": "Anatomical LEFT medical boot/cast on separate elevated support, zero weight bearing",
+    "clinicalClearanceRequired": true
+  },
+  "clips": [
+    {
+      "id": "C09-PRE-BREATH-R2",
+      "title": "C09-PRE-BREATH-R2",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C10-POST-BREATH-R1",
+      "title": "C10-POST-BREATH-R1",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C01-R3",
+      "title": "C01-R3",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C02",
+      "title": "C02",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-bc16-778b-a773-db16e57aade7.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C03",
+      "title": "C03",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C04-R2",
+      "title": "C04-R2",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C08-PRESS-R3",
+      "title": "C08-PRESS-R3",
+      "source": "seven-owner-locked-originals",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Original approved file is immutable. Video timing / full-session release QA remains pending."
+    },
+    {
+      "id": "C12-LATERAL-R3",
+      "title": "C12-LATERAL-R3",
+      "source": "latest-owner-approved-R3",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "Correct elevated left boot owner-approved clip; full timed repetitions and coach audio still incomplete"
+    },
+    {
+      "id": "NEW_SEATED-TRICEPS-PRESSDOWN",
+      "title": "NEW_SEATED-TRICEPS-PRESSDOWN",
+      "source": "older-owner-approved-visual-version",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/6e2a8059-fd18-4281-a404-cd0a180c2a4d.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "User-approved earlier preview only; later avatar/boot refinements outstanding. No silent production promotion."
+    },
+    {
+      "id": "NEW_SEATED-BAND-PULL-APART",
+      "title": "NEW_SEATED-BAND-PULL-APART",
+      "source": "older-owner-approved-visual-version",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/229b8d95-bb09-4734-914f-b73c2932a6ce.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "User-approved earlier preview only; later avatar/boot refinements outstanding. No silent production promotion."
+    },
+    {
+      "id": "NEW_ARM-BOXING",
+      "title": "NEW_ARM-BOXING",
+      "source": "older-owner-approved-visual-version",
+      "videoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/5e6112e1-73d3-4013-b533-1f011a1051cd.mp4",
+      "ownerApproved": true,
+      "originalProtected": true,
+      "previewAllowed": true,
+      "releaseReady": false,
+      "medicalClearanceVerified": false,
+      "notes": "User-approved earlier preview only; later avatar/boot refinements outstanding. No silent production promotion."
+    }
+  ]
+}
