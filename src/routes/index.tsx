@@ -171,7 +171,6 @@ function Today() {
         <p className="mt-2 text-sm text-muted-foreground">{plan.summary}</p>
 
         <div className="mt-4 grid gap-2">
-          <ExerciseLibraryButton label="Exercise demo library" />
           <Link
             to="/glasses"
             search={{ day }}
@@ -246,7 +245,10 @@ function Today() {
               </div>
             )}
 
-            <button
+            <section aria-label="M3 FLEX training modes" className="mt-4 rounded-2xl border-2 border-primary/40 bg-elevated/60 p-3">
+              <h3 className="text-base font-bold uppercase tracking-wide">Choose your M3 FLEX mode</h3>
+              <p className="mt-1 text-xs text-muted-foreground">One app, one approved exercise library. Coach Session tracks your workout; Exercise Demonstrations let you study movements without starting or logging a workout.</p>
+              <button
               type="button"
               onClick={() => {
                 if (log.completed) return openCoach();
@@ -255,7 +257,7 @@ function Today() {
                 startWorkoutOnce(day);
                 openCoach();
               }}
-              className="tap-target mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3 text-center text-base font-bold uppercase leading-tight tracking-wide text-primary-foreground"
+              className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3 text-center text-base font-bold uppercase leading-tight tracking-wide text-primary-foreground"
             >
               {started ? (
                 <RotateCcw className="size-5 shrink-0" />
@@ -263,10 +265,10 @@ function Today() {
                 <Play className="size-5 shrink-0" />
               )}
               {log.completed
-                ? "Coach Mode — review session"
+                ? "Coach Session — review workout"
                 : started
-                  ? "Resume Coach Mode"
-                  : "Coach Mode — Train with Coach"}
+                  ? "Resume Coach Session"
+                  : "Coach Session — train with Marcus"}
             </button>
             {navError && (
               <p className="mt-2 rounded-xl bg-destructive/15 p-2 text-center text-xs font-semibold text-destructive">
@@ -274,8 +276,13 @@ function Today() {
               </p>
             )}
             <p className="mt-2 text-center text-xs text-muted-foreground">
-              Coach performs every movement with you, talks you through sets, rest, camera and form.
+              Marcus guides your set and rep sequence, rest periods and logging. Only approved exercise footage is used; missing full-length movement scenes remain clearly identified.
             </p>
+              <div className="mt-3">
+                <ExerciseLibraryButton label="Exercise Demonstrations — no workout started" />
+              </div>
+              <p className="mt-2 text-center text-[11px] text-muted-foreground">Browse each exercise independently. The library does not advance or reset your coach session.</p>
+            </section>
 
             <button
               type="button"
