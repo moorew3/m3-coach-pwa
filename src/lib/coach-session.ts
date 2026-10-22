@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import type { CoachStep } from "@/lib/coach-script";
 import { useCoachWorkVideo } from "@/lib/coach-work-video";
+import { playMarcusWorkCue, pauseMarcusWorkCue, stopMarcusWorkCue } from "@/lib/marcus-approved-cues";
 import { beep, logIntervalFromCoach, markSetFromCoach, useApp, type SetEntry } from "@/lib/store";
 import {
   dropPending,
@@ -338,6 +339,24 @@ export function useCoachEngine(
     return () => requirePlayingWorkVideoForSpeech(false);
   }, [videoRequired, videoAudible, step?.id]);
 
+  /* V2 cannot yet render fresh Marcus TTS: the /coach-speech endpoint is
+     intentionally 503 for the preview. Reuse ONLY recorded owner-approved
+     Marcus cues on exact approved VIDEO work sets. No alternate speaker. */
+  useEffect(() => {
+    if (!opts.requireWorkVideo) return;
+    if (!videoRequired || !step || !voiceOn || !isLeader) {
+      stopMarcusWorkCue();
+      return;
+    }
+    if (!videoAudible || !session.running) {
+      pauseMarcusWorkCue();
+      return;
+    }
+    playMarcusWorkCue(step.id, step.mirror, step.setIndex ?? 0);
+  }, [videoRequired, videoAudible, step?.id, step?.mirror, step?.setIndex, session.running, isLeader, voiceOn]);
+  useEffect(() => () => stopMarcusWorkCue(), []);
+
+
   const resetCountdown = useCallback((stepId: string) => {
     countdownStep.current = stepId;
     countdownStarted.current = false;
@@ -386,7 +405,7 @@ export function useCoachEngine(
 
   /* narration — leader only, and re-fires the moment audio is unlocked */
   useEffect(() => {
-    if (!step || !isLeader || !videoAudible) return;
+    if (!step || !isLeader || !videoAudible || (opts.requireWorkVideo && videoRequired)) return;
     if (!voiceOn) {
       stopSpeech();
       spoken.current = "";
@@ -437,7 +456,7 @@ export function useCoachEngine(
   /* LIVE CUES — spaced coaching inside a step, so the coach stays with the
      user through the set instead of going silent after the opening line. */
   useEffect(() => {
-    if (!step || !isLeader || !voiceOn || !session.running || !videoAudible) return;
+    if (!step || !isLeader || !voiceOn || !session.running || !videoAudible || (opts.requireWorkVideo && videoRequired)) return;
     const cues = step.liveCues;
     if (!cues?.length) return;
     // A screen that takes the voice mid-set joins where the clock already
