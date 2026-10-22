@@ -1,0 +1,211 @@
+{
+  "schema": "m3-flex-v2-recovery-program-staging-v1",
+  "date": "2026-10-22",
+  "status": "PROPOSED_OWNER_REVIEW__NOT_ACTIVATED__CLINICIAN_CLEARANCE_REQUIRED",
+  "source": "Owner-approved M3 FLEX video inventory and previously drafted Workout A/B preview prescription; not a medically approved treatment plan",
+  "safety": {
+    "injuredLeg": "LEFT",
+    "supportedAndUnloaded": true,
+    "nonWeightBearing": true,
+    "clinicalClearanceRequired": true,
+    "noStanding": true,
+    "noFootPivot": true,
+    "noLegDrive": true,
+    "stopForNewPain": true
+  },
+  "voice": {
+    "name": "Marcus — Warm & Friendly English",
+    "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+    "noSyntheticFallback": true
+  },
+  "policy": {
+    "restAfterEveryStraightSet": true,
+    "restBetweenDifferentExercises": true,
+    "supersetTimerStartsAfterLastPairedExercise": true,
+    "noRestBetweenSupersetPartners": true,
+    "unpairedExtraSetsStayInSequence": true,
+    "restTimerCanBeExtended": true,
+    "shortClipsDoNotImplyFullCoachPerformedSet": true
+  },
+  "shared": [
+    {
+      "id": "prep",
+      "name": "Preparation breathing",
+      "mediaId": "C09-PRE-BREATH-R2",
+      "seconds": 60,
+      "position": "before",
+      "required": true
+    },
+    {
+      "id": "cooldown",
+      "name": "Cooldown breathing",
+      "mediaId": "C10-POST-BREATH-R1",
+      "seconds": 60,
+      "position": "after",
+      "required": true
+    }
+  ],
+  "workouts": {
+    "A": {
+      "name": "Workout A — seated shoulders, arms and controlled conditioning",
+      "workingSets": 16,
+      "exercises": [
+        {
+          "id": "lateral",
+          "name": "Seated lateral dumbbell raise",
+          "mediaId": "C12-LATERAL-R3",
+          "sets": 3,
+          "reps": {
+            "min": 10,
+            "max": 12
+          },
+          "restSec": 60,
+          "notes": "Arms lift to shoulder height; no leg assistance"
+        },
+        {
+          "id": "hammer",
+          "name": "Seated hammer curls",
+          "mediaId": "C02",
+          "sets": 3,
+          "reps": {
+            "min": 8,
+            "max": 12
+          },
+          "restSec": 75,
+          "notes": "Controlled lowering without trunk rocking"
+        },
+        {
+          "id": "shrugs",
+          "name": "Seated dumbbell shrugs",
+          "mediaId": "C01-R3",
+          "sets": 3,
+          "reps": {
+            "min": 12,
+            "max": 15
+          },
+          "restSec": 60,
+          "notes": "Controlled shoulder elevation; avoid neck jerks"
+        },
+        {
+          "id": "triceps",
+          "name": "Seated cable triceps pressdowns",
+          "mediaId": "NEW_SEATED-TRICEPS-PRESSDOWN",
+          "sets": 3,
+          "reps": {
+            "min": 10,
+            "max": 12
+          },
+          "restSec": 75,
+          "notes": "No leaning or foot bracing"
+        },
+        {
+          "id": "boxing",
+          "name": "Seated arm-only shadow boxing",
+          "mediaId": "NEW_ARM-BOXING",
+          "sets": 4,
+          "durationSec": 45,
+          "restSec": 45,
+          "notes": "Hands only, no pivoting or lower-body twist"
+        }
+      ],
+      "supersetOptions": [
+        {
+          "id": "A-pair",
+          "a": "hammer",
+          "b": "triceps",
+          "restSec": 75
+        }
+      ]
+    },
+    "B": {
+      "name": "Workout B — seated chest, upper back and arms",
+      "workingSets": 15,
+      "exercises": [
+        {
+          "id": "chest",
+          "name": "Seated INNSTAR chest press",
+          "mediaId": "C08-PRESS-R3",
+          "sets": 4,
+          "reps": {
+            "min": 8,
+            "max": 12
+          },
+          "restSec": 90,
+          "notes": "Band behind back and chair, not neck; no leg drive"
+        },
+        {
+          "id": "front",
+          "name": "Seated front dumbbell raises",
+          "mediaId": "C03",
+          "sets": 3,
+          "reps": {
+            "min": 10,
+            "max": 12
+          },
+          "restSec": 60,
+          "notes": "Light weight, height no higher than shoulders"
+        },
+        {
+          "id": "curls",
+          "name": "Seated alternating curls",
+          "mediaId": "C04-R2",
+          "sets": 3,
+          "reps": {
+            "min": 8,
+            "max": 12
+          },
+          "restSec": 75,
+          "notes": "One arm at a time, leg still supported"
+        },
+        {
+          "id": "band",
+          "name": "Seated resistance-band pull-aparts",
+          "mediaId": "NEW_SEATED-BAND-PULL-APART",
+          "sets": 2,
+          "reps": {
+            "min": 12,
+            "max": 15
+          },
+          "restSec": 60,
+          "notes": "Gentle band tension and controlled return"
+        },
+        {
+          "id": "triceps",
+          "name": "Seated cable triceps pressdowns",
+          "mediaId": "NEW_SEATED-TRICEPS-PRESSDOWN",
+          "sets": 3,
+          "reps": {
+            "min": 10,
+            "max": 12
+          },
+          "restSec": 75,
+          "notes": "Only if seated anchor and boot support are safe"
+        }
+      ],
+      "supersetOptions": [
+        {
+          "id": "B-pair1",
+          "a": "front",
+          "b": "curls",
+          "restSec": 75
+        },
+        {
+          "id": "B-pair2",
+          "a": "band",
+          "b": "triceps",
+          "restSec": 75
+        }
+      ]
+    }
+  },
+  "releaseGates": {
+    "androidPlayback": false,
+    "fullContinuousInstructorPerformances": false,
+    "marcusFullRepAndRestAudio": false,
+    "approvedMediaIdentityMapping": false,
+    "nonWeightBearingMedicalClearance": false,
+    "exercisePrescriptionApproval": false,
+    "productionIntegration": false,
+    "productionDeploy": false
+  }
+}
