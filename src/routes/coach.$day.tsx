@@ -1889,7 +1889,7 @@ function CoachSession() {
           {step.kind === "work" && setKind !== "work" && chip(`${setKind} set`, "primary")}
           {sideMatch && chip(`${sideMatch[1]} side`)}
           {substituted && chip(`Swapped → ${substituted}`, "accent")}
-          {motionMissing && chip("Use audio + form cues", "primary")}
+          {motionMissing && chip("Coach video pending · set paused for safety", "primary")}
           {previewing &&
             chip(
               upcoming?.sameExercise ? "Preview · next set" : `Preview · ${upcoming?.name}`,
