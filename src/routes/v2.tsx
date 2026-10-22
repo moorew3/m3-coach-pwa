@@ -815,14 +815,14 @@ function V2Coach() {
         </header>
         <section aria-label="Choose training experience" data-testid="v2-experience-switch"
           className="mt-3 grid grid-cols-2 gap-2 rounded-2xl border border-cyan-300/20 bg-[#111820] p-2">
-          <button type="button" aria-pressed={experience === "coach-session"}
+          <button type="button" disabled={!hydrated} aria-pressed={experience === "coach-session"}
             onClick={() => chooseExperience("coach-session")}
             className={experience === "coach-session"
               ? "min-h-14 rounded-xl bg-cyan-300 px-3 text-xs font-black text-black sm:text-sm"
               : "min-h-14 rounded-xl bg-white/10 px-3 text-xs font-black text-white sm:text-sm"}>
             Coach Session
           </button>
-          <button type="button" aria-pressed={experience === "demonstrations"}
+          <button type="button" disabled={!hydrated} aria-pressed={experience === "demonstrations"}
             onClick={() => chooseExperience("demonstrations")}
             className={experience === "demonstrations"
               ? "min-h-14 rounded-xl bg-cyan-300 px-3 text-xs font-black text-black sm:text-sm"
