@@ -383,7 +383,11 @@ export function useCoachEngine(
     // Speech-led steps fall back to a read-along clock when the coach is
     // muted; cap it so a silent session still flows instead of stalling.
     const secs =
-      step.speechPaced && !voiceOn && step.seconds ? Math.min(step.seconds, 10) : step.seconds;
+      opts.requireWorkVideo && step.speechPaced
+        ? Math.min(step.seconds ?? 3, step.kind === "intro" ? 5 : 3)
+        : step.speechPaced && !voiceOn && step.seconds
+          ? Math.min(step.seconds, 10)
+          : step.seconds;
     // Rep-based sets count down too (lead runs, no clock); timed sets arm both.
     if (step.countdownIn) {
       resetCountdown(step.id);
