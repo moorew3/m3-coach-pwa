@@ -110,7 +110,16 @@
           "prescription": "3 × 10–12 · rest 60 s",
           "reference": "original tricepsPressdown motion and V2 audio",
           "availability": "V2 reference only; safe seat/anchor and Flex animation unapproved",
-          "priority": "reference"
+          "priority": "approved",
+          "media": "NEW_SEATED-TRICEPS-PRESSDOWN",
+          "ownerApproved": true,
+          "clipStatus": "EARLIER_OWNER_APPROVED_MOTION_PREVIEW__NEW_AVATAR_BOOT_REFINEMENTS_PENDING",
+          "originalVideoId": "0682811783264435ab1ba6ac589eabdd",
+          "previewPlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/6e2a8059-fd18-4281-a404-cd0a180c2a4d.mp4",
+          "silentPreviewSha256": "136fcb43211de6c0f215c09d5dd2d5cd1382a4a31484afbde85d9517c0f1acef",
+          "releaseReady": false,
+          "clinicianClearanceVerified": false,
+          "finalMovementIdentityQaPassed": false
         },
         {
           "phase": "Conditioning",
@@ -119,7 +128,15 @@
           "media": "NEW_ARM-BOXING",
           "reference": "V2 boxingFlow60.mp4 includes standing actions—not usable as-is",
           "availability": "adapted cast-safe motion and clinician approval pending",
-          "priority": "blocked"
+          "priority": "approved",
+          "ownerApproved": true,
+          "clipStatus": "EARLIER_OWNER_APPROVED_MOTION_PREVIEW__NEW_AVATAR_BOOT_REFINEMENTS_PENDING",
+          "originalVideoId": "94be7d7f3b894ef5bbdecdb3734f7120",
+          "previewPlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/5e6112e1-73d3-4013-b533-1f011a1051cd.mp4",
+          "silentPreviewSha256": "7769226668c380e8819c54144b5078f7b9d04b5424e4c1ab15dbd1d365b26a66",
+          "releaseReady": false,
+          "clinicianClearanceVerified": false,
+          "finalMovementIdentityQaPassed": false
         },
         {
           "phase": "Post",
@@ -198,7 +215,16 @@
           "prescription": "2 × 12–15 · rest 60 s",
           "reference": "original bandPullApart reference",
           "availability": "new Flex seated cast-safe visual not approved",
-          "priority": "reference"
+          "priority": "approved",
+          "media": "NEW_SEATED-BAND-PULL-APART",
+          "ownerApproved": true,
+          "clipStatus": "EARLIER_OWNER_APPROVED_MOTION_PREVIEW__NEW_AVATAR_BOOT_REFINEMENTS_PENDING",
+          "originalVideoId": "31570149e9fe4a729c2de629da5eff46",
+          "previewPlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/229b8d95-bb09-4734-914f-b73c2932a6ce.mp4",
+          "silentPreviewSha256": "ad331b515297a03988b9bcc9d74fa96f8f8341b1714b768fef1fd157dffc869a",
+          "releaseReady": false,
+          "clinicianClearanceVerified": false,
+          "finalMovementIdentityQaPassed": false
         },
         {
           "phase": "Strength",
@@ -206,7 +232,16 @@
           "prescription": "3 × 10–12 · rest 60 s",
           "reference": "original tricepsPressdown motion, V2 coaching",
           "availability": "reference only, equipment anchor safety and cast-safe form unapproved",
-          "priority": "reference"
+          "priority": "approved",
+          "media": "NEW_SEATED-TRICEPS-PRESSDOWN",
+          "ownerApproved": true,
+          "clipStatus": "EARLIER_OWNER_APPROVED_MOTION_PREVIEW__NEW_AVATAR_BOOT_REFINEMENTS_PENDING",
+          "originalVideoId": "0682811783264435ab1ba6ac589eabdd",
+          "previewPlaybackUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/6e2a8059-fd18-4281-a404-cd0a180c2a4d.mp4",
+          "silentPreviewSha256": "136fcb43211de6c0f215c09d5dd2d5cd1382a4a31484afbde85d9517c0f1acef",
+          "releaseReady": false,
+          "clinicianClearanceVerified": false,
+          "finalMovementIdentityQaPassed": false
         },
         {
           "phase": "Optional (not included in base duration)",
@@ -256,5 +291,14 @@
     "sceneId": "C12-LATERAL-R3",
     "approvedOn": "2026-10-21",
     "restrictions": "Do not use to perform prescribed sets until clinician clearance; no final master's Marcus track/timing yet."
+  },
+  "ownerApprovedPreviewAdditions": {
+    "updated": "2026-10-21",
+    "restoredSceneIds": [
+      "NEW_SEATED-TRICEPS-PRESSDOWN",
+      "NEW_SEATED-BAND-PULL-APART",
+      "NEW_ARM-BOXING"
+    ],
+    "note": "These earlier owner-accepted sources are permitted in owner preview only. Avatar/medical-boot refinements requested later remain outstanding. Do not substitute unapproved newer black-boot clips."
   }
 }
