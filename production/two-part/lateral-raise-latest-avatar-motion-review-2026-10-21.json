@@ -8,7 +8,7 @@
   "silentEditedVideoUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/06074cef-4f28-4568-9873-1715e9289a22.mp4",
   "silentMediaId": "06074cef-4f28-4568-9873-1715e9289a22",
   "durationSeconds": 5.25,
-  "stage": "1080P_LEFT_BOOT_R3_RENDERING_REVIEW_ONLY",
+  "stage": "LEFT_BOOT_LATERAL_R3_OWNER_APPROVED__MEDICAL_RELEASE_AND_MARCUS_AUDIO_PENDING",
   "inspection": {
     "videoMotion": "Real dumbbell raising and lowering observed in ten-frame sampled contact sheet; fixed camera; no obvious abrupt hard cut in samples.",
     "issue": "The first-frame image supplied to video generator has the black medical boot on coach's RIGHT leg (viewer's left), while the owner's actual injury and approved new-video requirement specifies LEFT leg. This must be corrected in a clean still before another moving workout production render.",
@@ -48,8 +48,8 @@
     "url": "https://app.heygen.com/videos/4ab71f91e4ac4e45a9865c903b5304b2",
     "targetResolution": "1080p",
     "durationRequestedSeconds": 5,
-    "progress": "SUBMITTED_PROCESSING_PLAYER_WILL_AUTO_UPDATE",
-    "ownerApproved": false,
+    "progress": "COMPLETED_AND_OWNER_APPROVED",
+    "ownerApproved": true,
     "medicalClearanceVerified": false,
     "releaseEligible": false,
     "lockedOlderSourcesUnaffected": true,
@@ -60,6 +60,12 @@
       "No cuts or face swapping; one consistent shot",
       "No generated audio in owner-review copy",
       "Do not add to A/B masters until full owner review and safety gates"
-    ]
+    ],
+    "videoUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16100-d6cd-7c36-9a68-80fb30e2246a.mp4",
+    "ownerApprovalDate": "2026-10-21",
+    "ownerApprovalSource": "Latest user message: \"Approve\", explicitly following the R3 correct-left-boot review link",
+    "appActive": false,
+    "finalMasterAssembled": false,
+    "approvalScope": "Exact R3 video and intended owner likeness, not medical clearance, final 45-55 minute workout, voice mix or rights to overwrite any seven previously approved clips"
   }
 }
