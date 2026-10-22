@@ -1,0 +1,285 @@
+{
+  "schema": "m3-flex-owner-runner-quality-checks-v1",
+  "date": "2026-10-22",
+  "scope": "Existing owner preview and production development branch, not live customer/Railway deployment",
+  "appPreview": "https://dochost.co/d/s77gmbhk",
+  "sourceHtml": "public/recovery-coach/programs/simple-owner-preview.html",
+  "testedPageVersion": 16,
+  "verifiedBy": "Automated DOM flow tests (jsdom) against the actual published iframe HTML downloaded live; not a physical Android-device or clinician test",
+  "voice": {
+    "required": "Marcus – Warm & Friendly English",
+    "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+    "confirmedBySpeechTool": "Marcus - Warm & Friendly",
+    "repCountAudio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=5a77ab00-8e7f-4ed7-8a59-46a04c8d975a.wav",
+    "techniqueGuide": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=c18e177c-7551-4541-91ce-c34e25ad16b6.wav",
+    "substitutionPolicy": "No browser synthetic fallback or alternate voice"
+  },
+  "prescriptions": {
+    "A": {
+      "workingSets": 16,
+      "breathingStages": 2,
+      "totalGuidedSteps": 18,
+      "exercises": [
+        [
+          "Seated dumbbell lateral raises",
+          3,
+          "10-12",
+          60
+        ],
+        [
+          "Seated hammer curls",
+          3,
+          "8-12",
+          75
+        ],
+        [
+          "Seated dumbbell shrugs",
+          3,
+          "12-15",
+          60
+        ],
+        [
+          "Seated cable triceps pressdowns",
+          3,
+          "10-12",
+          75
+        ],
+        [
+          "Seated arm-only boxing",
+          4,
+          "45 seconds",
+          45
+        ]
+      ]
+    },
+    "B": {
+      "workingSets": 15,
+      "breathingStages": 2,
+      "totalGuidedSteps": 17,
+      "exercises": [
+        [
+          "Seated INNSTAR chest press",
+          4,
+          "8-12",
+          90
+        ],
+        [
+          "Seated front raises",
+          3,
+          "10-12",
+          60
+        ],
+        [
+          "Seated alternating curls",
+          3,
+          "8-12",
+          75
+        ],
+        [
+          "Seated band pull-aparts",
+          2,
+          "12-15",
+          60
+        ],
+        [
+          "Seated cable triceps pressdowns",
+          3,
+          "10-12",
+          75
+        ]
+      ]
+    }
+  },
+  "supersetPairing": {
+    "A": [
+      [
+        "hammer",
+        "triceps"
+      ]
+    ],
+    "B": [
+      [
+        "front",
+        "curls"
+      ],
+      [
+        "band",
+        "triceps"
+      ]
+    ],
+    "behavior": "Alternate 1 set of each chosen exercise per round, then rest. If unequal number of sets, extra sets remain standalone. No additional sets created."
+  },
+  "tests": [
+    {
+      "id": "A-straight",
+      "expectedSteps": 18,
+      "observedSteps": 18,
+      "passed": true
+    },
+    {
+      "id": "A-hammer-triceps-superset",
+      "expectedSteps": 18,
+      "observedSteps": 18,
+      "passed": true
+    },
+    {
+      "id": "B-straight",
+      "expectedSteps": 17,
+      "observedSteps": 17,
+      "passed": true
+    },
+    {
+      "id": "B-front-curls-superset",
+      "expectedSteps": 17,
+      "observedSteps": 17,
+      "passed": true
+    },
+    {
+      "id": "B-band-triceps-unequal-superset",
+      "expectedSteps": 17,
+      "observedSteps": 17,
+      "passed": true,
+      "previousDefect": "Two band sets vs three triceps sets caused exception; fixed to two alternating rounds plus remaining triceps set."
+    },
+    {
+      "id": "B-both-supersets",
+      "expectedSteps": 17,
+      "observedSteps": 17,
+      "passed": true
+    },
+    {
+      "id": "clearance-gate",
+      "result": "Training cannot start without checkbox; user declaration is not medical verification",
+      "passed": true
+    },
+    {
+      "id": "local-logging",
+      "result": "Logged sets persisted in localStorage and counted correctly across session",
+      "passed": true
+    },
+    {
+      "id": "interrupted-session-resume",
+      "result": "Restored next unfinished step and preserved preceding log entries, without inferring unfinished reps",
+      "passed": true
+    },
+    {
+      "id": "safety-stop",
+      "result": "Uncontrolled form checkbox forces session stop; warning remains visible; flagged set retained honestly",
+      "passed": true
+    },
+    {
+      "id": "export",
+      "result": "CSV and JSON download links invoked in simulated browser",
+      "passed": true
+    },
+    {
+      "id": "voice-lock",
+      "result": "Marcus voice ID in rep sprite and technique audio; no alternative voice",
+      "passed": true
+    },
+    {
+      "id": "no-glitch-repeat",
+      "result": "Reviewed media player loop disabled; 5s videos play once per set",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "The instructor videos are short approved demonstrations, not full physically performed 8-15-rep or four-boxing-set footage. Rep-by-rep counts are paced audio/text, not full avatar performances.",
+    "No access to camera or sensors; cannot see the user's body, automatically count actual repetitions, or assess correct form.",
+    "Exercise-specific technique voice is available as a separate continuous Marcus guide, not yet indexed automatically to each exercise.",
+    "Training logs currently reside in each local browser profile only; exported CSV/JSON can be backed up but cloud sync across devices is not built.",
+    "Clinician clearance for left medical boot and non-weight bearing cannot be checked by the app. Deployment gate remains closed.",
+    "Real Galaxy Fold/Android audio unlock, cross-origin video playback, browser background behavior and interruption recovery require physical-device validation.",
+    "Full workout programming includes pending unapproved movements (controlled arm reaches, seated row, rear-delt fly, hand/wrist prep), so the coached runner intentionally includes only owner-approved sources."
+  ],
+  "releaseStatus": "OWNER_TEST_PREVIEW_ONLY__NOT_CLINICALLY_CLEARED__NO_CUSTOMER_RELEASE",
+  "protect": [
+    "Seven original locked approved clips",
+    "Latest approved R3 lateral raise and three earlier explicitly accepted moving candidates",
+    "Rejected lat-pulldown sources never shown or imported"
+  ],
+  "security": "Device-local logs; no third-party CRM, trackers, camera stream, or backend credentials added.",
+  "lastFlowRepair": {
+    "date": "2026-10-22",
+    "testedPageVersion": 22,
+    "commit": "8fc487218d3fcbbc05fa1b6b3fddbc8a08344568",
+    "purpose": "Keep Marcus voice locked to actual playing video, explain once, coach subsequent sets and preserve all set slots",
+    "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+    "newMotivationAudioId": "87deaa52-e40f-4609-8702-ca8cf89d9646",
+    "firstExplanationAudioId": "c18e177c-7551-4541-91ce-c34e25ad16b6",
+    "introSegmentsVerifiedUsingASR": true,
+    "checks": [
+      {
+        "name": "Workout A straight",
+        "setStages": 18,
+        "logged": 18,
+        "pass": true
+      },
+      {
+        "name": "Workout A hammer/triceps superset",
+        "setStages": 18,
+        "logged": 18,
+        "pass": true
+      },
+      {
+        "name": "Workout B straight",
+        "setStages": 17,
+        "logged": 17,
+        "pass": true
+      },
+      {
+        "name": "Workout B front/curl superset",
+        "setStages": 17,
+        "logged": 17,
+        "pass": true
+      },
+      {
+        "name": "Workout B band/triceps unequal-set superset",
+        "setStages": 17,
+        "logged": 17,
+        "pass": true
+      },
+      {
+        "name": "Workout B both optional supersets",
+        "setStages": 17,
+        "logged": 17,
+        "pass": true
+      },
+      {
+        "name": "No unstarted set skip",
+        "pass": true
+      },
+      {
+        "name": "First-time technique voice cue",
+        "pass": true
+      },
+      {
+        "name": "Later-set motivation and count voice",
+        "pass": true
+      },
+      {
+        "name": "Paused video silences all Marcus channels",
+        "pass": true
+      },
+      {
+        "name": "Paused video stops timed breathing counter",
+        "pass": true
+      },
+      {
+        "name": "Resume video continues timed stage",
+        "pass": true
+      }
+    ],
+    "testType": "DOM event-flow simulation against live published iframe; NOT a real Android Galaxy Fold playback test",
+    "releaseBlocked": true,
+    "importantRemainingBlockers": [
+      "Approved 5–12 second clips replay to accompany sets; they are not full separately recorded 8–15-rep coach-performed scenes",
+      "No camera/sensor-based rep or posture verification; actual sets and effort are entered manually",
+      "Superset safety and non-weight-bearing positioning require treating clinician clearance",
+      "Marcus spoken video lip sync and every-exercise on-screen full reps remain incomplete",
+      "Real Android browser/autoplay buffering and sync QA pending",
+      "Still a temporary owner review page, not final deployed app"
+    ],
+    "sourcePreservation": "Seven locked media plus newer owner-approved sources untouched; rejected and unapproved files omitted from training runner."
+  }
+}

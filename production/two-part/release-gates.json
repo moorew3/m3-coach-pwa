@@ -1,0 +1,255 @@
+{
+  "schema": "m3-flex-two-part-release-gates-v1",
+  "status": "DRAFT_NOT_MEDICALLY_CLEARED_NO_CUSTOMER_DEPLOYMENT",
+  "approvedNewAssets": {
+    "A:07:C12-LATERAL-R3": {
+      "ownerApproved": true,
+      "ownerApprovalDate": "2026-10-21",
+      "originalHeyGenId": "4ab71f91e4ac4e45a9865c903b5304b2",
+      "originalSourceUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16100-d6cd-7c36-9a68-80fb30e2246a.mp4",
+      "silentPreviewUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+      "silentPreviewSha256": "bdee80cc6a983b8c81be93628089aeea56333cadcd90e69187cd37a3f6640a6c",
+      "sourceDurationSec": 5.167,
+      "previewOnly": true,
+      "clinicianClearanceVerified": false,
+      "ownerReviewedFinalChapterTiming": false,
+      "MarcusAudioSynced": false,
+      "appReleaseEligible": false,
+      "originalLockedSevenUntouched": true
+    },
+    "PREVIEW:NEW_SEATED-TRICEPS-PRESSDOWN": {
+      "ownerApproved": true,
+      "approvedOriginalVideoId": "0682811783264435ab1ba6ac589eabdd",
+      "videoPreviewUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/6e2a8059-fd18-4281-a404-cd0a180c2a4d.mp4",
+      "silentPreviewSha256": "136fcb43211de6c0f215c09d5dd2d5cd1382a4a31484afbde85d9517c0f1acef",
+      "status": "EARLIER_OWNER_APPROVED_VISUAL_VERSION__TECHNICAL_QA_CLINICIAN_CLEARANCE_PENDING",
+      "ownerApprovedDate": "2026-10-21",
+      "MarcusAudioSynced": false,
+      "releaseEligible": false,
+      "previousVersion": true,
+      "originalSourceUnmodified": true
+    },
+    "PREVIEW:NEW_SEATED-BAND-PULL-APART": {
+      "ownerApproved": true,
+      "approvedOriginalVideoId": "31570149e9fe4a729c2de629da5eff46",
+      "videoPreviewUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/229b8d95-bb09-4734-914f-b73c2932a6ce.mp4",
+      "silentPreviewSha256": "ad331b515297a03988b9bcc9d74fa96f8f8341b1714b768fef1fd157dffc869a",
+      "status": "EARLIER_OWNER_APPROVED_VISUAL_VERSION__TECHNICAL_QA_CLINICIAN_CLEARANCE_PENDING",
+      "ownerApprovedDate": "2026-10-21",
+      "MarcusAudioSynced": false,
+      "releaseEligible": false,
+      "previousVersion": true,
+      "originalSourceUnmodified": true
+    },
+    "PREVIEW:NEW_ARM-BOXING": {
+      "ownerApproved": true,
+      "approvedOriginalVideoId": "94be7d7f3b894ef5bbdecdb3734f7120",
+      "videoPreviewUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/5e6112e1-73d3-4013-b533-1f011a1051cd.mp4",
+      "silentPreviewSha256": "7769226668c380e8819c54144b5078f7b9d04b5424e4c1ab15dbd1d365b26a66",
+      "status": "EARLIER_OWNER_APPROVED_VISUAL_VERSION__TECHNICAL_QA_CLINICIAN_CLEARANCE_PENDING",
+      "ownerApprovedDate": "2026-10-21",
+      "MarcusAudioSynced": false,
+      "releaseEligible": false,
+      "previousVersion": true,
+      "originalSourceUnmodified": true
+    }
+  },
+  "chapterTiming": {
+    "A:00:NEW_INTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:01:C09-PRE-BREATH-R2": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:02:C11-HAND-OPEN": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:03:NEW_SHOULDER-MOBILITY": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:04:NEW_WRIST-CIRCLES": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:05:NEW_ELBOW-BENDS": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:06:NEW_WRIST-CURL": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:07:NEW_LATERAL-RAISE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false,
+      "sourceMediaId": "C12-LATERAL-R3",
+      "sourceMediaDurationSec": 5.167,
+      "ownerSourceApproved": true
+    },
+    "A:08:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:09:C02": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:10:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:11:C01-R3": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:12:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:13:NEW_ARM-BOXING": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:14:NEW_UPPER-STRETCH": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:15:C10-POST-BREATH-R1": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:16:NEW_HAND-SHOULDER-RELEASE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "A:17:NEW_OUTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:00:NEW_INTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:01:C09-PRE-BREATH-R2": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:02:C11-HAND-OPEN": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:03:NEW_SHOULDER-MOBILITY": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:04:NEW_FORWARD-PRESS-WARMUP": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:05:NEW_ELBOW-EXTENSION": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:06:C08-PRESS-R3": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:07:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:08:NEW_INNSTAR-FLY": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:09:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:10:C03": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:11:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:12:C04-R2": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:13:NEW_REST-CUE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:14:NEW_AMYCO-WRIST": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:15:NEW_CHEST-STRETCH": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:16:C10-POST-BREATH-R1": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:17:NEW_HAND-SHOULDER-RELEASE": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    },
+    "B:18:NEW_OUTRO": {
+      "durationSec": null,
+      "timingBasis": "",
+      "ownerReviewed": false
+    }
+  },
+  "releaseGate": {
+    "ownerFinalApproval": false,
+    "ownerApprovalRecord": "",
+    "clinicianClearanceConfirmed": false,
+    "clinicianClearanceRecord": "",
+    "androidEndToEndQAPassed": false,
+    "androidQARecord": ""
+  }
+}

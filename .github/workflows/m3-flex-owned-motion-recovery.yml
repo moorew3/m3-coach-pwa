@@ -1,0 +1,87 @@
+name: M3 FLEX Recover Historic Owned Motion (No Generation)
+# Historic noncanonical avatar scan is retired per owner direction.
+# This workflow cannot run on push; retained for audit reproducibility only.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  existing-source-contact-sheets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - name: Read draft production branch
+        uses: actions/checkout@v4
+      - name: Install media inspectors
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+      - name: Produce offline-only visual inspections from owned videos
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .m3-owned-review
+          cat > .m3-owned-review/inspect.py <<'PY'
+          import concurrent.futures, hashlib, json, pathlib, subprocess, time
+          source = json.loads(pathlib.Path("production/owned-video-recovery-audit-2026-10-19.json").read_text())
+          root = pathlib.Path(".m3-owned-review")
+          root.mkdir(exist_ok=True)
+          def work(item):
+              label = item["label"]
+              movie = pathlib.Path("/tmp")/f"m3_owned_{label}.mp4"
+              target = root/f"{label}_contact.jpg"
+              row = {"label":label,"source_uuid":item["id"],"account":item["account"],"status":"download-failed"}
+              try:
+                  cp=subprocess.run(["curl","-fsSL","--retry","1","--connect-timeout","12","--max-time","70",
+                        "--max-filesize","28000000",item["url"],"-o",str(movie)],capture_output=True,text=True,timeout=88)
+                  if cp.returncode!=0:
+                      row["error"]=(cp.stderr or "")[-350:]
+                      return row
+                  row["download_size_bytes"]=movie.stat().st_size
+                  if movie.stat().st_size<15000:
+                      row["error"]="Source too short to inspect"
+                      return row
+                  row["sha256"]=hashlib.sha256(movie.read_bytes()).hexdigest()
+                  info=subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration:stream=codec_type,width,height","-of","json",str(movie)],timeout=20)
+                  obj=json.loads(info)
+                  row["duration"]=float(obj.get("format",{}).get("duration",0))
+                  vid=next((x for x in obj.get("streams",[]) if x.get("codec_type")=="video"),{})
+                  row["size"]=f'{vid.get("width","?")}x{vid.get("height","?")}'
+                  f="fps=1,scale=210:-2,tile=5x1:padding=6:margin=6:color=0x182330"
+                  proc=subprocess.run(["ffmpeg","-hide_banner","-loglevel","error","-y","-i",str(movie),
+                       "-vf",f,"-frames:v","1",str(target)],capture_output=True,text=True,timeout=50)
+                  if proc.returncode==0 and target.exists():
+                      row["status"]="contact-ready"
+                      row["contact_sheet"]=target.name
+                  else:
+                      row["status"]="frame-failed"
+                      row["error"]=proc.stderr[-400:]
+                  return row
+              except Exception as exc:
+                  row["status"]="error";row["error"]=str(exc)[:380]
+                  return row
+              finally:
+                  movie.unlink(missing_ok=True)
+          with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+              rows=list(ex.map(work,source["items"]))
+          rows.sort(key=lambda x:x["label"])
+          (root/"results.json").write_text(json.dumps(rows,indent=2))
+          print(json.dumps({"inspected":len(rows),"contact_ready":sum(x["status"]=="contact-ready" for x in rows),"failures":[x for x in rows if x["status"]!="contact-ready"]},indent=2))
+          (root/"README.txt").write_text(
+              "M3 FLEX HISTORIC OWNED VIDEO AUDIT\n"
+              "Only source FRAME CONTACT SHEETS and metadata; no new AI render and no generated audio.\n"
+              "No original source videos overwritten, approved seven originals protected.\n"
+              "Visual samples are not sufficient to approve biomechanics; inspect candidate motion full-length before approval.\n"
+              "No output is activated in Workout A/B or deployed.\n"
+              "Each P## or S## contact file maps to a source UUID in results.json.\n"
+              "This audit is private, for the owner's own recovered materials; do not publish third-party/person media.\n"
+          )
+          PY
+          python .m3-owned-review/inspect.py
+      - name: Save recovered visual-inspection pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-EXISTING-OWNED-VIDEO-CONTACT-AUDIT
+          path: .m3-owned-review/
+          retention-days: 14
+          include-hidden-files: true

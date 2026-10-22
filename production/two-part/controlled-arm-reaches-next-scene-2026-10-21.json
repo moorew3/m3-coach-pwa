@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-21",
+  "project": "M3 FLEX",
+  "sceneId": "NEW_SHOULDER-MOBILITY",
+  "exerciseName": "Seated controlled arm reaches (unloaded)",
+  "useInWorkouts": [
+    "A",
+    "B"
+  ],
+  "stage": "SINGLE_IMAGE_FRAME_EDIT_SUBMITTED_PENDING_VISUAL_QA__NO_VIDEO_YET",
+  "ownerApproved": false,
+  "clinicalClearanceVerified": false,
+  "appActive": false,
+  "source": {
+    "userApprovedPerson": "R3 seated lateral-raise sharp-faced braided avatar",
+    "imageHeygenAssetId": "c146011de37444b5a5933353f3daa6b3",
+    "sourceUrl": "https://dynamic.heygen.ai/image/c146011de37444b5a5933353f3daa6b3/original.png",
+    "ownerReference": "Original user-provided closeups for braids/tattoos, actual black boot photo references"
+  },
+  "imageTask": {
+    "tool": "Runway image edit",
+    "taskId": "22694bfa-35c3-455f-b390-d762d2be75b5",
+    "goal": "Single portrait of same approved seated sharp-faced coach but with NO dumbbells or equipment and open relaxed hands beside thighs",
+    "status": "pending",
+    "mustVerify": [
+      "Same approved braided face, tattoos and physique",
+      "Black walking boot on coach LEFT leg (viewer's RIGHT), raised on an independent support",
+      "Empty hands with correct fingers, no weights or bands",
+      "SINGLE photographic full-body frame without panels/text"
+    ]
+  },
+  "targetAnimation": {
+    "description": "2 genuine controlled seated arm-reach cycles from relaxed arm position to controlled unweighted reach and return; no leg loading",
+    "voice": "None until Marcus audio approved for the specific movement",
+    "videoStatus": "NOT_CREATED",
+    "releaseGate": "DO_NOT_ANIMATE_FROM_MONTAGE_OR_INCORRECT_FIRST_FRAME__NO_PAID_VIDEO_UNTIL_CLEAN_FRAME_IS_VERIFIED"
+  },
+  "protectedAssets": {
+    "approvedOriginalSevenUntouched": true,
+    "approvedR3LateralRaiseId": "4ab71f91e4ac4e45a9865c903b5304b2",
+    "workoutASequencePreview": "https://dochost.co/d/s77gmbhk"
+  }
+}

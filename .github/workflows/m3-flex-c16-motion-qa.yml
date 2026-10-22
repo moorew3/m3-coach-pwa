@@ -1,0 +1,65 @@
+name: M3 FLEX C16 Motion and Identity QA
+on:
+  push:
+    branches:
+      - production/m3-flex-two-part-masters-2026-10-19
+    paths:
+      - .github/workflows/m3-flex-c16-motion-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-c16:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg
+      - name: Retrieve raw new C16 reference-to-video output
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p review/c16_frames
+          curl -fLsS --retry 2 --max-time 120 \
+            'https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1572f-71b2-7966-91e8-4b1995fe477d.mp4' \
+            -o review/C16_UNAPPROVED_RAW.mp4
+          test "$(stat -c%s review/C16_UNAPPROVED_RAW.mp4)" -gt 50000
+          ffprobe -v error -show_format -show_streams -of json review/C16_UNAPPROVED_RAW.mp4 > review/ffprobe.json
+          sha256sum review/C16_UNAPPROVED_RAW.mp4 > review/sha256-original.txt
+      - name: Prepare high-resolution anatomical movement inspection frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel error -y \
+            -i review/C16_UNAPPROVED_RAW.mp4 \
+            -vf 'fps=4,scale=480:-1' review/c16_frames/C16_%02d.jpg
+          ffmpeg -hide_banner -loglevel error -y \
+            -i review/C16_UNAPPROVED_RAW.mp4 \
+            -vf 'fps=2,scale=330:-1,tile=5x2:padding=8:margin=8:color=0x182635' \
+            -frames:v 1 review/C16_TEN_FRAME_CONTACT.jpg
+          ffmpeg -hide_banner -loglevel error -y \
+            -i review/C16_UNAPPROVED_RAW.mp4 \
+            -vf 'fps=1,scale=540:-1,tile=5x1:padding=10:margin=10:color=0x182635' \
+            -frames:v 1 review/C16_FIVE_LARGE_FRAMES.jpg
+          cat > review/README.txt <<'EOF'
+          M3 FLEX C16 controlled arm reaches R1 — unapproved real video QA.
+          Generation: 5a9d47da598f47adbb63e024a81fcf17
+          This is a distinct motion-reference guided clip, not C11/C12/C13.
+          Source image is canonical user-approved Flex identity.
+          Check BOTH ARMS, hands EMPTY (no dumbbells) and TWO COMPLETE forward
+          chest/shoulder height reach-and-RETURN repetitions (arm movement).
+          Confirm subject remains SEATED, white cast on anatomical LEFT leg
+          fully supported and stationary, right foot in dark sneaker grounded.
+          Confirm original face, cornrows, beard, tattoos, no extra fingers.
+          Check unwanted speech/music. Do not pair Marcus voice unless motion,
+          identity and cast pass owner approval. No production app deployment.
+          Seven approved original clips are NOT accessed or edited.
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-C16-MOTION-FRAME-QA-REVIEW-ONLY
+          path: review/
+          retention-days: 14

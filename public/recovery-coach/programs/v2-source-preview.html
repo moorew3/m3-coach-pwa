@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M3 FLEX · V2 Motion Source Review</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b1521;color:#f4f8fa}*{box-sizing:border-box}body{margin:0}main{max-width:790px;margin:auto;padding:20px 14px 55px}h1{font-size:28px;margin:10px 0}h2{font-size:18px;margin:0}a{color:#b9e48b}p{line-height:1.48}.muted{color:#bfd0dc}.warn{color:#f7d1a0;font-size:13px}.card{background:#17293a;border:1px solid #4d6073;border-radius:15px;padding:15px;margin:12px 0}.bar{font-size:11px;color:#c5ef8f;letter-spacing:.09em;font-weight:800;text-transform:uppercase}video{width:100%;max-width:360px;display:block;margin:12px auto;background:#000;border-radius:9px;aspect-ratio:9/16;object-fit:contain;max-height:58vh}.button{background:#d0f38d;color:#16261c;border:0;border-radius:10px;padding:12px;font-weight:bold;display:inline-block;text-decoration:none}.small{font-size:12px}
+</style>
+</head>
+<body><main>
+<p><a href="./">← Workout A/B development player</a></p>
+<div class="bar">Protected review · Original M3 Coach V2 sources</div>
+<h1>Use what we already made</h1>
+<p class="muted">These four MP4 files were copied losslessly from your existing V2 branch into this protected development branch. They are movement references only. The seven owner-approved cast-wearing Flex clips are unchanged.</p>
+<section class="card">
+<div class="bar">V2 reference 1 of 4</div><h2>Continuous boxing flow</h2>
+<p class="warn">Original V2 flow includes movements that may involve standing/footwork. Not the seated cast-safe Flex boxing chapter.</p>
+<video controls muted playsinline preload="metadata" src="./v2-sources/boxingFlow60.mp4"></video>
+</section>
+<section class="card">
+<div class="bar">V2 reference 2 of 4</div><h2>Chest press movement</h2>
+<p class="warn">Different equipment/actor from your locked INNSTAR press C08. Use only to compare the arm path; never substitute for C08.</p>
+<video controls muted playsinline preload="metadata" src="./v2-sources/chestPress.mp4"></video>
+</section>
+<section class="card">
+<div class="bar">V2 reference 3 of 4</div><h2>Dumbbell curl movement</h2>
+<p class="warn">An arm curl, not a wrist curl; approved Flex C02 and C04-R2 remain the workout sources.</p>
+<video controls muted playsinline preload="metadata" src="./v2-sources/dumbbellCurl.mp4"></video>
+</section>
+<section class="card">
+<div class="bar">V2 reference 4 of 4</div><h2>Rear-delt fly movement</h2>
+<p class="warn">Movement study only. The demonstrator's identity, posture and cast safety have not been accepted for recovery workouts.</p>
+<video controls muted playsinline preload="metadata" src="./v2-sources/rearDeltFly.mp4"></video>
+</section>
+<section class="card"><div class="bar">Additional existing V2 animations</div>
+<p class="small">The original M3 Coach V2 also maps lateral raises, seated rows, triceps pressdowns and shoulder mobility. These are source references, not added chapters, until playback, licensing and seated-form review.</p>
+<a href="https://github.com/moorew3/m3-coach-pwa/blob/rebuild/m3-coach-v2/src/data/coach-identity.ts" target="_blank" rel="noopener noreferrer">Inspect original motion registry</a>
+</section>
+<section class="card">
+<div class="bar">Recovered original V2 coaching · Listen and verify</div>
+<h2>Reuse the existing coaching tracks</h2>
+<p class="warn">These five tracks were copied exactly from Workout App V2. Their voice identity, phrasing, standing instructions and timing have not been approved for the seated recovery program. They do not automatically replace Marcus's seven approved Flex recordings.</p>
+<div id="sourceAudio"></div>
+</section>
+<p class="warn">Do not follow along with any movements here while injured. Wait for your clinician to clear the exact seated exercise. No workouts, sets or progress are recorded on this page.</p>
+</main>
+<script>
+const recoveredVoiceNames=["Chest press","Dumbbell curls","Lateral raises","Seated row","Triceps pressdown"];
+const recoveredVoiceKeys=["chestPress","dumbbellCurl","lateralRaise","seatedRow","tricepsPressdown"];
+const audioWrap=document.getElementById("sourceAudio");
+recoveredVoiceKeys.forEach((key,i)=>{const label=document.createElement("label");label.className="small muted";label.style.display="block";label.style.marginTop="13px";label.textContent=recoveredVoiceNames[i]+" · V2 audio source";
+const clip=document.createElement("audio");clip.controls=true;clip.preload="none";clip.src="./v2-sources/audio/"+key+".mp3";clip.style.width="100%";clip.setAttribute("aria-label",label.textContent);audioWrap.append(label,clip);});
+const vids=[...document.querySelectorAll("video")];
+vids.forEach(v=>{v.addEventListener("play",()=>vids.forEach(other=>{if(other!==v)other.pause()}));v.addEventListener("error",()=>{const msg=document.createElement("p");msg.className="warn";msg.textContent="Source video could not load in this browser; this is not verified playback.";v.after(msg)},{once:true})});
+</script></body></html>

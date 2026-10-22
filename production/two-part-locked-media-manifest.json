@@ -1,0 +1,998 @@
+{
+  "kind": "M3-FLEX-TWO-PART-MASTER-PRODUCTION",
+  "status": "draft-protected-only-not-cleared-not-deployed",
+  "created": "2026-10-19",
+  "lockedApprovedVideoIds": [
+    "C09-PRE-BREATH-R2",
+    "C10-POST-BREATH-R1",
+    "C01-R3",
+    "C02",
+    "C03",
+    "C04-R2",
+    "C08-PRESS-R3"
+  ],
+  "approvedAssets": {
+    "C09-PRE-BREATH-R2": {
+      "label": "Approved preparation breathing",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",
+      "embeddedMarcus": true
+    },
+    "C10-POST-BREATH-R1": {
+      "label": "Approved cooldown breathing",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",
+      "embeddedMarcus": true
+    },
+    "C01-R3": {
+      "label": "Seated dumbbell shrugs",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",
+      "embeddedMarcus": true
+    },
+    "C02": {
+      "label": "Seated hammer curls",
+      "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-bc16-778b-a773-db16e57aade7.mp4",
+      "embeddedMarcus": false,
+      "approvedMarcusAudio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav",
+      "note": "Approved Marcus audio outlasts short clip ~0.46 seconds. Resolve without changing original."
+    },
+    "C03": {
+      "label": "Seated front raises",
+      "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",
+      "embeddedMarcus": false,
+      "approvedMarcusAudio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav",
+      "note": "Approved Marcus audio outlasts short clip ~1.35 seconds. Resolve without changing original."
+    },
+    "C04-R2": {
+      "label": "Seated alternating curls",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",
+      "embeddedMarcus": true
+    },
+    "C08-PRESS-R3": {
+      "label": "INNSTAR seated chest press",
+      "video": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",
+      "embeddedMarcus": true
+    }
+  },
+  "voice": {
+    "name": "Marcus – Warm & Friendly English",
+    "id": "0fadce1e82af494a93873aa38ea8d106"
+  },
+  "avatar": {
+    "name": "Flex",
+    "approvedIdentityAsset": "fbc0d826660d479080f2c2ac5fbf5939",
+    "ownerApproval": "EXPLICITLY_RECONFIRMED_2026-10-19",
+    "approvedReferenceName": "9550.png",
+    "approvedReferenceSource": "User-attached canonical image in M3 FLEX project conversation",
+    "submittedImage": {
+      "filename": "9550.png",
+      "pixelWidth": 857,
+      "pixelHeight": 1536,
+      "actualEncoding": "JPEG (despite .png filename)",
+      "byteSize": 200048,
+      "sha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
+    },
+    "existingHeyGenAssetId": "fbc0d826660d479080f2c2ac5fbf5939",
+    "existingHeyGenAssetLabel": "9550.png",
+    "approvedVisualAttributes": "Exact original face and facial structure; short cornrow hairstyle, neatly trimmed beard, muscular tattooed upper body and arms, black shorts, seated bench/gym presentation; white anatomical LEFT leg cast elevated/supported and RIGHT foot in black sneaker when recovery footage requires it.",
+    "identityRules": [
+      "Always use exact user-approved realistic Flex image as identity source. No generic/cartoon/different trainer/avatar.",
+      "Do not alter face, hairstyle, facial hair, tattoos, skin tone, physique, clothing appearance or approved cast/right shoe details without explicit owner authorization.",
+      "User-provided app screenshot (9483.jpg) is EXISTING APP reference, not an instruction to change existing workout cards, brand images or videos.",
+      "This avatar/photo approval does not certify any generated exercise movement. Every new exercise clip must separately pass biomechanics/identity/voice approval.",
+      "Never change or overwrite any of seven locked approved video/audio sources.",
+      "The two workout MP4s and mobile app remain incomplete/not released until full QC."
+    ]
+  },
+  "parts": {
+    "A": [
+      {
+        "id": "NEW_INTRO",
+        "label": "Workout intro",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C09-PRE-BREATH-R2",
+        "label": "Approved preparation breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "C11-HAND-OPEN",
+        "label": "Hand opening",
+        "status": "missing",
+        "reason": "New HeyGen candidate exists but not owner/technique/audio approved"
+      },
+      {
+        "id": "NEW_SHOULDER-MOBILITY",
+        "label": "Controlled arm reaches — seated and unloaded",
+        "status": "missing",
+        "reason": "User-required controlled arm reaches, not shoulder rolls. Need actual realistic Flex two-cycle movement with left cast supported, right foot grounded, hands empty, no swinging or loading. Clinician clearance/owner review pending."
+      },
+      {
+        "id": "NEW_WRIST-CIRCLES",
+        "label": "Unloaded wrist circles",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_ELBOW-BENDS",
+        "label": "Unloaded elbow bends",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_WRIST-CURL",
+        "label": "Seated wrist curl",
+        "status": "missing",
+        "reason": "Recovered Drive footage is ARM curl; accurate wrist-curl source not approved"
+      },
+      {
+        "id": "NEW_LATERAL-RAISE",
+        "label": "Seated lateral raise",
+        "status": "missing",
+        "reason": "Flow editor link only, verified direct export needed"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C02",
+        "label": "Seated hammer curls",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C01-R3",
+        "label": "Seated dumbbell shrugs",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "NEW_ARM-BOXING",
+        "label": "Seated arm-only boxing",
+        "status": "missing",
+        "reason": "Flow editor link only, verified direct export needed"
+      },
+      {
+        "id": "NEW_UPPER-STRETCH",
+        "label": "Gentle upper body stretch",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C10-POST-BREATH-R1",
+        "label": "Approved cooldown breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_HAND-SHOULDER-RELEASE",
+        "label": "Relax hand and shoulder",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_OUTRO",
+        "label": "Workout completion",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      }
+    ],
+    "B": [
+      {
+        "id": "NEW_INTRO",
+        "label": "Workout intro",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C09-PRE-BREATH-R2",
+        "label": "Approved preparation breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "C11-HAND-OPEN",
+        "label": "Hand opening",
+        "status": "missing",
+        "reason": "New HeyGen candidate exists but not owner/technique/audio approved"
+      },
+      {
+        "id": "NEW_SHOULDER-MOBILITY",
+        "label": "Controlled arm reaches — seated and unloaded",
+        "status": "missing",
+        "reason": "User-required controlled arm reaches, not shoulder rolls. Need actual realistic Flex two-cycle movement with left cast supported, right foot grounded, hands empty, no swinging or loading. Clinician clearance/owner review pending."
+      },
+      {
+        "id": "NEW_FORWARD-PRESS-WARMUP",
+        "label": "Unloaded seated press warmup",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_ELBOW-EXTENSION",
+        "label": "Seated elbow extension",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C08-PRESS-R3",
+        "label": "INNSTAR seated chest press",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "NEW_INNSTAR-FLY",
+        "label": "INNSTAR band chest fly",
+        "status": "missing",
+        "reason": "C07 demo is not approved"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C03",
+        "label": "Seated front raises",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "C04-R2",
+        "label": "Seated alternating curls",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "missing",
+        "reason": "New Flex + Marcus transition needed; prescribed duration not medically cleared"
+      },
+      {
+        "id": "NEW_AMYCO-WRIST",
+        "label": "AMYCO wrist apparatus",
+        "status": "missing",
+        "reason": "Verify actual device geometry and safe technique"
+      },
+      {
+        "id": "NEW_CHEST-STRETCH",
+        "label": "Gentle chest/shoulder stretch",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "C10-POST-BREATH-R1",
+        "label": "Approved cooldown breathing",
+        "status": "approved-source-locked"
+      },
+      {
+        "id": "NEW_HAND-SHOULDER-RELEASE",
+        "label": "Relax hand and shoulder",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      },
+      {
+        "id": "NEW_OUTRO",
+        "label": "Workout completion",
+        "status": "missing",
+        "reason": "Needs newly produced approved Flex and Marcus footage"
+      }
+    ]
+  },
+  "candidates": {
+    "C11-HAND-OPEN-R1": {
+      "status": "REJECTED_BY_INTERNAL_MOTION_QA_NOT_OWNER_APPROVED",
+      "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a154f3-ef54-7546-8740-1c488df4c772.mp4",
+      "generationId": "586d74c51f0b46b8a5b0b2c7bfbe6ccf",
+      "note": "raw 5s unapproved; no validated Marcus coaching",
+      "renderId": "586d74c51f0b46b8a5b0b2c7bfbe6ccf",
+      "renderLengthSeconds": 5,
+      "frameAuditRunId": 39359965854,
+      "frameAuditArtifactId": 12236493977,
+      "frameAuditArtifactName": "M3-FLEX-C11-FRAME-MOTION-QA-REVIEW-ONLY",
+      "motionQaResult": "FAILED: Full-video 2-fps contact sheet plus enlarged hand-area frames show hands held on thighs with slight shifts; no distinguishable fully opened fingers -> fist/closed fingers -> open cycle, much less 2 complete deliberate cycles. Lip/head motion visible, but that is not the required exercise. Do not treat as correct hand openings.",
+      "castAppearance": "White cast on LEFT lower leg looks supported in sample frames, RIGHT shoe grounded; passing this condition does not override movement failure.",
+      "approved": false,
+      "active": false,
+      "regeneration": "Do not reuse the ineffective reference method; do not ask owner to review a clip that fails biomechanics before further changes."
+    },
+    "C12-SEATED-SHOULDER-ROLLS-R1": {
+      "generationId": "967742f823ef4407919b80a2745f0d8a",
+      "status": "REJECTED_BY_VISUAL_MOTION_QA_DO_NOT_ACTIVATE",
+      "intendedSceneId": "NEW_SHOULDER-MOBILITY",
+      "appliedTo": [
+        "Workout_A",
+        "Workout_B"
+      ],
+      "canonicalApprovedFlexReference": "fbc0d826660d479080f2c2ac5fbf5939",
+      "techniqueReference": "https://www.mskcc.org/cancer-care/patient-education/arm-exercise-program",
+      "requiredMovement": "Seated slow backward shoulder rolls; two full cycles, shoulders travel forward/up/back/down while cast and legs remain still and supported",
+      "renderTarget": {
+        "durationSeconds": 5,
+        "resolution": "480p",
+        "aspectRatio": "9:16",
+        "model": "heygen-video-1"
+      },
+      "audio": "SILENT CANDIDATE; approved Marcus voice must be separately matched; not yet a final exercise",
+      "protectedSourceRule": "Never touch the existing seven approved files; new candidate must be approved independently before active usage",
+      "note": "Different new exercise from C11 hand openings; never call a repeat review of C11 new work",
+      "motionQa": "FAILED: contact-sheet shows lateral/raised arms, not backward shoulder rolls. No demonstrated shoulder rise -> back -> down cycles. Cast observed supported in samples; exact face continuity unverified.",
+      "ownerApproval": "not requested because motion QA failed",
+      "rawVideo": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a15565-a7a3-710c-9caf-e860fa57b0de.mp4",
+      "unapprovedReviewArtifact": {
+        "id": 12212715319,
+        "name": "M3-FLEX-C12-MARCUS-REVIEW-ONLY",
+        "workflowRun": 39302922714,
+        "durationSeconds": 12.76,
+        "notes": "Voice composite technically succeeded but candidate FAILS exercise movement; no production activation."
+      },
+      "nextAction": "Find motion-controlled verified reference or rig/mocap guide. DO NOT spend on identical image-only approach. Preserve approved originals."
+    },
+    "C13-SHOULDER-ROLLS-MOTION-DRIVER": {
+      "status": "REJECTED_BY_OWNER_NOT_ACCEPTABLE",
+      "type": "reference-motion-source",
+      "durationSeconds": 7.5,
+      "fps": 24,
+      "orientation": "9:16",
+      "dimensions": "480x832",
+      "cycles": 3,
+      "movement": "Both shoulders travel forward -> up -> back -> down while arms remain lowered, with head/hips/legs fixed; generic illustrated figure",
+      "productionAssets": [
+        "C13_BACKWARD_SHOULDER_ROLLS_DRIVER.mp4",
+        "C13_shoulder_motion_keyframes.csv",
+        "C13_motion_contact_sheet.png",
+        "README.txt"
+      ],
+      "content": "Custom authored reference animation only, generic illustrated subject. NOT the approved Flex face and NOT a deliverable workout video.",
+      "desiredNextAction": "Pair driving-video (video role) with exact approved Flex reference still (image role) in one motion-transfer generation ONLY after confirmed upload and price approval; human QA then add already approved Marcus audio separately.",
+      "license": "Original procedure-generated reference by M3 production, not third-party exercise video",
+      "priceGate": "Higgsfield paid model; both connected accounts have 0 free motion-control attempts; credits 10 and 2.5 respectively. No generation submitted.",
+      "originalFileName": "C13_BACKWARD_SHOULDER_ROLLS_DRIVER.mp4",
+      "originalFileBytes": 1013994,
+      "sha256": "ed57c371af87e8f9f9a6f7e4f6c9cd168b67a6a32304fc3798dc22dddf2636e0",
+      "videoDurationSeconds": 7.5,
+      "width": 480,
+      "height": 832,
+      "reviewNote": "Original file was checked in source conversation's mounted /mnt/data. Other chat environments do not automatically mount it. Download and attach exact MP4 to the other conversation to transfer. Do not claim this original is already in GitHub.",
+      "approvedProductionMedia": false,
+      "newGenerationAuthorized": false,
+      "ownerFeedbackDate": "2026-10-19",
+      "ownerFeedback": "Cartoon mannequin animation with on-screen instructional overlays is unacceptable. This is neither realistic approved Flex footage nor an acceptable reference for the production strategy. Do not present, reuse, transfer, or treat C13 as completed progress.",
+      "allowedAsProductionSource": false,
+      "doNotUseAsDrivingVideo": true,
+      "doNotGenerateFromThisReference": true,
+      "nextAction": "Use a credible, realistic, anatomically correct filmed movement guide, motion capture, or a genuinely rigged approved Flex character. Preserve seven approved videos unchanged. Do not spend generation credits before checking input readiness and cost."
+    },
+    "C16-CONTROLLED-ARM-REACHES-R1": {
+      "status": "REJECTED_BY_VISUAL_MOTION_QA_DO_NOT_ACTIVATE",
+      "heygenVideoId": "5a9d47da598f47adbb63e024a81fcf17",
+      "submittedDate": "2026-10-19",
+      "promptGoal": "Exactly two complete forward and return arm reaches with hands EMPTY; fixed camera; realistic original approved Flex face/cornrows/beard/tattoos; anatomical LEFT white cast supported, RIGHT shoe grounded; silent actual body motion",
+      "productionMethod": "Approved C03 moving front raise supplied as motion reference ONLY, approved C09 seated cast footage supplied as posture reference, exact user approved HeyGen image asset fbc0d826660d479080f2c2ac5fbf5939 definitive identity.",
+      "inputApprovedClips": [
+        "C03",
+        "C09-PRE-BREATH-R2"
+      ],
+      "approvedClipsChanged": [],
+      "type": "New candidate only; never call approved based solely on successful model job.",
+      "resolution": "480p",
+      "durationSeconds": 5,
+      "engine": "HeyGen Video 1 reference-to-video",
+      "reviewGate": [
+        "Video render completes",
+        "Actual seated left-supported-cast image unchanged",
+        "At least two completed forward reaches, not weighted raises/arm waves",
+        "No dumbbells/bands or extra limbs",
+        "Marcus voice added only from approved prerecorded separate track after motion passes",
+        "Owner approval and clinician clearance before activation"
+      ],
+      "sourceDoc": "https://www.nth.nhs.uk/resources/balance-exercises/",
+      "ownerApproval": false,
+      "appDeployed": false,
+      "costObservation": {
+        "beforeHeyGenPremiumCredits": 267,
+        "afterHeyGenPremiumCredits": 256,
+        "observedDecreaseCredits": 11,
+        "notes": "Balance read immediately after single new clip submission; reported as observed consumption, no other generated videos submitted in this turn."
+      },
+      "generationPolicy": "No more candidate generations until C16 result is actually visually assessed and owner accepts method; do not assume success based on submitted job.",
+      "modelJobStatus": "completed",
+      "rawVideoUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1572f-71b2-7966-91e8-4b1995fe477d.mp4",
+      "frameAuditRunId": 39361266752,
+      "frameAuditArtifactId": 12236863589,
+      "frameAuditStatus": "passed technical extraction, failed exercise technique",
+      "motionFinding": "Two forward-raise patterns occur with seated Flex in left cast and right shoe; however elbows remain markedly flexed, hands curled/partially clenched, arms do not extend forward fully to target. Not a valid demonstration of two controlled forward arm reaches with empty OPEN hands. Some mouth movement; audio/voice not approved.",
+      "positiveFindings": [
+        "Photorealistic approved Flex-like identity on seated gym bench",
+        "Anatomical LEFT white cast supported on beige foot bench, RIGHT black shoe grounded",
+        "No visible handheld dumbbell or resistance band"
+      ],
+      "primaryFailures": [
+        "Both elbows substantially bent during the raised phase",
+        "Hands remain curled instead of comfortably open/fingers extended",
+        "Movement resembles forward arm pumping, not controlled reach and full return, so no two correct repetitions"
+      ],
+      "active": false,
+      "reportedPremiumCreditsUsed": 11,
+      "doNotAttachMarcus": true,
+      "nextAction": "Do not regenerate from same loose image/video reference prompt. Require actual anatomically correct, licensed/owned motion-driving clip and motion-transfer tool supporting frame/pose fidelity, with cost quote and owner approval before any paid run.",
+      "audioQa": {
+        "result": "FAILED",
+        "embeddedAudio": "AAC non-silent",
+        "meanVolumeDb": -28.5,
+        "maxPeakDb": 0,
+        "sourceClipDurationSeconds": 5.258344,
+        "rule": "New exercise footage should be silent; if technically suitable later, strip unapproved generated soundtrack and overlay original Marcus separately. But do NOT salvage/relabel C16 motion."
+      },
+      "qaReport": "docs/M3-FLEX-C16-MOTION-QA-REJECTED-2026-10-19.md"
+    }
+  },
+  "nonNegotiables": [
+    "Never change or overwrite any approved original clip",
+    "New scenes need owner approval",
+    "Workout A and B must be full independent MP4s plus chapter tracking",
+    "Keep injured LEFT cast unloaded and obtain clinician clearance for injury-specific workouts",
+    "No further significant paid generation without approval",
+    "Do not activate incomplete workouts",
+    "New master files are derivatives; preserve source bytes unchanged"
+  ],
+  "qualityGates": [
+    "Original video hashes preserved",
+    "Every needed scene approved",
+    "Rep count and audio synchronization reviewed",
+    "Actual device/biomechanical technique verified",
+    "Full mobile end-to-end playback QA",
+    "Owner and clinician clearance where required"
+  ],
+  "currentProductionNextStep": "Stop rerunning. Owner REJECTED first Comfy result: static Flex photograph + superimposed cartoon. 5->4 free runs. Correct design choice is motion transfer (Wan Animate 2: Motion Transfer or native Wan2.2 Animate Move) instead of auto character replace (Mix). Experimental cartoon driver lacks realistic human-pose suitability. Evaluate graph and input, validate with preflight no Run. Original approved 7 assets unchanged.",
+  "ownerIdentityApprovalDate": "2026-10-19",
+  "approvedReelReview": {
+    "status": "COMPLETED_TECHNICAL_REVIEW_EXPORT_NOT_FINAL_NO_DEPLOY",
+    "date": "2026-10-19",
+    "githubWorkflowRunId": 39317185636,
+    "githubArtifactId": 12218591149,
+    "githubArtifactName": "M3-FLEX-TWO-APPROVED-CLIP-ASSEMBLY-REVIEWS",
+    "githubArtifactUrl": "https://github.com/moorew3/m3-coach-pwa/actions/runs/39317185636/artifacts/12218591149",
+    "files": [
+      {
+        "part": "A",
+        "filename": "M3_FLEX_WORKOUT_A_APPROVED_FOOTAGE_REVIEW_NOT_FINAL.mp4",
+        "durationSeconds": 48.238,
+        "bytes": 7063027,
+        "sceneIds": [
+          "C09-PRE-BREATH-R2",
+          "C02",
+          "C01-R3",
+          "C10-POST-BREATH-R1"
+        ]
+      },
+      {
+        "part": "B",
+        "filename": "M3_FLEX_WORKOUT_B_APPROVED_FOOTAGE_REVIEW_NOT_FINAL.mp4",
+        "durationSeconds": 58.538,
+        "bytes": 8831130,
+        "sceneIds": [
+          "C09-PRE-BREATH-R2",
+          "C08-PRESS-R3",
+          "C03",
+          "C04-R2",
+          "C10-POST-BREATH-R1"
+        ]
+      }
+    ],
+    "confirmed": "Media downloads and checksum invariance verified in GitHub Actions. Both derivative MP4 outputs probed with H.264 video and AAC audio and 720x1280. Sample frames checked locally. No live app changes.",
+    "sourceIntegritySha256": {
+      "C03.mp4": "ecfba8d3e856fcf321705eaf4508461c9bdcb35ada76f6cd89f33444ee2624db",
+      "C02.mp4": "a221c13afa88ba38d265447162a2f92cc07b8d0055737f655bfabb1c2fa25b1a",
+      "C08-PRESS-R3.mp4": "f2674f6052e083209fd7c481d1ff8c6102c183b9c6260621efb97272da86a008",
+      "C10-POST-BREATH-R1.mp4": "6f4c4407443dfb2e218f34d976485305eb5e94a2564e8ac025994ad1cfcbccb3",
+      "C03.wav": "c5ff336589cc2cd330fe6b73c4c895a708c22d0dcaeadf562eef71bbeccd3341",
+      "C02.wav": "43dda91cee7ea09e3f3628c4d8e8473234323c3a07ff0c2feb0479f9ce61b259",
+      "C09-PRE-BREATH-R2.mp4": "9868fb3cd791e1242d7ad04c6e4004b9a7b885740505ea26736bd69fac75371f",
+      "C04-R2.mp4": "6829b3a1b8f8501eeb14d68851b3130bf7534ba6e57092afb8d27a82f4f7791b",
+      "C01-R3.mp4": "853c590721d88b9a01c3dfdaa8c8c2ec23a261491cb8b444afb0db99e6dbd7b3"
+    },
+    "restrictions": "Not completed workouts; must not be activated. The extra Marcus C02/C03 narration holds on the final frame in the derivative rather than cropping/altering locked original assets. Title interstitials are separate and not approved as final graphic treatment. All missing scenes must still be created, owner approved and medically cleared as applicable.",
+    "excluded": [
+      "C11 unapproved",
+      "C12 rejected",
+      "C13 rejected"
+    ]
+  },
+  "archivedLegacyHeyGenAudit": {
+    "auditDate": "2026-10-19",
+    "status": "FOUR_LEGACY_CANDIDATES_REJECTED_BY_INTERNAL_MOTION_QA_NOT_USER_APPROVED",
+    "visualAuditWorkflowRun": 39318404157,
+    "reviewArtifactId": 12218409201,
+    "videoIds": {
+      "8d2ca8fce35935efe0453c1524b2494a": "C11 archived hand-opening title",
+      "3ec419dbcb05b9f66819313952f4e782": "Archived shoulder-roll title",
+      "c1c5c6c97ff87c9fe830dafb1922fd0d": "Archived seated elbow-bend title",
+      "3dbad600606d6d4827b5348e0f0d1706": "Archived supported forward-reach title"
+    },
+    "inspection": "Downloaded public GIF visual previews and reviewed multiple frames. All four actually show standing, shirtless/tattooed presenter with an on-screen motivational slogan, speaking/gesturing. The anatomical LEFT cast is absent, no chair, no seated position; no complete specified exercise cycle visible. These cannot be used as shoulder rolls, hand openings, elbow bends or seated reaches. Any title/Marcus voice does not establish the exercise.",
+    "useInWorkoutA": false,
+    "useInWorkoutB": false,
+    "approval": "None; do not substitute."
+  },
+  "newOpeningSequenceDrafts": {
+    "status": "REJECTED_BY_OWNER_STATIC_PHOTO_DO_NOT_USE",
+    "date": "2026-10-19",
+    "files": {
+      "A": {
+        "name": "M3_FLEX_WORKOUT_A_CINEMATIC_OPENING_REVIEW_V2.mp4",
+        "durationSeconds": 7.021,
+        "dimensions": "720x1280",
+        "audio": "silent AAC, approved Marcus soundtrack pending",
+        "sourcePhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
+      },
+      "B": {
+        "name": "M3_FLEX_WORKOUT_B_CINEMATIC_OPENING_REVIEW_V2.mp4",
+        "durationSeconds": 7.021,
+        "dimensions": "720x1280",
+        "audio": "silent AAC, approved Marcus soundtrack pending",
+        "sourcePhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d"
+      }
+    },
+    "notes": "Both separate source-independent editorial opening graphics use exact source photo with simple text overlays; no exercise video was created, overwritten, recut or replaced. Packaged as M3_FLEX_Workout_A_B_New_Openings_Review.zip in originating conversation; NOT yet in GitHub file bytes. Full A/B guided master MP4s remain incomplete. Do not treat unapproved draft intro as final client asset.",
+    "ownerRejectionDate": "2026-10-19",
+    "reason": "The opening is an inert still image and an unacceptable starting frame. Do not deploy or repeat this approach."
+  },
+  "movingOpeningReviewV3": {
+    "date": "2026-10-19",
+    "status": "TWO_NEW_MOTION_BASED_REVIEW_MP4S_NOT_OWNER_APPROVED_NOT_DEPLOYED",
+    "method": "Animated typography over derivatives excerpted from real approved moving Flex workout clips with existing Marcus coaching audio carried through, no still-photo animation, cartoon, stock athlete or newly generated trainer.",
+    "clips": {
+      "A": {
+        "name": "M3_FLEX_WORKOUT_A_MOVING_OPENING_REVIEW_V3.mp4",
+        "durationSeconds": 10.58,
+        "sizeBytes": 2783615,
+        "sha256": "fb08c431afe8743497fa1fe67e4d02820f751bd5388f8dfb3e0555ac409ac03a",
+        "scenes": [
+          "C02 hammer curls",
+          "C01-R3 seated shrugs"
+        ]
+      },
+      "B": {
+        "name": "M3_FLEX_WORKOUT_B_MOVING_OPENING_REVIEW_V3.mp4",
+        "durationSeconds": 10.58,
+        "sizeBytes": 2671224,
+        "sha256": "bdffcacf63969d6bfdbb91c40b7080d93dcc072957e9996b156305160e32d51d",
+        "scenes": [
+          "C08-PRESS-R3",
+          "C04-R2 alternating curls"
+        ]
+      }
+    },
+    "mediaStatus": "Files generated and verified in originating conversation /mnt/data; not yet uploaded to GitHub. User download links were provided in source chat; must not treat as checked-in assets.",
+    "originalProtection": "Work A/B existing composite review footage SHA-256 verified unchanged before/after. Seven owner-approved original scenes never opened for writing or regenerated. Only separate review derivative montage output created.",
+    "notes": "Already-approved exercise movements are reused as teaser shots; do NOT confuse with newly created missing exercise animations or completed workout videos. Marcus audio taken from approved source scenes is not a separate scripted opening greeting.",
+    "releaseGate": "Owner must approve visual arrangement and audio before future integration."
+  },
+  "nextExerciseFocus": {
+    "sceneId": "NEW_SHOULDER-MOBILITY",
+    "exerciseName": "Controlled arm reaches",
+    "rejectedAlternatives": [
+      "C12 incorrectly simulated shoulder rolls",
+      "C13 rejected cartoon guide",
+      "older video called Gentle Shoulder Rolls is actually standing presenter"
+    ],
+    "motionTechnique": "Seated on fixed bench, torso stable; one arm or both reach forward gently within pain-free range, return to rest fully, repeat twice; no weights. LEFT white cast elevated at all times. Safe range follows clinician guidance.",
+    "stage": "Reference technique prepared; new correctly moving Flex footage still needed."
+  },
+  "typecheckFix": {
+    "date": "2026-10-19",
+    "commit": "8b481c426e01e4fa02ecd0d0c9736e0b17eceee9",
+    "buildRun": 39359678848,
+    "result": "PRODUCTION_BUILD_AND_TYPECHECK_SUCCESS",
+    "scope": "Draft production branch only; six .inputValidator usages migrated to .validator in src/lib/cloud.functions.ts; no live deployment"
+  },
+  "historicHiggsfieldVideoAudit": {
+    "status": "EXCLUDED_NONCANONICAL_AVATAR",
+    "count": 32,
+    "ownerInstruction": "These do not show approved Flex; do not use as reference or final footage.",
+    "date": "2026-10-19"
+  },
+  "existingDIDAgentReference": {
+    "status": "DID_SPEAKING_COMPATIBILITY_HARNESS_COMMITTED_NOT_TESTED_NO_DEPLOYMENT",
+    "source": "User image 8573.jpg screenshot of logged-in D-ID Studio > Agents showing a standing muscular tattooed male digital presenter visually resembling Flex, with dark shorts and black sneakers",
+    "accountIntegration": "D-ID account is accessed by user in browser, not connected as an available D-ID direct plugin here; exact agent ID, plan, voice and export capabilities not verified",
+    "intendedUse": "Possible speaking Flex host for welcoming participants, explaining exercises, resting, closing/interactive Q&A, only with separately verified approved Marcus voice and owner's approval",
+    "limitations": [
+      "Standing reference has no white LEFT cast or supporting bench. It is NOT the recovery workout full-body Flex demonstration.",
+      "D-ID's published agent/video workflows support speaking digital presenters and natural conversational gestures; they do not establish precise user-programmed multi-repetition exercise motion.",
+      "Do not turn this still screenshot into an exercise clip and claim biomechanical success.",
+      "Do not change visual identity on the seven locked approved scenes."
+    ],
+    "identityApproval": "Screenshot not in itself approval of a new variation; canonical seated approved photo and seven video originals remain authority.",
+    "userSourceImage": "8573.jpg",
+    "userC16ContactSheet": "9835.jpg",
+    "c16Observation": "User-supplied 10-frame C16 still sequence depicts bent-elbow forward motions with curled hands and seated LEFT white cast; this verifies earlier reasons for rejection as straight-arm controlled reaches.",
+    "officialCapabilities": {
+      "embeddedSpeakingAgent": "Documented D-ID Agents Embed SDK; agent ID and domain-restricted client key required",
+      "originalMarcusAudio": "Official D-ID Agents Embed speak({type:'audio',input:'https://...wav/mp3'}) supports playing existing externally hosted prerecorded audio, subject to plan/media accessibility; original approved C02 Marcus WAV is prepared in the review harness",
+      "motionLimitation": "No documented precise user-scripted exercise-joint kinetics or cast-supported exercise reps; don't use talking-agent gestures as exercises"
+    },
+    "draftHarness": "public/recovery-coach/did-agent-review/index.html",
+    "sourceAudioId": "C02 owner-approved Marcus WAV exact source",
+    "consentAndCost": "No session auto-starts; script loads only on user click, D-ID session and voice use may incur plan charges; do not test or deploy without owner's action and actual D-ID permitted domain",
+    "verificationGates": [
+      "Receive user-approved existing D-ID guest/Share URL or scoped embed Agent ID, never ask for private API key",
+      "Confirm the existing agent's face, tattoos, hair and talking lip sync rather than assume screenshot verifies live",
+      "Confirm original Marcus WAV audio_url is playable by D-ID as the audio source",
+      "Check account plan costs before sustained conversational use",
+      "Do not enable D-ID in customer app unless owner approves",
+      "Do not use standing D-ID agent for white cast seated recovery reps"
+    ],
+    "sharedAgentId": "v2_agt_u9mkY4Wb",
+    "sharedPageMetadata": "Share link user supplied. Page metadata title Flex and D-ID avatar preview OG image available.",
+    "guestViewerInspection": {
+      "status": "PAGE_LOADS_BUT_AGENT_NEVER_INITIALIZES",
+      "userProvidedLinkContainsAccessKey": true,
+      "accessKeyRecorded": false,
+      "guestTitleObserved": "AI Agent Video Chat",
+      "uiMessage": "Looking for agent — Finding an available agent for you",
+      "observableAvatar": false,
+      "startCallVisible": false,
+      "microphoneControlsVisible": false,
+      "loginPrompt": false,
+      "paywallOrExplicitError": false,
+      "testConversationStarted": false,
+      "actualMarcusVoiceTested": false,
+      "inspection": "Read-only guest browser check on 2026-10-19 (Mountain time). Spun for at least ~25 seconds; entire bounded inspection ~99 sec; agent never became ready."
+    },
+    "nextStep": "In D-ID Studio open existing Flex agent -> View as guest; if same loading loop, inspect agent availability and sharing settings or D-ID support. For embed testing obtain separately generated domain-scoped client key via D-ID Embed (not guest share URL key) and approve test origin; never store credentials in GitHub.",
+    "release": "Not validated for Marcus, lip-sync, motion, pricing. No live app integration; no session started.",
+    "liveOwnerTest": {
+      "date": "2026-10-20",
+      "status": "SPEAKING_AND_APPARENT_LIPSYNC_CONFIRMED_BY_OWNER_BUT_WRONG_VOICE",
+      "ownerObserved": "The mouth moves and seems synchronized, but the voice is FEMALE instead of the approved Marcus Warm & Friendly English male voice.",
+      "voiceApproval": false,
+      "lipSyncOwnerObservation": "appeared synchronized",
+      "avatarApprovedForWorkout": false,
+      "preserveCharacter": true,
+      "testingNote": "Do not confuse interactive agent's currently configured female TTS with owner-approved HeyGen voice ID 0fadce1e82af494a93873aa38ea8d106.",
+      "next": "Inspect Language & Voice settings of existing D-ID Flex agent; exact approved Marcus may require using existing recorded audio through D-ID agent speak audio API, and conversational TTS voice availability remains unverified. Do not select arbitrary male replacement or change agent yet."
+    },
+    "approvedMarcusPlaybackRestoration": {
+      "status": "DIRECT_RECORDING_PLAYER_COMMITTED_ON_DRAFT_BRANCH_NOT_DEPLOYED",
+      "method": "Same previously used app-side DirectPlayback of original approved Marcus WAV; no browser TTS, no D-ID Emma, no new generated TTS.",
+      "voiceId": "0fadce1e82af494a93873aa38ea8d106",
+      "source": "C02 approved Marcus WAV already linked in GitHub source",
+      "page": "public/recovery-coach/did-agent-review/index.html",
+      "userControl": "Play my Marcus voice / Stop, click-to-play for Android",
+      "limitation": "Existing user-facing standalone D-ID Studio Start Call still has female Emma until the D-ID agent's conversational TTS is changed. Direct playback does NOT cause D-ID standalone guest viewer to lip-sync. D-ID SDK speak({type:'audio',input:URL}) can lip sync on a connected embed with domain-scoped client key, but not yet live tested.",
+      "extraGenerationCreditsSpent": 0,
+      "approvedOriginalsEdited": 0
+    }
+  },
+  "openMotionStudio": {
+    "date": "2026-10-20",
+    "status": "OFFLINE_LOCAL_MOTION_PREPARATION_STARTER_BUILT_TESTED; AI_MODEL_UNINSTALLED_AND_NO_NEW_SCENE_RENDERED",
+    "doc": "docs/M3-FLEX-SELF-HOSTED-OPEN-MOTION-STUDIO-2026-10-20.md",
+    "starterZip": "M3_FLEX_Open_Motion_Studio_Starter.zip, owner download only in conversation",
+    "starterZipSha256": "39c7d215ce14b2bd3f854a042e18e5ac262446997b4930b2c388b86b6f56ed28",
+    "model": "Wan-Animate-2, free Apache-2.0 source, with local ComfyUI workflow",
+    "requirementsUnknown": "User's Windows computer GPU name, dedicated VRAM, RAM, free storage unknown; GPU capabilities NOT established, do not buy anything yet",
+    "statusNotes": "Actual photo SHA verified; offline motion processing pipeline tested; rejected C13 file blocked. No new animation generated, no D-ID speech affected, no credits spent.",
+    "privacy": "Approved user photo included ONLY in user-controlled starter zip, not committed into shared GitHub repository",
+    "protection": "All seven approved source videos immutable; no app merges or production deployments"
+  },
+  "comfyCloudSetup": {
+    "date": "2026-10-20",
+    "status": "GOOGLE_DRIVE_STUDIO_CREATED; CANONICAL_APPROVED_PHOTO_UPLOADED; CLOUD_ACCOUNT_LOGIN_OWNER_ACTION_PENDING; NO_AI_GENERATION",
+    "workspaceFolderId": "1tYbV8u5WMo4KExYYGou7D7DIRSn_56EQ",
+    "workspaceFolderUrl": "https://drive.google.com/drive/folders/1tYbV8u5WMo4KExYYGou7D7DIRSn_56EQ",
+    "approvedPhotoDriveFileId": "1igE_5RTHvRHbytHYq-ytHF2HM8x6_g0o",
+    "approvedPhotoDriveUrl": "https://drive.google.com/file/d/1igE_5RTHvRHbytHYq-ytHF2HM8x6_g0o/view?usp=drivesdk",
+    "originalPhotoSha256": "6fcc17c6982cf2931b846292269bd2502fcd0d24fb063ccfd0c777f8e8cd9f8d",
+    "sourcePhotoPrivacy": "Photo has owner-only permissions, not shared, no modification; stored as correctly labeled JPEG.",
+    "folders": [
+      "01 - Approved Flex and Marcus",
+      "02 - Exercise Motion References",
+      "03 - AI Drafts for Review",
+      "04 - Approved Exercise Animations",
+      "05 - Workout A and B Masters"
+    ],
+    "starterZipDriveFileId": "1xv6JlKLOheavL6Gw4x8_MBVjCaGxch3n",
+    "platform": "Comfy Cloud (https://cloud.comfy.org/) with official Wan Animate 2 workflow",
+    "freeTrialEvidence": "Vendor's current Comfy Cloud product page states five free GPU runs without credit card; eligibility not verified for user's account.",
+    "cloudBrowserProfileName": "M3 FLEX — Comfy Cloud Animation",
+    "cloudSignIn": "User must sign in via separately supplied browser setup link and save profile; account is not yet authenticated and no account created by assistant.",
+    "generationPolicy": "Never queue an AI run until exact approved Flex image, rights-cleared correct driving video, model/workflow support, cost/credit and owner approval are checked. No paid new credits. Two final workouts not completed.",
+    "approvedOriginalsChanged": 0
+  },
+  "controlledArmReachReferenceSearch": {
+    "date": "2026-10-20",
+    "status": "NO_COMMERCIALLY_USABLE_TWO_CYCLE_SEATED_OPEN_HAND_FORWARD_REACH_DRIVER_VISUALLY_VERIFIED",
+    "doc": "docs/M3-FLEX-C16-CONTROLLED-ARM-REACHES-RIGHTS-AND-DRIVER-2026-10-20.md",
+    "rejectedThirdPartyReference": [
+      {
+        "title": "Physitrack grounded sitting balance arm reach",
+        "reason": "Outside-platform rights not licensed for M3 FLEX AI motion transfer."
+      },
+      {
+        "title": "Pexels 7517374 caregiver assists senior arms",
+        "reason": "Independence/two forward reach cycles unverified; likely assisted, browser Cloudflare blocked video inspection."
+      }
+    ],
+    "next": "Obtain rights-cleared consenting adult-original 12–16 second real seated two-rep shot; exact storyboard in linked documentation.",
+    "referenceDriveFolderUrl": "https://drive.google.com/drive/folders/1GLq90aPO8YmnRl-rGloAFHaLaRBoxhcv",
+    "comfyRunsRemainingAsOfOwnerScreenshot": 5,
+    "noComfyGenerationRun": true,
+    "priorApprovedScenesModified": false
+  },
+  "referenceVideoCatalog": {
+    "date": "2026-10-20",
+    "githubDocument": "docs/M3-FLEX-ALL-EXERCISE-REFERENCE-VIDEO-CATALOG-2026-10-20.md",
+    "googleDriveFolder": "https://drive.google.com/drive/folders/1tYbV8u5WMo4KExYYGou7D7DIRSn_56EQ",
+    "googleDriveHtmlFileId": "14pjoNMtogmq7tjQfUaKPkiAZ57pWoltn",
+    "googleDriveJsonFileId": "1Nvp1BXGQddugVO_w0XwCMKTMNt8boSgG",
+    "uniqueMissingSceneTypes": 17,
+    "sceneTypes": [
+      {
+        "id": "NEW_INTRO",
+        "label": "Workout intro",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "C11-HAND-OPEN",
+        "label": "Hand opening",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_SHOULDER-MOBILITY",
+        "label": "Controlled arm reaches — seated and unloaded",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_WRIST-CIRCLES",
+        "label": "Unloaded wrist circles",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_ELBOW-BENDS",
+        "label": "Unloaded elbow bends",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_WRIST-CURL",
+        "label": "Seated wrist curl",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_LATERAL-RAISE",
+        "label": "Seated lateral raise",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_REST-CUE",
+        "label": "Rest and transition",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_ARM-BOXING",
+        "label": "Seated arm-only boxing",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_UPPER-STRETCH",
+        "label": "Gentle upper body stretch",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_HAND-SHOULDER-RELEASE",
+        "label": "Relax hand and shoulder",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_OUTRO",
+        "label": "Workout completion",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_FORWARD-PRESS-WARMUP",
+        "label": "Unloaded seated press warmup",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_ELBOW-EXTENSION",
+        "label": "Seated elbow extension",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_INNSTAR-FLY",
+        "label": "INNSTAR band chest fly",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_AMYCO-WRIST",
+        "label": "AMYCO wrist apparatus",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      },
+      {
+        "id": "NEW_CHEST-STRETCH",
+        "label": "Gentle chest/shoulder stretch",
+        "status": "REFERENCES_DISCOVERED_OR_GAP_NOTED__NOT_GENERATED"
+      }
+    ],
+    "sourcePolicy": "Pexels licensed videos: commercial adaptation allowed with limitations. Actual motion matching AND depicted-person consents for AI transfer need separate review. ZenithFits source video ownership unverified so DO NOT use in commercial motion transfer.",
+    "currentlyReadyValidatedExactDrivingClips": 0,
+    "generationRunsStartedByThisWork": 0,
+    "original7AssetFilesChanged": false
+  },
+  "confirmedTechniqueReferences": {
+    "NEW_LATERAL-RAISE": {
+      "status": "OWNER_CONFIRMED_EXACT_SEATED_LATERAL_RAISE_TECHNIQUE_VIDEO",
+      "url": "https://vimeo.com/1082610274",
+      "creator": "Tony Gentilcore",
+      "dateConfirmed": "2026-10-20",
+      "reuseRights": "NOT VERIFIED: Vimeo publisher permission or an applicable commercial derivative license must be obtained before using as Wan motion-transfer input",
+      "notProductionReady": true,
+      "permissionRequestStatus": "DRAFT_PREPARED_NOT_SENT",
+      "licensingEvidence": [
+        "Vimeo demonstration owner-approved technique, not cleared for motion transfer.",
+        "Exercise Animatic exact $1 video is NOT eligible: publisher explicitly prohibits uploading any clips to AI platform even under paid commercial license: https://www.exerciseanimatic.com/copy-of-license",
+        "Permission-request email draft saved in connected Gmail, not sent; requires owner's review and sending."
+      ]
+    }
+  },
+  "syntheticMotionDriverTrial": {
+    "scene": "NEW_LATERAL-RAISE",
+    "status": "DRIVER_CREATED_AND_UPLOADED__NOT_TESTED_IN_COMFY",
+    "type": "original procedurally animated fictional seated adult with two complete lateral-raise motion cycles; no filmed person, no stock media, no borrowed creator footage",
+    "durationSeconds": 8,
+    "resolution": "540x960",
+    "fps": 20,
+    "license": "Original tool-produced demonstration footage; no third-party source footage used.",
+    "driveFileId": "1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C",
+    "driveUrl": "https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view",
+    "qaCaveat": "Illustrated humanoid may fail Wan Animate 2's human motion interpretation; must validate output; do not represent as approved Flex footage.",
+    "originalApprovedVideosAltered": false,
+    "comfyCloudGenerationsUsedByThisTrial": 0
+  },
+  "firstComfyCloudAnimationTrial": {
+    "date": "2026-10-21",
+    "scene": "NEW_LATERAL-RAISE",
+    "status": "REJECTED_BY_OWNER__CARTOON_OVERLAY_NO_REAL_FLEX_MOTION",
+    "input": "8 sec synthetic illustrated seated lateral raises two repetitions; Flex_Approved_9550_original.jpg",
+    "template": "template_purz_wan22_animate_auto_character_replace",
+    "outputObserved": "Illustrated character overlays original unmoving approved Flex gym photograph; subject identity and full-body motion transfer fail",
+    "gpuFreeRunsObservedBefore": 5,
+    "gpuFreeRunsObservedAfter": 4,
+    "approvedVideoAssetsModified": false,
+    "correctiveAction": "Stop all runs. Review Wan 2.2 Animate Mix vs Move or dedicated Wan Animate 2 Motion Transfer blueprint. Mix is subject replacement in driver video; Move transfers motion onto reference photo. Procedural cartoon driver is not reliable human pose source. Do not spend another run until appropriate graph mode and real/humanlike authorized driver are verified.",
+    "sourceLinks": [
+      "https://github.com/Comfy-Org/ComfyUI/blob/master/blueprints/Motion%20Transfer%20%28Wan%20Animate%202%29.json",
+      "https://github.com/deanhowe/comfyui-docs/blob/main/tutorials/video/wan/wan2-2-animate.mdx"
+    ]
+  },
+  "v2ProtectedReuse": {
+    "created": "2026-10-21",
+    "state": "ORIGINAL_V2_MEDIA_COPIED_AND_LINKED_FOR_REVIEW_ONLY",
+    "originalBranch": "rebuild/m3-coach-v2",
+    "referenceGallery": "public/recovery-coach/programs/v2-source-preview.html",
+    "sourceFiles": [
+      {
+        "key": "boxingFlow60",
+        "path": "public/recovery-coach/programs/v2-sources/boxingFlow60.mp4",
+        "blobSha": "0e3c8b9cb45324dfb5cbcd8e81f070942702f776",
+        "role": "original existing V2 boxing motion - standing/footwork not cast cleared"
+      },
+      {
+        "key": "chestPress",
+        "path": "public/recovery-coach/programs/v2-sources/chestPress.mp4",
+        "blobSha": "0648ce54638ef396fc3b4b4dbac498c67c627e98",
+        "role": "different actor/equipment; cannot substitute locked INNSTAR"
+      },
+      {
+        "key": "dumbbellCurl",
+        "path": "public/recovery-coach/programs/v2-sources/dumbbellCurl.mp4",
+        "blobSha": "3c5548821bba420fc4e9794462778d744b83295d",
+        "role": "arm curl reference only; never relabel wrist curl"
+      },
+      {
+        "key": "rearDeltFly",
+        "path": "public/recovery-coach/programs/v2-sources/rearDeltFly.mp4",
+        "blobSha": "ca71cb6a395320a47f223df0a5096124f1a41038",
+        "role": "reference only; identity, position and cast still unverified"
+      },
+      {
+        "key": "chestPressV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/chestPress.mp3",
+        "blobSha": "ce76c0d9f55aa45adafd0949d1de722c9df6e592",
+        "role": "old V2 coaching audio; voice/content/timing not certified for recovery"
+      },
+      {
+        "key": "curlV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/dumbbellCurl.mp3",
+        "blobSha": "e63de4c6f5090c63fa1fd6e6cc00bb4313837a43",
+        "role": "old V2 coaching audio; not the locked Flex Marcus clip"
+      },
+      {
+        "key": "lateralRaiseV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/lateralRaise.mp3",
+        "blobSha": "c28b433efb93e81e279cc41aa09bb6c6eff96805",
+        "role": "old V2 coaching audio; voice/content/timing pending review"
+      },
+      {
+        "key": "seatedRowV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/seatedRow.mp3",
+        "blobSha": "4e44a3771c6081b6345ff1083de0d9b841b41735",
+        "role": "old V2 coaching audio; bracing instruction may be unsafe with cast"
+      },
+      {
+        "key": "tricepsV2Coaching",
+        "path": "public/recovery-coach/programs/v2-sources/audio/tricepsPressdown.mp3",
+        "blobSha": "0b36f96e6b8aec64b5b7fb41268b77b219bdbdb7",
+        "role": "old V2 coaching audio; may require seated adaptation"
+      }
+    ],
+    "chapterStudyMapping": {
+      "NEW_ARM-BOXING": {
+        "from": "boxingFlow60",
+        "purpose": "punch path and timing reference",
+        "blockedBecause": "standing footwork must be removed, left cast support and clinician clearance unverified"
+      },
+      "NEW_LATERAL-RAISE": {
+        "from": "original V2 coach-identity.ts lateralRaise motion and V2 lateralRaise coaching audio",
+        "purpose": "movement reference and coaching phrasing",
+        "blockedBecause": "standing vs seated, face/left cast, exact voice/timing and clinician clearance"
+      },
+      "NEW_SHOULDER-MOBILITY": {
+        "from": "original V2 coach-identity.ts controlledShoulderWork motion",
+        "purpose": "compare for exact controlled arm reaches",
+        "blockedBecause": "not established as the exact controlled arm reaches"
+      },
+      "NEW_REST-CUE": {
+        "from": "src/v2/marcus-cue-audio.ts",
+        "purpose": "reuse segmentation and session-event wiring without new voice generation",
+        "blockedBecause": "live playable cue audio source and recovery phrasing/timing not recovered and certified"
+      },
+      "NEW_FORWARD-PRESS-WARMUP": {
+        "from": "chestPress",
+        "purpose": "reference only to arm extension",
+        "blockedBecause": "V2 chest press is equipment-specific, not an approved unloaded warm-up"
+      }
+    },
+    "playerAndVoiceLogic": {
+      "workoutSessionEngine": "src/v2/session.ts",
+      "recordedVoiceRegistry": "src/v2/marcus-trainer-recordings.ts",
+      "approvedVoiceId": "0fadce1e82af494a93873aa38ea8d106",
+      "v2VoiceMediaCaveat": "The V2 trainer registry points to /media/marcus-trainer/*.mp3 which are NOT present in the inspected V2 public/media tree. Five separate /media/coaching/*.mp3 files were copied; do not mislabel them as newly certified Marcus trainer recordings.",
+      "masterBuilder": "production/two-part/build_masters.py",
+      "releaseGates": "production/two-part/release-gates.json"
+    },
+    "activationGates": {
+      "videoVoiceIdentityConfirmed": false,
+      "seatedCastSafeTechniqueConfirmed": false,
+      "ownerNewClipApproval": false,
+      "treatingClinicianClearance": false,
+      "androidPlaybackVerified": false,
+      "mastersReleased": false
+    },
+    "protection": "reference-only paths must never be resolved by production assembler as approved media; existing seven lockedApprovedVideoIds, all approvedAssets, chapter statuses and release gates remain unchanged"
+  }
+}

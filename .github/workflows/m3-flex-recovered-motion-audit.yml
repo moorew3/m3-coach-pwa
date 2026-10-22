@@ -1,0 +1,64 @@
+name: M3 FLEX recovered motion audit (review only)
+on:
+  push:
+    branches: [production/m3-flex-two-part-masters-2026-10-19]
+    paths:
+      - .github/workflows/m3-flex-recovered-motion-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect-existing-v2-motion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout immutable reference branch
+        uses: actions/checkout@v4
+      - name: Checkout older V2 production media in separate directory
+        uses: actions/checkout@v4
+        with:
+          ref: rebuild/m3-coach-v2
+          path: m3v2
+      - name: Install frame inspection tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+      - name: Produce source-level video probe and contact sheets
+        shell: bash
+        run: |
+          set -u
+          mkdir -p audit
+          command -v ffmpeg && command -v ffprobe
+          cp m3v2/public/media/boxingFlow3.mp4 audit/boxingFlow3_EXISTING_REFERENCE.mp4
+          curl -L --fail --max-time 25 --retry 1 -A "M3-FLEX-QA/1.0" -o audit/lateralRaise_EXISTING_REFERENCE.mp4 'https://m3-coach-v2-visual-production.up.railway.app/media/approved/lateralRaise.mp4'             && echo 'Lateral raise remote source downloaded' || { rm -f audit/lateralRaise_EXISTING_REFERENCE.mp4; echo 'Lateral raise URL could not be fetched' | tee audit/lateralRaise_FETCH_FAILED.txt; }
+          for f in audit/*.mp4; do
+            [ -f "$f" ] || continue
+            echo "Probing $f"
+            ffprobe -hide_banner -v error -show_format -show_streams -of json "$f" > "${f%.mp4}.ffprobe.json" || true
+            ffmpeg -hide_banner -loglevel error -y -i "$f" -t 18 -vf "fps=1,scale=320:-1,tile=5x4:padding=8:margin=8" -frames:v 1 "${f%.mp4}_contact.jpg" || true
+            ffmpeg -hide_banner -loglevel error -y -i "$f" -ss 1 -frames:v 1 -vf "scale=420:-1" "${f%.mp4}_first.jpg" || true
+            sha256sum "$f" >> audit/source_checksums.sha256
+          done
+          printf 'Historical video source / new derived QA previews only. Not approved for M3 FLEX Recovery Coach. No live changes.\n' > audit/README.txt
+      - name: Commit derived thumbnails and metadata to isolated draft branch
+        shell: bash
+        run: |
+          set -e
+          mkdir -p docs/motion-audits/2026-10-20
+          cp audit/*_contact.jpg audit/*_first.jpg audit/*.ffprobe.json audit/*.sha256 docs/motion-audits/2026-10-20/ 2>/dev/null || true
+          printf '%s\n' 'REVIEW ONLY. Existing V2 footage is not approved as cast-safe M3 FLEX footage. Do not deploy without owner and technique QA.' > docs/motion-audits/2026-10-20/README.txt
+          git config user.name "m3-flex-motion-audit"
+          git config user.email "m3-flex-motion-audit@users.noreply.github.com"
+          git add docs/motion-audits/2026-10-20
+          if ! git diff --cached --quiet; then
+            git commit -m "Capture original V2 lateral and boxing frame contact sheets for owner QC (not approved)"
+            git push origin HEAD:production/m3-flex-two-part-masters-2026-10-19
+          fi
+      - name: Upload review-only source/frames
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: M3-FLEX-EXISTING-BOXING-LATERAL-SOURCE-QA-NOT-APPROVED
+          path: audit/
+          retention-days: 7
+          if-no-files-found: error
