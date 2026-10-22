@@ -247,10 +247,10 @@ function Today() {
 
             <section aria-label="M3 FLEX training modes" className="mt-4 rounded-2xl border-2 border-primary/40 bg-elevated/60 p-3">
               <h3 className="text-base font-bold uppercase tracking-wide">Choose your M3 FLEX mode</h3>
-              <p className="mt-1 text-xs text-muted-foreground">One app, one approved exercise library. Coach Session tracks your workout; Exercise Demonstrations let you study movements without starting or logging a workout.</p>
+              <p className="mt-1 text-xs text-muted-foreground">One app, two experiences. Coach Session tracks your workout; Exercise Demonstrations let you inspect available movements without starting or logging a workout. Unverified motion must stay identified as pending.</p>
               <button
-              type="button"
-              onClick={() => {
+                type="button"
+                onClick={() => {
                 if (log.completed) return openCoach();
                 if (hasActiveSession(state, day)) return setStartChoice(true);
                 if (!ready) return setChecking(true);
@@ -276,7 +276,7 @@ function Today() {
               </p>
             )}
             <p className="mt-2 text-center text-xs text-muted-foreground">
-              Marcus guides your set and rep sequence, rest periods and logging. Only approved exercise footage is used; missing full-length movement scenes remain clearly identified.
+              Marcus guides the prescribed sets, reps, rest and logging. The existing media registry must be reconciled with the owner-approved clips before this staging change can ship.
             </p>
               <div className="mt-3">
                 <ExerciseLibraryButton label="Exercise Demonstrations — no workout started" />
