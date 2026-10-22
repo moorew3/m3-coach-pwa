@@ -813,6 +813,28 @@ function V2Coach() {
           </button>
           </div>
         </header>
+        <section aria-label="Choose training experience" data-testid="v2-experience-switch"
+          className="mt-3 grid grid-cols-2 gap-2 rounded-2xl border border-cyan-300/20 bg-[#111820] p-2">
+          <button type="button" aria-pressed={experience === "coach-session"}
+            onClick={() => chooseExperience("coach-session")}
+            className={experience === "coach-session"
+              ? "min-h-14 rounded-xl bg-cyan-300 px-3 text-xs font-black text-black sm:text-sm"
+              : "min-h-14 rounded-xl bg-white/10 px-3 text-xs font-black text-white sm:text-sm"}>
+            Coach Session
+          </button>
+          <button type="button" aria-pressed={experience === "demonstrations"}
+            onClick={() => chooseExperience("demonstrations")}
+            className={experience === "demonstrations"
+              ? "min-h-14 rounded-xl bg-cyan-300 px-3 text-xs font-black text-black sm:text-sm"
+              : "min-h-14 rounded-xl bg-white/10 px-3 text-xs font-black text-white sm:text-sm"}>
+            Exercise Demonstrations
+          </button>
+          <p className="col-span-2 px-2 pb-1 text-[11px] text-white/60">
+            {experience === "coach-session"
+              ? "Guided sets, workout logging, prescribed rest and optional supersets."
+              : "Browse approved movement videos without advancing or logging your workout. Your coach session is saved."}
+          </p>
+        </section>
         <div
           role="status"
           aria-live="polite"
@@ -920,14 +942,14 @@ function V2Coach() {
               </div>
             </div>
 
-            <V2TrainingCamera
+            {experience === "coach-session" && <V2TrainingCamera
               session={session}
               onCue={giveFeedback}
               onRepCapture={captureReps}
               stance={boxingStance}
               onBoxingSnapshot={receiveBoxing}
               onRoundSummary={reportRound}
-            />
+            />}
 
             <div className="absolute inset-x-0 bottom-0 z-[9] p-3">
               <div className="rounded-2xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl">
@@ -945,7 +967,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={toggleWorkout}
-                      disabled={session.phase === "complete"}
+                      disabled={experience === "demonstrations" || session.phase === "complete"}
                       className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-black disabled:opacity-35"
                       aria-label={session.running ? "Pause workout" : "Start workout"}
                     >
@@ -955,7 +977,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "complete-set" })}
-                      disabled={session.phase !== "work"}
+                      disabled={experience === "demonstrations" || session.phase !== "work"}
                       className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
                       aria-label="Complete set and advance"
                     >
@@ -964,6 +986,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "reset", workout })}
+                      disabled={experience === "demonstrations"}
                       className="grid size-11 place-items-center rounded-xl bg-white/15"
                       aria-label="Reset workout"
                     >
