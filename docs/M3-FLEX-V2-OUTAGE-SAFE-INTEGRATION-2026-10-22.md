@@ -51,6 +51,29 @@ This is the PRIMARY product. The dochost owner-preview page is a feature/test re
 7. Inspect Railway incident closure and any required credential rotation/security recommendations, then request explicit owner confirmation before deploying.
 8. Deploy only after confirmed approved source, successful test results and rollback checkpoint. Preserve the current V2 app, media, routes and logs.
 
+## October 22 continuation — V2 motion-synchronized Marcus, development branch ONLY
+
+Implemented directly in the original V2 React/TanStack application, NOT the separate dochost demo:
+
+- `src/lib/coach-work-video.ts`: an observable actual-video status keyed to the exact WORK set ID, rather than a timer guessing that a video should be playing. States include paused, buffering, playing and failed.
+- `src/components/CoachMotion.tsx`: only the active coached work-set video emits playback status; it immediately pauses speech on video pause/stall/error/seek. Repeated sets using the same clip force a new playback transition and timestamp reset.
+- `src/components/TrainerStageMedia.tsx` and `src/routes/coach.$day.tsx`: V2 uses the actual playback key and keeps the accepted moving exercise visible during countdown. The independent demonstration/library route is unchanged.
+- `src/lib/coach-session.ts`: work-set audio, live cues and clocks wait for actual motion playback; the exact current set ID must match. No missing-motion set is silently timed or declared complete. Non-work, TTS-paced caption steps are shortened in staging to avoid long silent transitions.
+- `src/lib/coach-voice.ts`: the V2 Coach Session is intentionally MARCUS-ONLY. It suppresses fallback to the unrelated OpenAI Onyx or Android/browser voice. The existing backend route explicitly returns HTTP 503 for Marcus until live TTS is integrated; do not claim live arbitrary speech works.
+- `src/lib/marcus-approved-cues.ts`: stages already-created, owner-accepted Marcus — Warm & Friendly English recording slices, ID `0fadce1e82af494a93873aa38ea8d106`. First compatible work set gets the recorded exercise explanation; later sets get short motivational recordings. No other voice is substituted. Mappings are exact/limited and do not cover every movement.
+
+**Static review:** 14 key wiring/source checks passed against the current branch (set identity, pause/buffer callbacks, voice-only policy, existing 11-approved-source inventory, same-URL next-set restart). These are NOT build, interactive runtime, network availability, audio-quality or real Samsung tests.
+
+**Critical reality checks remaining:**
+1. The existing V2 canonical motion registry (`src/data/coach-identity.ts`) was originally reviewed against a short fade haircut and portrait chest tattoo and explicitly quarantines braids. The newer approved recovery trainer has braids and a LEFT black boot on raised support. Do NOT bypass the registry or quietly substitute one identity. Reconcile and personally approve exact final mappings first.
+2. The 11 newer owner-approved motion URLs are still **staging manifest entries**, not registered live clip replacements. The original V2 weekly program still includes exercises that would bear weight on the injured leg. DO NOT deploy that program as the user's recovery routine without an explicit seated, medically cleared selection and movement audit.
+3. Existing 5–12-second recordings are short source demonstrations, not full coach-performed repetitions through every set. The video is currently visually looping for approved clips; continuous recorded A/B follow-along masters remain unproduced.
+4. The approved Marcus voice cue slices cover some exercises; arbitrary trainer dialogue, full spoken rep synchronization, lip-sync, recovery instruction, guided rests and unmatched exercises do NOT yet have a validated Marcus playback track. They are intentionally silent rather than substituted with another speaker.
+5. Existing V2 set/repetition logging and optional supersets are reused but have NOT been exercised against this new media gate in a compiled build. Pausing on missing media is intentional; a clear recovery-safe treatment or user action is needed before public release.
+6. Railway authorization is unavailable during its platform incident. Do not merge/deploy until Railway source/branch/commit are verified and owner explicitly approves after source and security review.
+
+Next code/QA targets in this same branch: build with `npm run build:dev`, adapt an injury-safe A/B session plan without overwriting historical tracking, write scripted tests for pause/resume/buffer/fail, first-versus-later Marcus cues, full sets and supersets, and conduct Galaxy Fold playback QA.
+
 ## Staging status
 - GitHub changes: **created; NOT DEPLOYED**.
 - Rails/Railway source verification: **BLOCKED BY PLATFORM AUTH/OUTAGE**.
