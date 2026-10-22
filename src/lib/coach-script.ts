@@ -926,7 +926,7 @@ export function buildCoachScript(
             ? `${isSuperset ? "Superset rest" : "Rest"} — then ${nextEx?.name ?? "cooldown"}`
             : isSuperset
               ? `Superset rest — round ${r + 2} of ${rounds}`
-              : `Rest — ${roundWord.toLowerCase()} ${r + 2} of ${total}`
+              : `Rest — ${roundWord.toLowerCase()} ${r + 2} of ${total}`,
           detail: blockDone
             ? nextEx
               ? `Coming up: ${nextEx.name} · ${nextEx.target} · ${setsFor(nextEx)} × ${nextEx.reps}`
