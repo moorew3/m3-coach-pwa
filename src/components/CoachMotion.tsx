@@ -6,6 +6,8 @@
  * for the next approved clip. Never substitute a still image for motion.
  */
 import { useEffect, useRef, useState } from "react";
+import { releaseCoachWorkVideo, updateCoachWorkVideo } from "@/lib/coach-work-video";
+import { stopSpeech } from "@/lib/coach-voice";
 
 export function CoachMotion({
   url,
@@ -15,6 +17,7 @@ export function CoachMotion({
   preloadUrl,
   cycleKey,
   stableFraming = false,
+  syncSessionVoice = false,
   className = "",
   label,
   onLayerChange,
@@ -32,6 +35,8 @@ export function CoachMotion({
   cycleKey?: string;
   /** Keep the full machine/body in frame. */
   stableFraming?: boolean;
+  /** Only the active coached work-set video; never previews or ambient clips. */
+  syncSessionVoice?: boolean;
   className?: string;
   label?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
@@ -45,6 +50,11 @@ export function CoachMotion({
   const [retryAttempt, setRetryAttempt] = useState(0);
   const callbackRef = useRef(onLayerChange);
   callbackRef.current = onLayerChange;
+
+  useEffect(() => {
+    if (syncSessionVoice) updateCoachWorkVideo(url, "paused");
+    return () => { if (syncSessionVoice) { releaseCoachWorkVideo(url); stopSpeech(); } };
+  }, [syncSessionVoice, url]);
 
   useEffect(() => {
     setFailed(false);
@@ -68,6 +78,7 @@ export function CoachMotion({
     if (!playing) {
       video.pause();
       setIsPlaying(false);
+      if (syncSessionVoice) { updateCoachWorkVideo(url, "paused"); stopSpeech(); }
       return;
     }
 
@@ -94,7 +105,7 @@ export function CoachMotion({
       window.clearTimeout(settleRetry);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [playing, rate, url, failed, loaded]);
+  }, [playing, rate, url, failed, loaded, syncSessionVoice]);
 
   return (
     <div
@@ -134,15 +145,16 @@ export function CoachMotion({
               callbackRef.current?.(0, "transition");
               if (playing) void event.currentTarget.play().catch(() => undefined);
             }}
-            onPlaying={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            onWaiting={() => setIsPlaying(false)}
-            onStalled={() => setIsPlaying(false)}
-            onEnded={() => setIsPlaying(false)}
+            onPlaying={() => { setIsPlaying(true); if (syncSessionVoice) updateCoachWorkVideo(url, "playing"); }}
+            onPause={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "paused"); stopSpeech(); } }}
+            onWaiting={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "buffering"); stopSpeech(); } }}
+            onStalled={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "buffering"); stopSpeech(); } }}
+            onEnded={() => { setIsPlaying(false); if (syncSessionVoice) { updateCoachWorkVideo(url, "paused"); stopSpeech(); } }}
             onError={() => {
               setFailed(true);
               setLoaded(false);
               setIsPlaying(false);
+              if (syncSessionVoice) { updateCoachWorkVideo(url, "failed"); stopSpeech(); }
             }}
             className={`absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"}`}
             style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
