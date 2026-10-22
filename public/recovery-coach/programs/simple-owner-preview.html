@@ -40,10 +40,10 @@
 <label for="m3PacePick">Pacing
 <select id="m3PacePick"><option value="3.5">3.5 sec / rep</option><option value="4.0">4 sec / rep</option><option value="5.0">5 sec / rep</option></select></label>
 </div>
-<div id="m3PairBox"></div>
+<div id="m3PairBox"></div><p class="m3hint">The runner covers all currently approved movement sources, plus approved opening/closing breathing. Missing arm reaches, hand preparation, seated rows and rear delts are <strong>not yet available as accepted video chapters</strong>.</p>
 <label class="m3choice"><input type="checkbox" id="m3Consent">My treating clinician has cleared my seated upper-body training. I can keep the LEFT medical boot elevated and entirely unloaded, including during transitions. This is my declaration, not app verification.</label>
 <label class="m3choice"><input type="checkbox" id="m3VoiceOn" checked>Marcus — Warm &amp; Friendly English: spoken rep counts and transitions (never another voice)</label>
-<div class="m3row"><button class="main" id="m3Begin" type="button">Start Guided Session</button><button id="m3End" type="button" disabled>End / Save Session</button></div>
+<div class="m3row"><button class="main" id="m3Begin" type="button">Start Guided Session</button><button id="m3End" type="button" disabled>End / Save Session</button><button id="m3Resume" type="button" hidden>Resume Interrupted Session</button></div>
 </div>
 <div id="m3ActivePanel" hidden>
 <div class="m3section">
@@ -51,8 +51,8 @@
 <div id="m3StepDetail" class="m3hint"></div>
 <div class="m3bar"><span id="m3ProgressBar"></span></div>
 <div id="m3FormCue" class="m3metric" role="status"></div>
-<video id="m3CoachVideo" playsinline preload="none" muted loop controls aria-label="Owner-approved seated exercise demonstration"></video>
-<p class="m3hint">The video loops a brief APPROVED demonstration. Rep numbers are paced instruction, not proof that the instructor video physically performed each full rep or that your body completed it.</p>
+<video id="m3CoachVideo" playsinline preload="none" muted controls aria-label="Owner-approved seated exercise demonstration"></video>
+<p class="m3hint">The brief approved demonstration plays once per set to avoid video-loop glitches. Marcus continues paced rep counts, but the video does NOT yet depict an entire 8–15-rep instructor set. Only your entered actual reps are logged.</p>
 <div class="m3metric"><span id="m3CoachRep" class="m3big">0</span> <span id="m3RepUnit">coach-counted / planned</span><div id="m3RestStatus" class="m3hint"></div></div>
 <div class="m3row"><button class="main" id="m3StartSet">▶ Coach this set</button><button id="m3PauseSet">Pause pacing</button><button id="m3SkipRest">Skip rest</button></div>
 </div>
@@ -71,7 +71,7 @@
 <p class="m3warn">If your injured foot was loaded, you lost control, or you have new pain, stop rather than pushing through the session. The app cannot see you or certify your form.</p>
 </div>
 </div>
-<div id="m3TrainerMessage" class="m3hint" role="status" aria-live="polite"></div>
+<div id="m3TrainerMessage" class="m3hint" role="status" aria-live="polite"></div><details><summary>Listen to Marcus explain exercise technique</summary><p class="m3hint">This guide uses the exact approved Marcus — Warm &amp; Friendly voice. It is a continuous explanation of each exercise; individually timed per-exercise spoken cues are still being prepared.</p><audio id="m3FormAudio" controls preload="none" src="https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=c18e177c-7551-4541-91ce-c34e25ad16b6.wav"></audio></details>
 <div class="m3section">
 <h3>My training log</h3>
 <p class="m3hint">Stored on this device/browser when local storage is available; not automatically synced to your other devices or clinical records.</p>
@@ -203,18 +203,22 @@ band:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/229
 };
 const P={
 A:[
+{id:"breath",name:"Preparation breathing",sets:1,min:60,max:60,rest:0,timed:true,cue:"Breathe slowly for one minute, seated with the left medical boot supported."},
 {id:"lateral",name:"Seated dumbbell lateral raises",sets:3,min:10,max:12,rest:60,cue:"Raise arms sideways to shoulder height, never above. Keep the left boot elevated; no leg drive."},
 {id:"hammer",name:"Seated hammer curls",sets:3,min:8,max:12,rest:75,cue:"Elbows by your sides. Lower deliberately. Do not rock the seat or brace with the feet."},
 {id:"shrugs",name:"Seated dumbbell shrugs",sets:3,min:12,max:15,rest:60,cue:"Lift shoulders gently up, then lower under control. No neck jerking."},
 {id:"triceps",name:"Seated cable triceps pressdowns",sets:3,min:10,max:12,rest:75,cue:"Elbows near ribs. Only forearms extend. Keep safe cable anchor; never use the injured leg."},
-{id:"boxing",name:"Seated arm-only boxing",sets:4,min:45,max:45,rest:45,timed:true,cue:"Punch and return to guard with controlled arms. No pivots, twisting or foot pressure."}
+{id:"boxing",name:"Seated arm-only boxing",sets:4,min:45,max:45,rest:45,timed:true,cue:"Punch and return to guard with controlled arms. No pivots, twisting or foot pressure."},
+{id:"cool",name:"Cooldown breathing",sets:1,min:60,max:60,rest:0,timed:true,cue:"Let breathing settle. Relax your shoulders; stay seated with the left boot supported."}
 ],
 B:[
+{id:"breath",name:"Preparation breathing",sets:1,min:60,max:60,rest:0,timed:true,cue:"Breathe steadily for one minute. Do not move or load the injured leg."},
 {id:"chest",name:"Seated INNSTAR chest press",sets:4,min:8,max:12,rest:90,cue:"INNSTAR band belongs behind your back/chair, never around your neck. No leg drive."},
 {id:"front",name:"Seated front raises",sets:3,min:10,max:12,rest:60,cue:"Raise light dumbbells to shoulder level, keep the back supported and boot raised."},
 {id:"curls",name:"Seated alternating curls",sets:3,min:8,max:12,rest:75,cue:"One arm at a time. Control the lowering movement; no shifting the hips or legs."},
 {id:"band",name:"Seated band pull-aparts",sets:2,min:12,max:15,rest:60,cue:"Band at chest height, gently separate hands. Keep shoulders down and boot elevated."},
-{id:"triceps",name:"Seated cable triceps pressdowns",sets:3,min:10,max:12,rest:75,cue:"Elbows by ribs, stretch cable only from a safe seated setup without foot bracing."}
+{id:"triceps",name:"Seated cable triceps pressdowns",sets:3,min:10,max:12,rest:75,cue:"Elbows by ribs, stretch cable only from a safe seated setup without foot bracing."},
+{id:"cool",name:"Cooldown breathing",sets:1,min:60,max:60,rest:0,timed:true,cue:"Relax shoulders. Breathe slowly and stay seated; no injured-leg movement."}
 ]};
 const PAIRS={A:[["hammer","triceps"]],B:[["front","curls"],["band","triceps"]]};
 const AUDIO=$("m3MarcusAudio"),numbers=[
@@ -227,15 +231,15 @@ const safeRead=(k,fallback)=>{try{const v=JSON.parse(localStorage.getItem(k));re
 const safeWrite=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){$("m3TrainerMessage").textContent="Device storage is unavailable. Export the log regularly; this session may not survive reloading.";return false}};
 let history=safeRead(KEY,[]);if(!Array.isArray(history))history=[];
 function msg(s){$("m3TrainerMessage").textContent=s}
-function speak(k){if(!$("m3VoiceOn").checked)return;const clip=typeof k==="number"?numbers[k-1]:SFX[k];if(!clip||!AUDIO)return;try{AUDIO.pause();AUDIO.currentTime=clip[0];clipStop=clip[1];const p=AUDIO.play();if(p&&p.catch)p.catch(()=>{msg("Audio blocked on this phone. Tap Start Coach again to unlock Marcus. No other voice will substitute.")})}catch(e){msg("Marcus audio is unavailable in this browser. Written rep cues still work.")}}
+function speak(k){if(!$("m3VoiceOn").checked)return;const clip=typeof k==="number"?numbers[k-1]:SFX[k];if(!clip||!AUDIO)return;try{if($("m3FormAudio"))$("m3FormAudio").pause();AUDIO.pause();AUDIO.currentTime=clip[0];clipStop=clip[1];const p=AUDIO.play();if(p&&p.catch)p.catch(()=>{msg("Audio blocked on this phone. Tap Start Coach again to unlock Marcus. No other voice will substitute.")})}catch(e){msg("Marcus audio is unavailable in this browser. Written rep cues still work.")}}
 AUDIO.addEventListener("timeupdate",()=>{if(clipStop!=null&&AUDIO.currentTime>=clipStop){AUDIO.pause();clipStop=null}});
 function pairRender(){let w=$("m3WorkoutPick").value;const arr=PAIRS[w];$("m3PairBox").innerHTML='<b class="m3hint">Optional supersets (OFF by default)</b>'+arr.map((p,i)=>'<label class="m3choice"><input type="checkbox" class="m3Pair" data-pair="'+i+'"> Pair '+P[w].find(x=>x.id===p[0]).name+' + '+P[w].find(x=>x.id===p[1]).name+' (alternate sets, then rest)</label>').join('')+'<p class="m3warn">Supersets require clearance and equipment within safe seated reach. Never stand, move the injured foot, or rush transitions. Turning them on changes the instructor sequence and rest timing; it does NOT add sets.</p>'}
-function build(){const part=$("m3WorkoutPick").value,items=P[part];const selected=[...root.querySelectorAll(".m3Pair:checked")].map(x=>PAIRS[part][+x.dataset.pair]);const used=new Set(),q=[];for(const ex of items){if(used.has(ex.id))continue;const group=selected.find(p=>p.includes(ex.id));if(group){const a=items.find(x=>x.id===group[0]),b=items.find(x=>x.id===group[1]);if(!a||!b||a.sets!==b.sets)throw Error("Invalid superset pair");used.add(a.id);used.add(b.id);for(let k=1;k<=a.sets;k++){q.push({ex:a,set:k,partner:b.name,superset:true,rest:0});q.push({ex:b,set:k,partner:a.name,superset:true,rest:Math.max(a.rest,b.rest)});}}else{used.add(ex.id);for(let k=1;k<=ex.sets;k++)q.push({ex,set:k,partner:null,superset:false,rest:ex.rest});}}
+function build(){const part=$("m3WorkoutPick").value,items=P[part];const selected=[...root.querySelectorAll(".m3Pair:checked")].map(x=>PAIRS[part][+x.dataset.pair]);const used=new Set(),q=[];for(const ex of items){if(used.has(ex.id))continue;const group=selected.find(p=>p.includes(ex.id));if(group){const a=items.find(x=>x.id===group[0]),b=items.find(x=>x.id===group[1]);if(!a||!b)throw Error("Invalid superset pair");used.add(a.id);used.add(b.id);const common=Math.min(a.sets,b.sets);for(let k=1;k<=common;k++){q.push({ex:a,set:k,partner:b.name,superset:true,rest:0});q.push({ex:b,set:k,partner:a.name,superset:true,rest:Math.max(a.rest,b.rest)});}for(let k=common+1;k<=a.sets;k++)q.push({ex:a,set:k,partner:null,superset:false,rest:a.rest});for(let k=common+1;k<=b.sets;k++)q.push({ex:b,set:k,partner:null,superset:false,rest:b.rest});}else{used.add(ex.id);for(let k=1;k<=ex.sets;k++)q.push({ex,set:k,partner:null,superset:false,rest:ex.rest});}}
 return q;}
 function persist(){safeWrite(RUNKEY,{active,queue:queue.map(q=>({id:q.ex.id,set:q.set,superset:q.superset,partner:q.partner,rest:q.rest})),at,sessionId,sessionDate,records,part:$("m3WorkoutPick").value})}
 function stopTimers(){if(interval)clearInterval(interval);if(restInterval)clearInterval(restInterval);interval=restInterval=null;$("m3CoachVideo").pause();}
-function finish(){stopTimers();active=false;$("m3ActivePanel").hidden=true;$("m3End").disabled=true;$("m3Begin").disabled=false;$("m3WorkoutPick").disabled=false;root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=false);persist();msg("Session saved: "+records.length+" logged sets. Export CSV/JSON for a backup. This was a coached preview, not a completed full video master.");renderLogs();}
-function video(ex){const el=$("m3CoachVideo");el.pause();el.removeAttribute("src");el.load();if(!ex)return;el.src=VIDEO[ex.id];el.muted=true;el.loop=true;el.load()}
+function finish(){stopTimers();active=false;$("m3ActivePanel").hidden=true;$("m3End").disabled=true;$("m3Begin").disabled=false;$("m3WorkoutPick").disabled=false;root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=false);$("m3Resume").hidden=true;persist();msg("Session saved: "+records.length+" logged sets. Export CSV/JSON for a backup. This was a coached preview, not a completed full video master.");renderLogs();}
+function video(ex){const el=$("m3CoachVideo");el.pause();el.removeAttribute("src");el.load();if(!ex)return;el.src=VIDEO[ex.id];el.muted=true;el.loop=false;el.load()}
 function step(){stopTimers();if(!active)return;if(at>=queue.length){finish();return}current=queue[at];coached=0;elapsed=0;restRemaining=0;const q=current,ex=q.ex;
 $("m3CoachRep").textContent="0";$("m3RepUnit").textContent=ex.timed?"coach-timed seconds":"coach-paced reps (not automatically logged)";
 $("m3StepTitle").textContent=ex.name+" • Set "+q.set+"/"+ex.sets;
@@ -247,8 +251,7 @@ $("m3ActualReps").value="";$("m3BootCheck").checked=true;$("m3FormCheck").checke
 $("m3RestStatus").textContent="Ready. Tap Coach this set. The video is a short demonstration, not a full counted performance.";
 video(ex);persist();}
 function startPace(){if(!active||!current)return;stopTimers();const ex=current.ex;const vid=$("m3CoachVideo");vid.play().catch(()=>{msg("Video playback blocked. Tap play on the video; manual logging still works.")});$("m3StartSet").textContent="▶ Restart set";speak("start");msg("Marcus is guiding the pace. Only LOG the reps you actually complete.");
-const rate=ex.timed?1000:1000*Number($("m3PacePick").value);let first=true;
-interval=setInterval(()=>{if(first){first=false;if(!ex.timed)return;}
+const rate=ex.timed?1000:1000*Number($("m3PacePick").value);interval=setInterval(()=>{
 if(ex.timed){elapsed++;$("m3CoachRep").textContent=String(elapsed);if(elapsed>=ex.max){clearInterval(interval);interval=null;vid.pause();speak("done");msg("Target time elapsed. Enter your actual seconds and log the set.")}}
 else{if(coached>=ex.max){clearInterval(interval);interval=null;vid.pause();speak("done");msg("Target count reached. Enter reps you ACTUALLY performed (may differ).");return}coached++;$("m3CoachRep").textContent=String(coached);speak(coached);if(coached>=ex.max){clearInterval(interval);interval=null;vid.pause();msg("Target count reached. Enter actual reps, then log the set.")}}
 },rate);}
@@ -257,14 +260,14 @@ function logSet(){if(!active||!current)return;const raw=$("m3ActualReps").value;
 if(!Number.isInteger(reps)||reps<0||reps>300||!Number.isFinite(w)||w<0||w>999||(rpe!==null&&(rpe<1||rpe>10))){msg("Please enter valid actual reps/seconds, resistance and effort.");return}
 const q=current,entry={sessionId,date:new Date().toISOString(),day:sessionDate,workout:$("m3WorkoutPick").value,exercise:q.ex.name,exerciseId:q.ex.id,set:q.set,target:q.ex.timed?q.ex.max+" seconds":q.ex.min+"-"+q.ex.max+" reps",actual:reps,unit:q.ex.timed?"seconds":"reps",loadLb:w,rpe,mode:q.superset?"superset":"straight",bootUnloaded:$("m3BootCheck").checked,formControlled:$("m3FormCheck").checked,ownerApprovedSource:true};
 records.push(entry);history.push(entry);safeWrite(KEY,history);renderLogs();
-at++;stopTimers();if(!entry.bootUnloaded||!entry.formControlled){msg("Form or boot warning: end the session and reassess; do not continue without safety confirmation.");finish();return}
+at++;stopTimers();if(!entry.bootUnloaded||!entry.formControlled){finish();msg("SAFETY STOP: A form or boot-support concern was logged. Do not continue this workout. Seek appropriate medical advice if you have symptoms.");return}
 if(at>=queue.length){finish();return}
 const shouldRest=q.rest>0;if(shouldRest){current=queue[at];$("m3StepTitle").textContent="Rest before "+current.ex.name+" · Set "+current.set;$("m3FormCue").textContent="Take "+q.rest+" seconds to recover. Maintain safe supported position.";$("m3CoachRep").textContent="-";$("m3ProgressBar").style.width=Math.floor(100*at/queue.length)+"%";video(null);beginRest(q.rest);persist()}else{step();if(q.superset)speak("superset");msg("No rest within the superset: switch only if both exercises are reachable without standing or loading the injured leg.");}}
 function renderLogs(){const recs=history.slice(-24).reverse();const sum=history.length,unique=new Set(history.map(e=>e.sessionId)).size;let body="<div class='m3metric'>"+sum+" logged sets across "+unique+" sessions on this browser</div>";if(recs.length)body+="<table><thead><tr><th>When</th><th>Exercise / set</th><th>Actual</th><th>Load</th></tr></thead><tbody>"+recs.map(x=>"<tr><td>"+new Date(x.date).toLocaleDateString()+"</td><td>"+x.exercise+" #"+x.set+"</td><td>"+x.actual+" "+x.unit+"</td><td>"+x.loadLb+" lb</td></tr>").join("")+"</tbody></table>";$("m3LogList").innerHTML=body;}
 function download(name,data,type){const blob=new Blob([data],{type});const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000)}
 function csv(){const cols=["sessionId","date","workout","exercise","set","target","actual","unit","loadLb","rpe","mode","bootUnloaded","formControlled"];const escape=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';return [cols.join(","),...history.map(e=>cols.map(k=>escape(e[k])).join(","))].join("\r\n")}
 $("m3WorkoutPick").addEventListener("change",pairRender);
-$("m3Begin").onclick=()=>{if(!$("m3Consent").checked){msg("Training is locked until you confirm treating-clinician clearance and a safe fully unloaded left boot. This checkbox does not verify clearance.");return}stopTimers();queue=build();at=0;records=[];active=true;sessionId="m3-"+Date.now();sessionDate=new Date().toISOString().slice(0,10);
+$("m3Begin").onclick=()=>{if(!$("m3Consent").checked){msg("Training is locked until you confirm treating-clinician clearance and a safe fully unloaded left boot. This checkbox does not verify clearance.");return}stopTimers();queue=build();at=0;records=[];active=true;sessionId="m3-"+Date.now();sessionDate=new Date().toLocaleDateString("en-CA");
 $("m3ActivePanel").hidden=false;$("m3Begin").disabled=true;$("m3End").disabled=false;$("m3WorkoutPick").disabled=true;root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=true);step();speak("safe");msg("Session started: "+queue.length+" sets planned. Complete and LOG each actual set. Supersets are optional. The instructor cannot observe or judge your form.");};
 $("m3StartSet").onclick=startPace;
 $("m3PauseSet").onclick=()=>{stopTimers();msg("Coached pace paused. The logged actual reps are unchanged.");};
@@ -274,7 +277,23 @@ $("m3SubRep").onclick=()=>{$("m3ActualReps").value=Math.max(0,Number($("m3Actual
 $("m3LogSet").onclick=logSet;$("m3End").onclick=finish;
 $("m3ExportCSV").onclick=()=>download("M3-FLEX-Actual-Sets.csv",csv(),"text/csv");
 $("m3ExportJSON").onclick=()=>download("M3-FLEX-Workout-Backup.json",JSON.stringify({schema:"m3-flex-log-v1",createdAt:new Date().toISOString(),records:history},null,2),"application/json");
-const saved=safeRead(RUNKEY,null);if(saved&&saved.active){msg("A previous session was interrupted. Its logged sets are saved on this device. Begin a new session or export the log; incomplete sets are not treated as complete.");}
-pairRender();renderLogs();
+const saved=safeRead(RUNKEY,null);pairRender();
+if(saved&&saved.active&&Array.isArray(saved.queue)&&saved.at<saved.queue.length){
+ $("m3Resume").hidden=false;
+ msg("You have an interrupted session on this device. Use Resume to restart the next UNFINISHED set; any unlogged reps are not counted.");
+ $("m3Resume").onclick=()=>{
+  if(!$("m3Consent").checked){msg("Confirm clinician clearance and a supported, unloaded left medical boot before resuming.");return;}
+  $("m3WorkoutPick").value=saved.part==="B"?"B":"A";pairRender();
+  queue=saved.queue.map(item=>{
+   const ex=P[saved.part].find(x=>x.id===item.id);
+   if(!ex)throw Error("Missing approved exercise in saved session");
+   return{ex,set:item.set,superset:!!item.superset,partner:item.partner||null,rest:item.rest||0};
+  });
+  at=saved.at;sessionId=saved.sessionId;sessionDate=saved.sessionDate;records=Array.isArray(saved.records)?saved.records:[];
+  active=true;$("m3ActivePanel").hidden=false;$("m3Begin").disabled=true;$("m3End").disabled=false;$("m3WorkoutPick").disabled=true;
+  root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=true);$("m3Resume").hidden=true;step();msg("Resumed the next unfinished set. Saved actual sets remain logged; interrupted rep counts were NOT assumed complete.");speak("safe");
+ };
+}
+renderLogs();
 })();
 </script></body></html>
