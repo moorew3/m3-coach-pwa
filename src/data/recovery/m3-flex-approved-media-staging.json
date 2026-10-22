@@ -2,8 +2,8 @@
   "schema": "m3-flex-v2-approved-media-staging-v1",
   "date": "2026-10-22",
   "sourceBranch": "production/m3-flex-two-part-masters-2026-10-19",
-  "purpose": "Owner-approved preview-only media inventory used in the original /v2 Exercise Demonstrations mode; originals preserved and coach-session identity registry not replaced",
-  "integrationState": "WIRED_TO_ORIGINAL_V2_DEMONSTRATIONS_ONLY__STAGING_NOT_DEPLOYED",
+  "purpose": "Protected owner-approved MP4 source inventory for original /v2 Demonstrations and owner-test Recovery Workout A/B only; originals preserved, no canonical coach identity replacement and release blocked",
+  "integrationState": "WIRED_TO_ORIGINAL_V2_DEMOS_AND_DRAFT_AB_OWNER_TESTS__STAGING_NOT_DEPLOYED",
   "allReleaseBlocked": true,
   "voice": {
     "ownerRequired": "Marcus – Warm & Friendly English",
