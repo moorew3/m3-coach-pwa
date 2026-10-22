@@ -2,10 +2,85 @@
 :root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;color:#eaf2f7;background:#0a1722}*{box-sizing:border-box}body{margin:0}main{max-width:730px;margin:auto;padding:18px 14px 65px}.brand{font-weight:900;letter-spacing:.05em;font-size:21px}.brand em{font-style:normal;color:#c5ef8b}h1{font-size:clamp(27px,6vw,38px);margin:8px 0}h2{font-size:19px}p{line-height:1.5}.lead{color:#c4d7e0}.hint{font-size:14px;color:#f2d19c}.tabs{display:flex;gap:8px;margin:16px 0}.tab{flex:1;border:2px solid #546a77;background:#182e40;color:white;padding:15px 6px;border-radius:12px;font-weight:900;font-size:17px}.tab[aria-selected=true]{background:#c7ef8f;color:#10241b;border-color:#c7ef8f}.clip{border:1px solid #405c70;border-radius:16px;padding:12px;margin:12px 0;background:#15293b}.cliphead{display:flex;gap:10px;align-items:center}.num{display:grid;place-items:center;background:#c7ef8f;color:#12291a;font-weight:900;border-radius:50%;width:35px;height:35px;flex:0 0 35px}h3{font-size:17px;margin:0}small{color:#d1e4d1}video{display:block;width:100%;max-width:375px;max-height:52vh;aspect-ratio:9/16;object-fit:contain;background:#03080d;border-radius:10px;margin:12px auto 5px}audio{width:100%;margin-top:6px}.tip,.smalllink{font-size:12px;color:#c6dce8}.smalllink{display:block;margin-top:8px}button{cursor:pointer}details{background:#122638;border:1px solid #4a6479;border-radius:14px;padding:14px;margin-top:17px}summary{cursor:pointer;font-weight:800}article.reference{border-bottom:1px solid #365264;padding:12px 0}article.reference p{font-size:13px;color:#e8ca9c}article.reference video{max-width:260px}a{color:#b8e3fe}.disclaimer{font-size:13px;color:#ead1a3;background:#342a20;border-radius:10px;padding:10px}.foot{font-size:12px;color:#91b0c3;margin-top:24px}#panelB{display:none}.sequence{margin:16px 0 20px;background:#102934;border:1px solid #7ca781;border-radius:16px;padding:13px}.sequence h2{margin:5px 0 8px}.sequence .seqbuttons{display:grid;grid-template-columns:2fr 1fr 1fr;gap:7px;margin:11px 0}.seqbuttons button{min-height:46px;border:1px solid #6d8a98;color:#edf9fc;background:#2c485d;border-radius:9px;font-size:13px;font-weight:800;padding:9px}.seqbuttons button:first-child{background:#c6ed90;color:#183020}.seqbuttons button:disabled{opacity:.45}#reviewSeqVideo{width:100%;max-width:325px;max-height:47vh;display:block;margin:10px auto;aspect-ratio:9/16;background:#000;border-radius:11px}#seqStatus{color:#cfe0eb;font-size:13px;line-height:1.5;min-height:38px}#seqName{font-size:16px;margin:9px 0 3px}#seqProgress{font-weight:800;font-size:12px;color:#cbe996}
 .goalbox{background:#172a35;border:1px solid #77936e;border-radius:13px;padding:14px;margin:16px 0}.goalhead,.eyebrow{font-size:11px;letter-spacing:.08em;color:#c6ed90;font-weight:900}.goalgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}.goalgrid span{font-size:12px;display:flex;flex-direction:column;padding:10px;background:#233947;border-radius:8px}.goalgrid b{font-size:19px;color:#fff}.tiny{font-size:13px;color:#cedde4;line-height:1.48}.strategy{border-left:3px solid #c6ed90;padding:8px 12px;margin:16px 0;background:#182b38}.strategy p{font-size:13px;margin:7px 0}.fullplan{background:#142536;border:1px solid #547084;border-radius:14px;padding:12px;margin:14px 0}.planhead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.planhead h3{font-size:20px;margin:5px 0 3px}.duration{font-weight:900;font-size:14px;color:#c6ed90;white-space:nowrap;padding:6px;background:#243e45;border-radius:9px}.phase{font-size:11px;letter-spacing:.06em;color:#bbe0fc;margin:16px 0 6px}.plannedrow{display:flex;align-items:center;gap:10px;justify-content:space-between;border-bottom:1px solid #355064;padding:10px 1px}.plannedtext{min-width:0;display:flex;flex-direction:column;gap:3px}.plannedtext strong{font-size:14px}.plannedtext span{font-size:13px;color:#c6d7e2}.plannedtext small{color:#91aebf;font-size:11px}.state{min-width:87px;max-width:104px;text-align:center;font-size:11px;font-weight:750;padding:6px 5px;border-radius:8px;line-height:1.25}.state.ready{background:#254331;color:#d3f5b4}.state.ref{background:#283b59;color:#d1e3fe}.state.blocked{background:#4b3624;color:#f4d6a6}.footnav{font-size:12px;margin:10px 0 14px;color:#c6d4dc}.footnav a{color:#b9e7a8}.clipoverview{background:#203649;border-radius:9px;padding:11px;margin:12px 0 8px;font-size:12px;color:#e5f0f6}
 
+
+/* M3 FLEX coached sets - owner preview, scoped styles */
+#m3TrainerV1{margin:16px 0;background:#112b37;border:2px solid #93cba2;border-radius:17px;padding:14px;color:#ecf6fa}
+#m3TrainerV1 .m3section{padding:11px 0;border-bottom:1px solid #3c6574}
+#m3TrainerV1 .m3row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#m3TrainerV1 label{display:block;font-size:13px;color:#e6f3f9;margin-bottom:4px}
+#m3TrainerV1 input[type=number],#m3TrainerV1 select{background:#223d4f;color:#fff;border:1px solid #76939c;border-radius:10px;padding:11px;min-height:44px;min-width:80px;font-size:17px}
+#m3TrainerV1 button{min-height:48px;border-radius:12px;border:1px solid #7898a8;background:#30576b;color:white;font-size:15px;font-weight:800;padding:9px 13px;flex:1}
+#m3TrainerV1 button.main{background:#c6ef94;color:#133020;border-color:#c6ef94}
+#m3TrainerV1 button:disabled{opacity:.35}
+#m3TrainerV1 .m3metric{padding:10px 13px;background:#203d48;border-radius:10px;margin:7px 0}
+#m3TrainerV1 .m3big{font-size:27px;font-weight:900;color:#c9efa1}
+#m3TrainerV1 .m3hint{font-size:12px;line-height:1.5;color:#c5dfeb}
+#m3TrainerV1 .m3warn{background:#302e21;padding:9px;border-radius:9px;color:#ffe3ab;font-size:12px}
+#m3TrainerV1 video{width:100%;max-width:290px;max-height:42vh;margin:auto;border-radius:12px;object-fit:contain;background:#000}
+#m3TrainerV1 .m3choice{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:9px 0}
+#m3TrainerV1 .m3choice input{width:20px;height:20px;flex:none}
+#m3TrainerV1 #m3LogList{max-height:220px;overflow:auto;font-size:12px}
+#m3TrainerV1 table{width:100%;border-collapse:collapse;font-size:12px}
+#m3TrainerV1 td,#m3TrainerV1 th{border-bottom:1px solid #4d6674;padding:7px 4px;text-align:left}
+#m3TrainerV1 .m3bar{height:9px;background:#314f5b;border-radius:9px;overflow:hidden}
+#m3TrainerV1 .m3bar span{display:block;height:100%;background:#bae58f;width:0%}
 </style></head><body><main><div class="brand">M3 <em>FLEX</em></div><h1>Your full strength workouts</h1><p class="lead">Keep training toward your original muscle and strength goals while protecting your injured leg. Select <strong>Workout A</strong> or <strong>Workout B</strong> to see the entire planned workout and watch its already approved Flex demonstrations.</p><div class="disclaimer"><strong>Full training plan + video previews—not a finished follow-along session yet.</strong> We still need the missing exercises, timing and medical clearance before releasing a full follow-along session. Protect your injured left foot and do not use videos as medical clearance.</div>
 <section class="goalbox"><div class="goalhead">YOUR ORIGINAL TRAINING GOALS</div><div class="goalgrid"><span>Bench <b>285 lb</b></span><span>Squat <b>386 lb</b></span><span>Body weight <b>180 lb</b></span><span>Body fat <b>~12%</b></span></div><p class="tiny">While your left leg heals, our job is to preserve/build upper-body muscle, pressing and pulling strength, and suitable conditioning. Your squat goal stays on the long-term roadmap, but we will not load your injured leg until your surgeon or treating clinician clears it.</p></section>
 <section class="strategy"><strong>Strength training, not just rehabilitation.</strong><p>Planned routine: alternate Workout A and Workout B on 2–3 nonconsecutive days weekly <em>only when your clinician clears seated resistance training</em>. Rest at least 48 hours between demanding upper-body sessions. Keep the cast supported and never brace or push through it.</p><p class="tiny">Progression after clearance: start lighter than your pre-injury loads, leave 2–3 controlled reps in reserve, and record weights and reps. When the high end of the target range becomes consistently easy with perfect seated control, increase by the smallest safe increment. No leg drive or standing exercise.</p></section><div class="tabs" role="tablist"><button id="tabA" class="tab" aria-selected="true" aria-controls="panelA">Workout A</button><button id="tabB" class="tab" aria-selected="false" aria-controls="panelB">Workout B</button></div>
 <section id="approvedMediaOnly" class="sequence" style="border-color:#8dbfaf;background:#152e32" aria-label="Owner approved clips only"><div class="eyebrow">APPROVED CLIPS ONLY</div><h2>Workout A &amp; B — approved preview</h2><p class="tiny">This owner-facing preview now plays <strong>all seven locked original approved clips</strong>, your <strong>latest approved R3 seated lateral raises</strong>, and your three <strong>previously owner-approved triceps, band pull-apart and shadow-boxing clips</strong>. The latter are earlier versions; final avatar/medical-boot corrections are still pending. Unapproved test renders and rejected clips remain off-page. Missing exercises remain listed in the training plans as <strong>not yet recorded or approved</strong>; they are not playable here. This short sequence is not a complete timed workout or medical clearance to exercise.</p></section>
+
+<section id="m3TrainerV1" aria-labelledby="m3CoachTitle">
+<div class="eyebrow">NEW OWNER TEST · SETS / REPS / SUPERSETS / LOGGING</div>
+<h2 id="m3CoachTitle">M3 FLEX — Guided Workout Coach</h2>
+<p class="m3hint">This is an interactive preview, not a medically cleared full-length workout. Marcus counts planned reps; <strong>you enter actual reps completed</strong>. Approved short video demonstrations repeat during the set, but they are not yet separately rendered full 8–15-rep instructor performances. There is no camera or automatic form verification.</p>
+<div class="m3section">
+<div class="m3row">
+<label for="m3WorkoutPick">Workout
+<select id="m3WorkoutPick"><option value="A">A — Shoulders, arms &amp; conditioning</option><option value="B">B — Chest, back &amp; arms</option></select></label>
+<label for="m3PacePick">Pacing
+<select id="m3PacePick"><option value="3.5">3.5 sec / rep</option><option value="4.0">4 sec / rep</option><option value="5.0">5 sec / rep</option></select></label>
+</div>
+<div id="m3PairBox"></div>
+<label class="m3choice"><input type="checkbox" id="m3Consent">My treating clinician has cleared my seated upper-body training. I can keep the LEFT medical boot elevated and entirely unloaded, including during transitions. This is my declaration, not app verification.</label>
+<label class="m3choice"><input type="checkbox" id="m3VoiceOn" checked>Marcus — Warm &amp; Friendly English: spoken rep counts and transitions (never another voice)</label>
+<div class="m3row"><button class="main" id="m3Begin" type="button">Start Guided Session</button><button id="m3End" type="button" disabled>End / Save Session</button></div>
+</div>
+<div id="m3ActivePanel" hidden>
+<div class="m3section">
+<div id="m3StepTitle" class="m3big">Ready</div>
+<div id="m3StepDetail" class="m3hint"></div>
+<div class="m3bar"><span id="m3ProgressBar"></span></div>
+<div id="m3FormCue" class="m3metric" role="status"></div>
+<video id="m3CoachVideo" playsinline preload="none" muted loop controls aria-label="Owner-approved seated exercise demonstration"></video>
+<p class="m3hint">The video loops a brief APPROVED demonstration. Rep numbers are paced instruction, not proof that the instructor video physically performed each full rep or that your body completed it.</p>
+<div class="m3metric"><span id="m3CoachRep" class="m3big">0</span> <span id="m3RepUnit">coach-counted / planned</span><div id="m3RestStatus" class="m3hint"></div></div>
+<div class="m3row"><button class="main" id="m3StartSet">▶ Coach this set</button><button id="m3PauseSet">Pause pacing</button><button id="m3SkipRest">Skip rest</button></div>
+</div>
+<div class="m3section">
+<h3>Log your actual work</h3>
+<p class="m3hint">The coach's count is NOT automatically treated as your completed reps.</p>
+<div class="m3row">
+<label>Reps / seconds actually completed<input id="m3ActualReps" type="number" min="0" max="300" placeholder="Enter actual"></label>
+<label>Weight / resistance (lb)<input id="m3Load" type="number" min="0" max="999" step="0.5" placeholder="0"></label>
+<label>Effort (RPE 1–10)<input id="m3Rpe" type="number" min="1" max="10" placeholder="7"></label>
+</div>
+<div class="m3row"><button id="m3AddRep" type="button">+ 1 actual rep</button><button id="m3SubRep" type="button">− 1 rep</button></div>
+<label class="m3choice"><input type="checkbox" id="m3BootCheck" checked>Injured left leg stayed supported and unloaded</label>
+<label class="m3choice"><input type="checkbox" id="m3FormCheck" checked>Controlled movement / safe posture throughout</label>
+<button class="main" id="m3LogSet" type="button">Log Set &amp; Continue</button>
+<p class="m3warn">If your injured foot was loaded, you lost control, or you have new pain, stop rather than pushing through the session. The app cannot see you or certify your form.</p>
+</div>
+</div>
+<div id="m3TrainerMessage" class="m3hint" role="status" aria-live="polite"></div>
+<div class="m3section">
+<h3>My training log</h3>
+<p class="m3hint">Stored on this device/browser when local storage is available; not automatically synced to your other devices or clinical records.</p>
+<div class="m3row"><button id="m3ExportCSV" type="button">Export sets (CSV)</button><button id="m3ExportJSON" type="button">Backup (JSON)</button></div>
+<div id="m3LogList"></div>
+</div>
+<audio id="m3MarcusAudio" preload="none" src="https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=5a77ab00-8e7f-4ed7-8a59-46a04c8d975a.wav"></audio>
+</section>
+
 <section id="approvedSequence" class="sequence" aria-labelledby="seqTitle">
 <div class="eyebrow">WATCH THE EXISTING APPROVED FOOTAGE</div>
 <h2 id="seqTitle">One-tap video sequence preview</h2>
@@ -107,5 +182,99 @@ function change(p){stopReel();resumePending=false;part=p;at=0;movie.hidden=true;
 document.getElementById("tabA").addEventListener("click",()=>change("A"));
 document.getElementById("tabB").addEventListener("click",()=>change("B"));
 change("A");
+})();
+
+(function(){
+"use strict";
+const root=document.getElementById("m3TrainerV1");if(!root)return;
+const $=id=>document.getElementById(id),KEY="m3flex_owner_training_log_v1",RUNKEY="m3flex_owner_training_active_v1";
+const VIDEO={
+breath:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",
+cool:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",
+lateral:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+hammer:"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-bc16-778b-a773-db16e57aade7.mp4",
+shrugs:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",
+triceps:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/6e2a8059-fd18-4281-a404-cd0a180c2a4d.mp4",
+boxing:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/5e6112e1-73d3-4013-b533-1f011a1051cd.mp4",
+chest:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",
+front:"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",
+curls:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",
+band:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/229b8d95-bb09-4734-914f-b73c2932a6ce.mp4"
+};
+const P={
+A:[
+{id:"lateral",name:"Seated dumbbell lateral raises",sets:3,min:10,max:12,rest:60,cue:"Raise arms sideways to shoulder height, never above. Keep the left boot elevated; no leg drive."},
+{id:"hammer",name:"Seated hammer curls",sets:3,min:8,max:12,rest:75,cue:"Elbows by your sides. Lower deliberately. Do not rock the seat or brace with the feet."},
+{id:"shrugs",name:"Seated dumbbell shrugs",sets:3,min:12,max:15,rest:60,cue:"Lift shoulders gently up, then lower under control. No neck jerking."},
+{id:"triceps",name:"Seated cable triceps pressdowns",sets:3,min:10,max:12,rest:75,cue:"Elbows near ribs. Only forearms extend. Keep safe cable anchor; never use the injured leg."},
+{id:"boxing",name:"Seated arm-only boxing",sets:4,min:45,max:45,rest:45,timed:true,cue:"Punch and return to guard with controlled arms. No pivots, twisting or foot pressure."}
+],
+B:[
+{id:"chest",name:"Seated INNSTAR chest press",sets:4,min:8,max:12,rest:90,cue:"INNSTAR band belongs behind your back/chair, never around your neck. No leg drive."},
+{id:"front",name:"Seated front raises",sets:3,min:10,max:12,rest:60,cue:"Raise light dumbbells to shoulder level, keep the back supported and boot raised."},
+{id:"curls",name:"Seated alternating curls",sets:3,min:8,max:12,rest:75,cue:"One arm at a time. Control the lowering movement; no shifting the hips or legs."},
+{id:"band",name:"Seated band pull-aparts",sets:2,min:12,max:15,rest:60,cue:"Band at chest height, gently separate hands. Keep shoulders down and boot elevated."},
+{id:"triceps",name:"Seated cable triceps pressdowns",sets:3,min:10,max:12,rest:75,cue:"Elbows by ribs, stretch cable only from a safe seated setup without foot bracing."}
+]};
+const PAIRS={A:[["hammer","triceps"]],B:[["front","curls"],["band","triceps"]]};
+const AUDIO=$("m3MarcusAudio"),numbers=[
+[7.765,8.149],[8.320,8.661],[8.789,9.152],[9.259,9.643],[9.771,10.197],
+[10.325,10.731],[10.880,11.221],[11.349,11.712],[11.861,12.288],[12.459,12.715],
+[12.800,13.227],[13.355,13.803],[13.952,14.443],[14.507,15.019],[15.061,15.659]];
+const SFX={intro:[0.299,2.816],safe:[3.20,6.421],start:[6.656,7.531],done:[15.829,16.555],rest:[16.768,17.237],next:[17.451,18.221],superset:[18.436,19.396],stop:[25.946,27.875]};
+let clipStop=null,queue=[],at=0,active=false,current=null,coached=0,elapsed=0,interval=null,restInterval=null,restRemaining=0,records=[],sessionId="",sessionDate="",safemode=true;
+const safeRead=(k,fallback)=>{try{const v=JSON.parse(localStorage.getItem(k));return v===null?fallback:v}catch(e){return fallback}};
+const safeWrite=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){$("m3TrainerMessage").textContent="Device storage is unavailable. Export the log regularly; this session may not survive reloading.";return false}};
+let history=safeRead(KEY,[]);if(!Array.isArray(history))history=[];
+function msg(s){$("m3TrainerMessage").textContent=s}
+function speak(k){if(!$("m3VoiceOn").checked)return;const clip=typeof k==="number"?numbers[k-1]:SFX[k];if(!clip||!AUDIO)return;try{AUDIO.pause();AUDIO.currentTime=clip[0];clipStop=clip[1];const p=AUDIO.play();if(p&&p.catch)p.catch(()=>{msg("Audio blocked on this phone. Tap Start Coach again to unlock Marcus. No other voice will substitute.")})}catch(e){msg("Marcus audio is unavailable in this browser. Written rep cues still work.")}}
+AUDIO.addEventListener("timeupdate",()=>{if(clipStop!=null&&AUDIO.currentTime>=clipStop){AUDIO.pause();clipStop=null}});
+function pairRender(){let w=$("m3WorkoutPick").value;const arr=PAIRS[w];$("m3PairBox").innerHTML='<b class="m3hint">Optional supersets (OFF by default)</b>'+arr.map((p,i)=>'<label class="m3choice"><input type="checkbox" class="m3Pair" data-pair="'+i+'"> Pair '+P[w].find(x=>x.id===p[0]).name+' + '+P[w].find(x=>x.id===p[1]).name+' (alternate sets, then rest)</label>').join('')+'<p class="m3warn">Supersets require clearance and equipment within safe seated reach. Never stand, move the injured foot, or rush transitions. Turning them on changes the instructor sequence and rest timing; it does NOT add sets.</p>'}
+function build(){const part=$("m3WorkoutPick").value,items=P[part];const selected=[...root.querySelectorAll(".m3Pair:checked")].map(x=>PAIRS[part][+x.dataset.pair]);const used=new Set(),q=[];for(const ex of items){if(used.has(ex.id))continue;const group=selected.find(p=>p.includes(ex.id));if(group){const a=items.find(x=>x.id===group[0]),b=items.find(x=>x.id===group[1]);if(!a||!b||a.sets!==b.sets)throw Error("Invalid superset pair");used.add(a.id);used.add(b.id);for(let k=1;k<=a.sets;k++){q.push({ex:a,set:k,partner:b.name,superset:true,rest:0});q.push({ex:b,set:k,partner:a.name,superset:true,rest:Math.max(a.rest,b.rest)});}}else{used.add(ex.id);for(let k=1;k<=ex.sets;k++)q.push({ex,set:k,partner:null,superset:false,rest:ex.rest});}}
+return q;}
+function persist(){safeWrite(RUNKEY,{active,queue:queue.map(q=>({id:q.ex.id,set:q.set,superset:q.superset,partner:q.partner,rest:q.rest})),at,sessionId,sessionDate,records,part:$("m3WorkoutPick").value})}
+function stopTimers(){if(interval)clearInterval(interval);if(restInterval)clearInterval(restInterval);interval=restInterval=null;$("m3CoachVideo").pause();}
+function finish(){stopTimers();active=false;$("m3ActivePanel").hidden=true;$("m3End").disabled=true;$("m3Begin").disabled=false;$("m3WorkoutPick").disabled=false;root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=false);persist();msg("Session saved: "+records.length+" logged sets. Export CSV/JSON for a backup. This was a coached preview, not a completed full video master.");renderLogs();}
+function video(ex){const el=$("m3CoachVideo");el.pause();el.removeAttribute("src");el.load();if(!ex)return;el.src=VIDEO[ex.id];el.muted=true;el.loop=true;el.load()}
+function step(){stopTimers();if(!active)return;if(at>=queue.length){finish();return}current=queue[at];coached=0;elapsed=0;restRemaining=0;const q=current,ex=q.ex;
+$("m3CoachRep").textContent="0";$("m3RepUnit").textContent=ex.timed?"coach-timed seconds":"coach-paced reps (not automatically logged)";
+$("m3StepTitle").textContent=ex.name+" • Set "+q.set+"/"+ex.sets;
+$("m3StepDetail").textContent=(q.superset?"SUPERSET with "+q.partner+". ":"")+"Target "+(ex.timed?ex.max+" seconds":ex.min+"–"+ex.max+" controlled reps")+". Rest "+q.rest+" sec after this set.";
+$("m3FormCue").textContent=ex.cue;
+$("m3ProgressBar").style.width=Math.floor(100*at/queue.length)+"%";
+$("m3StartSet").disabled=false;$("m3StartSet").textContent="▶ Coach this set";$("m3PauseSet").disabled=false;$("m3SkipRest").disabled=true;
+$("m3ActualReps").value="";$("m3BootCheck").checked=true;$("m3FormCheck").checked=true;
+$("m3RestStatus").textContent="Ready. Tap Coach this set. The video is a short demonstration, not a full counted performance.";
+video(ex);persist();}
+function startPace(){if(!active||!current)return;stopTimers();const ex=current.ex;const vid=$("m3CoachVideo");vid.play().catch(()=>{msg("Video playback blocked. Tap play on the video; manual logging still works.")});$("m3StartSet").textContent="▶ Restart set";speak("start");msg("Marcus is guiding the pace. Only LOG the reps you actually complete.");
+const rate=ex.timed?1000:1000*Number($("m3PacePick").value);let first=true;
+interval=setInterval(()=>{if(first){first=false;if(!ex.timed)return;}
+if(ex.timed){elapsed++;$("m3CoachRep").textContent=String(elapsed);if(elapsed>=ex.max){clearInterval(interval);interval=null;vid.pause();speak("done");msg("Target time elapsed. Enter your actual seconds and log the set.")}}
+else{if(coached>=ex.max){clearInterval(interval);interval=null;vid.pause();speak("done");msg("Target count reached. Enter reps you ACTUALLY performed (may differ).");return}coached++;$("m3CoachRep").textContent=String(coached);speak(coached);if(coached>=ex.max){clearInterval(interval);interval=null;vid.pause();msg("Target count reached. Enter actual reps, then log the set.")}}
+},rate);}
+function beginRest(seconds){stopTimers();restRemaining=seconds;$("m3StartSet").disabled=true;$("m3PauseSet").disabled=true;$("m3SkipRest").disabled=false;$("m3RestStatus").textContent="Rest "+restRemaining+" seconds. Boot remains elevated. Superset transitions only from stable seated setup.";speak("rest");restInterval=setInterval(()=>{restRemaining--;if(restRemaining<=0){clearInterval(restInterval);restInterval=null;speak("next");step();return}$("m3RestStatus").textContent="Rest "+restRemaining+" seconds. Do not stand or load injured foot.";},1000)}
+function logSet(){if(!active||!current)return;const raw=$("m3ActualReps").value;if(raw===""||!Number.isFinite(Number(raw))){msg("Enter your actual reps or seconds (including 0). The coach count is not your actual log.");return}const reps=Number(raw),w=Number($("m3Load").value||0),rpe=$("m3Rpe").value===""?null:Number($("m3Rpe").value);
+if(!Number.isInteger(reps)||reps<0||reps>300||!Number.isFinite(w)||w<0||w>999||(rpe!==null&&(rpe<1||rpe>10))){msg("Please enter valid actual reps/seconds, resistance and effort.");return}
+const q=current,entry={sessionId,date:new Date().toISOString(),day:sessionDate,workout:$("m3WorkoutPick").value,exercise:q.ex.name,exerciseId:q.ex.id,set:q.set,target:q.ex.timed?q.ex.max+" seconds":q.ex.min+"-"+q.ex.max+" reps",actual:reps,unit:q.ex.timed?"seconds":"reps",loadLb:w,rpe,mode:q.superset?"superset":"straight",bootUnloaded:$("m3BootCheck").checked,formControlled:$("m3FormCheck").checked,ownerApprovedSource:true};
+records.push(entry);history.push(entry);safeWrite(KEY,history);renderLogs();
+at++;stopTimers();if(!entry.bootUnloaded||!entry.formControlled){msg("Form or boot warning: end the session and reassess; do not continue without safety confirmation.");finish();return}
+if(at>=queue.length){finish();return}
+const shouldRest=q.rest>0;if(shouldRest){current=queue[at];$("m3StepTitle").textContent="Rest before "+current.ex.name+" · Set "+current.set;$("m3FormCue").textContent="Take "+q.rest+" seconds to recover. Maintain safe supported position.";$("m3CoachRep").textContent="-";$("m3ProgressBar").style.width=Math.floor(100*at/queue.length)+"%";video(null);beginRest(q.rest);persist()}else{step();if(q.superset)speak("superset");msg("No rest within the superset: switch only if both exercises are reachable without standing or loading the injured leg.");}}
+function renderLogs(){const recs=history.slice(-24).reverse();const sum=history.length,unique=new Set(history.map(e=>e.sessionId)).size;let body="<div class='m3metric'>"+sum+" logged sets across "+unique+" sessions on this browser</div>";if(recs.length)body+="<table><thead><tr><th>When</th><th>Exercise / set</th><th>Actual</th><th>Load</th></tr></thead><tbody>"+recs.map(x=>"<tr><td>"+new Date(x.date).toLocaleDateString()+"</td><td>"+x.exercise+" #"+x.set+"</td><td>"+x.actual+" "+x.unit+"</td><td>"+x.loadLb+" lb</td></tr>").join("")+"</tbody></table>";$("m3LogList").innerHTML=body;}
+function download(name,data,type){const blob=new Blob([data],{type});const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000)}
+function csv(){const cols=["sessionId","date","workout","exercise","set","target","actual","unit","loadLb","rpe","mode","bootUnloaded","formControlled"];const escape=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';return [cols.join(","),...history.map(e=>cols.map(k=>escape(e[k])).join(","))].join("\r\n")}
+$("m3WorkoutPick").addEventListener("change",pairRender);
+$("m3Begin").onclick=()=>{if(!$("m3Consent").checked){msg("Training is locked until you confirm treating-clinician clearance and a safe fully unloaded left boot. This checkbox does not verify clearance.");return}stopTimers();queue=build();at=0;records=[];active=true;sessionId="m3-"+Date.now();sessionDate=new Date().toISOString().slice(0,10);
+$("m3ActivePanel").hidden=false;$("m3Begin").disabled=true;$("m3End").disabled=false;$("m3WorkoutPick").disabled=true;root.querySelectorAll(".m3Pair").forEach(e=>e.disabled=true);step();speak("safe");msg("Session started: "+queue.length+" sets planned. Complete and LOG each actual set. Supersets are optional. The instructor cannot observe or judge your form.");};
+$("m3StartSet").onclick=startPace;
+$("m3PauseSet").onclick=()=>{stopTimers();msg("Coached pace paused. The logged actual reps are unchanged.");};
+$("m3SkipRest").onclick=()=>{if(!restInterval)return;clearInterval(restInterval);restInterval=null;restRemaining=0;step();msg("Rest skipped by you. Use the next set only if you have recovered and are safely positioned.");};
+$("m3AddRep").onclick=()=>{$("m3ActualReps").value=Math.min(300,Number($("m3ActualReps").value||0)+1)};
+$("m3SubRep").onclick=()=>{$("m3ActualReps").value=Math.max(0,Number($("m3ActualReps").value||0)-1)};
+$("m3LogSet").onclick=logSet;$("m3End").onclick=finish;
+$("m3ExportCSV").onclick=()=>download("M3-FLEX-Actual-Sets.csv",csv(),"text/csv");
+$("m3ExportJSON").onclick=()=>download("M3-FLEX-Workout-Backup.json",JSON.stringify({schema:"m3-flex-log-v1",createdAt:new Date().toISOString(),records:history},null,2),"application/json");
+const saved=safeRead(RUNKEY,null);if(saved&&saved.active){msg("A previous session was interrupted. Its logged sets are saved on this device. Begin a new session or export the log; incomplete sets are not treated as complete.");}
+pairRender();renderLogs();
 })();
 </script></body></html>
