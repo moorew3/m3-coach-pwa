@@ -1255,7 +1255,7 @@ function V2Coach() {
                   <p className="font-black">Owner-test recovery workout · NOT MEDICALLY CLEARED</p>
                   <p className="mt-1">Proposed seated-only program. Keep the anatomical LEFT boot elevated and unloaded.
                     These short approved video previews are not complete follow-along set performances.</p>
-                  <button type="button" disabled={session.phase !== "ready"}
+                  <button type="button" disabled={session.phase !== "ready" || session.completedSetIds.length > 0}
                     aria-pressed={Boolean(session.workout.useSupersets)}
                     onClick={() => dispatch({ type: "reset", workout: {
                       ...session.workout, useSupersets: !session.workout.useSupersets,
