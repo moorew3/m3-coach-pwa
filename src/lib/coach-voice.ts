@@ -17,6 +17,8 @@
  *   4. NONE       Reported loudly — never a silent failure.
  */
 
+import { getCoachWorkVideoSnapshot } from "@/lib/coach-work-video";
+
 export type VoiceStatus = "unsupported" | "locked" | "ready" | "blocked";
 
 /** Emotional delivery phase — drives the TTS style prompt. */
@@ -1071,7 +1073,16 @@ export interface SpeakOptions {
   onEnd?: () => void;
 }
 
+let workVideoRequiredForSpeech = false;
+
+/** In the V2 Coach Session only, no work-set audio without moving video. */
+export function requirePlayingWorkVideoForSpeech(required: boolean) {
+  workVideoRequiredForSpeech = required;
+  if (required && getCoachWorkVideoSnapshot().status !== "playing") stopSpeech();
+}
+
 export function speak(text: string, enabled: boolean, opts: SpeakOptions = {}) {
+  if (workVideoRequiredForSpeech && getCoachWorkVideoSnapshot().status !== "playing") return;
   const tone = opts.tone ?? "assertive";
   const interrupt = opts.interrupt ?? true;
   if (!enabled || !text) return;
@@ -1110,7 +1121,9 @@ export function speak(text: string, enabled: boolean, opts: SpeakOptions = {}) {
   if (ctx && ctx.state === "suspended") void ctx.resume().catch(() => {});
 
   const order: VoicePath[] =
-    diag.path === "browser"
+    workVideoRequiredForSpeech
+      ? ["file", "stream"] // Never substitute the browser\u0027s unapproved voice in guided work sets.
+      : diag.path === "browser"
       ? ["browser", "file", "stream"]
       : diag.path === "stream"
         ? ["stream", "file", "browser"]
