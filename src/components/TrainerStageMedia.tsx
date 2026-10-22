@@ -16,6 +16,7 @@ export function TrainerStageMedia({
   playing,
   rate,
   label,
+  syncSessionVoice = false,
 }: {
   decision: TrainerMediaDecision;
   preloadMotion?: { url: string; poster?: string };
@@ -23,6 +24,7 @@ export function TrainerStageMedia({
   playing: boolean;
   rate: number;
   label: string;
+  syncSessionVoice?: boolean;
 }) {
   const motion = decision.mode === "motion" ? decision.motion : undefined;
   const ambient = motion ? undefined : decision.ambient;
@@ -61,6 +63,7 @@ export function TrainerStageMedia({
           mirrored={mirrored}
           playing={playing}
           rate={rate}
+          syncSessionVoice={syncSessionVoice}
           preloadUrl={preloadMotion?.url}
           className="h-full w-full"
           label={label}
