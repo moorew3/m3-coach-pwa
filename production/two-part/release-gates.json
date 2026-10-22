@@ -1,7 +1,23 @@
 {
   "schema": "m3-flex-two-part-release-gates-v1",
   "status": "DRAFT_NOT_MEDICALLY_CLEARED_NO_CUSTOMER_DEPLOYMENT",
-  "approvedNewAssets": {},
+  "approvedNewAssets": {
+    "A:07:C12-LATERAL-R3": {
+      "ownerApproved": true,
+      "ownerApprovalDate": "2026-10-21",
+      "originalHeyGenId": "4ab71f91e4ac4e45a9865c903b5304b2",
+      "originalSourceUrl": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16100-d6cd-7c36-9a68-80fb30e2246a.mp4",
+      "silentPreviewUrl": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f62073e1-c95a-4521-9ea9-b42ad4590522.mp4",
+      "silentPreviewSha256": "bdee80cc6a983b8c81be93628089aeea56333cadcd90e69187cd37a3f6640a6c",
+      "sourceDurationSec": 5.167,
+      "previewOnly": true,
+      "clinicianClearanceVerified": false,
+      "ownerReviewedFinalChapterTiming": false,
+      "MarcusAudioSynced": false,
+      "appReleaseEligible": false,
+      "originalLockedSevenUntouched": true
+    }
+  },
   "chapterTiming": {
     "A:00:NEW_INTRO": {
       "durationSec": null,
@@ -41,7 +57,10 @@
     "A:07:NEW_LATERAL-RAISE": {
       "durationSec": null,
       "timingBasis": "",
-      "ownerReviewed": false
+      "ownerReviewed": false,
+      "sourceMediaId": "C12-LATERAL-R3",
+      "sourceMediaDurationSec": 5.167,
+      "ownerSourceApproved": true
     },
     "A:08:NEW_REST-CUE": {
       "durationSec": null,
