@@ -5,6 +5,7 @@ import {
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
+import { RecoveryExerciseDemonstrations } from "@/components/RecoveryExerciseDemonstrations";
 import { coachMotionFor, COACH_REFERENCE } from "@/data/coach-identity";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
@@ -745,7 +746,7 @@ function V2Coach() {
   const stagePreloadUrl = isFighterMovement
     ? session.phase === "rest" ? media?.url : guardClip?.url
     : preload?.url;
-  const videoPlaying = experience === "demonstrations" || session.running && (session.phase === "work" ||
+  const videoPlaying = session.running && (session.phase === "work" ||
     (session.phase === "rest" && isFighterMovement && Boolean(guardClip)));
   // Full 6s technique demonstrations play seven complete guard-to-guard
   // cycles within the 40s bell. The full-length combo is nearly 1:1.
@@ -844,6 +845,7 @@ function V2Coach() {
               : "Browse approved movement videos without advancing or logging your workout. Your coach session is saved."}
           </p>
         </section>
+        {experience === "demonstrations" && <RecoveryExerciseDemonstrations />}
         <div
           role="status"
           aria-live="polite"
@@ -877,7 +879,9 @@ function V2Coach() {
           </p>
         )}
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className={experience === "demonstrations"
+          ? "hidden"
+          : "mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]"}>
           <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
             <LiveFlexProvider
               presence={flexPresence}
