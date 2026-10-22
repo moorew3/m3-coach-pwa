@@ -1,4 +1,5 @@
 import type { V2Mode, V2Session, V2Workout } from "./types";
+import { buildV2SetSequence } from "./set-sequence";
 
 export type V2Action =
   | { type: "restore"; session: V2Session }
@@ -44,31 +45,22 @@ function beginWork(session: V2Session): V2Session {
 }
 
 function advance(session: V2Session): V2Session {
-  const exercise = session.workout.exercises[session.exerciseIndex];
-  if (!exercise) return { ...session, phase: "complete", running: false };
-
-  if (session.setIndex + 1 < exercise.sets) {
-    return {
-      ...session,
-      phase: exercise.restSeconds ? "rest" : "work",
-      setIndex: session.setIndex + 1,
-      phaseSecondsLeft: exercise.restSeconds || exercise.seconds || null,
-      running: true,
-    };
+  const planned = buildV2SetSequence(session.workout);
+  const current = planned.findIndex(
+    step => step.exerciseIndex === session.exerciseIndex && step.setIndex === session.setIndex,
+  );
+  const next = current >= 0 ? planned[current + 1] : undefined;
+  if (!next) {
+    return { ...session, phase: "complete", running: false, phaseSecondsLeft: null };
   }
-
-  if (session.exerciseIndex + 1 < session.workout.exercises.length) {
-    return {
-      ...session,
-      phase: "transition",
-      exerciseIndex: session.exerciseIndex + 1,
-      setIndex: 0,
-      phaseSecondsLeft: 8,
-      running: true,
-    };
+  const duration = planned[current].restAfterSeconds;
+  const queued = { ...session, exerciseIndex: next.exerciseIndex, setIndex: next.setIndex };
+  // During rest, show which exercise/set comes NEXT; log only after its own
+  // work step is actually completed. A->B superset has duration=0.
+  if (duration > 0) {
+    return { ...queued, phase: "rest", phaseSecondsLeft: duration, running: true };
   }
-
-  return { ...session, phase: "complete", running: false, phaseSecondsLeft: null };
+  return beginWork(queued);
 }
 
 function updateSetEntry(
@@ -157,6 +149,8 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
       return next;
     }
     case "complete-set": {
+      // A rest/transition tap or voice command must never credit the NEXT set.
+      if (session.phase !== "work") return session;
       const completedSetIds = session.completedSetIds.includes(setKey(session))
         ? session.completedSetIds
         : [...session.completedSetIds, setKey(session)];
