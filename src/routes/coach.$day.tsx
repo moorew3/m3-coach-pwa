@@ -1780,6 +1780,7 @@ function CoachSession() {
             preloadMotion={preloadClip}
             mirrored={mirrored}
             syncSessionVoice={step.kind === "work" && trainerMedia.mode === "motion"}
+            cycleKey={step.id}
             playing={running}
             rate={previewing ? 1 : coachRate(tempo)}
             label={
