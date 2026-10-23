@@ -10,6 +10,7 @@ export type V2Action =
   | { type: "set-form"; exerciseId: string; setIndex: number; cleanForm: boolean | null }
   | { type: "start" }
   | { type: "pause" }
+  | { type: "adjust-rest"; seconds: number }
   | { type: "tick" }
   | { type: "complete-set" }
   | { type: "next" }
@@ -23,6 +24,7 @@ export function createV2Session(workout: V2Workout): V2Session {
     exerciseIndex: 0,
     setIndex: 0,
     elapsedSeconds: 0,
+    phaseElapsedSeconds: 0,
     phaseSecondsLeft: null,
     running: false,
     completedSetIds: [],
@@ -40,6 +42,7 @@ function beginWork(session: V2Session): V2Session {
     ...session,
     phase: "work",
     running: true,
+    phaseElapsedSeconds: 0,
     phaseSecondsLeft: exercise?.seconds ?? null,
   };
 }
@@ -51,14 +54,14 @@ function advance(session: V2Session): V2Session {
   );
   const next = current >= 0 ? planned[current + 1] : undefined;
   if (!next) {
-    return { ...session, phase: "complete", running: false, phaseSecondsLeft: null };
+    return { ...session, phase: "complete", running: false, phaseElapsedSeconds: 0, phaseSecondsLeft: null };
   }
   const duration = planned[current].restAfterSeconds;
   const queued = { ...session, exerciseIndex: next.exerciseIndex, setIndex: next.setIndex };
   // During rest, show which exercise/set comes NEXT; log only after its own
   // work step is actually completed. A->B superset has duration=0.
   if (duration > 0) {
-    return { ...queued, phase: "rest", phaseSecondsLeft: duration, running: true };
+    return { ...queued, phase: "rest", phaseElapsedSeconds: 0, phaseSecondsLeft: duration, running: true };
   }
   return beginWork(queued);
 }
@@ -103,6 +106,7 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
             exerciseIndex: action.exerciseIndex,
             setIndex: 0,
             phase: "work",
+            phaseElapsedSeconds: 0,
             phaseSecondsLeft: selected?.seconds ?? null,
             running: true,
           }
@@ -111,6 +115,7 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
             exerciseIndex: action.exerciseIndex,
             setIndex: 0,
             phase: "ready",
+            phaseElapsedSeconds: 0,
             phaseSecondsLeft: null,
             running: false,
           };
@@ -133,9 +138,16 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
       return session.phase === "ready" ? beginWork(session) : { ...session, running: true };
     case "pause":
       return { ...session, running: false };
+    case "adjust-rest": {
+      if (session.phase !== "rest" || session.phaseSecondsLeft === null) return session;
+      const offset = Number.isFinite(action.seconds) ? Math.trunc(action.seconds) : 0;
+      const remaining = Math.min(600, Math.max(5, session.phaseSecondsLeft + offset));
+      return { ...session, phaseSecondsLeft: remaining };
+    }
     case "tick": {
       if (!session.running) return session;
-      const next = { ...session, elapsedSeconds: session.elapsedSeconds + 1 };
+      const next = { ...session, elapsedSeconds: session.elapsedSeconds + 1,
+        phaseElapsedSeconds: (session.phaseElapsedSeconds ?? 0) + 1 };
       if (session.phaseSecondsLeft === null) return next;
       const left = Math.max(0, session.phaseSecondsLeft - 1);
       if (left > 0) return { ...next, phaseSecondsLeft: left };
