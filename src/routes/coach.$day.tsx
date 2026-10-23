@@ -1288,7 +1288,9 @@ function CoachSession() {
           ? "Ready"
           : String(lead)
       : step.speechPaced
-        ? (step.reps ?? "")
+        ? !paidCoachSpeechEnabled() && left !== null
+          ? mmss(left)
+          : (step.reps ?? "")
         : left !== null
           ? mmss(left)
           : (step.reps ?? "");
@@ -1924,6 +1926,16 @@ function CoachSession() {
           {step.kind === "work" && !pattern && chip("Log by hand or voice")}
           {step.kind === "work" && pattern && !camActive && chip("Camera off")}
         </div>
+
+        {step.speechPaced && !paidCoachSpeechEnabled() && (
+          <p
+            data-testid="coach-readable-script"
+            role="status"
+            className="mb-2 max-h-32 overflow-y-auto rounded-xl border border-white/15 bg-black/80 px-3 py-2 text-sm leading-snug text-white/90"
+          >
+            {step.say}
+          </p>
+        )}
 
         {coachReply && (
           <div
