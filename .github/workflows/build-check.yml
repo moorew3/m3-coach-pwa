@@ -28,3 +28,12 @@ jobs:
 
       - name: Type check
         run: npx tsc --noEmit
+
+      - name: Workout sequence, media integrity, and safety regression checks
+        run: node --experimental-strip-types --test scripts/*.test.mjs
+
+      - name: Verify vendor-neutral Node runtime bundle
+        run: |
+          test -s .output/server/index.mjs
+          test -f .output/public/recovery-coach/index.html
+          test -f .output/public/recovery-coach/programs/index.html
