@@ -21,6 +21,20 @@ These are **confirmed examples**, not an exhaustive list of every exercise or fo
 - No existing programmed exercises, superset/rest prescriptions, approved Flex/Marcus videos or owner media assets have been silently substituted. No new exercises were auto-approved.
 - This safety warning does not transform the old schedule. It is not a medical clearance, exercise validator or a complete substitute seated plan.
 
+## Available approved-media seated session (protected staging)
+
+An **approved-media recovery circuit** is now linked prominently from the app home page to the existing same-origin `/recovery-coach/` player, **before** the legacy weekly workout button.
+
+- It reuses only the existing owner-approved scenes: C09 breathing; C01-R3 shrugs; C02 hammer curls; C03 front raises; C04-R2 alternating curls; C08-PRESS-R3 INNSTAR seated chest press; C10 cooldown breathing. Original media/Marcus sources are unchanged and protected by ID regression assertions.
+- The viewer can opt into **one or two timed demonstration sets** per approved loaded movement with a selected **15/20/30/45-second rest** after a set and between different movements. The same approved scene repeats; no footage or workouts are invented.
+- A counted demonstration set does **not** establish completed user reps, movement quality, approved training load, or clinical clearance. The player deliberately does not write fictitious reps into the legacy workout log.
+- The player still requires three explicit clinician/restriction/effort acknowledgments before any timed active session. Previews are possible without beginning exercise. It keeps cast-support warnings.
+- The exact phrase **"Controlled arm reaches"** appears for the text-only preparation step. The existing Marcus general shoulder mobility MP3 is left untouched and is **not claimed** to be an approved video demonstrating those reaches.
+- Re-selecting an exercise resets the demonstration round counter. The one/two-set choice locks after the timed session starts and unlocks on Reset.
+- Workout A and Workout B remain **incomplete development previews** because several necessary moving demonstrations and equipment-specific technique validations are missing. This approved-media circuit is not a replacement for finished Workout A/B.
+
+The browser QA checks the standalone player using **simulated media playback and accelerated time** for the scheduler; therefore neither the video host nor actual Bluetooth/earbud audio is certified by that test. Physical Android and full Marcus movement/lip synchronization remain open QA gates. This is not medical prescription advice.
+
 ## Required release implementation
 
 1. Create a dedicated **seated-only plan** with explicit chair/back support, protected foot positioning, equipment and adjustable ranges, pre/post-workout and set/rest timing. Confirm biomechanics and limitations with the user's treating clinician when necessary.
