@@ -236,6 +236,7 @@ try {
     assert.equal(recoveryResponse?.status(), 200);
     await recoveryPage.locator('[data-stage="1"]').click();
     await recoveryPage.locator("#setRounds").selectOption("2");
+    assert.match((await recoveryPage.locator("#position").textContent())?.trim() ?? "", /Set 1 of 2/, "Selecting 2 rounds must update the visible stage before workout");
     await recoveryPage.locator("#workDuration").selectOption("20");
     await recoveryPage.locator("#restDuration").selectOption("15");
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
