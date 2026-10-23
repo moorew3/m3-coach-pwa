@@ -482,6 +482,7 @@ function V2Coach() {
           return;
         case "pause":
           stopCoachReply();
+          pauseMarcusWorkCue();
           stopMarcusCue();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
@@ -501,19 +502,21 @@ function V2Coach() {
               setIndex: session.setIndex, reps: observed.reps,
             });
           }
+          stopMarcusWorkCue();
           dispatch({ type: "complete-set" });
           setLiveCue("Set complete. Keep moving with the coach.");
           return;
         }
         case "next":
         case "skip":
-          // Explicit next/skip remains available, but ordinary set completion
-          // should use the hands-free "done" command.
+          // Deliberate skip is NOT a completed set. Preserve an honest log.
           if (session.phase !== "work") {
             setLiveCue("You are already between sets. The workout will continue automatically.");
             return;
           }
-          dispatch({ type: "complete-set" });
+          stopMarcusWorkCue();
+          dispatch({ type: "next" });
+          setLiveCue("Set skipped without workout credit. Continue with the next prescribed set.");
           return;
         case "previous":
           dispatch({
@@ -558,7 +561,7 @@ function V2Coach() {
           const next = session.workout.exercises[session.exerciseIndex + 1];
           const line = next ? `Next is ${next.name}.` : "That is the final movement.";
           setLiveCue(line);
-          if (voiceOn) {
+          if (voiceOn && !isRecoveryPreviewWorkout(session.workout.id)) {
             if (session.workout.id === "weekly-fri" && next) {
               stopDetailedExerciseSpeech();
               void playFridayPremiumCue(next.motionKey).then((started) => {
@@ -576,6 +579,7 @@ function V2Coach() {
         }
         case "muteCoach":
           stopCoachReply();
+          stopMarcusWorkCue();
           setVoiceOn(false);
           stopMarcusCue();
           stopDetailedExerciseSpeech();
@@ -589,6 +593,7 @@ function V2Coach() {
           return;
         case "end":
           stopCoachReply();
+          stopMarcusWorkCue();
           stopMarcusCue();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
@@ -606,6 +611,7 @@ function V2Coach() {
       // A deliberate conversation turn takes priority over canned coaching.
       // Stop current Flex audio so he listens instead of talking over the athlete.
       stopMarcusCue();
+      pauseMarcusWorkCue();
       stopMarcusTrainer();
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
