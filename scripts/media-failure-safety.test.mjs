@@ -60,5 +60,6 @@ test("audio diagnostics play only approved recorded Marcus while premium speech 
 test("wake-screen video failure retry stays above full-screen entrance tap layer", () => {
   const wake = readFileSync(new URL("CoachWake.tsx", root), "utf8");
   assert.equal((wake.match(/fallbackAtTop/g) ?? []).length, 2);
-  assert.match(coachMotion, /fallbackAtTop \? "top-4 z-\[70\]" : "bottom-5"/);
+  assert.match(wake, /pointer-events-none absolute inset-0 z-20/);
+  assert.match(coachMotion, /fallbackAtTop \? "top-4 z-\[70\] pointer-events-auto" : "bottom-5"/);
 });
