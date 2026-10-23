@@ -39,6 +39,17 @@ Both `/api/public/coach-speech` and `/api/public/coach-talk` now share `src/lib/
 - Do not enable just because the tests pass: the counter is **in-memory, per Node process**, resets on restart and is NOT a durable cross-instance hard budget. Put an account-level hard spending cap (if provided by the API vendor) and a shared persistent request quota in place. These must be verified for the deployed service; do not promise a hard stop that the API provider does not guarantee.
 - Before enabling, verify an allowed signed-in account works, a disallowed account is blocked, missing JWT is rejected, provider outage is safe, and app recovery/approved media work with paid AI disabled.
 
+## No-cost deterministic coaching (staging)
+
+- The existing full workout route now answers a defined set of live session questions from its own state via `src/lib/local-coach-answer.ts`. These include exercise name, prescribed reps, actual set number, next script step, displayed rest time, entered load and recorded movement cues.
+- A short safety response takes priority if pain, chest pain, breathing difficulty or cast loading is mentioned. The helper does not invent body measurements or clinician clearance.
+- Camera form answers are refused when the camera is off or its confidence is below 0.70. Stronger readings quote an existing camera cue as an estimate, NOT a verified physical assessment.
+- Session Controls contains a low-clutter text input, and answers appear as a dismissible on-screen caption. Browser speech recognition, when permitted and actually supported, uses the same local-answer path. **Browser speech recognition may itself depend on platform services and is not claimed to operate offline.**
+- The local answer helper is deterministic, not a generative conversational model. Open-ended questions cannot always be answered; the app explicitly says when optional online AI is unavailable.
+- By default `VITE_FLEX_PAID_AI_ENABLED=false` (browser build) and `FLEX_PAID_AI_ENABLED=false` (server); local factual questions are answered without sending audio/text to a paid AI provider. Both flags and all server allowlists must be deliberately configured before enabling external conversation or generating speech.
+- This development pass DOES NOT make freshly composed local answers audible in Marcus's voice while optional paid speech is off. Owner-approved recorded clips remain the permitted spoken media; no robotic device-voice substitution has been added.
+- QA requirements include real device input/caption usability, microphone permission checks, session persistence, pre-existing voice playback and no paid network usage with flags disabled.
+
 ## Database, rollback and live-traffic gate
 
 - Preserve current Supabase security policy and existing sync data. No schemas or data have been migrated.
