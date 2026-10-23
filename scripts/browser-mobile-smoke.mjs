@@ -212,6 +212,70 @@ try {
     await pairingContext.close();
   }
 
+  // The standalone seated recovery sequence is the ONLY currently active
+  // owner-approved Flex+Marcus circuit. Exercise time measures demonstration
+  // duration, not completed reps. Media play is mocked in this timing check;
+  // original remote media URLs are separately checked for integrity.
+  const recoveryContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await recoveryContext.addInitScript(() => {
+    // We test scheduler/state rather than claim these are real device audio
+    // output or downloaded videos. Media may be hosted externally.
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const recoveryPage = await recoveryContext.newPage();
+  recoveryPage.setDefaultTimeout(12000);
+  try {
+    await recoveryPage.clock.install();
+    const recoveryResponse = await recoveryPage.goto(base + "/recovery-coach/", {
+      waitUntil: "domcontentloaded",
+    });
+    assert.equal(recoveryResponse?.status(), 200);
+    await recoveryPage.locator('[data-stage="1"]').click();
+    await recoveryPage.locator("#setRounds").selectOption("2");
+    await recoveryPage.locator("#workDuration").selectOption("20");
+    await recoveryPage.locator("#restDuration").selectOption("15");
+    assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
+    // A full timed session cannot run without explicit safety acknowledgment.
+    await recoveryPage.locator("#startPause").click();
+    assert.match(await recoveryPage.locator("#note").innerText(), /clearance/i);
+    assert.equal(await recoveryPage.locator("#runState").innerText(), "Ready");
+    for (const box of await recoveryPage.locator("#clearance .check").all()) {
+      await box.check();
+    }
+    await recoveryPage.locator("#startPause").click();
+    assert.equal(await recoveryPage.locator("#setRounds").isDisabled(), true);
+    assert.equal(await recoveryPage.locator("#runState").innerText(), "Workout in progress");
+    assert.match(await recoveryPage.locator("#position").innerText(), /Set 1 of 2/);
+    await recoveryPage.clock.fastForward(21_000);
+    assert.equal(await recoveryPage.locator("#runState").innerText(), "Rest interval");
+    assert.match(await recoveryPage.locator("#position").innerText(), /Set 2 of 2/);
+    assert.match(await recoveryPage.locator("#progressText").innerText(), /^0 of 10 steps completed/);
+    await recoveryPage.locator("#startPause").click();
+    assert.equal(await recoveryPage.locator("#runState").innerText(), "Paused");
+    const paused = await recoveryPage.locator("#clock").innerText();
+    await recoveryPage.clock.fastForward(5_000);
+    assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Rest must freeze on Pause");
+    await recoveryPage.locator("#startPause").click();
+    await recoveryPage.clock.fastForward(16_000);
+    assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
+    assert.match(await recoveryPage.locator("#position").innerText(), /Set 2 of 2/);
+    assert.equal(await recoveryPage.locator("#runState").innerText(), "Workout in progress");
+    await recoveryPage.clock.fastForward(21_000);
+    assert.equal(await recoveryPage.locator("#runState").innerText(), "Rest interval");
+    assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
+    assert.match(await recoveryPage.locator("#progressText").innerText(), /^1 of 10 steps completed/);
+    await recoveryPage.clock.fastForward(16_000);
+    assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated hammer curls");
+    assert.match(await recoveryPage.locator("#position").innerText(), /Set 1 of 2/);
+    step("Approved seated circuit: clearance, 2 rounds, 15s rest, Pause, no fabricated rep tally");
+  } finally {
+    await recoveryContext.close();
+  }
+
   // Simulate a failure from the approved external MP4 host in another clean
   // browser context. The app must remain usable and never display a random
   // replacement clip as though it were the actual coach.
