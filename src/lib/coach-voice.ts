@@ -17,6 +17,8 @@
  *   4. NONE       Reported loudly — never a silent failure.
  */
 
+import { paidAiHeaders } from "@/lib/paid-ai-client";
+
 export type VoiceStatus = "unsupported" | "locked" | "ready" | "blocked";
 
 /** Emotional delivery phase — drives the TTS style prompt. */
@@ -532,7 +534,7 @@ function unlockElements() {
 async function fetchSpeech(text: string, tone: CoachTone, format: "mp3" | "pcm") {
   const res = await fetch("/api/public/coach-speech", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await paidAiHeaders(),
     body: JSON.stringify({ text, tone, format }),
   });
   note({ lastHttpStatus: res.status, lastFormat: format, lastLine: text.slice(0, 80) });
