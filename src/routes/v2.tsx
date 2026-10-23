@@ -22,6 +22,7 @@ import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-w
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
 import { recoveredMotionFor } from "@/v2/recovered-motion-media";
 import { RECOVERY_PREVIEW_WORKOUTS, isRecoveryPreviewWorkout, recoveryPreviewMediaFor } from "@/v2/recovery-training-workouts";
+import { recoveryRepGuide } from "@/v2/recovery-rep-guide";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import {
   unlockRecordedCoachAudio,
@@ -96,6 +97,7 @@ function V2Coach() {
   const [experience, setExperience] = useState<"coach-session" | "demonstrations">("coach-session");
   const coachCheckpoint = useRef<V2Session | null>(null);
   const [stagePlayback, setStagePlayback] = useState({ key: "", playing: false });
+  const [recoveryPaceSeconds, setRecoveryPaceSeconds] = useState(4);
   const stageStepKey = [session.workout.id, session.exerciseIndex, session.setIndex, session.phase].join(":");
   const actualWorkVideoPlaying = stagePlayback.playing && stagePlayback.key === stageStepKey;
   const needsVisibleWorkVideo =
@@ -268,6 +270,11 @@ function V2Coach() {
   }, []);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
+  // Display-only pacing: session clock advances only with moving video.
+  // This NEVER auto-logs a rep, detects form, or marks a set as completed.
+  const repGuide = session.phase === "work"
+    ? recoveryRepGuide(exercise, session.phaseElapsedSeconds ?? 0, recoveryPaceSeconds)
+    : null;
   const viewpoint = viewpointFor(session.mode);
   // Preview workouts have separate owner-approved footage; never borrow the old identity registry.
   const media = isRecoveryPreviewWorkout(session.workout.id) ? undefined : approvedCoachMedia(exercise);
@@ -1028,6 +1035,60 @@ function V2Coach() {
               </div>
             </div>
 
+            {experience === "coach-session" && repGuide && (
+              <div data-testid="v2-recovery-rep-guide"
+                className="absolute inset-x-3 bottom-[126px] z-[8] rounded-2xl border border-cyan-300/50 bg-black/90 p-3 text-white shadow-xl">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-cyan-200">Visual pace guide · not actual reps</p>
+                    <p className="text-2xl font-black tabular-nums">
+                      Cue {repGuide.cueNumber}
+                      <span className="ml-2 text-sm font-semibold text-white/65">Target {repGuide.minimum}–{repGuide.maximum}</span>
+                    </p>
+                    <p className="text-xs text-white/70">{repGuide.phase}</p>
+                  </div>
+                  <label className="text-[11px] font-bold text-white/75">
+                    Pace
+                    <select aria-label="Seconds per guided repetition"
+                      value={recoveryPaceSeconds}
+                      onChange={(event) => setRecoveryPaceSeconds(Number(event.target.value))}
+                      className="ml-2 min-h-11 rounded-lg border border-white/20 bg-[#243342] px-2 text-white">
+                      <option value={3}>3 sec</option>
+                      <option value={4}>4 sec</option>
+                      <option value={5}>5 sec</option>
+                      <option value={6}>6 sec</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15" role="presentation">
+                  <div className="h-full bg-cyan-300 transition-[width] duration-300"
+                    style={{ width: `${repGuide.progressPercent}%` }} />
+                </div>
+                <p className="mt-2 text-[10px] text-white/60">
+                  A timed cue, not camera-verified movement. Confirm your completed set when ready;
+                  never force repetitions to match the clock.
+                </p>
+              </div>
+            )}
+            {experience === "coach-session" && session.phase === "rest" && (
+              <div data-testid="v2-rest-controls"
+                className="absolute inset-x-3 bottom-[126px] z-[8] rounded-2xl border border-cyan-300/50 bg-black/90 p-3 text-white shadow-xl">
+                <p className="text-xs font-black uppercase tracking-wider text-cyan-200">Recovery timer</p>
+                <p className="mt-1 text-2xl font-black tabular-nums" aria-label="Rest seconds remaining">
+                  {session.phaseSecondsLeft ?? 0}s remaining
+                </p>
+                <p className="mt-1 text-xs text-white/70">Next: {exercise?.name} · Set {session.setIndex + 1}</p>
+                <div className="mt-3 flex gap-2">
+                  <button type="button" aria-label="Reduce rest by 15 seconds"
+                    onClick={() => dispatch({ type: "adjust-rest", seconds: -15 })}
+                    className="min-h-11 flex-1 rounded-xl bg-white/15 text-xs font-black">−15 seconds</button>
+                  <button type="button" aria-label="Add 15 seconds to rest"
+                    onClick={() => dispatch({ type: "adjust-rest", seconds: 15 })}
+                    className="min-h-11 flex-1 rounded-xl bg-cyan-300 text-xs font-black text-black">+15 seconds</button>
+                </div>
+                <p className="mt-2 text-[10px] text-white/55">Supersets rest only after the last paired exercise.</p>
+              </div>
+            )}
             {experience === "coach-session" && <V2TrainingCamera
               session={session}
               onCue={giveFeedback}
