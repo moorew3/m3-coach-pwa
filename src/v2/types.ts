@@ -59,6 +59,8 @@ export type V2Session = {
   exerciseIndex: number;
   setIndex: number;
   elapsedSeconds: number;
+  /** Genuine playing work/rest seconds for the current phase. Old saves may omit it. */
+  phaseElapsedSeconds?: number;
   phaseSecondsLeft: number | null;
   running: boolean;
   completedSetIds: string[];
