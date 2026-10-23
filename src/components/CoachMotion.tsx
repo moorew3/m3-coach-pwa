@@ -21,6 +21,7 @@ export function CoachMotion({
   className = "",
   label,
   onLayerChange,
+  fallbackAtTop = false,
 }: {
   url: string;
   vimeoId?: string;
@@ -33,6 +34,9 @@ export function CoachMotion({
   preloadUrl?: string;
   className?: string;
   label?: string;
+  /** On an entrance screen, float a failed-video retry ABOVE the wake tap
+   * overlay instead of hiding it under the bottom "Yes/No" controls. */
+  fallbackAtTop?: boolean;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
   onLayerChange?: (layer: 0 | 1, reason: "loop" | "transition") => void;
 }) {
@@ -166,7 +170,7 @@ export function CoachMotion({
           role="status"
           aria-live="polite"
           data-testid="coach-video-fallback"
-          className="absolute inset-x-3 bottom-5 rounded-xl border border-amber-300/60 bg-black/85 p-3 text-center text-sm text-white shadow-lg"
+          className={`absolute inset-x-3 ${fallbackAtTop ? "top-4 z-[70]" : "bottom-5"} rounded-xl border border-amber-300/60 bg-black/85 p-3 text-center text-sm text-white shadow-lg`}
         >
           <p className="font-semibold">Approved exercise video unavailable</p>
           <p className="mt-1 text-xs text-white/80">
