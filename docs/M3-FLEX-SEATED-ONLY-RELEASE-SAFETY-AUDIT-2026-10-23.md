@@ -35,6 +35,20 @@ An **approved-media recovery circuit** is now linked prominently from the app ho
 
 The browser QA checks the standalone player using **simulated media playback and accelerated time** for the scheduler; therefore neither the video host nor actual Bluetooth/earbud audio is certified by that test. Physical Android and full Marcus movement/lip synchronization remain open QA gates. This is not medical prescription advice.
 
+## Recovery Coach phone-lock, reload and same-device resume
+
+Protected staging now saves a minimal progress snapshot to **the current browser's local storage** under `m3-flex-recovery-progress-v1`. It holds only the current before/workout/after phase, approved scene index, set number, elapsed demonstration/rest seconds, current pending rest target, user-selected duration/rest preferences and a list of *timed demonstration stages*. It stores **no medical-clearance confirmations, user rep counts, camera content, audio recordings, API secrets or account identifiers**.
+
+- On phone/tab lock, the active workout timer and media are **paused automatically**. No timed set or rest keeps running invisibly.
+- On browser refresh, tab discard, or reopening the app in the **same browser profile**, the snapshot is validated (allowed scene, index, preset choices, bounded remaining time, 24-hour expiration) and loaded in **Paused** mode. This does not mean all browsers will retain local storage indefinitely.
+- The user must recheck all three medical/restriction/effort boxes and explicitly tap **Resume** before any motion/audio restarts. Playback cannot start automatically after refresh.
+- Rest recovery preserves the remaining time and reselects the existing approved **Marcus rest MP3**, rather than playing the previous exercise's audio by mistake.
+- Only the current set/rest time is stored: it is **not** a verified physical-rep count, synchronized cross-device record, or medical clearance.
+- Completed sessions and explicit Reset delete the snapshot. Corrupt, out-of-range or expired data is rejected, rather than inventing a workout position.
+- Automated Chrome QA simulates page reload during the 15-second second-set rest and checks Paused status, unchanged time, restored set index, zero selected clearance boxes, blocked Resume, re-confirmation, and approved Marcus-rest track restoration.
+
+The original approved media IDs are unchanged. This is an interruption/recovery feature, **not full PWA offline support, physical Galaxy Fold QA, or verification of speech-to-lip synchronization**.
+
 ## Required release implementation
 
 1. Create a dedicated **seated-only plan** with explicit chair/back support, protected foot positioning, equipment and adjustable ranges, pre/post-workout and set/rest timing. Confirm biomechanics and limitations with the user's treating clinician when necessary.
