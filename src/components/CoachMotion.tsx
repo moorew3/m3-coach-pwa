@@ -170,7 +170,7 @@ export function CoachMotion({
           role="status"
           aria-live="polite"
           data-testid="coach-video-fallback"
-          className={`absolute inset-x-3 ${fallbackAtTop ? "top-4 z-[70]" : "bottom-5"} rounded-xl border border-amber-300/60 bg-black/85 p-3 text-center text-sm text-white shadow-lg`}
+          className={`absolute inset-x-3 ${fallbackAtTop ? "top-4 z-[70] pointer-events-auto" : "bottom-5"} rounded-xl border border-amber-300/60 bg-black/85 p-3 text-center text-sm text-white shadow-lg`}
         >
           <p className="font-semibold">Approved exercise video unavailable</p>
           <p className="mt-1 text-xs text-white/80">
