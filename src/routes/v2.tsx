@@ -954,6 +954,7 @@ function V2Coach() {
                 key={stageMedia.url}
                 url={stageMedia.url}
                 playing={showCoach && videoPlaying}
+                syncSessionVoice={isRecoveryPreviewWorkout(session.workout.id)}
                 rate={videoRate}
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
