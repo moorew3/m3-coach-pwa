@@ -25,6 +25,7 @@ import {
   loadVoices,
   onCoachSpeech,
   prefetchSpeech,
+  paidCoachSpeechEnabled,
   speak,
   stopSpeech,
   unlockVoice,
@@ -225,7 +226,9 @@ export function useCoachEngine(
   const passive = !!opts.passive;
   const session = useCoachSession();
   const state = useApp();
-  const voiceOn = state.settings.coachVoice !== false;
+  // When paid speech is disabled, run captions + shortened read-along
+  // transitions instead of holding timers for a voice that cannot start.
+  const voiceOn = state.settings.coachVoice !== false && paidCoachSpeechEnabled();
   const [isLeader, setIsLeader] = useState(false);
   const voiceStatus = useVoiceStatus();
   const spoken = useRef("");
