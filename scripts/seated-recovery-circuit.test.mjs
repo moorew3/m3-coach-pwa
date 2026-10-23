@@ -75,3 +75,32 @@ test("locked motion and Marcus recording sources remain byte-for-byte referenced
     assert.ok(page.includes(sourceId), "Original approved asset changed or missing: " + sourceId);
   }
 });
+
+test("restore stores only tab-local playback progress and requires fresh clearance", () => {
+  assert.match(page, /const PROGRESS_KEY="m3-flex-recovery-progress-v1"/);
+  assert.match(page, /sessionStorage\.setItem\(PROGRESS_KEY/);
+  assert.match(page, /function restoreProgress\(\)/);
+  assert.match(page, /mode="paused";return true;/);
+  assert.match(page, /if\(!safetyOkay\(\)\)\{\s*tell\("Please re-confirm all three clinician clearance checks/);
+  assert.match(page, /No video or audio was auto-played/);
+  assert.match(page, /const restored=restoreProgress\(\)/);
+  const save = page.slice(page.indexOf("function persistProgress()"),page.indexOf("function restoreProgress()"));
+  assert.doesNotMatch(save, /document\.querySelectorAll\("\.check"\)|readiness:|clearance:|userReps:|recordedReps:/);
+  assert.match(save, /restNext, completed:\[\.\.\.completed\]/);
+  assert.match(save, /mode==="complete"/);
+  assert.match(save, /Math\.ceil\(secondsLeft\/1000\)\*1000/);
+});
+
+test("restore validates bounded phase, current movement, rest target and expiration", () => {
+  const restore=page.slice(page.indexOf("function restoreProgress()"),page.indexOf("const elapsedState="));
+  for (const expected of ["PROGRESS_VALID_MS","stages.length","stages[p].items.length","[1,2].includes(saved.targetRounds)","180_000","validSteps","saved.restDuration","saved.workDuration","next.phase!==1"]) {
+    assert.ok(restore.includes(expected),"Missing restore guard: "+expected);
+  }
+});
+
+test("browser reload test proves rest/round retention and safety check re-confirmation", () => {
+  assert.match(chrome, /await recoveryPage\.reload\(\{ waitUntil: "domcontentloaded" \}\)/);
+  assert.match(chrome, /#clearance \.check:checked/);
+  assert.match(chrome, /re-confirm all three clinician clearance/i);
+  assert.match(chrome, /Recovery phone reload restores pending rest/);
+});
