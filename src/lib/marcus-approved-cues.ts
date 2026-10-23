@@ -12,13 +12,17 @@ type Slice = { src: string; start: number; end: number };
 const firstSet: Record<string, [number, number]> = {
   lateralRaise: [0, 7.82],
   hammerCurl: [8.42, 13.5],
+  shrugs: [13.95, 18.47],
   tricepsPressdown: [19.3, 25.04],
   shadowboxPunches: [25.57, 31.88],
   shadowboxPunches60: [25.57, 31.88],
+  chestPress: [32.44, 40.2],
   frontRaise: [40.92, 46.49],
   dumbbellFrontRaise: [40.92, 46.49],
   alternatingCurl: [47.13, 51.7],
   bandPullApart: [51.73, 58.15],
+  breathing: [58.48, 62.7],
+  cooldownBreathing: [63.17, 68.76],
 };
 const laterSets: Record<number, [number, number]> = {
   1: [0.28, 5.35], // second set
