@@ -325,7 +325,7 @@ async function resume(){
   $("clearance").scrollIntoView({behavior:"smooth",block:"center"});return;
  }
  const wasWaiting=mode==="waiting";mode="running";
- if(restNext){mode="rest";beginTicker();audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
+ if(restNext){mode="rest";beginTicker();if(audio.src!==REST_MARCUS)playRestVoice();else audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
  if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
  beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
 }
