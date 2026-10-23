@@ -623,6 +623,7 @@ function CoachSession() {
   const cadenceLive = repSet && running && lead === null && Boolean(step?.exerciseId);
   const camRef = useRef({ reps: null as number | null, conf: 0 });
   camRef.current = { reps: camReps, conf: camConfidence };
+  const [cadencePrompt, setCadencePrompt] = useState(false);
   const coachRep = useRepCadence({
     key: `${step?.id ?? "none"}`,
     active: cadenceLive,
@@ -637,25 +638,21 @@ function CoachSession() {
           interrupt: false,
         });
     },
-    onDone: (total: number) => {
-      /* the coach has finished the set with the user. A number the user
-         typed, tapped or spoke is final; otherwise a confident camera count
-         is used, and failing that the prescribed target. */
-      const cam = camRef.current;
-      const used = manualReps.current
-        ? repsRef.current || String(total)
-        : cam.reps !== null && cam.conf >= 0.7
-          ? String(cam.reps)
-          : String(total);
-      confirmReps.current = used;
-      setReps(used);
-      speak(`Good set. Logging ${used}.`, voiceRef.current, {
+    onDone: (_total: number) => {
+      /* This clock counts the COACH'S demonstration reps, not the athlete's.
+         Reaching the scripted target never proves the athlete performed
+         those reps. Only an explicit log/Done-set action can save them. */
+      setCadencePrompt(true);
+      speak("Demo reps complete. Confirm your actual reps, then tap Done set.", voiceRef.current, {
         tone: "reassuring",
         interrupt: false,
       });
-      engine.finishWork();
     },
   });
+
+  useEffect(() => {
+    setCadencePrompt(false);
+  }, [step?.id]);
 
   /* pre-fill the log fields from memory whenever the coach opens a set:
      last-used weight (or today's progression call) + planned reps, so a
@@ -2110,6 +2107,17 @@ function CoachSession() {
               <Plus className="mr-1 inline size-4" /> 15s
             </button>
           </div>
+        )}
+
+        {cadencePrompt && step.kind === "work" && !step.seconds && (
+          <p
+            data-testid="confirm-actual-reps"
+            role="status"
+            className="mt-2 rounded-xl border border-accent/50 bg-black/65 px-3 py-2 text-xs font-semibold text-white"
+          >
+            The coach finished demonstrating the target reps. Verify your own rep count above,
+            then tap Done set. A coach animation is not proof of completed reps.
+          </p>
         )}
 
         {camConfirmReady && camReps !== null ? (
