@@ -35,7 +35,8 @@ test("camera claims require a real measurement and sufficient confidence", () =>
   assert.match(localCoachAnswer("Can you see me?", { ...current, camera: { active: true, confidence: 0.62, cue: "good" } }), /isn't reliable enough/);
   const strong = localCoachAnswer("Is my technique okay?", { ...current, camera: { active: true, confidence: 0.82, cue: "Slow the lowering phase" } });
   assert.match(strong, /Camera estimate: Slow the lowering phase/);
-  assert.doesNotMatch(strong, /perfect|verified physical assessment/i);
+  assert.match(strong, /not a verified physical assessment/i);
+  assert.doesNotMatch(strong, /your form is perfect|confirmed correct/i);
   assert.match(localCoachAnswer("How is my form?", { ...current, camera: { active: true, confidence: 0.94 } }), /can't confirm/);
 });
 
