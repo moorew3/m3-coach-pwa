@@ -102,8 +102,11 @@ export const Route = createFileRoute("/api/public/coach-talk")({
         const key = process.env["OPENAI_API_KEY"];
         if (!key) return aiError(503, "Live AI coaching provider is not configured.");
 
-        const upstream = await fetch("https://api.openai.com/v1/responses", {
+        let upstream: Response;
+        try {
+          upstream = await fetch("https://api.openai.com/v1/responses", {
           method: "POST",
+          signal: AbortSignal.timeout(20000),
           headers: {
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
@@ -118,7 +121,10 @@ export const Route = createFileRoute("/api/public/coach-talk")({
             input: `CONTEXT\n${JSON.stringify(parsed.context)}\n\nATHLETE\n${parsed.message}`,
             max_output_tokens: 160,
           }),
-        });
+          });
+        } catch {
+          return aiError(504, "Optional AI provider timed out or could not be reached.");
+        }
 
         if (!upstream.ok) {
           return aiError(upstream.status === 429 ? 429 : 502, "Optional coach conversation provider is unavailable.");
