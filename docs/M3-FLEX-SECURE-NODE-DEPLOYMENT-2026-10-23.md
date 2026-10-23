@@ -64,6 +64,20 @@ The owner-cost setting `VITE_FLEX_PAID_AI_ENABLED=false` now applies to the **en
 
 `VITE_FLEX_PAID_AI_ENABLED` is a **build-time** value. Changing it requires a fresh application build; enabling the server alone must never bypass the browser opt-in. Every deployment requires an independent live user validation of workouts, local captions, motion, voice output, and timer transitions.
 
+## Automated browser interaction QA (staging, NOT phone hardware certification)
+
+A GitHub Actions step now installs a **temporary CI-only** Chrome browser and Playwright controller after the compiled Node build. Neither dependency is shipped with the app or requires a new paid subscription. The automated 390-pixel mobile-width browser workflow tests:
+
+- A fresh session's opening gate, genuine tap and "Yes" acceptance
+- The in-workout coach entrance, user-selected "Yes", required readiness confirmation and visible no-charge read-along state
+- Actual React Pause/Resume controls updating the shared session's `data-running` state
+- A typed factual coach question answered on screen without any request to a paid AI endpoint
+- Browser uncaught errors throughout the main flow
+- Simulated network failure of an existing approved MP4, followed by its still-image fallback and **exact same URL** retry (the tool does not approve or replace media)
+- Previous compiled Node health and default-denied speech/conversation smoke tests remain intact
+
+If a browser test fails, GitHub Actions retains a screenshot for seven days. **This test emulates viewport and touch controls in desktop Chromium**. It cannot establish Galaxy Fold microphone permission, camera calibration, headset output, motion quality, video-host reachability, or genuine avatar lip synchronization. These remain live-device acceptance criteria. No production deployment is performed by the workflow.
+
 ## Media failure handling — approved motion only (staging)
 
 The existing full-screen coach video player now detects direct clip source failures, browser autoplay blocks and playback stalls exceeding 12 seconds. It **does not** replace the clip with an unrelated demonstration. It displays the original approved still, an explicit message, and a tap-to-retry button that reloads the exact same source. Vimeo embed errors similarly display the original poster/still and permit a same-ID retry.
