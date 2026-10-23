@@ -58,3 +58,20 @@ test("browser scheduler verifies actual second set and rest instead of source-on
   assert.match(chrome, /Set 2 of 2/);
   assert.match(chrome, /Seated hammer curls/);
 });
+
+test("locked motion and Marcus recording sources remain byte-for-byte referenced", () => {
+  const sourceIds = [
+    "9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4", // C01-R3
+    "01a14462-bc16-778b-a773-db16e57aade7.mp4", // C02
+    "01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4", // C03
+    "31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4", // C04-R2
+    "b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4", // C08-PRESS-R3
+    "f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4", // C09-PRE-BREATH-R2
+    "d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4", // C10-POST-BREATH-R1
+    "9226f649-9808-4275-b269-bcc93d3b0342.mp3", // approved C09 Marcus
+    "37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3", // approved C10 Marcus
+  ];
+  for (const sourceId of sourceIds) {
+    assert.ok(page.includes(sourceId), "Original approved asset changed or missing: " + sourceId);
+  }
+});
