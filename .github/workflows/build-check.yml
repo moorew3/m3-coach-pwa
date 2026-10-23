@@ -37,3 +37,6 @@ jobs:
           test -s .output/server/index.mjs
           test -f .output/public/recovery-coach/index.html
           test -f .output/public/recovery-coach/programs/index.html
+
+      - name: Smoke test actual compiled Node server without paid AI
+        run: node scripts/node-runtime-smoke.mjs
