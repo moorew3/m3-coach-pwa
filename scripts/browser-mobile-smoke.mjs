@@ -242,20 +242,20 @@ try {
     // A full timed session cannot run without explicit safety acknowledgment.
     await recoveryPage.locator("#startPause").click();
     assert.match(await recoveryPage.locator("#note").innerText(), /clearance/i);
-    assert.equal(await recoveryPage.locator("#runState").innerText(), "Ready");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Ready");
     for (const box of await recoveryPage.locator("#clearance .check").all()) {
       await box.check();
     }
     await recoveryPage.locator("#startPause").click();
     assert.equal(await recoveryPage.locator("#setRounds").isDisabled(), true);
-    assert.equal(await recoveryPage.locator("#runState").innerText(), "Workout in progress");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Workout in progress");
     assert.match(await recoveryPage.locator("#position").innerText(), /Set 1 of 2/);
     await recoveryPage.clock.fastForward(21_000);
-    assert.equal(await recoveryPage.locator("#runState").innerText(), "Rest interval");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
     assert.match(await recoveryPage.locator("#position").innerText(), /Set 2 of 2/);
     assert.match(await recoveryPage.locator("#progressText").innerText(), /^0 of 10 steps completed/);
     await recoveryPage.locator("#startPause").click();
-    assert.equal(await recoveryPage.locator("#runState").innerText(), "Paused");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
     const paused = await recoveryPage.locator("#clock").innerText();
     await recoveryPage.clock.fastForward(5_000);
     assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Rest must freeze on Pause");
@@ -263,9 +263,9 @@ try {
     await recoveryPage.clock.fastForward(16_000);
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
     assert.match(await recoveryPage.locator("#position").innerText(), /Set 2 of 2/);
-    assert.equal(await recoveryPage.locator("#runState").innerText(), "Workout in progress");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Workout in progress");
     await recoveryPage.clock.fastForward(21_000);
-    assert.equal(await recoveryPage.locator("#runState").innerText(), "Rest interval");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
     assert.match(await recoveryPage.locator("#progressText").innerText(), /^1 of 10 steps completed/);
     await recoveryPage.clock.fastForward(16_000);
