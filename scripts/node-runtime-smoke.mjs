@@ -69,6 +69,8 @@ try {
     await delay(400);
   }
   if (!started) throw new Error("Compiled Node server did not accept HTTP requests");
+  await assertPage("/", ["22-Day Arm Growth Tracker"]);
+  await assertPage("/coach/1", ["Coached Session"]);
   await assertPage("/recovery-coach/", [
     "M3 Flex Recovery Coach",
     "C09-PRE-BREATH-R2",
