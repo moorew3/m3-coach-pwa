@@ -73,7 +73,7 @@ A GitHub Actions step now installs a **temporary CI-only** Chrome browser and Pl
 - Actual React Pause/Resume controls updating the shared session's `data-running` state
 - A typed factual coach question answered on screen without any request to a paid AI endpoint
 - Browser uncaught errors throughout the main flow
-- Simulated network failure of an existing approved MP4, followed by its still-image fallback and **exact same URL** retry (the tool does not approve or replace media)
+- Simulated network failure of an existing approved MP4, followed by its still-image fallback and **exact same URL** retry (the tool does not approve or replace media). The entrance variant places the Retry control above the full-screen welcome tap and Yes/No overlay, so it can be clicked immediately without dismissing the introduction.
 - Previous compiled Node health and default-denied speech/conversation smoke tests remain intact
 
 If a browser test fails, GitHub Actions retains a screenshot for seven days. **This test emulates viewport and touch controls in desktop Chromium**. It cannot establish Galaxy Fold microphone permission, camera calibration, headset output, motion quality, video-host reachability, or genuine avatar lip synchronization. These remain live-device acceptance criteria. No production deployment is performed by the workflow.
