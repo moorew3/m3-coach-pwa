@@ -271,6 +271,7 @@ try {
     }
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    assert.match(await recoveryPage.locator("#coachVoice").getAttribute("src") ?? "", /006720cc-2f40-44bd-a44f-4c4937336f8e\.mp3/, "Rest restore must play existing Marcus rest MP3, not exercise audio");
     assert.equal((await recoveryPage.locator("#clock").textContent())?.trim(), beforeReload);
     step("Recovery phone reload restores pending rest/round paused, but requires fresh clinician clearance");
     await recoveryPage.locator("#startPause").click();
