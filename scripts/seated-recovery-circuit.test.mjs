@@ -104,3 +104,17 @@ test("browser reload test proves rest/round retention and safety check re-confir
   assert.match(chrome, /re-confirm all three clinician clearance/i);
   assert.match(chrome, /Recovery phone reload restores pending rest/);
 });
+
+test("rest after device restart uses approved rest Marcus recording, not stale exercise audio", () => {
+  assert.match(page, /if\(restNext\)\{mode="rest";beginTicker\(\);if\(audio\.src!==REST_MARCUS\)playRestVoice\(\)/);
+  assert.match(page, /const REST_MARCUS="https:\/\/d2ol7oe51mr4n9\.cloudfront\.net\/.*\/006720cc-2f40-44bd-a44f-4c4937336f8e\.mp3"/);
+  assert.match(chrome, /Rest restore must play existing Marcus rest MP3/);
+});
+
+test("Android page lock pauses the timer and saving a completed session clears its cache", () => {
+  assert.match(page, /document\.addEventListener\("visibilitychange"/);
+  assert.match(page, /document\.hidden&&\(mode==="running"\|\|mode==="rest"\)/);
+  assert.match(page, /window\.addEventListener\("pagehide",persistProgress\)/);
+  assert.match(page, /if\(!sessionStarted\|\|mode==="complete"\)/);
+  assert.match(page, /localStorage\.removeItem\(PROGRESS_KEY\)/);
+});
