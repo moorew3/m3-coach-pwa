@@ -6,6 +6,8 @@
  * athlete. The OpenAI key remains server-side.
  */
 
+import { paidAiHeaders } from "@/lib/paid-ai-client";
+
 export interface LiveCoachContext {
   athlete?: string;
   workout?: string;
@@ -42,7 +44,7 @@ export async function askLiveCoach(
   try {
     const res = await fetch("/api/public/coach-talk", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await paidAiHeaders(),
       body: JSON.stringify({ message: text, context }),
     });
     if (!res.ok) return null;
