@@ -55,7 +55,7 @@ import {
   weightIn,
 } from "@/lib/voice-commands";
 import { speak } from "@/lib/coach-voice";
-import { askLiveCoach } from "@/lib/coach-talk";
+import { askLiveCoach, premiumAiAvailableOnClient } from "@/lib/coach-talk";
 import { FLEX_NAME } from "@/lib/coach-persona";
 import { exerciseMemoryFor } from "@/lib/coach-memory";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
@@ -329,6 +329,9 @@ function CoachSession() {
   const voiceRef = useRef(true);
   voiceRef.current = voiceOn;
   const coachTalkBusy = useRef(false);
+  const coachAskHandler = useRef<((question: string) => void) | null>(null);
+  const [coachQuestion, setCoachQuestion] = useState("");
+  const [coachReply, setCoachReply] = useState("");
   /** Short in-session transcript for natural follow-up questions. */
   const coachDialogue = useRef<string[]>([]);
   const [coachChoice, setCoachChoice] = useState<CoachCheckIn | null>(null);
@@ -796,7 +799,7 @@ function CoachSession() {
      answer from the server. The model never mutates workout state; it talks,
      and the existing session engine stays authoritative. */
   useEffect(() => {
-    setConversationHandler((phrase) => {
+    const answerQuestion = (phrase: string) => {
       if (coachTalkBusy.current) return;
       const ex = step?.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
       const m = metricsSnapshot();
@@ -872,24 +875,31 @@ function CoachSession() {
       })
         .then((reply) => {
           if (!reply) {
-            speak("I heard you, but I couldn't get a reliable answer. Keep the set where it is for now.", voiceRef.current, {
-              tone: "attentive",
-              interrupt: false,
-            });
+            setCoachReply("I couldn't get a reliable answer. The current workout remains unchanged.");
             return;
           }
+          setCoachReply(reply);
           coachDialogue.current = [
             ...coachDialogue.current,
             `Athlete: ${phrase}`,
             `${FLEX_NAME}: ${reply}`,
           ].slice(-8);
-          speak(reply, voiceRef.current, { tone: "attentive", interrupt: false });
+          // Recorded Marcus workouts work independently. Only the expressly
+          // enabled premium voice path should attempt a paid spoken reply.
+          if (premiumAiAvailableOnClient() && voiceRef.current) {
+            speak(reply, true, { tone: "attentive", interrupt: false });
+          }
         })
         .finally(() => {
           coachTalkBusy.current = false;
         });
-    });
-    return () => setConversationHandler(null);
+    };
+    coachAskHandler.current = answerQuestion;
+    setConversationHandler(answerQuestion);
+    return () => {
+      coachAskHandler.current = null;
+      setConversationHandler(null);
+    };
   }, [
     day,
     feel,
@@ -1911,6 +1921,24 @@ function CoachSession() {
           {step.kind === "work" && pattern && !camActive && chip("Camera off")}
         </div>
 
+        {coachReply && (
+          <div
+            data-testid="coach-local-answer"
+            aria-live="polite"
+            className="mb-2 flex items-start gap-2 rounded-xl border border-accent/40 bg-black/85 px-3 py-2 text-xs text-white backdrop-blur-md"
+          >
+            <span className="max-h-24 flex-1 overflow-y-auto leading-relaxed">
+              <strong className="text-accent">Coach answer: </strong>{coachReply}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCoachReply("")}
+              aria-label="Dismiss coach answer"
+              className="shrink-0 rounded-lg px-1 text-lg text-white/70"
+            >×</button>
+          </div>
+        )}
+
         {coachChoice && step.kind === "rest" && (
           <section
             data-testid="coach-choice"
@@ -2222,6 +2250,37 @@ function CoachSession() {
           subtitle={`${plan.weekday} · ${plan.title}`}
           onClose={() => setMoreOpen(false)}
         >
+          <form
+            className="rounded-xl border border-border bg-elevated p-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const question = coachQuestion.trim();
+              if (!question || coachTalkBusy.current) return;
+              coachAskHandler.current?.(question);
+              setCoachQuestion("");
+              setMoreOpen(false);
+            }}
+          >
+            <label htmlFor="flex-coach-question" className="mb-2 block text-sm font-bold">
+              Ask your coach
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="flex-coach-question"
+                data-testid="coach-question-input"
+                type="text"
+                value={coachQuestion}
+                onChange={(event) => setCoachQuestion(event.target.value)}
+                placeholder="How many sets are left?"
+                maxLength={400}
+                className="min-w-0 flex-1 rounded-lg border border-white/15 bg-black/30 px-3 text-sm"
+              />
+              <button type="submit" className="tap-target rounded-lg bg-primary px-3 text-xs font-black text-primary-foreground">
+                Ask
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">Workout facts are answered locally without paid AI. Open-ended AI and its voice require separate secure activation.</p>
+          </form>
           {/* moved off the stage: camera, voice, gestures, swap */}
           <div className="mb-2 grid grid-cols-4 gap-2">
             {[
