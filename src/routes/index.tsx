@@ -246,6 +246,22 @@ function Today() {
               </div>
             )}
 
+            <div
+              role="note"
+              data-testid="seated-program-warning"
+              className="mt-4 rounded-xl border border-accent/50 bg-accent/10 p-3 text-xs leading-relaxed text-foreground"
+            >
+              <p className="font-bold">Seated-only workout review still required</p>
+              <p className="mt-1">
+                This legacy weekly program includes standing, stepping and kicking movements.
+                It has not been fully converted or cleared for foot-cast seated-only training.
+                Do not use its standing exercises during seated-only recovery.
+              </p>
+              <a className="mt-2 inline-block font-bold underline underline-offset-4" href="/recovery-coach/">
+                Open reviewed seated recovery clips
+              </a>
+            </div>
+
             <button
               type="button"
               onClick={() => {
