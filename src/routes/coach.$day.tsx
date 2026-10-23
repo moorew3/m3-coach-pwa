@@ -42,7 +42,7 @@ import { coachStateFor } from "@/lib/coach-states";
 
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
 import { buildCoachScript, coachingFor, currentCue } from "@/lib/coach-script";
-import { stopSpeech } from "@/lib/coach-voice";
+import { paidCoachSpeechEnabled, stopSpeech } from "@/lib/coach-voice";
 import { CoachAudioBadge, CoachAudioGate } from "@/components/CoachAudio";
 import { CoachAudioPanel } from "@/components/CoachAudioPanel";
 import { SessionAudio } from "@/components/SessionAudio";
@@ -209,7 +209,7 @@ function CoachSession() {
   const sessionExercises = effectiveExercises(state, day);
   const log = getDay(state, day);
   const coaching = coachingFor(plan);
-  const voiceOn = state.settings.coachVoice !== false;
+  const voiceOn = state.settings.coachVoice !== false && paidCoachSpeechEnabled();
 
   /* real facts for the recap chapter — the coach names what was actually done */
   const doneSetsNow = Object.values(log.exercises).reduce(
@@ -1862,6 +1862,7 @@ function CoachSession() {
               <FlipHorizontal2 className="size-4" />
             </button>
             <CoachAudioBadge
+              generatedEnabled={paidCoachSpeechEnabled()}
               status={engine.voiceStatus}
               voiceOn={voiceOn}
               onEnable={() => void engine.enableAudio()}
@@ -2284,6 +2285,15 @@ function CoachSession() {
             </div>
             <p className="mt-2 text-xs text-muted-foreground">Workout facts are answered locally without paid AI. Open-ended AI and its voice require separate secure activation.</p>
           </form>
+          {!paidCoachSpeechEnabled() && (
+            <p
+              data-testid="coach-read-along-mode"
+              className="mb-3 rounded-xl border border-accent/30 bg-accent/10 p-3 text-xs text-muted-foreground"
+            >
+              Read-along mode: scripted cues and timers stay visible. New spoken coaching
+              is disabled to avoid AI charges. Test the approved Marcus recording in Audio status.
+            </p>
+          )}
           {/* moved off the stage: camera, voice, gestures, swap */}
           <div className="mb-2 grid grid-cols-4 gap-2">
             {[
