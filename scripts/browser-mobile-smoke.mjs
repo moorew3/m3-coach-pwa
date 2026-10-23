@@ -249,10 +249,10 @@ try {
     await recoveryPage.locator("#startPause").click();
     assert.equal(await recoveryPage.locator("#setRounds").isDisabled(), true);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Workout in progress");
-    assert.match(await recoveryPage.locator("#position").innerText(), /Set 1 of 2/);
+    assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 1 of 2/);
     await recoveryPage.clock.fastForward(21_000);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
-    assert.match(await recoveryPage.locator("#position").innerText(), /Set 2 of 2/);
+    assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 2 of 2/);
     assert.match(await recoveryPage.locator("#progressText").innerText(), /^0 of 10 steps completed/);
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
@@ -262,7 +262,7 @@ try {
     await recoveryPage.locator("#startPause").click();
     await recoveryPage.clock.fastForward(16_000);
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
-    assert.match(await recoveryPage.locator("#position").innerText(), /Set 2 of 2/);
+    assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 2 of 2/);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Workout in progress");
     await recoveryPage.clock.fastForward(21_000);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
@@ -270,7 +270,7 @@ try {
     assert.match(await recoveryPage.locator("#progressText").innerText(), /^1 of 10 steps completed/);
     await recoveryPage.clock.fastForward(16_000);
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated hammer curls");
-    assert.match(await recoveryPage.locator("#position").innerText(), /Set 1 of 2/);
+    assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 1 of 2/);
     step("Approved seated circuit: clearance, 2 rounds, 15s rest, Pause, no fabricated rep tally");
   } finally {
     await recoveryContext.close();
