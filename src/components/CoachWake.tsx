@@ -195,6 +195,7 @@ export function CoachWake({
               poster={approachClip.poster}
               playing
               rate={AMBIENT_RATE}
+              fallbackAtTop
               className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${
                 entranceEnded ? "opacity-0" : "opacity-100"
               }`}
@@ -206,6 +207,7 @@ export function CoachWake({
                 poster={readyClip.poster}
                 playing
                 rate={AMBIENT_RATE}
+              fallbackAtTop
                 className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${
                   entranceEnded ? "opacity-100" : "opacity-0"
                 }`}
