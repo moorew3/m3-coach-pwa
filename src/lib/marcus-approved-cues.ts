@@ -42,6 +42,7 @@ let active: CueSession | null = null;
 
 function startIfReady(session: CueSession) {
   if (active !== session || !session.requested || session.finished || !session.seekReady) return;
+  if (!session.element.paused) return;
   void session.element.play().catch(() => {
     // Mobile audio permission may still require a direct user gesture.
     // Never substitute a different voice or count an unheard cue as spoken.
@@ -78,17 +79,25 @@ export function playMarcusWorkCue(stepKey: string, mirror: string | undefined, s
   // seeked to its correct start. This prevents the beginning of the long
   // recorded voice file leaking into a completely different exercise cue.
   const seekAndStart = () => {
-    if (active !== session || !Number.isFinite(element.duration)) return;
-    if (!session.seekReady) {
-      try {
-        element.currentTime = clip.start;
-        session.seekReady = true;
-      } catch { return; }
+    if (active !== session || element.readyState < 1 || session.seekReady) return;
+    if (clip.start <= 0.001) {
+      session.seekReady = true;
+      startIfReady(session);
+      return;
     }
-    startIfReady(session);
+    try {
+      element.currentTime = clip.start;
+      // Wait for onseeked; setting currentTime may trigger another request,
+      // and starting while still seeking can leak the wrong audio phrase.
+    } catch { /* retry when the stream becomes seekable */ }
   };
   element.onloadedmetadata = seekAndStart;
   element.oncanplay = seekAndStart;
+  element.onseeked = () => {
+    if (active !== session || Math.abs(element.currentTime - clip.start) > 0.35) return;
+    session.seekReady = true;
+    startIfReady(session);
+  };
   element.ontimeupdate = () => {
     if (active !== session) return;
     if (element.currentTime >= clip.end - 0.06) {
@@ -119,6 +128,7 @@ export function stopMarcusWorkCue() {
   element.ontimeupdate = null;
   element.onloadedmetadata = null;
   element.oncanplay = null;
+  element.onseeked = null;
   element.onended = null;
   element.removeAttribute("src");
   element.load();
