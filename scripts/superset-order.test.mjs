@@ -78,3 +78,11 @@ test("helper handles a three-slot group with an interposed solo exercise", () =>
   assert.deepEqual(ids(order), ["a1", "a2", "a3", "solo", "b1", "b2"]);
   assert.equal(order[0], A1, "original exercise object must remain unchanged");
 });
+
+test("superset partner handoff is preparation, not an artificial rest timer", async () => {
+  const { readFileSync } = await import("node:fs");
+  const coach = readFileSync(new URL("../src/lib/coach-script.ts", import.meta.url), "utf8");
+  assert.match(coach, /id: \`\$\{e\.id\}-handoff-\$\{r\}\`,\s*\/\/ A superset partner handoff is coaching\/prep, never a rest interval\.\s*kind: "brief"/);
+  assert.match(coach, /\/\* inside a pair: no rest/);
+  assert.match(coach, /if \(partnerFollows\) return/);
+});
