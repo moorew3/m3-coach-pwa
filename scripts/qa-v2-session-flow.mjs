@@ -72,6 +72,14 @@ check("B set has its own 90s recovery",()=>{assert.equal(s.phase,"rest");assert.
 s=ticks(s,90);s=move(s,"complete-set");
 check("last B set ends without false extra rest",()=>{assert.equal(s.phase,"complete");assert.equal(s.completedSetIds.length,5);});
 
+let skipped=move(createV2Session(straight),"start");
+skipped=move(skipped,"next");
+check("deliberately skipped set advances into recovery but earns NO completed credit",()=>{
+ assert.equal(skipped.phase,"rest");
+ assert.equal(skipped.phaseSecondsLeft,60);
+ assert.deepEqual(idx(skipped),[0,1]);
+ assert.equal(skipped.completedSetIds.length,0);
+});
 const group = workout("paired",[
  ex("A",3,60,{supersetId:"S",supersetRestSeconds:75}),
  ex("gap",1,45),
