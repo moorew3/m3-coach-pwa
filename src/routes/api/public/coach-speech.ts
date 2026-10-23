@@ -12,6 +12,7 @@
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { authorizePaidAi, readBoundedAiJson, aiError } from "@/lib/paid-ai-access";
 
 /**
  * Delivery direction per phase of the session. The TTS model is
@@ -95,6 +96,11 @@ export const Route = createFileRoute("/api/public/coach-speech")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const access = await authorizePaidAi(request, "speech");
+        if (access instanceof Response) return access;
+        const body = await readBoundedAiJson(request);
+        if (body instanceof Response) return body;
+
         const key = process.env["OPENAI_API_KEY"];
         if (!key) {
           return new Response(
@@ -105,7 +111,7 @@ export const Route = createFileRoute("/api/public/coach-speech")({
 
         let parsed: z.infer<typeof Body>;
         try {
-          parsed = Body.parse(await request.json());
+          parsed = Body.parse(body.value);
         } catch {
           return new Response(JSON.stringify({ message: "Invalid coach speech request." }), {
             status: 400,
@@ -135,13 +141,7 @@ export const Route = createFileRoute("/api/public/coach-speech")({
         });
 
         if (!upstream.ok || !upstream.body) {
-          const detail = await upstream.text().catch(() => "");
-          return new Response(
-            JSON.stringify({
-              message: detail || `Coach voice unavailable (${upstream.status}).`,
-            }),
-            { status: upstream.status, headers: { "content-type": "application/json" } },
-          );
+          return aiError(upstream.status === 429 ? 429 : 502, "Optional coach audio provider is unavailable.");
         }
 
         return new Response(upstream.body, {
