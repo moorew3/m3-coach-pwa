@@ -122,8 +122,11 @@ export const Route = createFileRoute("/api/public/coach-speech")({
         const style = TONE_STYLE[parsed.tone ?? "assertive"] ?? TONE_STYLE.assertive;
         const mp3 = parsed.format === "mp3";
 
-        const upstream = await fetch("https://api.openai.com/v1/audio/speech", {
+        let upstream: Response;
+        try {
+          upstream = await fetch("https://api.openai.com/v1/audio/speech", {
           method: "POST",
+          signal: AbortSignal.timeout(60000),
           headers: {
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
@@ -138,7 +141,10 @@ export const Route = createFileRoute("/api/public/coach-speech")({
               ? { response_format: "mp3" }
               : { stream_format: "sse", response_format: "pcm" }),
           }),
-        });
+          });
+        } catch {
+          return aiError(504, "Optional AI provider timed out or could not be reached.");
+        }
 
         if (!upstream.ok || !upstream.body) {
           return aiError(upstream.status === 429 ? 429 : 502, "Optional coach audio provider is unavailable.");
