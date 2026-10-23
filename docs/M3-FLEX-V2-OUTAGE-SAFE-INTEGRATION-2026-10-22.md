@@ -1,3 +1,17 @@
+## October 23 staged improvement — visual paced repetitions and adjustable recovery
+
+**Original application:** `/v2`, existing `moorew3/m3-coach-pwa` branch `work/m3-flex-v2-two-modes-oct22-offline`. Original live Railway app remains unchanged. No approved videos or Marcus recordings have been modified or regenerated.
+
+- The actual V2 session now records `phaseElapsedSeconds` for each active work/rest phase. This increments only on the existing validated 1-second workout ticks. Ticks pause when the moving workout video pauses/buffers and when the user pauses; each new set/rest interval resets its own clock to zero. Older saved sessions without the new optional counter remain compatible.
+- Recovery strength sets now show a compact **visual repetition pace guide** over the moving avatar footage, with a 3-, 4-, 5- or 6-second tempo choice, prescribed target rep range, an estimated cue number, and controlled lift/return text. This is a **timed visual metronome only**: it does not infer observed repetitions, grade form, auto-complete sets, or store fictitious achievements. The user must confirm actual completion or use reliable independent observation. Short looping preview video is not misrepresented as demonstrating every performed rep.
+- When the recovery clock enters an actual rest (after normal sets and only AFTER the last active partner in a superset), a dedicated on-stage countdown displays the upcoming exercise/set, with **+15 seconds / −15 seconds** buttons. The reducer clamps rest to 5–600 seconds and ignores adjustments outside actual rest. Timers stop when the session is paused.
+- Added `src/v2/recovery-rep-guide.ts` and the test `scripts/qa-v2-pace-rest.mjs`, registered as `npm run test:v2-pace-rest`.
+- **19/19** new deterministic tests passed: phase-local seconds and paused/resumed work, visual cue ranges, 3/6-second tempo behavior, 75-second true superset rest after B, adjustments during rest without log mutations, min/max rest limits, rest completion resetting the new pace phase, and no inferred rep credit. The preceding seven suites contained **110** checks, yielding **129** source/reducer checks across eight suites.
+- `npx tsc --noEmit`: **zero errors**. `npm run build:dev`: **passed**.
+- Playwright (420px wide Chromium) using a test video and muted test audio: picked Workout A's lateral raise, verified visual guide target 10–12, changed pace to 3 seconds, confirmed cue 2 after 3 actual **video-playing** seconds. A test initially assumed 4 wall seconds meant 4 playback seconds; actual V2 video did not start immediately, and its session clock correctly advanced only ~2 seconds. Confirmed guide freezes during direct video pause, rest begins at 60 seconds after the set, +15 raises it to 75, −15 returns it to 60, and browsing Demonstrations then returning preserves rest. **Browser test passed, no page errors.**
+- Still no continuous full rep-by-rep avatar performance or approved full-length Marcus spoken coaching through all repetitions and rest; these remain release blockers, together with physical Galaxy Fold testing, clinician clearance and Railway authorization.
+
+
 ## October 22 late development pass — original V2 Marcus audio/video set lifecycle
 
 **Applies ONLY to branch** `work/m3-flex-v2-two-modes-oct22-offline`. **Railway live /v2 and protected media are untouched.** This supersedes earlier “Marcus only staged in a separate preview” notes for the proposed seated recovery A/B exercises.
