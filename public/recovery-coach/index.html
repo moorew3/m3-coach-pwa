@@ -43,7 +43,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 .hidden{display:none!important}
 @media(min-width:680px){main{padding:30px 24px 70px}.future{grid-template-columns:1fr 1fr}.videoWrap video{max-height:440px}}
 </style></head><body><main>
-<header class="top"><div class="brand">M3 <b>FLEX</b></div><div class="version">Recovery Coach · 7 approved scenes</div></header>
+<header class="top"><div class="brand">M3 <b>FLEX</b></div><a href="/" style="color:#c5f08c;font-size:12px;font-weight:800">← App home</a><div class="version">Recovery Coach · 7 approved scenes</div></header>
 <h1>Your guided recovery workout</h1>
 <p class="lead">One simple session, using your five approved Flex videos and Marcus – Warm &amp; Friendly English coaching. No rejected clips or replacement avatars.</p>
 <div class="trust"><span>✓ 7 approved moving scenes</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
@@ -61,7 +61,8 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <div class="timer"><div class="small muted" id="runState">Ready</div><div class="clock" id="clock">00:30</div><div class="small muted" id="progressText">0 of 10 steps completed</div></div>
 <div class="opts">
 <label>Exercise time <select id="workDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></label>
-<label>Rest between exercises <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
+<label>Rest after each movement/set <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
+<label>Sets per approved exercise <select id="setRounds" aria-label="Approved exercise sets; not a repetition count"><option value="1" selected>1 set per exercise</option><option value="2">2 sets per exercise</option></select></label>
 </div>
 <div class="controls">
 <button id="startPause" type="button" class="btn primary wide">▶ Start full session</button>
@@ -69,7 +70,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <button id="next" type="button" class="btn">Next step →</button>
 <button id="reset" type="button" class="btn wide">↺ Restart session</button>
 </div>
-<p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance.</p>
+<p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance. Sets count timed demonstrations, not verified athlete repetitions.</p>
 </section>
 <section class="panel"><div class="stepHeader"><strong id="listHeading">Before workout</strong><span id="listCounter">3 gentle steps</span></div><div class="steps" id="steps"></div></section>
 <section class="approve" id="clearance" aria-label="Medical clearance confirmation">
@@ -131,6 +132,7 @@ const video=$("coachVideo"),audio=$("coachVoice");
 const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3";
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
+let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable rounds; no inferred completed reps
 const elapsedState={phase:0,idx:0};
 function step(){return stages[phase].items[idx]}
 function total(){return stages.reduce((n,s)=>n+s.items.length,0)}
@@ -151,8 +153,9 @@ function safetyOkay(){return [...document.querySelectorAll(".check")].every(c=>c
 function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
 function drawTimer(){
+$("setRounds").disabled=sessionStarted;
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed"})[mode]||"Ready";
-$("progressText").textContent=completed.size+" of "+total()+" steps completed";
+$("progressText").textContent=completed.size+" of "+total()+" steps completed — manually skipped steps do not count";
 $("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
 $("startPause").disabled=mode==="complete";
 $("preview").disabled=(!step().voice&&!step().video&&mode!=="complete")||mode==="running"||mode==="rest";$("preview").textContent=mode==="complete"?"▶ Hear Marcus finish":step().video?"▶ Preview Flex + Marcus":"▶ Hear Marcus";
@@ -182,7 +185,7 @@ function setMedia(){
  if(it.voice){audio.src=it.voice;audio.volume=1;audio.loop=false;}
 }
 function render(){
- const it=step();$("phaseLabel").textContent=label();$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length;$("moveTitle").textContent=it.name;$("moveDetail").textContent=stages[phase].subtitle;$("cue").textContent=it.note;
+ const it=step();$("phaseLabel").textContent=label();$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");$("moveTitle").textContent=it.name;$("moveDetail").textContent=stages[phase].subtitle;$("cue").textContent=it.note;
  $("videoBox").classList.toggle("hidden",!it.video);$("textBox").classList.toggle("hidden",!!it.video);
  $("listHeading").textContent=label();$("listCounter").textContent=stages[phase].items.length+" steps";
  document.querySelectorAll(".phase").forEach(b=>b.setAttribute("aria-selected",Number(b.dataset.stage)===phase?"true":"false"));
@@ -214,12 +217,14 @@ function beginTicker(){clearTick();deadline=Date.now()+secondsLeft;interval=setI
  },200);}
 async function runCurrent(){
  if(!safetyOkay()){tell("Please confirm all three clinician-clearance checks before starting a timed session. Preview videos remain available.");$("clearance").scrollIntoView({behavior:"smooth",block:"center"});return}
+ if(!sessionStarted){targetRounds=Number($("setRounds").value);sessionStarted=true}
  if(mode==="ready"&&completed.size===0&&phase!==0){/* selected phase may start directly */}
  mode="running";secondsLeft=duration();drawTimer();
  if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
  if(mode!=="running")return;beginTicker();tell(phase===1?"Follow your approved Flex video and Marcus narration.":"Follow Marcus voice guidance. Keep the cast supported.");
 }
 function advance(){
+ workRound=1;
  if(idx+1<stages[phase].items.length){idx++;return true}
  if(phase<2){phase++;idx=0;return true}
  if(completed.size<total()){
@@ -232,9 +237,19 @@ function advance(){
  return false;
 }
 function advanceAfterStep(){
- stopMedia(true);completed.add(phase+":"+idx);
+ stopMedia(true);
+ if(phase===1&&workRound<targetRounds){
+   // The clip timer only demonstrates the movement. Never invent actual reps.
+   workRound++;
+   restNext={phase:1,idx};
+   mode="rest";secondsLeft=Number($("restDuration").value)*1000;
+   render();beginTicker();playRestVoice();
+   tell("Rest after demonstration set "+(workRound-1)+". Confirm your own actual reps separately; same approved movement returns for set "+workRound+".");
+   return;
+ }
+ completed.add(phase+":"+idx);
  if(phase===1&&idx<stages[phase].items.length-1){
-   restNext={phase:1,idx:idx+1};mode="rest";secondsLeft=Number($("restDuration").value)*1000;
+   restNext={phase:1,idx:idx+1};workRound=1;mode="rest";secondsLeft=Number($("restDuration").value)*1000;
    render();beginTicker();playRestVoice();tell("Marcus rest coaching. Keep the cast supported. Next: "+stages[1].items[idx+1].name);return
  }
  if(!advance()){if(mode!=="complete")secondsLeft=duration();render();if(mode==="complete")playCompleteVoice();return}
@@ -256,7 +271,7 @@ async function resume(){
  beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
 }
 function stopForNavigation(p,i){
- clearTick();stopMedia(true);restNext=null;phase=p;idx=i;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
+ clearTick();stopMedia(true);restNext=null;phase=p;idx=i;workRound=1;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
 }
 $("startPause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")pause();else if(mode==="paused"||mode==="waiting")resume();else if(mode==="ready")runCurrent()});
 $("preview").addEventListener("click",async()=>{
@@ -302,7 +317,7 @@ $("next").addEventListener("click",()=>{
  tell(mode==="complete"?"Session complete.": "Moved to "+step().name+". Skipped steps do not count as completed.");
  if(more&&continueSession){mode="ready";runCurrent().catch(()=>tell("Tap Start full session to resume."));}
 });
-$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
+$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;sessionStarted=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
 for(const id of ["workDuration","restDuration"])$(id).addEventListener("change",()=>{if(mode==="ready")secondsLeft=duration();drawTimer()});
 secondsLeft=duration();render();
