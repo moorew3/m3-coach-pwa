@@ -76,9 +76,9 @@ test("locked motion and Marcus recording sources remain byte-for-byte referenced
   }
 });
 
-test("restore stores only tab-local playback progress and requires fresh clearance", () => {
+test("restore stores only same-browser playback progress and requires fresh clearance", () => {
   assert.match(page, /const PROGRESS_KEY="m3-flex-recovery-progress-v1"/);
-  assert.match(page, /sessionStorage\.setItem\(PROGRESS_KEY/);
+  assert.match(page, /localStorage\.setItem\(PROGRESS_KEY/);
   assert.match(page, /function restoreProgress\(\)/);
   assert.match(page, /mode="paused";return true;/);
   assert.match(page, /if\(!safetyOkay\(\)\)\{\s*tell\("Please re-confirm all three clinician clearance checks/);
