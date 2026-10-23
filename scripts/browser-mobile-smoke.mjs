@@ -137,13 +137,14 @@ try {
     const mediaResponse = await mediaPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
     assert.equal(mediaResponse?.status(), 200);
     await mediaPage.getByTestId("coach-wake").waitFor({ timeout: 15000 });
-    const failedVideo = mediaPage.getByTestId("coach-video-fallback").first();
+    const wakeStage = mediaPage.getByTestId("coach-wake");
+    const failedVideo = wakeStage.getByTestId("coach-video-fallback").first();
     await failedVideo.waitFor({ timeout: 12000 });
-    const sourceBefore = await mediaPage.getByTestId("coach-motion").first().getAttribute("data-url");
+    const sourceBefore = await wakeStage.getByTestId("coach-motion").first().getAttribute("data-url");
     assert.ok(sourceBefore?.endsWith(".mp4"), "Must originate from real approved MP4 path");
     await failedVideo.getByTestId("retry-coach-video").click();
     await failedVideo.waitFor({ timeout: 12000 });
-    const sourceAfter = await mediaPage.getByTestId("coach-motion").first().getAttribute("data-url");
+    const sourceAfter = await wakeStage.getByTestId("coach-motion").first().getAttribute("data-url");
     assert.equal(sourceAfter, sourceBefore, "Video retry must never substitute another clip");
     step("Blocked video shows approved still and retries identical approved source");
   } catch (mediaError) {
