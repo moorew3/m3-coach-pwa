@@ -1,3 +1,34 @@
+## October 22 late development pass — original V2 Marcus audio/video set lifecycle
+
+**Applies ONLY to branch** `work/m3-flex-v2-two-modes-oct22-offline`. **Railway live /v2 and protected media are untouched.** This supersedes earlier “Marcus only staged in a separate preview” notes for the proposed seated recovery A/B exercises.
+
+### Changes
+
+1. The **original V2 recovery Coach Session** now invokes the existing owner-accepted Marcus – Warm & Friendly English segments in `src/lib/marcus-approved-cues.ts`. This is not a newly generated voice or paid provider call. First sets use the matching recorded technique line for all 11 recovery program media items (including chest press, shrugs, breathing and cooldown); subsequent sets use distinct short Marcus motivational lines for Set 2, 3 and 4.
+2. Audio is keyed to the **exact workout/exercise/set** and may only start when the corresponding approved moving video is genuinely playing. Video pause, buffer, mode switch and rest pause/stop speech; resume in the same set resumes the existing audio clip rather than restarting the whole sentence.
+3. Audio waits for the HTMLMediaElement to load metadata and **confirm the seek** to the desired timestamp before starting. This prevents the beginning of the long Marcus speech file from being heard as the wrong exercise instruction. Already-finished clips do not restart every time the short movement footage loops.
+4. Fixed a real bug found by Playwright: initial startup video retries could automatically restart a manually paused video and therefore resume Marcus unexpectedly. Retries stop once a video has genuinely begun, and the retry gate resets only for an explicitly resumed or new set. The original V2 recovery stage now opts into fresh same-URL set transitions via `syncSessionVoice`.
+5. Distinct voice commands: **“complete set”** logs a completed set; **“next” / “skip”** advances without falsely crediting an unperformed set. User-triggered speech, pause, mute and switching into Demonstrations interrupt the active work cue.
+6. Original legacy V2 seven-day coach recordings and the separate browsing-only Exercise Demonstrations screen remain intact; recovery A/B uses the approved modern recovery clip mapping without substituting legacy avatar footage. Rest/superset timers remain dictated by existing V2 sequence (A1 → B1 → timed rest, etc.).
+
+### Verified test results
+
+- `npm run test:v2-marcus-lifecycle`: **11/11** tests passed against a fake Audio implementation. Cases include all 11 approved recovery movement IDs, exact first-set segment, the three later-set segment starts, pause/resume preserving playback position, seeking before speech, new-set cancellation, and rest cleanup.
+- `npm run test:v2-flow`: **22/22** V2 reducer checks passed; new case verifies a skipped set does not receive completed-set credit.
+- **Playwright original V2 at 420px viewport**, using a temporary muted video fixture and a mocked HTMLAudioElement (no owner assets modified): first preparation cue selected approved Marcus technique timestamp **58.48 s**; video pause muted Marcus, video resumption resumed same voice position, and completing the set stopped audio at rest. Earlier run initially FAILED because automatic retry resumed the video: bug fixed, re-tested and PASSED with no browser errors in final run.
+- **Playwright next-set run**, with only test time acceleration: after Workout A lateral raise Set 1 and its 60-second programmed rest, the **same source video** restarted for Set 2 and the audio changed from the recorded technique cue at **0 s** to Set 2’s shorter cue starting **0.28 s**. PASSED.
+- Two already recorded owner-accepted Marcus sources both returned HTTP **206** partial audio payload (MPEG content despite `.wav` filenames); no credits spent.
+- `npx tsc --noEmit`: **zero errors** after work-set code update; `npm run build:dev`: **passed**. Other previously verified suites remain unchanged.
+
+### Remaining release blockers
+
+- These are short looping owner-accepted motion previews, **not** complete physical coach-performance videos showing every repetition and set in continuous form; loops have not been rep/lip synchronized with the Marcus counts.
+- Video-linked intro and short set coaching are working in *controlled browser playback simulation only*. This is not verified on the actual Galaxy Fold, Android Bluetooth earbuds, background/audio interruptions or live network buffering. Mobile autoplay permission could still block first spoken audio; user-device verification is required.
+- There are not yet approved live Marcus replies for arbitrary spoken questions, nor a continuous spoken rest/transition track with matching video. The app uses text during rest and for open-ended conversation rather than an unapproved substitute speaker.
+- Recovery A/B prescriptions are proposal-only owner tests, **not medically cleared**, and the LEFT injured leg must remain supported/unloaded.
+- Do not deploy, merge, buy subscriptions, regenerate, edit or overwrite approved owner media without explicit permission and release/security checks.
+
+
 ## Final October 22 staging update — actual V2 A/B and approved demonstrations
 
 This section supersedes the earlier **pending-original-V2-A/B-integration** and **intermittent-hydration-error** notes below. **Live Railway V2 remains unchanged.** Changes exist only on `work/m3-flex-v2-two-modes-oct22-offline`.
