@@ -154,6 +154,7 @@ function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
 function drawTimer(){
 $("setRounds").disabled=sessionStarted;
+$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed"})[mode]||"Ready";
 $("progressText").textContent=completed.size+" of "+total()+" steps completed — manually skipped steps do not count";
 $("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
@@ -319,6 +320,6 @@ $("next").addEventListener("click",()=>{
 });
 $("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;sessionStarted=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
-for(const id of ["workDuration","restDuration"])$(id).addEventListener("change",()=>{if(mode==="ready")secondsLeft=duration();drawTimer()});
+for(const id of ["workDuration","restDuration","setRounds"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
 secondsLeft=duration();render();
 </script></body></html>
