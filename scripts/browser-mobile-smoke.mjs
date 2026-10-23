@@ -132,7 +132,7 @@ try {
     window.sessionStorage.setItem("coach-intro-seen-v1", "1");
   });
   const mediaPage = await mediaContext.newPage();
-  await mediaPage.route(/\\.mp4(?:\\?|$)/i, (route) => route.abort("failed"));
+  await mediaPage.route(/\.mp4(?:\?|$)/i, (route) => route.abort("failed"));
   try {
     const mediaResponse = await mediaPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
     assert.equal(mediaResponse?.status(), 200);
