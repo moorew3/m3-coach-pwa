@@ -133,6 +133,59 @@ const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
 let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable rounds; no inferred completed reps
+const PROGRESS_KEY="m3-flex-recovery-progress-v1";
+const PROGRESS_VALID_MS=24*60*60*1000;
+let lastProgressText="";
+/** Stores this tab's demonstrated phase only, NOT medical clearance or personal reps. */
+function persistProgress(){
+ if(!sessionStarted||mode==="complete"){
+  try{sessionStorage.removeItem(PROGRESS_KEY)}catch(e){}
+  lastProgressText="";return;
+ }
+ const snapshot={
+  v:1, savedAt:Date.now(), phase,idx,workRound,targetRounds,
+  secondsLeft:Math.max(0,Math.ceil(secondsLeft/1000)*1000),
+  mode, restNext, completed:[...completed],
+  workDuration:$("workDuration").value,restDuration:$("restDuration").value
+ };
+ // Avoid 200ms storage writes from the ticker. A new second, phase or
+ // explicit Pause/Resume still commits immediately.
+ const signature=JSON.stringify({...snapshot,savedAt:0});
+ if(signature===lastProgressText)return;
+ try{sessionStorage.setItem(PROGRESS_KEY,JSON.stringify(snapshot));lastProgressText=signature}catch(e){}
+}
+function restoreProgress(){
+ let saved;
+ try{saved=JSON.parse(sessionStorage.getItem(PROGRESS_KEY)||"null")}catch(e){return false}
+ if(!saved||saved.v!==1||!Number.isFinite(saved.savedAt)||
+    Date.now()-saved.savedAt>PROGRESS_VALID_MS||saved.savedAt>Date.now()+60_000)return false;
+ const p=saved.phase,n=saved.idx;
+ if(!Number.isInteger(p)||p<0||p>=stages.length||
+    !Number.isInteger(n)||n<0||n>=stages[p].items.length||
+    ![1,2].includes(saved.targetRounds)||
+    !Number.isInteger(saved.workRound)||saved.workRound<1||saved.workRound>saved.targetRounds||
+    !Number.isFinite(saved.secondsLeft)||saved.secondsLeft<0||saved.secondsLeft>180_000||
+    !["ready","running","rest","paused","waiting","preview"].includes(saved.mode)||
+    !["20","30","45","60"].includes(saved.workDuration)||
+    !["15","20","30","45"].includes(saved.restDuration)||
+    !Array.isArray(saved.completed))return false;
+ const validSteps=new Set(stages.flatMap((st,pi)=>st.items.map((_,i)=>pi+":"+i)));
+ if(saved.completed.some(key=>typeof key!=="string"||!validSteps.has(key)))return false;
+ const next=saved.restNext;
+ if(next!==null&&next!==undefined&&
+    (!Number.isInteger(next.phase)||next.phase!==1||
+     !Number.isInteger(next.idx)||next.idx<0||next.idx>=stages[1].items.length))return false;
+ if(saved.mode==="rest"&&!next)return false;
+ phase=p;idx=n;workRound=saved.workRound;targetRounds=saved.targetRounds;
+ secondsLeft=saved.secondsLeft;completed=new Set(saved.completed);
+ restNext=next??null;sessionStarted=true;
+ $("setRounds").value=String(targetRounds);
+ $("workDuration").value=saved.workDuration;
+ $("restDuration").value=saved.restDuration;
+ // Never auto-play audio, move the cast, or reuse previous clearance after
+ // browser restore. The user must re-acknowledge and tap Resume.
+ mode="paused";return true;
+}
 const elapsedState={phase:0,idx:0};
 function step(){return stages[phase].items[idx]}
 function total(){return stages.reduce((n,s)=>n+s.items.length,0)}
@@ -160,6 +213,7 @@ $("progressText").textContent=completed.size+" of "+total()+" steps completed �
 $("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
 $("startPause").disabled=mode==="complete";
 $("preview").disabled=(!step().voice&&!step().video&&mode!=="complete")||mode==="running"||mode==="rest";$("preview").textContent=mode==="complete"?"▶ Hear Marcus finish":step().video?"▶ Preview Flex + Marcus":"▶ Hear Marcus";
+persistProgress();
 }
 function cards(){
 const box=$("steps");box.replaceChildren();
@@ -266,6 +320,10 @@ function pause(){
 }
 async function resume(){
  if(mode!=="paused"&&mode!=="waiting")return;
+ if(!safetyOkay()){
+  tell("Please re-confirm all three clinician clearance checks before resuming the paused workout. No exercise or audio will start.");
+  $("clearance").scrollIntoView({behavior:"smooth",block:"center"});return;
+ }
  const wasWaiting=mode==="waiting";mode="running";
  if(restNext){mode="rest";beginTicker();audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
  if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
@@ -321,5 +379,9 @@ $("next").addEventListener("click",()=>{
 $("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;sessionStarted=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
 for(const id of ["workDuration","restDuration","setRounds"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
-secondsLeft=duration();render();
+const restored=restoreProgress();
+if(!restored)secondsLeft=duration();
+render();
+if(restored)tell("Workout position restored in PAUSED mode. Confirm today's clinician-clearance checks again, then tap Resume. No video or audio was auto-played.");
+window.addEventListener("pagehide",persistProgress);
 </script></body></html>
