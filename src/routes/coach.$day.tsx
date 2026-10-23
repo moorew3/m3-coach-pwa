@@ -861,6 +861,8 @@ function CoachSession() {
         rpe,
         feel,
         next: step?.next,
+        cues: step?.cues?.filter(Boolean).slice(0, 3),
+        restRemainingSeconds: step?.kind === "rest" && left !== null ? left : undefined,
         nutrition: nutrition.contextLine,
         camera: {
           active: Boolean(m),
@@ -903,6 +905,7 @@ function CoachSession() {
   }, [
     day,
     feel,
+    left,
     plan.focus,
     plan.title,
     reps,
