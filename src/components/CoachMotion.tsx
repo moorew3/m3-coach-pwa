@@ -48,6 +48,9 @@ export function CoachMotion({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const previousCycle = useRef(cycleKey);
+  // Once video has genuinely started, do not let startup retry timers
+  // override a pause/buffer event and restart Marcus behind the athlete.
+  const startedCurrentCycle = useRef(false);
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -61,6 +64,7 @@ export function CoachMotion({
   }, [syncSessionVoice, url, cycleKey]);
 
   useEffect(() => {
+    startedCurrentCycle.current = false;
     setFailed(false);
     setLoaded(false);
     setIsPlaying(false);
@@ -69,6 +73,7 @@ export function CoachMotion({
   useEffect(() => {
     if (!cycleKey || previousCycle.current === cycleKey) return;
     previousCycle.current = cycleKey;
+    startedCurrentCycle.current = false;
     const video = videoRef.current;
     if (!video) return;
     // A new set of the SAME exercise must fire a fresh playback transition;
@@ -84,6 +89,7 @@ export function CoachMotion({
     video.playbackRate = Math.max(0.5, Math.min(2, rate || 1));
 
     if (!playing) {
+      startedCurrentCycle.current = false;
       video.pause();
       setIsPlaying(false);
       onPlaybackChange?.(false);
@@ -96,7 +102,7 @@ export function CoachMotion({
     // running state and again after metadata/canplay settles.
     let cancelled = false;
     const tryPlay = () => {
-      if (cancelled || !videoRef.current || !playing) return;
+      if (cancelled || !videoRef.current || !playing || startedCurrentCycle.current) return;
       void videoRef.current.play().catch(() => undefined);
     };
 
@@ -154,7 +160,7 @@ export function CoachMotion({
               callbackRef.current?.(0, "transition");
               if (playing) void event.currentTarget.play().catch(() => undefined);
             }}
-            onPlaying={() => { setIsPlaying(true); onPlaybackChange?.(true); if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "playing"); }}
+            onPlaying={() => { startedCurrentCycle.current = true; setIsPlaying(true); onPlaybackChange?.(true); if (syncSessionVoice) updateCoachWorkVideo(url, cycleKey ?? url, "playing"); }}
             onPause={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "paused"); stopSpeech(); pauseMarcusWorkCue(); } }}
             onWaiting={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
             onStalled={() => { setIsPlaying(false); onPlaybackChange?.(false); if (syncSessionVoice) { updateCoachWorkVideo(url, cycleKey ?? url, "buffering"); stopSpeech(); pauseMarcusWorkCue(); } }}
