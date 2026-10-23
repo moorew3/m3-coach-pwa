@@ -64,6 +64,20 @@ The owner-cost setting `VITE_FLEX_PAID_AI_ENABLED=false` now applies to the **en
 
 `VITE_FLEX_PAID_AI_ENABLED` is a **build-time** value. Changing it requires a fresh application build; enabling the server alone must never bypass the browser opt-in. Every deployment requires an independent live user validation of workouts, local captions, motion, voice output, and timer transitions.
 
+## Athlete-log integrity and timed superset QA (staging)
+
+A coach repetition animation is an approximation of the **demonstrator's cadence**, not a verified count of the athlete's real reps. The old callback recorded the preset target as actual completion even when no clear camera observation or user confirmation existed. It now stops at the demonstrated target, shows an explicit "verify your own reps" message, and waits for the existing manual Done set / confirmed-camera action. Prescribed rep guidance is unchanged; **the app must not turn a demonstration timer into fabricated workout history**. A dedicated regression check enforces this separation.
+
+The browser interaction suite now also inspects the live, locally persisted workout timer:
+
+- An actual paused countdown must remain at the same value for longer than one second, then visibly decrement after Resume.
+- Turn on supersets using the real application control and skip via the real coach rail to Monday's declared B1/B2 pair.
+- Assert B1 first-round curls lead directly to B2's short **brief**, not a fake rest; then B2's work set, **75-second rest only after B2**, and round 2 restarting on B1.
+- Pause mid-pair rest and verify no countdown decrement. Resume and verify the number decreases.
+- These are fake-user browser tests using ephemeral local test data; no production logs, subscriptions or live user workouts are affected.
+
+Release limitation: this validates timing and logging mechanics in an emulated 390px Chrome browser; it is **not** a biomechanics, seated-only programming, cast support, physical-device camera or voice certification. Verify injury-safe exercise selection separately before athlete use.
+
 ## Automated browser interaction QA (staging, NOT phone hardware certification)
 
 A GitHub Actions step now installs a **temporary CI-only** Chrome browser and Playwright controller after the compiled Node build. Neither dependency is shipped with the app or requires a new paid subscription. The automated 390-pixel mobile-width browser workflow tests:
