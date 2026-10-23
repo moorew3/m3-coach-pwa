@@ -86,6 +86,15 @@ try {
     "C11-PRE-HANDS-R1",
     "NOT approved",
   ]);
+  const health = await get("/api/health");
+  assert.equal(health.status, 200, "Node liveness endpoint must work without credentials");
+  assert.match(health.headers.get("content-type") ?? "", /application\/json/);
+  assert.deepEqual(await health.json(), {
+    service: "m3-flex",
+    status: "ok",
+    check: "process",
+  });
+  console.log("✓ /api/health: HTTP 200, public process state only");
   await checkNoPaidRequests("/api/public/coach-talk", {
     message: "What is my next set?",
     context: {},
