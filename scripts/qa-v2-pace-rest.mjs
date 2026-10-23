@@ -23,9 +23,9 @@ function load(name) {
 const { v2SessionReducer:run,createV2Session:create }=load("session");
 const { recoveryRepGuide:guide }=load("recovery-rep-guide");
 const ex={id:"recovery-hammer",name:"Seated hammer curls",category:"strength",sets:3,
-  repRange:[8,12],restSeconds:75, motionKey:"hammerCurl",cues:[]};
+  repRange:[8,12],restSeconds:75, supersetId:"S", supersetRestSeconds:75, motionKey:"hammerCurl",cues:[]};
 const other={id:"recovery-triceps",name:"Seated triceps",category:"strength",sets:2,
-  repRange:[10,12],restSeconds:75,motionKey:"tricepsPressdown",cues:[]};
+  repRange:[10,12],restSeconds:75,supersetId:"S",supersetRestSeconds:75,motionKey:"tricepsPressdown",cues:[]};
 const workout={id:"m3-recovery-a",title:"Owner test",focus:"",exercises:[ex,other],useSupersets:true};
 const act=(session,type,extra={})=>run(session,{type,...extra});
 let passed=0;
