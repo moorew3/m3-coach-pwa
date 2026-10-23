@@ -50,6 +50,19 @@ Both `/api/public/coach-speech` and `/api/public/coach-talk` now share `src/lib/
 - This development pass DOES NOT make freshly composed local answers audible in Marcus's voice while optional paid speech is off. Owner-approved recorded clips remain the permitted spoken media; no robotic device-voice substitution has been added.
 - QA requirements include real device input/caption usability, microphone permission checks, session persistence, pre-existing voice playback and no paid network usage with flags disabled.
 
+## Media failure handling — approved motion only (staging)
+
+The existing full-screen coach video player now detects direct clip source failures, browser autoplay blocks and playback stalls exceeding 12 seconds. It **does not** replace the clip with an unrelated demonstration. It displays the original approved still, an explicit message, and a tap-to-retry button that reloads the exact same source. Vimeo embed errors similarly display the original poster/still and permit a same-ID retry.
+
+- The workout timer is **not paused automatically** by a media failure, and no set is automatically marked as complete. The notice explicitly reminds the user to use the normal Pause control if a demonstration is needed.
+- The owner-approved still is used for visual fallback, but it is **not** represented as a moving demonstration.
+- The preloader, active movement identity gate, approved-video allowlist, superset prescriptions and motion attribution remain unchanged.
+- The full app's Audio status panel now separately offers a native play-control for the already-approved C09 Marcus English recording. It explicitly identifies recorded playback as no-charge and does not describe HTML playback as proof that the physical speaker made sound.
+- The previous premium-generated-audio diagnostic is disabled by default when `VITE_FLEX_PAID_AI_ENABLED` is not true, avoiding a confusing 503 test that might be misdiagnosed as broken phone audio.
+- Regression tests protect both retry controls, their unchanged original sources, absence of automatic set logging, and the approved Marcus test media ID. CI checks the React/TypeScript build, not actual CDN uptime or a physical Android speaker.
+
+For live Galaxy Fold QA, verify three separate outcomes: normal approved motion and Marcus narration; video URL unavailable with the same-source retry and original still; phone autoplay blocked with retry after a tap. Repeat in portrait/landscape and with Bluetooth earbuds. Confirm the timer and set log do not change from retry alone. Do not claim complete video/audio device verification from unit tests.
+
 ## Portable uptime diagnosis (no monitoring subscription)
 
 The staging app exposes `GET /api/health`: a no-credentials JSON process-liveness check containing only `service`, `status`, and `check`. It does not contact Supabase, OpenAI, HeyGen, or any paid provider. This route is covered by the compiled Node HTTP smoke test.
