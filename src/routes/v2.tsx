@@ -32,6 +32,7 @@ import {
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { playMarcusTrainer, stopMarcusTrainer } from "@/v2/marcus-trainer-audio";
+import { getMarcusCue, pauseMarcusWorkCue, playMarcusWorkCue, stopMarcusWorkCue } from "@/lib/marcus-approved-cues";
 import { stopCoachReply } from "@/v2/coach-reply-speech";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { M3GymRenderer } from "@/v2/renderer";
@@ -99,8 +100,8 @@ function V2Coach() {
   const actualWorkVideoPlaying = stagePlayback.playing && stagePlayback.key === stageStepKey;
   const needsVisibleWorkVideo =
     experience === "coach-session" && session.phase === "work" &&
-    (session.mode === "coach" || session.mode === "shadow") &&
-    !hasApprovedRealTimeCoach(session.workout.exercises[session.exerciseIndex]?.motionKey);
+    (isRecoveryPreviewWorkout(session.workout.id) || session.mode === "coach" || session.mode === "shadow") &&
+    (isRecoveryPreviewWorkout(session.workout.id) || !hasApprovedRealTimeCoach(session.workout.exercises[session.exerciseIndex]?.motionKey));
   const [hydrated, setHydrated] = useState(false);
   const [showOpening, setShowOpening] = useState(false);
   const [openingStarting, setOpeningStarting] = useState(false);
@@ -260,6 +261,7 @@ function V2Coach() {
 
   useEffect(() => () => {
     stopMarcusCue();
+    stopMarcusWorkCue();
     stopListening();
     stopDetailedExerciseSpeech();
     stopFridayPremiumCue();
@@ -273,6 +275,7 @@ function V2Coach() {
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   useEffect(() => {
     if (!hydrated) return;
+    if (isRecoveryPreviewWorkout(session.workout.id)) return;
     preloadFridayPremiumCue(exercise?.motionKey);
     preloadFridayPremiumCue(session.workout.exercises[session.exerciseIndex + 1]?.motionKey);
   }, [hydrated, session.workout.id, session.exerciseIndex, exercise?.motionKey]);
@@ -376,7 +379,7 @@ function V2Coach() {
       // No substitute voice, and NO Marcus audio before exact video playback.
       // Rest and transition remain visible countdown text until approved
       // speaking/presence footage exists for those chapters.
-      if (voiceOn && session.phase === "work" && actualWorkVideoPlaying) {
+      if (voiceOn && session.phase === "work" && actualWorkVideoPlaying && !isRecoveryPreviewWorkout(session.workout.id)) {
         let cancelled = false;
         const announce = async () => {
           const started = await playMarcusTrainer(exercise.motionKey);
@@ -397,6 +400,34 @@ function V2Coach() {
     session.phase, session.running, voiceOn, exercise?.id,
     needsVisibleWorkVideo, actualWorkVideoPlaying,
   ]);
+
+  // Recovery A/B has its OWN owner-approved Marcus recordings.
+  // First set: exercise technique. Later sets: shorter spoken coaching.
+  // Only the exact ACTIVE moving video may unlock a cue. A pause or buffer
+  // preserves the recording position; rest/another exercise discards it.
+  useEffect(() => {
+    if (!isRecoveryPreviewWorkout(session.workout.id)) {
+      stopMarcusWorkCue();
+      return;
+    }
+    if (!voiceOn || session.phase !== "work" || experience !== "coach-session") {
+      stopMarcusWorkCue();
+      return;
+    }
+    if (!session.running || !actualWorkVideoPlaying) {
+      pauseMarcusWorkCue();
+      return;
+    }
+    const key = stageStepKey;
+    const clip = getMarcusCue(key, exercise?.motionKey, session.setIndex);
+    if (!clip) {
+      stopMarcusWorkCue();
+      setVoiceError("An approved Marcus cue has not been matched to this exercise. No substitute voice.");
+      return;
+    }
+    playMarcusWorkCue(key, exercise?.motionKey, session.setIndex);
+  }, [session.workout.id, session.exerciseIndex, session.setIndex, session.phase,
+    session.running, experience, voiceOn, actualWorkVideoPlaying, exercise?.motionKey, stageStepKey]);
 
   // Brief reminders during the set; never infer unseen reps or form.
   useEffect(() => {
@@ -425,6 +456,10 @@ function V2Coach() {
     }
     if (!message || coachingClock.current.last === checkpoint) return;
     coachingClock.current.last = checkpoint;
+    if (isRecoveryPreviewWorkout(session.workout.id)) {
+      setLiveCue(message);
+      return; // Dedicated Marcus recovery player owns all audible speech.
+    }
     // Let the initial instruction finish; reminders must never double-talk.
     if (recordedCoachAudioBusy() || (typeof window !== "undefined" && window.speechSynthesis?.speaking)) return;
     setLiveCue(message);
@@ -651,6 +686,7 @@ function V2Coach() {
     if (voiceOn) {
       stopCoachReply();
       stopMarcusCue();
+      stopMarcusWorkCue();
       stopDetailedExerciseSpeech();
       stopFridayPremiumCue();
       setVoiceOn(false);
@@ -679,6 +715,7 @@ function V2Coach() {
   const chooseExperience = (next: "coach-session" | "demonstrations") => {
     if (experience === next) return;
     stopMarcusCue();
+    stopMarcusWorkCue();
     stopFridayPremiumCue();
     stopDetailedExerciseSpeech();
     stopMarcusTrainer();
@@ -700,6 +737,7 @@ function V2Coach() {
   const toggleWorkout = () => {
     if (session.running) {
       stopMarcusCue();
+      pauseMarcusWorkCue();
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
       dispatch({ type: "pause" });
@@ -719,9 +757,11 @@ function V2Coach() {
     setOpeningStarting(true);
     setVoiceError(null);
     // Start Workout is the only opening-scene exit and also unlocks audio.
-    const started = await playMarcusCue("intro", true);
+    const started = isRecoveryPreviewWorkout(session.workout.id)
+      ? unlockRecordedCoachAudio()
+      : await playMarcusCue("intro", true);
     if (started) setVoiceOn(true);
-    else if (!speakDetailedExercise(`${FLEX_NAME} is ready. Starting your workout.`)) {
+    else if (!isRecoveryPreviewWorkout(session.workout.id) && !speakDetailedExercise(`${FLEX_NAME} is ready. Starting your workout.`)) {
       setVoiceOn(false);
       setVoiceError("Coach audio could not start. Tap the voice button once after the workout opens.");
     }
@@ -752,7 +792,7 @@ function V2Coach() {
   const videoRate = session.phase === "work" && isFighterMovement && exercise?.seconds === 40
     ? exercise.motionKey === "boxingCombination" ? 1.017 : 1.05
     : 1;
-  const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
+  const realTimeRigReady = !isRecoveryPreviewWorkout(session.workout.id) && (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
   const flexPresence = resolveFlexPresence({
     thinking: flexThinking,
     speaking: liveSpeechPlaying || recordedSpeechPlaying || liveProviderSpeaking,
@@ -914,6 +954,7 @@ function V2Coach() {
                 onPlaybackChange={(playing) => {
                   setStagePlayback({ key: stageStepKey, playing });
                   if (!playing) {
+                    pauseMarcusWorkCue();
                     stopMarcusTrainer();
                     stopMarcusCue();
                     stopFridayPremiumCue();
@@ -1151,7 +1192,7 @@ function V2Coach() {
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}
                 {voiceOn ? `${FLEX_NAME} voice on · ${FLEX_VOICE_NAME}` : `Enable ${FLEX_NAME} voice`}
               </button>
-              {hasFridayPremiumCue(exercise?.motionKey) && (
+              {!isRecoveryPreviewWorkout(session.workout.id) && hasFridayPremiumCue(exercise?.motionKey) && (
                 <button
                   type="button"
                   disabled={!voiceOn || !["ready", "work"].includes(session.phase)}
