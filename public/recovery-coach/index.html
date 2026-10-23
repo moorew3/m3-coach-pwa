@@ -80,7 +80,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <label><input type="checkbox" class="check">My cast support, non-weight-bearing restrictions and transfers are cleared.</label>
 <label><input type="checkbox" class="check">My exercise duration and effort are cleared.</label>
 </section>
-<p class="safety">Keep the injured left leg supported and never use it to anchor bands or push against the floor. Stop if pain, swelling, dizziness, or cast pressure develops. Warm-up/cooldown steps are gentle text suggestions, not approved Flex videos.</p>
+<p class="safety">Keep the injured left leg supported and never use it to anchor bands or push against the floor. Stop if pain, swelling, dizziness, or cast pressure develops. The approved breathing scenes have moving Flex videos; the other warm-up/cooldown steps remain text or existing audio guidance only.</p>
 <section class="panel"><h3>Next programs: Workout A &amp; Workout B</h3><p class="small"><a href="./programs/" target="_blank" rel="noopener noreferrer">Open Workout A/B exercise preview and new animation reviews ↗</a></p><p class="small"><a href="./programs/" style="color:#c5f08c;font-weight:800">▶ Open Workout A/B development player</a> — preview only verified Flex videos and Marcus audio. Missing exercises are clearly blocked until approved.</p><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
 <div class="future">
 <div><strong>Workout A · Dumbbells and arm cardio</strong><p>Bring forward your previously approved seated wrist-curl, seated lateral-raise, and arm-only boxing visuals from the archive. Verify the playable video and Marcus voice for each before activation.</p><span class="tag">Video integration next</span></div>
@@ -114,7 +114,7 @@ const stages=[
 {label:"Before workout",subtitle:"Gentle preparation · approved Flex breathing video + Marcus",items:[
 {id:"C09-PRE-BREATH-R2",name:"Calm seated breathing",sec:30,video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3",voiceOnce:true,approved:true,note:"Approved C09-R2: seated Flex breathing with white left cast supported. Follow Marcus English instructions once; the visible breathing animation continues while the preparation timer runs."},
 {name:"Easy hand openings",sec:30,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2dcdf842-9177-4bc6-a6a4-a274fc726876.mp3",note:"With forearms supported if needed, gently open and close your hands. No weights; stay within your clinician's restrictions.",text:true},
-{name:"Unloaded shoulder mobility",sec:30,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",note:"If cleared, make small comfortable shoulder circles without weights. Keep the torso steady and injured leg fully supported.",text:true}
+{name:"Controlled arm reaches",sec:30,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",note:"Controlled arm reaches: while seated and only if cleared, reach one arm gently forward within a comfortable range, then return. Keep the injured leg fully supported. This text guidance has no approved moving demonstration; the existing Marcus recording is general shoulder-mobility audio.",text:true}
 ]},
 {label:"Approved Flex workout",subtitle:"Five locked demonstrations · original Flex and Marcus",items:[
 {id:"C01-R3",name:"Seated dumbbell shrugs",video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",embedded:true,note:"Approved original black-tank-top shrug video with the white left cast. Lift shoulders under control; keep cast supported."},
@@ -170,7 +170,7 @@ stages[phase].items.forEach((it,i)=>{
  body.append(h,details);
  const tag=document.createElement("span");tag.className="status";tag.textContent=completed.has(phase+":"+i)?"✓ Done":it.video?"✓ Approved":(i===idx?"Current":"");
  btn.append(num,body,tag);
- btn.addEventListener("click",()=>{clearTick();stopMedia(true);phase=Number(phase);idx=i;mode="ready";secondsLeft=duration();render();});
+ btn.addEventListener("click",()=>stopForNavigation(phase,i));
  box.append(btn);
 });
 }
