@@ -730,7 +730,8 @@ export function buildCoachScript(
           const handoff = `Straight over to ${cu.label} — set ${r + 1} of ${total}, ${reps}. ${rotate(cu.form, r + 1)}`;
           steps.push({
             id: `${e.id}-handoff-${r}`,
-            kind: "rest",
+            // A superset partner handoff is coaching/prep, never a rest interval.
+            kind: "brief",
             chapter,
             section,
             title: `Straight into ${e.name}`,
