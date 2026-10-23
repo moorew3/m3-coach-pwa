@@ -15,7 +15,7 @@ import { MirrorMeDemo } from "@/components/MirrorMe";
 import { CoachPresence } from "@/components/CoachPresence";
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
 import { CoachAudioBadge, CoachAudioGate } from "@/components/CoachAudio";
-import { stopSpeech } from "@/lib/coach-voice";
+import { paidCoachSpeechEnabled, stopSpeech } from "@/lib/coach-voice";
 import { planForDay } from "@/data/program";
 import { effectiveExercise, effectiveExercises, effectivePlan } from "@/lib/activities";
 import { buildCoachScript, currentCue } from "@/lib/coach-script";
@@ -173,7 +173,7 @@ function GlassesMode() {
       {engine.isLeader && (
         <CoachAudioGate
           status={engine.voiceStatus}
-          voiceOn={state.settings.coachVoice !== false}
+          voiceOn={state.settings.coachVoice !== false && paidCoachSpeechEnabled()}
           title={`${plan.weekday} · ${plan.title}`}
           onEnable={engine.enableAudio}
           onSkip={() => setState((p) => ({ ...p, settings: { ...p.settings, coachVoice: false } }))}
@@ -285,8 +285,9 @@ function GlassesMode() {
 
         <div className="mb-2 flex justify-center">
           <CoachAudioBadge
+            generatedEnabled={paidCoachSpeechEnabled()}
             status={engine.voiceStatus}
-            voiceOn={state.settings.coachVoice !== false}
+            voiceOn={state.settings.coachVoice !== false && paidCoachSpeechEnabled()}
             onEnable={() => void engine.enableAudio()}
             onToggleMute={() => {
               stopSpeech();
