@@ -72,7 +72,12 @@ try {
   await page.getByTestId("app-entry-tap").click();
   await page.getByTestId("app-entry-yes").click({ timeout: 12000 });
   await page.getByTestId("app-entry-gate").waitFor({ state: "detached", timeout: 10000 });
-  step("Fresh-session entrance accepted on a 390px phone viewport");
+  await page.getByTestId("seated-program-warning").waitFor();
+  assert.ok(
+    (await page.getByTestId("seated-program-warning").innerText()).includes("not been fully converted"),
+    "Legacy weekly plan must not appear cleared for seated-only training",
+  );
+  step("Fresh-session entrance accepted; seated-only program warning visible");
 
   // Directly open the session to test its own entrance independent of
   // home-page onboarding defaults. Both entry screens are genuine React UI.
@@ -87,6 +92,7 @@ try {
   // disclosure, consent state, or real on-screen control.
   const save = page.getByRole("button", { name: "Save & continue" });
   await save.waitFor({ timeout: 12000 });
+  await page.getByTestId("coach-seated-review-warning").waitFor();
   await save.click();
   await page.getByTestId("coach-wake").waitFor({ state: "detached", timeout: 12000 });
   await page.getByTestId("coach-read-along-badge").waitFor();
