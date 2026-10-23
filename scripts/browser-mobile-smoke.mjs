@@ -119,6 +119,43 @@ try {
   assert.deepEqual(errors, [], "The React page must have no uncaught script errors");
   step("No paid AI requests or uncaught browser page errors");
 
+  // Simulate a failure from the approved external MP4 host in another clean
+  // browser context. The app must remain usable and never display a random
+  // replacement clip as though it were the actual coach.
+  const mediaContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 1,
+  });
+  await mediaContext.addInitScript(() => {
+    window.sessionStorage.setItem("coach-intro-seen-v1", "1");
+  });
+  const mediaPage = await mediaContext.newPage();
+  await mediaPage.route(/\\.mp4(?:\\?|$)/i, (route) => route.abort("failed"));
+  try {
+    const mediaResponse = await mediaPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
+    assert.equal(mediaResponse?.status(), 200);
+    await mediaPage.getByTestId("coach-wake").waitFor({ timeout: 15000 });
+    const failedVideo = mediaPage.getByTestId("coach-video-fallback").first();
+    await failedVideo.waitFor({ timeout: 12000 });
+    const sourceBefore = await mediaPage.getByTestId("coach-motion").first().getAttribute("data-url");
+    assert.ok(sourceBefore?.endsWith(".mp4"), "Must originate from real approved MP4 path");
+    await failedVideo.getByTestId("retry-coach-video").click();
+    await failedVideo.waitFor({ timeout: 12000 });
+    const sourceAfter = await mediaPage.getByTestId("coach-motion").first().getAttribute("data-url");
+    assert.equal(sourceAfter, sourceBefore, "Video retry must never substitute another clip");
+    step("Blocked video shows approved still and retries identical approved source");
+  } catch (mediaError) {
+    await mkdir("artifacts", { recursive: true });
+    await mediaPage.screenshot({
+      path: "artifacts/m3-flex-video-failure.png", fullPage: true, timeout: 4000,
+    }).catch(() => {});
+    throw mediaError;
+  } finally {
+    await mediaContext.close();
+  }
+
   // These checks are intentionally NOT certification of Android hardware,
   // microphone/camera output, physical speaker sound, or remote media CDN.
   console.log("Chromium mobile-width interaction smoke check passed. No deployment performed.");
