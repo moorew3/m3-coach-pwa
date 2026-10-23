@@ -29,7 +29,24 @@ const laterSets: Record<number, [number, number]> = {
   2: [5.66, 8.39], // third set
   3: [8.57, 11.6], // fourth set
 };
-let active: { stepKey: string; element: HTMLAudioElement; end: number } | null = null;
+type CueSession = {
+  stepKey: string;
+  element: HTMLAudioElement;
+  start: number;
+  end: number;
+  requested: boolean;
+  finished: boolean;
+  seekReady: boolean;
+};
+let active: CueSession | null = null;
+
+function startIfReady(session: CueSession) {
+  if (active !== session || !session.requested || session.finished || !session.seekReady) return;
+  void session.element.play().catch(() => {
+    // Mobile audio permission may still require a direct user gesture.
+    // Never substitute a different voice or count an unheard cue as spoken.
+  });
+}
 
 export function getMarcusCue(stepKey: string, mirror: string | undefined, setIndex: number): Slice | null {
   const intro = mirror ? firstSet[mirror] : undefined;
@@ -39,36 +56,61 @@ export function getMarcusCue(stepKey: string, mirror: string | undefined, setInd
   return next ? { src: LATER_SETS, start: next[0], end: next[1] } : null;
 }
 
-/** Called only after the exact work-set video has fired 'playing'. */
+/** Called only after the matching VIDEO has fired the genuine playing event. */
 export function playMarcusWorkCue(stepKey: string, mirror: string | undefined, setIndex: number): boolean {
   if (typeof Audio === "undefined") return false;
   const clip = getMarcusCue(stepKey, mirror, setIndex);
   if (!clip) { stopMarcusWorkCue(); return false; }
   if (active?.stepKey === stepKey) {
-    if (active.element.paused && active.element.currentTime < active.end) {
-      void active.element.play().catch(() => undefined);
-    }
+    active.requested = true;
+    startIfReady(active); // Resume the same sentence, never start another copy.
     return true;
   }
   stopMarcusWorkCue();
-  const element = new Audio(clip.src);
+  const element = new Audio();
   element.preload = "auto";
-  element.onloadedmetadata = () => {
-    try { if (element.currentTime < clip.start) element.currentTime = clip.start; } catch { /* browser not seekable yet */ }
+  const session: CueSession = {
+    stepKey, element, start: clip.start, end: clip.end,
+    requested: true, finished: false, seekReady: false,
   };
-  try { element.currentTime = clip.start; } catch { /* seek when metadata loads */ }
-  const session = { stepKey, element, end: clip.end };
   active = session;
+  // Do not call play() until metadata is loaded AND the segment has been
+  // seeked to its correct start. This prevents the beginning of the long
+  // recorded voice file leaking into a completely different exercise cue.
+  const seekAndStart = () => {
+    if (active !== session || !Number.isFinite(element.duration)) return;
+    if (!session.seekReady) {
+      try {
+        element.currentTime = clip.start;
+        session.seekReady = true;
+      } catch { return; }
+    }
+    startIfReady(session);
+  };
+  element.onloadedmetadata = seekAndStart;
+  element.oncanplay = seekAndStart;
   element.ontimeupdate = () => {
-    if (element.currentTime >= clip.end && active === session) {
+    if (active !== session) return;
+    if (element.currentTime >= clip.end - 0.06) {
+      session.finished = true;
+      session.requested = false;
       element.pause();
-      element.ontimeupdate = null;
     }
   };
-  void element.play().catch(() => undefined);
+  element.onended = () => {
+    if (active !== session) return;
+    session.finished = true;
+    session.requested = false;
+  };
+  element.src = clip.src;
+  element.load();
   return true;
 }
-export function pauseMarcusWorkCue() { active?.element.pause(); }
+export function pauseMarcusWorkCue() {
+  if (!active) return;
+  active.requested = false;
+  active.element.pause();
+}
 export function stopMarcusWorkCue() {
   if (!active) return;
   const element = active.element;
@@ -76,6 +118,8 @@ export function stopMarcusWorkCue() {
   element.pause();
   element.ontimeupdate = null;
   element.onloadedmetadata = null;
+  element.oncanplay = null;
+  element.onended = null;
   element.removeAttribute("src");
   element.load();
 }
