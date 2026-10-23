@@ -56,3 +56,9 @@ test("audio diagnostics play only approved recorded Marcus while premium speech 
   assert.match(panel, /onError=\{\(\) => setRecordedStatus/);
   assert.doesNotMatch(panel, /api\.openai\.com|newSpeechCredit/);
 });
+
+test("wake-screen video failure retry stays above full-screen entrance tap layer", () => {
+  const wake = readFileSync(new URL("CoachWake.tsx", root), "utf8");
+  assert.equal((wake.match(/fallbackAtTop/g) ?? []).length, 2);
+  assert.match(coachMotion, /fallbackAtTop \? "top-4 z-\[70\]" : "bottom-5"/);
+});
