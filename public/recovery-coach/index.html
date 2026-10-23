@@ -364,7 +364,7 @@ video.addEventListener("waiting",()=>{
  },2300);
 });
 video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&(mode==="running"||mode==="rest"))pause();});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)return;if(mode==="running"||mode==="rest")pause();else if(mode==="preview"){stopMedia(false);mode="ready";drawTimer();tell("Preview stopped when this screen was hidden. Tap Preview to replay; no exercise was logged.");}});
 $("next").addEventListener("click",()=>{
  if(mode==="complete")return;
  if(phase===2&&idx===stages[2].items.length-1){tell("Complete the last cooldown timer before the session can be marked complete.");return;}
