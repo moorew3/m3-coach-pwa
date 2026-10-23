@@ -60,3 +60,12 @@ test("unapproved Workout A/B demonstration candidates are still blocked", () => 
   assert.match(previews, /"name":"Seated lateral raises","status":"source"/);
   assert.match(previews, /"name":"Arm-only seated boxing","status":"source"/);
 });
+
+test("C09 and C10 are correctly labeled as approved, while C11 stays preview-only", () => {
+  assert.match(previews, /C09 · Owner-approved and active/);
+  assert.match(previews, /C10 · Owner-approved and active/);
+  assert.match(previews, /id="C11-PRE-HANDS-R1"/);
+  assert.match(previews, /C11 · Render completed · NOT approved/);
+  assert.match(previews, /01a154f3-ef54-7546-8740-1c488df4c772\.mp4/);
+  assert.doesNotMatch(production, /C11-PRE-HANDS-R1/);
+});
