@@ -51,3 +51,20 @@ test("none of the approved audio/video sources are replaced by speech-off mode",
     assert.ok(approved.includes(id), id + " approved source missing");
   }
 });
+
+test("phone, glasses and TV surfaces never demand inactive generated voice", () => {
+  const phone = readFileSync(new URL("../src/routes/coach.$day.tsx", import.meta.url), "utf8");
+  const glasses = readFileSync(new URL("../src/routes/glasses.tsx", import.meta.url), "utf8");
+  const presentation = readFileSync(new URL("../src/routes/presentation.tsx", import.meta.url), "utf8");
+  for (const route of [phone, glasses, presentation]) {
+    assert.match(route, /paidCoachSpeechEnabled\(\)/);
+  }
+  assert.match(phone, /data-testid="coach-readable-script"/);
+  assert.match(phone, /\{step\.say\}/);
+  assert.match(glasses, /data-testid="glasses-readable-script"/);
+  assert.match(glasses, /voiceOn=\{state\.settings\.coachVoice !== false && paidCoachSpeechEnabled\(\)\}/);
+  assert.match(glasses, /generatedEnabled=\{paidCoachSpeechEnabled\(\)\}/);
+  assert.match(presentation, /const voiceOn = state\.settings\.coachVoice !== false && paidCoachSpeechEnabled\(\);/);
+  assert.match(presentation, /disabled=\{!paidCoachSpeechEnabled\(\)\}/);
+  assert.match(presentation, /"Read-along"/);
+});
