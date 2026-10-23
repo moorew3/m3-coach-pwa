@@ -50,6 +50,19 @@ Both `/api/public/coach-speech` and `/api/public/coach-talk` now share `src/lib/
 - This development pass DOES NOT make freshly composed local answers audible in Marcus's voice while optional paid speech is off. Owner-approved recorded clips remain the permitted spoken media; no robotic device-voice substitution has been added.
 - QA requirements include real device input/caption usability, microphone permission checks, session persistence, pre-existing voice playback and no paid network usage with flags disabled.
 
+## Read-along workout operation when paid speech is disabled
+
+The owner-cost setting `VITE_FLEX_PAID_AI_ENABLED=false` now applies to the **entire shared coached-session voice layer**, not merely the conversation form:
+
+- `speak`, speech prefetch, voice unlock, optional voice diagnostics and the underlying speech-request function all return without attempting an outside TTS request. The server independently denies these same paid calls.
+- `useCoachEngine` treats generated narration as unavailable in this mode. Speech-led **intro / setup / handoff** steps use the visible-script read-along timer capped at 10 seconds; the app cannot hold them indefinitely while waiting for a non-existent audio completion event.
+- **Actual exercise intervals, rep-based sets, rest periods, programmed cooldown seconds and 3–2–1 countdowns retain their original duration and logging behavior.** The cap applies only to steps explicitly marked `speechPaced`.
+- The phone workout screen shows a passive **Read-along** indicator and a plain explanation in Session Controls. It does not display a non-functional “Tap to enable AI voice” prompt. This is a precise limitation, not a substitute for the approved Marcus narrator.
+- Owner-approved **pre-recorded Marcus MP3** remains separately testable in Audio Status. This pass does NOT automatically sync that MP3 to every dynamic scripted cue or claim new Marcus speech/lip-sync while live generated speech is disabled.
+- Added `src/lib/speech-pacing.ts` and regression tests to protect exercises and rest from accidental shortening, along with source-level guards against paid speech calls while disabled.
+
+`VITE_FLEX_PAID_AI_ENABLED` is a **build-time** value. Changing it requires a fresh application build; enabling the server alone must never bypass the browser opt-in. Every deployment requires an independent live user validation of workouts, local captions, motion, voice output, and timer transitions.
+
 ## Media failure handling — approved motion only (staging)
 
 The existing full-screen coach video player now detects direct clip source failures, browser autoplay blocks and playback stalls exceeding 12 seconds. It **does not** replace the clip with an unrelated demonstration. It displays the original approved still, an explicit message, and a tap-to-retry button that reloads the exact same source. Vimeo embed errors similarly display the original poster/still and permit a same-ID retry.
