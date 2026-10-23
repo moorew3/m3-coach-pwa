@@ -187,7 +187,7 @@ export function CoachWake({
       {/* IDENTITY LOCK: the opening uses the same canonical approved coach
           clips as the rest of the app (coachMotionFor via ambientClipFor).
           No separately generated look-alike is allowed on this screen. */}
-      <div className="absolute inset-0" data-testid="coach-entrance-media">
+      <div className="pointer-events-none absolute inset-0 z-20" data-testid="coach-entrance-media">
         {approachClip ? (
           <>
             <CoachMotion
