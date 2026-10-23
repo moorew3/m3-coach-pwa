@@ -103,6 +103,7 @@ test("browser reload test proves rest/round retention and safety check re-confir
   assert.match(chrome, /#clearance \.check:checked/);
   assert.match(chrome, /re-confirm all three clinician clearance/i);
   assert.match(chrome, /Recovery phone reload restores pending rest/);
+  assert.match(chrome, /Closing\/reopening recovery tab preserves approved exercise/);
 });
 
 test("rest after device restart uses approved rest Marcus recording, not stale exercise audio", () => {
@@ -113,7 +114,8 @@ test("rest after device restart uses approved rest Marcus recording, not stale e
 
 test("Android page lock pauses the timer and saving a completed session clears its cache", () => {
   assert.match(page, /document\.addEventListener\("visibilitychange"/);
-  assert.match(page, /document\.hidden&&\(mode==="running"\|\|mode==="rest"\)/);
+  assert.match(page, /if\(!document\.hidden\)return;if\(mode==="running"\|\|mode==="rest"\)pause\(\)/);
+  assert.match(page, /else if\(mode==="preview"\)\{stopMedia\(false\);mode="ready"/);
   assert.match(page, /window\.addEventListener\("pagehide",persistProgress\)/);
   assert.match(page, /if\(!sessionStarted\|\|mode==="complete"\)/);
   assert.match(page, /localStorage\.removeItem\(PROGRESS_KEY\)/);
