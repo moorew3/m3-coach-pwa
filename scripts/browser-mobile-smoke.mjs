@@ -98,11 +98,20 @@ try {
   await page.waitForFunction(
     () => document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-running") === "false",
   );
+  const pausedAt = await stage.getAttribute("data-left");
+  assert.notEqual(pausedAt, "null", "Intro read-along must have an actual countdown");
+  await page.waitForTimeout(1300);
+  assert.equal(await stage.getAttribute("data-left"), pausedAt, "Pausing must freeze countdown");
   await page.getByTestId("rail-pause").click();
   await page.waitForFunction(
     () => document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-running") === "true",
   );
-  step("Pause and Resume update actual shared coach session state");
+  await page.waitForFunction(
+    (prior) => Number(document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-left")) < Number(prior),
+    pausedAt,
+    { timeout: 4500 },
+  );
+  step("Pause freezes the real second counter; Resume advances it again");
 
   await page.getByTestId("rail-more").click();
   await page.getByTestId("coach-question-input").fill("How many sets are left?");
@@ -118,6 +127,84 @@ try {
   );
   assert.deepEqual(errors, [], "The React page must have no uncaught script errors");
   step("No paid AI requests or uncaught browser page errors");
+
+  // Live superset navigation in a fresh local-data browser context.
+  // Configure the prescribed Monday paired mode through the REAL homepage
+  // toggle; skip through the actual engine instead of assuming source order.
+  const pairingContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+  });
+  const pairingPage = await pairingContext.newPage();
+  pairingPage.setDefaultTimeout(12000);
+  try {
+    await pairingPage.goto(base + "/", { waitUntil: "domcontentloaded" });
+    await pairingPage.getByTestId("app-entry-tap").click();
+    await pairingPage.getByTestId("app-entry-yes").click();
+    const toggle = pairingPage.getByRole("button", { name: /Use supersets today/i });
+    await toggle.waitFor();
+    await toggle.click();
+    assert.equal(await toggle.getAttribute("aria-pressed"), "true", "Superset mode must be on");
+
+    await pairingPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
+    await pairingPage.getByTestId("coach-wake-yes").click();
+    await pairingPage.getByRole("button", { name: "Save & continue" }).click();
+    await pairingPage.getByTestId("coach-wake").waitFor({ state: "detached", timeout: 12000 });
+    const pairStage = pairingPage.getByTestId("coach-stage");
+    const pairStep = () => pairStage.getAttribute("data-step-id");
+    const skip = async () => {
+      const prior = await pairStep();
+      await pairingPage.getByTestId("rail-skip").click();
+      await pairingPage.waitForFunction(
+        (previous) => document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-step-id") !== previous,
+        prior,
+        { timeout: 9000 },
+      );
+    };
+    let found = false;
+    for (let i = 0; i < 150; i++) {
+      const current = await pairStep();
+      if (current === "mon-db-curl-work-0") { found = true; break; }
+      if (current === "complete") break;
+      await skip();
+    }
+    assert.ok(found, "Monday B1 paired dumbbell curl must exist in live coached script");
+    await skip();
+    assert.equal(await pairStage.getAttribute("data-step-kind"), "brief", "B2 partner handoff is not rest");
+    assert.equal(await pairStep(), "mon-triceps-pressdown-brief", "B2 follows B1 immediately");
+    await skip();
+    assert.equal(await pairStep(), "mon-triceps-pressdown-work-0", "Partner B2 starts after brief");
+    await skip();
+    assert.equal(await pairStage.getAttribute("data-step-kind"), "rest", "Rest only AFTER partner B2");
+    const pairRest = await pairStep();
+    assert.equal(pairRest, "mon-triceps-pressdown-rest-0");
+    await pairingPage.waitForFunction(
+      () => Number(document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-left")) >= 65,
+      null,
+      { timeout: 6000 },
+    );
+    const restLeft = Number(await pairStage.getAttribute("data-left"));
+    assert.ok(restLeft <= 75 && restLeft >= 65, "Prescribed paired rest must remain 75 seconds");
+    await pairingPage.getByTestId("rail-pause").click();
+    await pairingPage.waitForFunction(
+      () => document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-running") === "false",
+    );
+    const frozenRest = await pairStage.getAttribute("data-left");
+    await pairingPage.waitForTimeout(1200);
+    assert.equal(await pairStage.getAttribute("data-left"), frozenRest, "Paused superset rest must not tick");
+    await pairingPage.getByTestId("rail-pause").click();
+    await pairingPage.waitForFunction(
+      (prior) => Number(document.querySelector('[data-testid="coach-stage"]')?.getAttribute("data-left")) < Number(prior),
+      frozenRest,
+      { timeout: 4000 },
+    );
+    await skip();
+    assert.equal(await pairStep(), "mon-db-curl-work-1", "After paired rest, next round starts at B1");
+    step("Live Monday B1→B2→75s rest→B1 superset, including paused/restored clock");
+  } finally {
+    await pairingContext.close();
+  }
 
   // Simulate a failure from the approved external MP4 host in another clean
   // browser context. The app must remain usable and never display a random
