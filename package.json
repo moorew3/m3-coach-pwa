@@ -18,7 +18,8 @@
     "test:v2-demos": "node scripts/qa-v2-demo-library.mjs",
     "test:v2-marcus-only": "node scripts/qa-v2-marcus-only.mjs",
     "test:v2-recovery-adapter": "node scripts/qa-v2-recovery-adapter.mjs",
-    "test:v2-marcus-lifecycle": "node scripts/qa-v2-marcus-clip-lifecycle.mjs"
+    "test:v2-marcus-lifecycle": "node scripts/qa-v2-marcus-clip-lifecycle.mjs",
+    "test:v2-pace-rest": "node scripts/qa-v2-pace-rest.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
