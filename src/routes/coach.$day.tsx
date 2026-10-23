@@ -1731,6 +1731,7 @@ function CoachSession() {
       data-step-id={step.id}
       data-running={running ? "true" : "false"}
       data-lead={lead === null ? "null" : lead}
+      data-left={left === null ? "null" : left}
       data-countdown-events={engine.countdownEvents.join(",")}
       data-trainer-state={trainerMedia.state}
       data-media-mode={trainerMedia.mode}
