@@ -163,7 +163,9 @@ function GlassesMode() {
           ? "Ready"
           : String(lead)
       : step.speechPaced
-        ? (step.reps ?? "Follow me")
+        ? !paidCoachSpeechEnabled() && left !== null
+          ? mmss(left)
+          : (step.reps ?? "Follow me")
         : left !== null
           ? mmss(left)
           : (step.reps ?? "Ready");
@@ -197,6 +199,14 @@ function GlassesMode() {
         <h1 className="font-display text-5xl font-black uppercase leading-none tracking-tight">
           {step.title}
         </h1>
+        {step.speechPaced && !paidCoachSpeechEnabled() && (
+          <p
+            data-testid="glasses-readable-script"
+            className="max-h-32 overflow-y-auto rounded-xl border border-cyan-200/20 bg-white/10 p-3 text-base leading-snug"
+          >
+            {step.say}
+          </p>
+        )}
 
         <p className="text-7xl font-black tabular-nums text-cyan-300">{big}</p>
 
