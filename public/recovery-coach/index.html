@@ -136,10 +136,10 @@ let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable ro
 const PROGRESS_KEY="m3-flex-recovery-progress-v1";
 const PROGRESS_VALID_MS=24*60*60*1000;
 let lastProgressText="";
-/** Stores this tab's demonstrated phase only, NOT medical clearance or personal reps. */
+/** Stores this browser's demonstrated phase only, NOT medical clearance or personal reps. */
 function persistProgress(){
  if(!sessionStarted||mode==="complete"){
-  try{sessionStorage.removeItem(PROGRESS_KEY)}catch(e){}
+  try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
   lastProgressText="";return;
  }
  const snapshot={
@@ -152,11 +152,11 @@ function persistProgress(){
  // explicit Pause/Resume still commits immediately.
  const signature=JSON.stringify({...snapshot,savedAt:0});
  if(signature===lastProgressText)return;
- try{sessionStorage.setItem(PROGRESS_KEY,JSON.stringify(snapshot));lastProgressText=signature}catch(e){}
+ try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(snapshot));lastProgressText=signature}catch(e){}
 }
 function restoreProgress(){
  let saved;
- try{saved=JSON.parse(sessionStorage.getItem(PROGRESS_KEY)||"null")}catch(e){return false}
+ try{saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null")}catch(e){return false}
  if(!saved||saved.v!==1||!Number.isFinite(saved.savedAt)||
     Date.now()-saved.savedAt>PROGRESS_VALID_MS||saved.savedAt>Date.now()+60_000)return false;
  const p=saved.phase,n=saved.idx;
