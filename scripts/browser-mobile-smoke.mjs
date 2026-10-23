@@ -255,6 +255,24 @@ try {
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
     assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 2 of 2/);
     assert.match(await recoveryPage.locator("#progressText").innerText(), /^0 of 10 steps completed/);
+    // Phone tab reload/relaunch must preserve the EXACT pending rest and
+    // current set; never auto-play and NEVER restore medical clearance.
+    const beforeReload = (await recoveryPage.locator("#clock").textContent())?.trim();
+    await recoveryPage.reload({ waitUntil: "domcontentloaded" });
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
+    assert.equal((await recoveryPage.locator("#clock").textContent())?.trim(), beforeReload);
+    assert.match((await recoveryPage.locator("#position").textContent())?.trim() ?? "", /Set 2 of 2/);
+    assert.equal(await recoveryPage.locator("#clearance .check:checked").count(), 0);
+    await recoveryPage.locator("#startPause").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
+    assert.match(await recoveryPage.locator("#note").innerText(), /re-confirm all three clinician clearance/i);
+    for (const box of await recoveryPage.locator("#clearance .check").all()) {
+      await box.check();
+    }
+    await recoveryPage.locator("#startPause").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    assert.equal((await recoveryPage.locator("#clock").textContent())?.trim(), beforeReload);
+    step("Recovery phone reload restores pending rest/round paused, but requires fresh clinician clearance");
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
     const paused = await recoveryPage.locator("#clock").innerText();
