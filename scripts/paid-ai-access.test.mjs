@@ -95,3 +95,13 @@ test("source routes consult the authorization gate before requesting paid servic
     assert.match(src, /readBoundedAiJson\(request\)/);
   }
 });
+
+test("all optional provider calls have timeouts and safe failure responses", async () => {
+  const { readFileSync } = await import("node:fs");
+  for (const name of ["coach-talk.ts", "coach-speech.ts"]) {
+    const src = readFileSync(new URL("../src/routes/api/public/" + name, import.meta.url), "utf8");
+    assert.match(src, /signal: AbortSignal\.timeout\(\d+\)/);
+    assert.match(src, /return aiError\(504, "Optional AI provider timed out/);
+    assert.doesNotMatch(src, /await upstream\.text\(\)/);
+  }
+});
