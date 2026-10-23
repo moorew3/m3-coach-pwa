@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import { Activity, ChevronDown, ChevronUp, Play } from "lucide-react";
-import { bufferedSegments, testCoachAudio, useVoiceDiagnostics } from "@/lib/coach-voice";
+import { bufferedSegments, stopSpeech, testCoachAudio, useVoiceDiagnostics } from "@/lib/coach-voice";
 
 function Row({ label, value, warn = false }: { label: string; value: string; warn?: boolean }) {
   return (
@@ -33,6 +33,8 @@ export function CoachAudioPanel({
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [recordedStatus, setRecordedStatus] = useState<string | null>(null);
+  const premiumSpeechEnabled = import.meta.env["VITE_FLEX_PAID_AI_ENABLED"] === "true";
 
   return (
     <div
@@ -53,7 +55,11 @@ export function CoachAudioPanel({
 
       {open && (
         <div className="px-3 pb-3">
-          <Row label="Status" value={d.status} warn={d.status !== "ready"} />
+          <Row
+            label="Live generated voice"
+            value={premiumSpeechEnabled ? "Enabled by build configuration" : "Off — no paid speech requests"}
+          />
+          <Row label="Status" value={d.status} warn={premiumSpeechEnabled && d.status !== "ready"} />
           <Row label="Voice path" value={d.path} warn={d.path === "none"} />
           <Row label="Unlocked by tap" value={d.unlocked ? "yes" : "no"} warn={!d.unlocked} />
           <Row
@@ -86,9 +92,32 @@ export function CoachAudioPanel({
           <Row label="Pre-buffered" value={`${bufferedSegments()} segments`} />
           <Row label="Last error" value={d.lastError ?? "none"} warn={!!d.lastError} />
 
+          <div className="mt-3 rounded-xl border border-border p-3">
+            <p className="text-xs font-bold">Test approved Marcus recording</p>
+            <p className="my-1 text-xs text-muted-foreground">
+              Plays the original C09 seated-breathing voice. No AI generation or credits are used.
+              A successful browser play does not prove your speaker or Bluetooth output is audible.
+            </p>
+            <audio
+              controls
+              preload="none"
+              aria-label="Play approved Marcus C09 English recording"
+              data-testid="test-approved-marcus-recording"
+              src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3"
+              className="w-full"
+              onPlay={() => {
+                stopSpeech();
+                setRecordedStatus("Approved recording playback started. Check your actual sound output.");
+              }}
+              onError={() => setRecordedStatus("The approved audio recording could not load. Check your network or media host.")}
+            />
+            {recordedStatus && (
+              <p className="mt-1 text-xs text-muted-foreground" role="status">{recordedStatus}</p>
+            )}
+          </div>
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !premiumSpeechEnabled}
             onClick={async () => {
               setBusy(true);
               setResult(null);
@@ -102,7 +131,7 @@ export function CoachAudioPanel({
             className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3 text-xs font-black uppercase tracking-wide text-primary-foreground"
           >
             <Play className="size-4" />
-            {busy ? "Testing…" : "Test coach audio"}
+            {busy ? "Testing…" : premiumSpeechEnabled ? "Test generated coach audio" : "Generated speech disabled (no charge)"}
           </button>
           {result && (
             <p className="mt-2 text-[11px] leading-snug text-muted-foreground">{result}</p>
