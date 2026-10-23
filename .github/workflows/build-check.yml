@@ -40,3 +40,27 @@ jobs:
 
       - name: Smoke test actual compiled Node server without paid AI
         run: node scripts/node-runtime-smoke.mjs
+
+      # Browser tooling is CI-only: it is never installed for app users or deployed.
+      - name: Install Chrome for interaction smoke test
+        uses: browser-actions/setup-chrome@v2
+        id: setup-chrome
+        with:
+          install-dependencies: true
+
+      - name: Install CI-only Playwright controller
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core@1.64.1
+
+      - name: Verify real phone-width coach interactions
+        env:
+          M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: node scripts/browser-mobile-smoke.mjs
+
+      - name: Save browser failure screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m3-flex-browser-failure
+          path: artifacts/m3-flex-browser-failure.png
+          retention-days: 7
+          if-no-files-found: ignore
