@@ -291,7 +291,19 @@ try {
     await recoveryPage.clock.fastForward(16_000);
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated hammer curls");
     assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 1 of 2/);
-    step("Approved seated circuit: clearance, 2 rounds, 15s rest, Pause, no fabricated rep tally");
+    // Closing a tab and reopening the page in the same local browser
+    // profile should work: unlike sessionStorage, localStorage survives.
+    await recoveryPage.locator("#startPause").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
+    await recoveryPage.close();
+    const reOpened = await recoveryContext.newPage();
+    await reOpened.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    assert.equal((await reOpened.locator("#runState").textContent())?.trim(), "Paused");
+    assert.equal(await reOpened.locator("#moveTitle").innerText(), "Seated hammer curls");
+    assert.match((await reOpened.locator("#position").textContent())?.trim(), /Set 1 of 2/);
+    assert.equal(await reOpened.locator("#clearance .check:checked").count(), 0);
+    step("Approved seated circuit: clearance, 2 rounds, 15s rest, Pause, and no fabricated rep tally");
+    step("Closing/reopening recovery tab preserves approved exercise/set without restoring clearance");
   } finally {
     await recoveryContext.close();
   }
