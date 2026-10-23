@@ -262,6 +262,20 @@ function Today() {
               </a>
             </div>
 
+            <a
+              href="/recovery-coach/"
+              data-testid="seated-recovery-start"
+              className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-accent bg-accent/15 px-3 py-3 text-center text-sm font-black uppercase leading-snug text-accent"
+            >
+              <Play className="size-5 shrink-0" aria-hidden />
+              Seated Recovery Coach · 7 approved scenes
+            </a>
+            <p className="mt-1 text-center text-[11px] text-muted-foreground">
+              Start inside M3 FLEX with the existing approved video sequence.
+              Clinician-clearance confirmation is required for timed exercise.
+              Workout A/B are still in development.
+            </p>
+
             <button
               type="button"
               onClick={() => {
