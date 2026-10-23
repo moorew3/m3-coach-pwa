@@ -50,6 +50,16 @@ Both `/api/public/coach-speech` and `/api/public/coach-talk` now share `src/lib/
 - This development pass DOES NOT make freshly composed local answers audible in Marcus's voice while optional paid speech is off. Owner-approved recorded clips remain the permitted spoken media; no robotic device-voice substitution has been added.
 - QA requirements include real device input/caption usability, microphone permission checks, session persistence, pre-existing voice playback and no paid network usage with flags disabled.
 
+## Portable uptime diagnosis (no monitoring subscription)
+
+The staging app exposes `GET /api/health`: a no-credentials JSON process-liveness check containing only `service`, `status`, and `check`. It does not contact Supabase, OpenAI, HeyGen, or any paid provider. This route is covered by the compiled Node HTTP smoke test.
+
+- `GET /api/health` returns 200 and `{"service":"m3-flex","status":"ok","check":"process"}` when this Node process responds. This alone **does not** certify login, database persistence, camera, voice, video CDN, or client hydration.
+- If health fails, inspect DNS, TLS proxy, Node logs, port mapping and upstream process.
+- If health succeeds but videos fail, test each immutable approved media URL, browser autoplay permission and content-policy/CORS problems separately. Never silently swap in unapproved footage.
+- If health succeeds but an optional conversation or newly generated speech request returns 503 while the paid-AI flags are off, **that is the expected cost-safety setting, not server downtime**.
+- After a real host is chosen, an existing owner-controlled scheduler can periodically check this endpoint without a paid uptime service; no external monitor is connected or scheduled by this commit.
+
 ## Database, rollback and live-traffic gate
 
 - Preserve current Supabase security policy and existing sync data. No schemas or data have been migrated.
