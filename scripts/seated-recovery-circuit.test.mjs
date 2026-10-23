@@ -36,6 +36,9 @@ test("one/two optional demonstrated sets do not multiply, log, or invent athlete
   assert.match(page, /restNext=\{phase:1,idx\}/);
   assert.match(page, /completed\.add\(phase\+":"\+idx\)/);
   assert.match(page, /sessionStarted=false;targetRounds=Number/);
+  assert.match(page, /btn\.addEventListener\("click",\(\)=>stopForNavigation\(phase,i\)\)/);
+  assert.match(page, /name:"Controlled arm reaches"/);
+  assert.match(page, /existing Marcus recording is general shoulder-mobility audio/);
   assert.match(page, /Sets count timed demonstrations, not verified athlete repetitions/);
   assert.doesNotMatch(page, /actualReps\s*=\s*workRound|completedReps\s*\+\+/);
 });
