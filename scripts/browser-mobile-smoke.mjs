@@ -137,6 +137,9 @@ try {
     const mediaResponse = await mediaPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
     assert.equal(mediaResponse?.status(), 200);
     await mediaPage.getByTestId("coach-wake").waitFor({ timeout: 15000 });
+    // The introduction's full-screen tap target overlays the underlying
+    // media. Dismiss that target before testing a real clickable retry.
+    await mediaPage.getByTestId("coach-wake-tap").click();
     const wakeStage = mediaPage.getByTestId("coach-wake");
     const failedVideo = wakeStage.getByTestId("coach-video-fallback").first();
     await failedVideo.waitFor({ timeout: 12000 });
