@@ -44,3 +44,15 @@ test("stage still uses exact approved resolver and never substitutes upcoming vi
   assert.match(stage, /<CoachMotion/);
   assert.match(stage, /<CoachFace/);
 });
+
+test("audio diagnostics play only approved recorded Marcus while premium speech is off", () => {
+  const panel = readFileSync(new URL("CoachAudioPanel.tsx", root), "utf8");
+  assert.match(panel, /data-testid="test-approved-marcus-recording"/);
+  assert.match(panel, /9226f649-9808-4275-b269-bcc93d3b0342\.mp3/);
+  assert.match(panel, /preload="none"/);
+  assert.match(panel, /disabled=\{busy \|\| !premiumSpeechEnabled\}/);
+  assert.match(panel, /VITE_FLEX_PAID_AI_ENABLED/);
+  assert.match(panel, /stopSpeech\(\)/);
+  assert.match(panel, /onError=\{\(\) => setRecordedStatus/);
+  assert.doesNotMatch(panel, /api\.openai\.com|newSpeechCredit/);
+});
