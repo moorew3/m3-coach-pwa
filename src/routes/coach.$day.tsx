@@ -1757,6 +1757,16 @@ function CoachSession() {
             <p className="mt-1 text-sm text-white/65">
               Give me the same information you would give a trainer standing in front of you.
             </p>
+            <p
+              role="note"
+              data-testid="coach-seated-review-warning"
+              className="mt-3 rounded-xl border border-accent/40 bg-accent/10 p-3 text-xs leading-relaxed text-white/85"
+            >
+              This legacy workout has not yet been fully reviewed for seated-only foot-cast
+              training. Some scheduled exercises require standing or footwork. The readiness
+              check does not certify those movements as safe. Do not perform them while
+              restricted to seated exercise.
+            </p>
             <ReadinessCheck
               onCancel={() => {
                 setReadinessOpen(false);
