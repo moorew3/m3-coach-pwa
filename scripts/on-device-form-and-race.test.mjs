@@ -58,3 +58,13 @@ test("video/audio async completion from a skipped or paused step is permanently 
  assert.match(browser,/__pendingMediaPlays/);
  assert.match(browser,/Old asynchronous media play response must not restart a new workout/);
 });
+
+test("form observation follows only same-origin approved workout exercises",()=>{
+ assert.match(coach,/const LOCAL_POSE_SCENES=new Set\(\["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"\]\)/);
+ assert.match(coach,/postMessage\(\{type:"m3-flex-active-scene",id:step\(\)\.id\},location\.origin\)/);
+ assert.match(coach,/\$\("formFrame"\)\.addEventListener\("load",syncFormExercise\)/);
+ assert.match(page,/event\.source!==window\.parent\|\|event\.origin!==location\.origin/);
+ assert.match(page,/event\.data\?\.type!=="m3-flex-active-scene"\|\|!approvedSceneIds\.has\(event\.data\.id\)/);
+ assert.match(page,/\$\("exercise"\)\.value=event\.data\.id/);
+ assert.match(browser,/contentDocument\?\.querySelector\("#exercise"\)\?\.value === "C03"/);
+});
