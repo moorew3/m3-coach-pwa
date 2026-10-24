@@ -256,6 +256,21 @@ try {
     await recoveryPage.locator("#formObservation summary").click();
     await recoveryPage.frameLocator("#formFrame").locator("#start").waitFor();
     assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "./form-check/");
+    await recoveryPage.locator('[data-stage="1"]').click();
+    await recoveryPage.waitForFunction(
+      () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#exercise")?.value === "C01-R3",
+      null, { timeout: 6000 },
+    );
+    await recoveryPage.locator("#steps .item").nth(2).click();
+    await recoveryPage.waitForFunction(
+      () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#exercise")?.value === "C03",
+      null, { timeout: 6000 },
+    );
+    await recoveryPage.locator("#steps .item").nth(0).click();
+    await recoveryPage.waitForFunction(
+      () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#exercise")?.value === "C01-R3",
+      null, { timeout: 6000 },
+    );
     await recoveryPage.locator("#formObservation summary").click();
     await recoveryPage.waitForFunction(
       () => document.querySelector("#formFrame")?.getAttribute("src") === "about:blank",
