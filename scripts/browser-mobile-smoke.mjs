@@ -426,6 +426,7 @@ try {
     await pairsPage.locator("#setRounds").selectOption("2");
     await pairsPage.locator("#workDuration").selectOption("20");
     await pairsPage.locator("#restDuration").selectOption("15");
+    await pairsPage.locator("#voiceAccessPanel summary").click();
     await pairsPage.locator("#handsfreeStart").click();
     assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Ready",
       "Paired supersets must never bypass clinician clearance");
