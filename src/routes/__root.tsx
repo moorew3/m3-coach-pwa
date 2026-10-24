@@ -93,12 +93,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#1c1d20" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Arm Tracker" },
-      { title: "22-Day Arm Growth Tracker" },
+      { name: "apple-mobile-web-app-title", content: "M3 FLEX" },
+      { title: "M3 FLEX | Recovery Coach & Workout Tracker" },
       {
         name: "description",
         content:
-          "A 22-day guided arm growth program with offline exercise diagrams, set tracking and rest timers.",
+          "M3 FLEX: approved seated Recovery Coach previews, tracked sets, rest timers and workout planning. Approved videos and Marcus voice require a network connection.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
