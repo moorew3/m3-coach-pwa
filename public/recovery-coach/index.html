@@ -76,6 +76,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <label>Exercise time <select id="workDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></label>
 <label>Rest after each movement/set <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
 <label>Sets per approved exercise <select id="setRounds" aria-label="Approved exercise sets; not a repetition count"><option value="1" selected>1 set per exercise</option><option value="2">2 sets per exercise</option></select></label>
+<label>Training order <select id="pairMode" aria-label="Training order, straight sets or paired supersets"><option value="straight" selected>Straight sets · rest each set</option><option value="paired">Paired supersets · rest after both</option></select></label>
 </div>
 <div class="controls">
 <button id="startPause" type="button" class="btn primary wide">▶ Start full session</button>
@@ -96,6 +97,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <p id="handsfreeStatus" role="status">Ready. Active exercise still requires today's clinician-clearance checks.</p>
 <p class="hint">Optional Bluetooth keyboard: Space = Start/Pause/Resume, N = Next exercise, E = Show guidance, Escape = Pause. Android Voice Access may process speech through Google depending on its settings; M3 FLEX never sends voice recordings to paid AI. These controls cannot listen with the screen off or answer open-ended questions.</p>
 </details>
+<p class="small muted" style="margin-top:9px">Optional paired mode: shrugs → hammer curls → rest; front raises → alternating curls → rest; INNSTAR press separately. No foot loading. Ask your clinician before increasing intensity or grouping exercises.</p>
 <p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance. Sets count timed demonstrations, not verified athlete repetitions.</p>
 </section>
 <section class="panel"><div class="stepHeader"><strong id="listHeading">Before workout</strong><span id="listCounter">3 gentle steps</span></div><div class="steps" id="steps"></div></section>
@@ -164,6 +166,7 @@ const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
 let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable rounds; no inferred completed reps
+const finishedSets=new Map(); // timed demos only; never inferred athlete reps
 // Each navigation/pause/retry supersedes unresolved video/audio play promises.
 let playbackGeneration=0;
 const PROGRESS_KEY="m3-flex-recovery-progress-v1";
@@ -178,7 +181,7 @@ function persistProgress(){
  const snapshot={
   v:1, savedAt:Date.now(), phase,idx,workRound,targetRounds,
   secondsLeft:Math.max(0,Math.ceil(secondsLeft/1000)*1000),
-  mode, restNext, completed:[...completed],
+  mode, restNext, completed:[...completed],finishedSets:Object.fromEntries(finishedSets),pairMode:$("pairMode").value,
   workDuration:$("workDuration").value,restDuration:$("restDuration").value
  };
  // Avoid 200ms storage writes from the ticker. A new second, phase or
@@ -199,11 +202,16 @@ function restoreProgress(){
     !Number.isInteger(saved.workRound)||saved.workRound<1||saved.workRound>saved.targetRounds||
     !Number.isFinite(saved.secondsLeft)||saved.secondsLeft<0||saved.secondsLeft>180_000||
     !["ready","running","rest","paused","waiting","preview"].includes(saved.mode)||
+    !["straight","paired"].includes(saved.pairMode??"straight")||
     !["20","30","45","60"].includes(saved.workDuration)||
     !["15","20","30","45"].includes(saved.restDuration)||
     !Array.isArray(saved.completed))return false;
  const validSteps=new Set(stages.flatMap((st,pi)=>st.items.map((_,i)=>pi+":"+i)));
  if(saved.completed.some(key=>typeof key!=="string"||!validSteps.has(key)))return false;
+ const restoredSets=saved.finishedSets??{};
+ if(!restoredSets||typeof restoredSets!=="object"||Array.isArray(restoredSets)||
+    Object.entries(restoredSets).some(([key,count])=>!validSteps.has(key)||!key.startsWith("1:")||
+      !Number.isInteger(count)||count<0||count>saved.targetRounds))return false;
  const next=saved.restNext;
  if(next!==null&&next!==undefined&&
     (!Number.isInteger(next.phase)||next.phase!==1||
@@ -211,8 +219,14 @@ function restoreProgress(){
  if(saved.mode==="rest"&&!next)return false;
  phase=p;idx=n;workRound=saved.workRound;targetRounds=saved.targetRounds;
  secondsLeft=saved.secondsLeft;completed=new Set(saved.completed);
+ finishedSets.clear();
+ for(const [key,count] of Object.entries(restoredSets))finishedSets.set(key,count);
+ // Old local snapshots did not store set-by-set counts. Preserve already
+ // completed timed demonstrations without inventing new repetitions.
+ if(saved.finishedSets===undefined)for(const key of saved.completed)if(key.startsWith("1:"))finishedSets.set(key,saved.targetRounds);
  restNext=next??null;sessionStarted=true;
  $("setRounds").value=String(targetRounds);
+ $("pairMode").value=saved.pairMode??"straight";
  $("workDuration").value=saved.workDuration;
  $("restDuration").value=saved.restDuration;
  // Never auto-play audio, move the cast, or reuse previous clearance after
@@ -239,7 +253,7 @@ function safetyOkay(){return [...document.querySelectorAll(".check")].every(c=>c
 function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
 function drawTimer(){
-$("setRounds").disabled=sessionStarted;
+$("setRounds").disabled=sessionStarted;$("pairMode").disabled=sessionStarted;
 $("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed"})[mode]||"Ready";
 $("progressText").textContent=completed.size+" of "+total()+" steps completed — manually skipped steps do not count";
@@ -344,6 +358,35 @@ function advance(){
 }
 function advanceAfterStep(){
  stopMedia(true);
+ if(phase===1){
+  const key="1:"+idx;
+  finishedSets.set(key,Math.min(targetRounds,(finishedSets.get(key)||0)+1));
+ }
+ if(phase===1&&$("pairMode").value==="paired"){
+  if(idx===0||idx===2){
+   const lead=step().name;
+   idx++;mode="ready";secondsLeft=duration();render();
+   tell("Superset: "+lead+" finished; perform its paired exercise next. No rest until both timed demonstrations finish.");
+   runCurrent();return;
+  }
+  if(idx===1||idx===3){
+   const leader=idx-1,partner=idx;
+   if(workRound<targetRounds){
+    workRound++;restNext={phase:1,idx:leader};mode="rest";
+    secondsLeft=Number($("restDuration").value)*1000;render();beginTicker();playRestVoice();
+    tell("Rest after BOTH exercises in paired superset. Next round "+workRound+" starts with "+stages[1].items[leader].name);
+    return;
+   }
+   if((finishedSets.get("1:"+leader)||0)>=targetRounds&&
+      (finishedSets.get("1:"+partner)||0)>=targetRounds){
+    completed.add("1:"+leader);completed.add("1:"+partner);
+   }
+   const next=idx+1;restNext={phase:1,idx:next};workRound=1;mode="rest";
+   secondsLeft=Number($("restDuration").value)*1000;render();beginTicker();playRestVoice();
+   tell("Both superset exercises reached their timed demonstration targets. Rest now. Next: "+stages[1].items[next].name);
+   return;
+  }
+ }
  if(phase===1&&workRound<targetRounds){
    // The clip timer only demonstrates the movement. Never invent actual reps.
    workRound++;
@@ -353,7 +396,7 @@ function advanceAfterStep(){
    tell("Rest after demonstration set "+(workRound-1)+". Confirm your own actual reps separately; same approved movement returns for set "+workRound+".");
    return;
  }
- completed.add(phase+":"+idx);
+ if(phase!==1||(finishedSets.get("1:"+idx)||0)>=targetRounds)completed.add(phase+":"+idx);
  if(phase===1&&idx<stages[phase].items.length-1){
    restNext={phase:1,idx:idx+1};workRound=1;mode="rest";secondsLeft=Number($("restDuration").value)*1000;
    render();beginTicker();playRestVoice();tell("Marcus rest coaching. Keep the cast supported. Next: "+stages[1].items[idx+1].name);return
@@ -474,9 +517,9 @@ $("next").addEventListener("click",()=>{
  tell(mode==="complete"?"Session complete.": "Moved to "+step().name+". Skipped steps do not count as completed.");
  if(more&&continueSession){mode="ready";runCurrent().catch(()=>tell("Tap Start full session to resume."));}
 });
-$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;sessionStarted=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
+$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
-for(const id of ["workDuration","restDuration","setRounds"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
+for(const id of ["workDuration","restDuration","setRounds","pairMode"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
 const restored=restoreProgress();
 if(!restored)secondsLeft=duration();
 render();
