@@ -29,7 +29,7 @@ footer{font-size:11px;color:#b5d0dd;margin:13px 0}
 <option value="C08-PRESS-R3">C08 · INNSTAR seated chest press</option>
 </select>
 <label><input id="consent" type="checkbox"> I allow local live camera pose analysis for this session.</label>
-<p class="small">The model and WebAssembly runtime download once from Google/jsDelivr. Frames are processed locally; Google MediaPipe may collect runtime usage metrics. Android requires HTTPS and explicit camera permission. No microphone is used.</p></fieldset>
+<p class="small">The approved public model and WebAssembly runtime are served by this website (no pose-model CDN at workout time). Frames are processed locally; Google MediaPipe may collect runtime usage metrics. Android requires HTTPS and explicit camera permission. No microphone is used.</p></fieldset>
 <div class="actions">
 <button id="start" type="button" class="primary">Enable live form view</button>
 <button id="stop" type="button" disabled>Stop camera</button>
@@ -43,9 +43,9 @@ footer{font-size:11px;color:#b5d0dd;margin:13px 0}
 <script type="module">
 "use strict";
 const $=id=>document.getElementById(id);
-const LIBRARY="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/vision_bundle.mjs";
-const WASM="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm";
-const MODEL="https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+const LIBRARY="./vendor/vision_bundle.mjs";
+const WASM="./vendor/wasm";
+const MODEL="./vendor/pose_landmarker_lite.task";
 let session=0,stream=null,tracker=null,frame=null,lastFrameAt=0,lastFeedbackAt=0;
 const display=message=>{$("status").textContent=message;};
 function closeTracks(value){if(value)for(const track of value.getTracks())track.stop();}
