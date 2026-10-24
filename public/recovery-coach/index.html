@@ -26,6 +26,13 @@ select{width:100%;margin-top:4px;border:1px solid #57768b;background:#263c4e;col
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
 .btn{background:#263f54;color:white;border:1px solid #47637a;border-radius:11px;padding:12px 10px;min-height:45px;font-size:14px;font-weight:800}
 .btn.primary{background:var(--green);color:#112118;border-color:var(--green)}.btn.wide{grid-column:1/-1}
+.voiceAccessPanel{border:1px solid #406078;border-radius:13px;background:#0e2030;padding:10px 12px;margin:12px 0 0;color:var(--fg)}
+.voiceAccessPanel summary{font-size:14px;color:var(--green);min-height:30px;cursor:pointer;font-weight:850}
+.voiceAccessPanel p{font-size:12px;color:var(--dim);line-height:1.55;margin:9px 0}
+.voiceActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:11px 0}
+.voiceActions .btn{min-height:55px;font-weight:850;font-size:15px}
+.voiceActions .btn:last-child{grid-column:1/-1}
+.voiceAccessPanel .hint{font-size:11px;color:#f4d7ab}
 .notice{font-size:12px;color:#e8e3b3;min-height:20px;line-height:1.55;margin:10px 0 0}
 .stepHeader{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:2px 0 12px;font-size:13px;color:var(--dim)}
 .steps{display:grid;gap:8px}.item{display:flex;align-items:center;text-align:left;width:100%;gap:10px;background:#1e3345;border:1px solid #36566a;color:#f0f6fa;border-radius:11px;padding:11px 10px}
@@ -70,6 +77,19 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <button id="next" type="button" class="btn">Next step →</button>
 <button id="reset" type="button" class="btn wide">↺ Restart session</button>
 </div>
+<details class="voiceAccessPanel" id="voiceAccessPanel">
+<summary>Hands-free controls · Android Voice Access and Bluetooth</summary>
+<p>On your Galaxy Fold, enable Android <strong>Voice Access</strong> in Settings → Accessibility. You can then say “Tap Start workout,” “Tap Pause workout,” “Tap Resume workout,” or “Tap Next exercise.” These buttons have unique stable names for voice control. Voice Access is an Android feature; M3 FLEX does not turn on its microphone or listen to speech.</p>
+<div class="voiceActions" aria-label="Hands-free workout controls">
+<button type="button" id="handsfreeStart" class="btn primary" aria-label="Start workout">Start workout</button>
+<button type="button" id="handsfreePause" class="btn" aria-label="Pause workout" disabled>Pause workout</button>
+<button type="button" id="handsfreeResume" class="btn" aria-label="Resume workout" disabled>Resume workout</button>
+<button type="button" id="handsfreeNext" class="btn" aria-label="Next exercise">Next exercise</button>
+<button type="button" id="handsfreeExplain" class="btn" aria-label="Show exercise guidance">Show exercise guidance</button>
+</div>
+<p id="handsfreeStatus" role="status">Ready. Active exercise still requires today's clinician-clearance checks.</p>
+<p class="hint">Optional Bluetooth keyboard: Space = Start/Pause/Resume, N = Next exercise, E = Show guidance, Escape = Pause. Android Voice Access may process speech through Google depending on its settings; M3 FLEX never sends voice recordings to paid AI. These controls cannot listen with the screen off or answer open-ended questions.</p>
+</details>
 <p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance. Sets count timed demonstrations, not verified athlete repetitions.</p>
 </section>
 <section class="panel"><div class="stepHeader"><strong id="listHeading">Before workout</strong><span id="listCounter">3 gentle steps</span></div><div class="steps" id="steps"></div></section>
@@ -214,6 +234,16 @@ $("progressText").textContent=completed.size+" of "+total()+" steps completed �
 $("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Retry approved media":mode==="complete"?"✓ Session complete":"▶ Start full session";
 $("startPause").disabled=mode==="complete";
 $("preview").disabled=(!step().voice&&!step().video&&mode!=="complete")||mode==="running"||mode==="rest";$("preview").textContent=mode==="complete"?"▶ Hear Marcus finish":step().video?"▶ Preview Flex + Marcus":"▶ Hear Marcus";
+$("handsfreeStart").disabled=mode!=="ready";
+$("handsfreePause").disabled=mode!=="running"&&mode!=="rest";
+$("handsfreeResume").disabled=mode!=="paused"&&mode!=="waiting";
+$("handsfreeNext").disabled=mode==="complete"||(phase===2&&idx===stages[2].items.length-1);
+$("handsfreeExplain").disabled=mode==="complete";
+const guidance=mode==="rest"?"Rest is running. Say Tap Pause workout if needed.":
+ mode==="running"?"Timed demonstration is running. Say Tap Pause workout or Tap Next exercise.":
+ mode==="paused"||mode==="waiting"?"Workout paused. Say Tap Resume workout after checking clearance.":
+ mode==="complete"?"Session complete. Hands-free actions are disabled.":"Ready. Say Tap Start workout after clinician clearance.";
+if($("handsfreeStatus").textContent!==guidance)$("handsfreeStatus").textContent=guidance;
 persistProgress();
 }
 function cards(){
@@ -334,6 +364,25 @@ function stopForNavigation(p,i){
  clearTick();stopMedia(true);restNext=null;phase=p;idx=i;workRound=1;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
 }
 $("startPause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")pause();else if(mode==="paused"||mode==="waiting")resume();else if(mode==="ready")runCurrent()});
+$("handsfreeStart").addEventListener("click",()=>{if(mode==="ready")$("startPause").click()});
+$("handsfreePause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")$("startPause").click()});
+$("handsfreeResume").addEventListener("click",()=>{if(mode==="paused"||mode==="waiting")$("startPause").click()});
+$("handsfreeNext").addEventListener("click",()=>{if(!$("handsfreeNext").disabled)$("next").click()});
+$("handsfreeExplain").addEventListener("click",()=>{if(mode==="complete")return;const guidance=step().note;const status="Guidance: "+guidance+" Marcus uses the original approved recording; free-form spoken replies are not yet available.";$("handsfreeStatus").textContent=status;tell(status)});
+document.addEventListener("keydown",event=>{
+ if(event.defaultPrevented||event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
+ if(event.target instanceof Element&&event.target.closest("input,select,textarea,button,summary,[contenteditable='true']"))return;
+ if(![" ","n","N","e","E","Escape"].includes(event.key))return;
+ if(event.key===" "){
+  if(mode==="ready"||mode==="paused"||mode==="waiting"||mode==="running"||mode==="rest"){event.preventDefault();$("startPause").click()}
+ }else if(event.key==="n"||event.key==="N"){
+  if(!$("handsfreeNext").disabled){event.preventDefault();$("handsfreeNext").click()}
+ }else if(event.key==="e"||event.key==="E"){
+  if(!$("handsfreeExplain").disabled){event.preventDefault();$("handsfreeExplain").click()}
+ }else if(event.key==="Escape"&&(mode==="running"||mode==="rest")){
+  event.preventDefault();$("handsfreePause").click();
+ }
+});
 $("preview").addEventListener("click",async()=>{
  if(mode==="complete"){audio.src=END_MARCUS;audio.currentTime=0;audio.play().catch(()=>tell("Please enable audio in Chrome."));return;}
  if(!step().video&&!step().voice)return;
