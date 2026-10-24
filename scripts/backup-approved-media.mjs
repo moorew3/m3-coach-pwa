@@ -10,7 +10,7 @@
  */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { closeSync, createWriteStream, openSync, readFileSync, readSync } from "node:fs";
+import { closeSync, createWriteStream, existsSync, openSync, readFileSync, readSync } from "node:fs";
 import { mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -68,6 +68,7 @@ if (!process.argv.includes("--download")) {
     const target = join(destination, fileName);
     const temp = target + ".incomplete";
     try {
+      if (existsSync(target)) throw new Error("Existing approved backup protected from overwrite; use a new destination");
       const response = await fetch(media.url, { redirect: "follow", signal: AbortSignal.timeout(120000) });
       const final = new URL(response.url);
       if (final.protocol !== "https:" || !allowed.has(final.hostname)) throw new Error("Unexpected redirect origin");
