@@ -351,6 +351,48 @@ try {
     await recoveryContext.close();
   }
 
+  // Real Android media play() may remain pending during buffering. A stale
+  // promise from a skipped clip must not restart, zero or complete a new step.
+  const delayedContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await delayedContext.addInitScript(() => {
+    window.__pendingMediaPlays = [];
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () {
+      return new Promise((resolve) => window.__pendingMediaPlays.push(resolve));
+    };
+  });
+  const delayedPage = await delayedContext.newPage();
+  delayedPage.setDefaultTimeout(12000);
+  try {
+    await delayedPage.clock.install();
+    await delayedPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    await delayedPage.locator('[data-stage="1"]').click();
+    await delayedPage.locator("#workDuration").selectOption("30");
+    for (const box of await delayedPage.locator("#clearance .check").all()) await box.check();
+    await delayedPage.locator("#handsfreeStart").click();
+    await delayedPage.waitForFunction(() => window.__pendingMediaPlays.length >= 1);
+    assert.equal((await delayedPage.locator("#clock").textContent())?.trim(), "00:30");
+    await delayedPage.locator("#handsfreePause").click();
+    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Paused");
+    assert.equal((await delayedPage.locator("#clock").textContent())?.trim(), "00:30",
+      "Pausing pending audio/video play must not zero the full unused set duration");
+    await delayedPage.locator("#handsfreeNext").click();
+    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Ready");
+    assert.equal(await delayedPage.locator("#moveTitle").innerText(), "Seated hammer curls");
+    await delayedPage.evaluate(() => window.__pendingMediaPlays.splice(0).forEach((resolve) => resolve()));
+    await delayedPage.clock.fastForward(33_000);
+    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Ready",
+      "Old asynchronous media play response must not restart a new workout");
+    assert.equal((await delayedPage.locator("#clock").textContent())?.trim(), "00:30");
+    assert.match((await delayedPage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
+    step("Delayed original-media play cancelled on Pause/Next; no phantom timer or completed step");
+  } finally {
+    await delayedContext.close();
+  }
+
   // Audio-only preparation is not permitted to finish silently if its
   // approved Marcus recording errors or stalls. Simulate media events in
   // Chrome without fetching/altering or replacing owner-approved assets.
