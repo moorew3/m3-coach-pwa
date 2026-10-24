@@ -2,6 +2,12 @@
 
 **Status: BLOCKED for a full seated-only workout release.** This audit is based on the existing source program, not on an assessment of the athlete's medical clearance. The owner requires seated-only exercise, a protected foot/cast, no jumping or burpees, and no machine shoulder press.
 
+## Clarified weight-bearing ability — October 24, 2026
+
+The owner explicitly reports **being able to bear weight on the injured foot while wearing a cast**. Earlier statements within the Recovery Coach referring to the owner as non-weight-bearing, unable to stand, or categorically forbidden from putting any foot pressure on the floor were inaccurate and have been corrected.
+
+The existing approved Recovery Coach exercises remain **seated because that was the selected workout design**, not because the owner has been medically established to be non-weight-bearing. No prior approval of a specific standing, loaded lower-body or impact exercise follows solely from weight-bearing ability. These movements can be evaluated for inclusion in a future plan under actual clinician-specific restrictions; do not automatically prohibit or automatically authorize them. Preserve the existing approved Flex media, white cast depiction, and Marcus audio without alteration.
+
 ## Current legacy programming conflicts
 
 These are **confirmed examples**, not an exhaustive list of every exercise or form cue:
