@@ -38,6 +38,7 @@ jobs:
           test -f .output/public/recovery-coach/index.html
           test -f .output/public/recovery-coach/programs/index.html
           test -f .output/public/recovery-coach/device-check/index.html
+          test -f .output/public/recovery-coach/form-check/index.html
 
       - name: Smoke test actual compiled Node server without paid AI
         run: node scripts/node-runtime-smoke.mjs
@@ -110,7 +111,8 @@ jobs:
             test ! -e /app/.git &&
             test -s /app/.output/server/index.mjs &&
             test -s /app/.output/public/recovery-coach/index.html &&
-            test -s /app/.output/public/recovery-coach/programs/index.html
+            test -s /app/.output/public/recovery-coach/programs/index.html &&
+            test -s /app/.output/public/recovery-coach/form-check/index.html
           '
 
       - name: Verify live container health, approved clips and disabled paid AI
@@ -138,6 +140,8 @@ jobs:
           curl --silent --fail http://127.0.0.1:17371/recovery-coach/device-check/ >/tmp/m3-device-check.html
           grep -q 'testMic' /tmp/m3-device-check.html
           grep -q 'testCamera' /tmp/m3-device-check.html
+          curl --silent --fail http://127.0.0.1:17371/recovery-coach/form-check/ >/tmp/m3-form-check.html
+          grep -q 'Enable live form view' /tmp/m3-form-check.html
           for route in coach-talk coach-speech; do
             code="$(curl --silent --output /tmp/m3-denied.json --write-out '%{http_code}' \
               --header 'Content-Type: application/json' \
