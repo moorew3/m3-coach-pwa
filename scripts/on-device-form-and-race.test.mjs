@@ -12,11 +12,12 @@ test("camera alignment page is opt-in, defaults off and never requests sound or 
  assert.match(page,/id="stop"/);
  assert.match(page,/if\(!\$\("consent"\)\.checked\)/);
  assert.match(page,/navigator\.mediaDevices\.getUserMedia\(\{audio:false,video:/);
- assert.match(page,/const MODEL="https:\/\/storage\.googleapis\.com\/mediapipe-models\/pose_landmarker/);
- assert.match(page,/const LIBRARY="https:\/\/cdn\.jsdelivr\.net\/npm\/@mediapipe\/tasks-vision@1\.0\.1/);
+ assert.match(page,/const MODEL="\.\/vendor\/pose_landmarker_lite\.task"/);
+ assert.match(page,/const LIBRARY="\.\/vendor\/vision_bundle\.mjs"/);
  assert.match(page,/detectForVideo\(\$\("camera"\),now\)/);
  assert.match(page,/minPoseDetectionConfidence:0\.55/);
  assert.match(page,/numPoses:1/);
+ assert.match(page,/const WASM="\.\/vendor\/wasm"/);
  assert.match(page,/getTracks\(\)\)track\.stop\(\)/);
  assert.match(page,/addEventListener\("pagehide",cleanup\)/);
  assert.match(page,/visibilitychange/);
