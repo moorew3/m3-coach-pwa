@@ -570,6 +570,46 @@ try {
     await modelContext.close();
   }
 
+  // Loss of the ability to stand requires strict non-weight-bearing
+  // interlock. Emergency Stop must silence sources and block resume even
+  // if all safety boxes had been checked before the user became unwell.
+  const noWeightContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await noWeightContext.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const noWeightPage = await noWeightContext.newPage();
+  noWeightPage.setDefaultTimeout(12000);
+  try {
+    await noWeightPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /NO STANDING/);
+    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /no foot pressure/i);
+    await noWeightPage.locator('[data-stage="1"]').click();
+    await noWeightPage.locator("#startPause").click();
+    assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /confirm all three clinician-clearance checks/);
+    for (const input of await noWeightPage.locator("#clearance .check").all()) await input.check();
+    await noWeightPage.locator("#startPause").click();
+    assert.equal((await noWeightPage.locator("#runState").textContent())?.trim(), "Workout in progress");
+    await noWeightPage.locator("#emergencyStop").click();
+    assert.equal((await noWeightPage.locator("#runState").textContent())?.trim(), "STOPPED — MEDICAL SAFETY");
+    assert.equal(await noWeightPage.locator("#startPause").isDisabled(), true);
+    assert.equal(await noWeightPage.locator("#preview").isDisabled(), true);
+    assert.equal(await noWeightPage.locator("#handsfreeResume").isDisabled(), true);
+    assert.equal(await noWeightPage.locator("#clearance .check:checked").count(), 0);
+    assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /urgent medical care/);
+    await noWeightPage.locator("#reset").click();
+    assert.equal((await noWeightPage.locator("#runState").textContent())?.trim(), "Ready");
+    assert.equal(await noWeightPage.locator("#clearance .check:checked").count(), 0);
+    await noWeightPage.locator("#startPause").click();
+    assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /confirm all three clinician-clearance checks/);
+    step("Strict non-weight-bearing safety Stop silences workout, blocks resume and requires NEW clearance after reset");
+  } finally {
+    await noWeightContext.close();
+  }
+
   // Audio-only preparation is not permitted to finish silently if its
   // approved Marcus recording errors or stalls. Simulate media events in
   // Chrome without fetching/altering or replacing owner-approved assets.
