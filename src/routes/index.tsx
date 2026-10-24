@@ -410,9 +410,9 @@ function Today() {
                 onChange={(event) => setLegacyRiskConfirmed(event.target.checked)}
               />
               <span>
-                I understand the old workout is not a seated-only program.
-                I will not perform its standing or weight-bearing movements
-                while those restrictions apply.
+                I understand I can bear weight, but this legacy program is
+                not individually reviewed for my cast or the specific
+                standing, loaded or impact movements it contains.
               </span>
             </label>
             <button
