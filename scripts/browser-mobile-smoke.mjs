@@ -36,6 +36,15 @@ let page;
 const requests = [];
 const errors = [];
 const step = (message) => console.log("✓ " + message);
+const acknowledgeLegacyDirectRoute = async (browserPage) => {
+  const gate = browserPage.getByTestId("legacy-route-gate");
+  await gate.waitFor();
+  const button = browserPage.getByTestId("legacy-route-continue");
+  assert.equal(await button.isDisabled(), true, "Direct legacy route must default to blocked");
+  await browserPage.getByTestId("legacy-route-ack").check();
+  await button.click();
+  await gate.waitFor({ state: "detached" });
+};
 try {
   let ready = false;
   for (let i = 0; i < 35; i++) {
@@ -88,6 +97,7 @@ try {
   // home-page onboarding defaults. Both entry screens are genuine React UI.
   const res = await page.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
   assert.equal(res?.status(), 200, "Coach route must serve successfully");
+  await acknowledgeLegacyDirectRoute(page);
   await page.getByTestId("coach-stage").waitFor({ timeout: 15000 });
   await page.getByTestId("coach-wake").waitFor();
   await page.getByTestId("coach-wake-yes").click({ timeout: 12000 });
@@ -159,6 +169,7 @@ try {
     assert.equal(await toggle.getAttribute("aria-pressed"), "true", "Superset mode must be on");
 
     await pairingPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
+    await acknowledgeLegacyDirectRoute(pairingPage);
     await pairingPage.getByTestId("coach-wake-yes").click();
     await pairingPage.getByRole("button", { name: "Save & continue" }).click();
     await pairingPage.getByTestId("coach-wake").waitFor({ state: "detached", timeout: 12000 });
@@ -395,6 +406,7 @@ try {
   try {
     const mediaResponse = await mediaPage.goto(base + "/coach/1", { waitUntil: "domcontentloaded" });
     assert.equal(mediaResponse?.status(), 200);
+    await acknowledgeLegacyDirectRoute(mediaPage);
     await mediaPage.getByTestId("coach-wake").waitFor({ timeout: 15000 });
     // The retry must remain clickable ABOVE the full-screen wake button,
     // without forcing the athlete to exit the coach entrance first.
