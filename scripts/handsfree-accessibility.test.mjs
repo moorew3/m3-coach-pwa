@@ -22,10 +22,10 @@ test("voice/remote buttons delegate to existing protected workout timer actions"
  assert.match(page,/handsfreeResume"\)\.addEventListener\("click"/);
  assert.match(page,/handsfreeNext"\)\.addEventListener\("click"/);
  assert.match(page,/handsfreeExplain"\)\.addEventListener\("click"/);
- assert.match(page,/handsfreeStart"\)\.disabled=mode!=="ready"/);
+ assert.match(page,/handsfreeStart"\)\.disabled=safetyLock\|\|mode!=="ready"/);
  assert.match(page,/handsfreePause"\)\.disabled=mode!=="running"&&mode!=="rest"/);
- assert.match(page,/handsfreeResume"\)\.disabled=mode!=="paused"&&mode!=="waiting"/);
- assert.match(page,/handsfreeNext"\)\.disabled=mode==="complete"/);
+ assert.match(page,/handsfreeResume"\)\.disabled=safetyLock\|\|\(mode!=="paused"&&mode!=="waiting"\)/);
+ assert.match(page,/handsfreeNext"\)\.disabled=safetyLock\|\|mode==="complete"/);
  assert.match(page,/if\(mode==="ready"\)\$\("startPause"\)\.click\(\)/);
  assert.match(page,/function safetyOkay\(\)/);
 });
