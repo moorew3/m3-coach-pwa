@@ -80,6 +80,13 @@ try {
     "C10-POST-BREATH-R1",
     "C08-PRESS-R3",
   ]);
+  await assertPage("/recovery-coach/device-check/", [
+    "M3 FLEX",
+    "playMarcus",
+    "testMic",
+    "testCamera",
+    "No report saved.",
+  ]);
   await assertPage("/recovery-coach/programs/", [
     "Workout A",
     "Workout B",
