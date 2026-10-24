@@ -67,3 +67,61 @@ jobs:
           path: artifacts/*.png
           retention-days: 7
           if-no-files-found: ignore
+
+  # Independent proof that the product can run without Railway, Lovable,
+  # Hostinger, a separately provisioned database or a paid AI provider.
+  # This job only tests an isolated ephemeral runner container: no deployment.
+  container-smoke:
+    name: Portable container startup
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout protected candidate
+        uses: actions/checkout@v4
+
+      - name: Build production container using owner-controlled source
+        run: docker build --pull -t m3-flex:ci .
+
+      - name: Verify media backups and credentials excluded from final image
+        run: |
+          docker run --rm --entrypoint /bin/sh m3-flex:ci -c '
+            test ! -e /app/.env &&
+            test ! -e /app/approved-media-backup &&
+            test ! -e /app/.git &&
+            test -s /app/.output/server/index.mjs &&
+            test -s /app/.output/public/recovery-coach/index.html &&
+            test -s /app/.output/public/recovery-coach/programs/index.html
+          '
+
+      - name: Verify live container health, approved clips and disabled paid AI
+        run: |
+          set -euo pipefail
+          docker run --detach --name m3-flex-ci-server \
+            -p 127.0.0.1:17371:3000 \
+            -e FLEX_PAID_AI_ENABLED=false \
+            m3-flex:ci
+          trap 'docker logs --tail=70 m3-flex-ci-server || true; docker rm -f m3-flex-ci-server || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl --silent --fail http://127.0.0.1:17371/api/health >/tmp/m3-health.json; then ready=1; break; fi
+            sleep 1
+          done
+          test "$ready" = "1"
+          grep -q '"service":"m3-flex"' /tmp/m3-health.json
+          curl --silent --fail http://127.0.0.1:17371/ >/tmp/m3-home.html
+          grep -q '<html' /tmp/m3-home.html
+          curl --silent --fail http://127.0.0.1:17371/recovery-coach/ >/tmp/m3-recovery.html
+          grep -q 'C08-PRESS-R3' /tmp/m3-recovery.html
+          grep -q 'C09-PRE-BREATH-R2' /tmp/m3-recovery.html
+          curl --silent --fail http://127.0.0.1:17371/recovery-coach/programs/ >/tmp/m3-programs.html
+          grep -q 'recovered-heygen-candidate-review' /tmp/m3-programs.html
+          for route in coach-talk coach-speech; do
+            code="$(curl --silent --output /tmp/m3-denied.json --write-out '%{http_code}' \
+              --header 'Content-Type: application/json' \
+              --data '{"message":"test","text":"test"}' \
+              http://127.0.0.1:17371/api/public/"$route")"
+            test "$code" = "503"
+          done
+          echo 'Portable production Docker image: healthy, approved recovery paths served, paid AI blocked. No live deployment.'
