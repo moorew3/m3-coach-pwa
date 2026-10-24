@@ -29,7 +29,7 @@ Open `http://127.0.0.1:3000/` in a separate browser tab and verify the original 
 - The diagnostic does **not** establish accurate voice recognition, coach listening on a locked phone, actual headset audibility (user must confirm), AI movement-form detection, virtual trainer lip-sync, foot-cast clearance, or real Galaxy Fold hardware compatibility. These remain release-blocking acceptance tests.
 - Advisory `scripts/check-approved-media-availability.mjs` sends only HEAD/range requests to each original media URL. It neither creates a backup nor downloads full recordings. External CDN failure is reported but does not corrupt or alter the independent build.
 
-**Privacy**: The linked GitHub repository is publicly visible. Do **not** commit owner-original video, voice, private QA reports, identifiers or media backup archives to it, and do **not** upload a binary backup into public GitHub Actions artifacts. Use an owner-controlled private storage destination. Current existing public source URLs are not proof of privately preserved master media.
+**Privacy**: The GitHub repository is public. Original **plaintext** media, the owner recovery key, and private QA reports must never enter GitHub source or Actions artifacts. A single-use CI job temporarily uploaded **AES-256-GCM encrypted ciphertext only**, then the workflow job was removed after owner-private Drive transfer. Never put the private recovery key in GitHub or beside the encrypted archive.
 
 ## Migration and release gates
 
@@ -41,7 +41,7 @@ Open `http://127.0.0.1:3000/` in a separate browser tab and verify the original 
 6. Confirm exact approved mouth motion/Marcus lipsync, movement biomechanics and missing Workout A/B media. Until this happens, release should explicitly be labeled preview and not described as a fully finished interactive trainer.
 7. Only then switch production traffic after owner acceptance and leave a reversible rollback. This repo's CI **never** automatically changes a live domain or starts a production server.
 
-## Exact-media owner backup — not yet completed
+## Original media backup — encrypted, transferred and independently verified
 
 The source now inventories the **seven originally approved Flex MP4 videos and nine approved Marcus audio tracks** in `approved-recovery-media.json`.
 
@@ -49,17 +49,18 @@ The source now inventories the **seven originally approved Flex MP4 videos and n
 # No external downloads or media-generation charges:
 node scripts/backup-approved-media.mjs --check
 
-# On an owner-controlled machine with actual HTTPS access, when ready to export:
+# The original media have already been exported and sealed once, with
+# original SHA-256 receipts checked. This is a future independent recovery option:
 node scripts/backup-approved-media.mjs --download
 ```
 
-The export reads only the exact original URLs, validates the HTTPS origin and media file signatures, caps download sizes, saves local files and creates `approved-media-backup/sha256-backup-report.json` with per-file SHA-256 hashes and failures. No content is uploaded, transformed, swapped into production, or sent to a paid generation API. A partial or failed export must **never** be described as a successful backup. The output folder and report are excluded from Git to protect the owner's original likeness/voice assets.
+The one-time export validated HTTPS origins, media file signatures, sizes and SHA-256 hashes of all original files. An X25519 public recipient key and fresh ephemeral encryption key were used to seal the originals in an authenticated AES-256-GCM archive. The **private decryption key never entered public GitHub**. A local verification subsequently decrypted the sealed artifact in a temporary directory and independently checked **all 16 originals, file sizes and SHA-256 hashes**; 7 MP4, 7 MP3 and 2 WAV passed. The encrypted package was uploaded to an owner-only, unshared Google Drive folder; Drive confirmed a 13,891,572-byte ZIP. The private recovery key was delivered separately through the owner conversation as a downloadable kit. Protect it offline; losing the key makes the sealed backup unrecoverable.
 
-This branch's GitHub CI runs only `--check` to prevent unintended network usage. Export was not run here because this environment cannot access the media-host download endpoints.
+The one-time CI export job **was removed after the successful transfer**, so future builds do not repeat the backup. Normal CI retains the safe `--check` and lightweight HEAD/range reachability probes. No approved source was rewritten or used for any unapproved replacement clip.
 
 ## Media licensing/availability caveat
 
-Current original owner-approved clips are hosted on HeyGen and CloudFront URLs. Their continued availability is an external dependency even if the app itself is independently hosted. Exporting the actual approved original files to storage controlled by the owner is still a separate task; a URL or GitHub file does not prove the media are backed up. Never silently replace them with other people or expired-preview links.
+Current original owner-approved clips are hosted on HeyGen and CloudFront URLs. Their continued availability is an external dependency even if the app itself is independently hosted. An authenticated encrypted owner-controlled copy is now verified and private. The live application still streams its original URLs; this backup has **not** been substituted into production or exposed as a public CDN. Never silently replace them with other people or expired-preview links.
 
 ## Payment/security
 
