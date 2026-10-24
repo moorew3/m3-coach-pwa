@@ -20,6 +20,7 @@ FILES={
   "recovery-coach/index.html":ROOT/"public/recovery-coach/index.html",
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
   "recovery-coach/device-check/index.html":ROOT/"public/recovery-coach/device-check/index.html",
+  "recovery-coach/form-check/index.html":ROOT/"public/recovery-coach/form-check/index.html",
 }
 HOME="""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -45,11 +46,12 @@ What is included
 - /recovery-coach/index.html — approved recovery workout (7 locked video scenes)
 - /recovery-coach/programs/index.html — Workout A/B owner-review only, NOT active
 - /recovery-coach/device-check/index.html — Galaxy Fold diagnostics
+- /recovery-coach/form-check/index.html — optional on-device landmark/camera check
 - sha256-manifest.json — exact file hashes for independently checking ZIP contents
 
 What is not included
 - Historical standing-coach or full React application
-- Account login, verified camera form coaching, on-device voice recognition
+- Account login, clinically validated camera form coaching, on-device voice recognition
 - Offline copies of owner-original Flex video or Marcus audio binaries
 - Any newly approved/created exercise footage, public production deployment
 
@@ -60,7 +62,7 @@ Do NOT overwrite any current WordPress site or production domain.
 Upload the CONTENTS of this ZIP into the separate review site's document root,
 preserving /recovery-coach/ subfolders exactly. HTTPS is required for local
 camera and microphone permission tests. Verify /, /recovery-coach/,
-and /recovery-coach/device-check/ before sharing a preview URL.
+/recovery-coach/device-check/ and /recovery-coach/form-check/ before sharing a preview URL.
 
 Android hands-free: use optional Voice Access to tap named buttons; it is
 system accessibility control, NOT embedded real-time coaching. Voice Access
@@ -91,7 +93,7 @@ def run():
         for path,blob in content.items():
             assert archive.read(path) == blob
     print("Verified static M3 FLEX seated recovery preview:",ZIP)
-    print("ZIP contains 3 original HTML feature pages, a root landing page, hash manifest, and instructions.")
+    print("ZIP contains 4 original HTML feature pages, a root landing page, hash manifest, and instructions.")
     print("No owner media binaries, credential files, chargeable voice services or dynamic Node app included.")
 if __name__=="__main__":
     run()
