@@ -456,7 +456,21 @@ try {
     await pairsPage.clock.fastForward(16_000);
     assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated front raises");
     assert.match((await pairsPage.locator("#position").textContent()) ?? "", /Set 1 of 2/);
-    step("Recovery Superset C01→C02→rest→C01→C02→rest→C03, no premature rest or reps");
+    // Skipping the first C03 demo cannot earn an all-sets-completed credit
+    // after its C04 partner and the next round finish.
+    await pairsPage.locator("#next").click();
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Alternating seated dumbbell curls");
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    await pairsPage.clock.fastForward(16_000);
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated front raises");
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Alternating seated dumbbell curls");
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    assert.match((await pairsPage.locator("#progressText").textContent()) ?? "", /^2 of 10 steps completed/,
+      "C03/C04 cannot be credited if first C03 set was manually skipped");
+    step("Recovery Superset C01→C02→rest→C01→C02→rest→C03, and skipped C03 is never falsely completed");
   } finally {
     await pairsContext.close();
   }
