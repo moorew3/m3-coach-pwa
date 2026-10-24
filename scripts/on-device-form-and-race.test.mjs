@@ -26,7 +26,7 @@ test("camera alignment page is opt-in, defaults off and never requests sound or 
 
 test("limited local landmark cues never claim repetitions, cast status, clinician clearance or flawless biomechanics",()=>{
  assert.match(page,/No repetitions assessed/);
- assert.match(page,/No automatic rep count or form clearance/);
+ assert.match(page,/no automatic rep count or form clearance/i);
  assert.match(page,/Camera CANNOT verify the band behind your chair/);
  assert.match(page,/No footage is saved by M3 FLEX/);
  assert.match(page,/No medical clearance is determined by this view/);
