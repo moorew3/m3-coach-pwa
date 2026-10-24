@@ -367,7 +367,7 @@ function playbackError(msg,source){
  tell(msg+" Timed step NOT completed. Tap Retry approved media; no automatic substitute will play.");
 }
 video.addEventListener("error",()=>playbackError("Approved Flex video failed to load.","video"));
-audio.addEventListener("error",()=>playbackError("Approved Marcus voice track failed.","audio"));
+audio.addEventListener("error",()=>{if(mode==="rest"){tell("Marcus rest recording unavailable. The rest timer is still running; review audio before the next guided exercise.");return;}playbackError("Approved Marcus voice track failed.","audio");});
 function waitForBuffer(kind){
  const element=kind==="video"?video:audio;
  if(mode!=="running"||!(kind==="video"?step().video:step().voice))return;
