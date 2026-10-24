@@ -123,7 +123,7 @@ $("start").addEventListener("click",async()=>{
   if(expected!==session){closeTracks(fresh);return;}
   stream=fresh;$("camera").srcObject=fresh;
   await $("camera").play();
-  if(expected!==session){cleanup();return;}
+  if(expected!==session){closeTracks(fresh);return;}
   display("Camera is on. Loading local pose model; nothing is being uploaded.");
   const {FilesetResolver,PoseLandmarker}=await import(LIBRARY);
   const vision=await FilesetResolver.forVisionTasks(WASM);
