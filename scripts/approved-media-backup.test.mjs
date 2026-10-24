@@ -33,6 +33,7 @@ test("backup tool never uploads or rewrites production videos",()=>{
  assert.match(script,/AbortSignal\.timeout\(120000\)/);
  assert.match(script,/const hash = createHash\("sha256"\)/);
  assert.match(script,/sha256-backup-report\.json/);
+ assert.match(script,/Existing approved backup protected from overwrite/);
  assert.match(script,/source exceeds size cap|Source exceeds size cap/);
  assert.doesNotMatch(script,/https:\/\/api\.openai\.com|https:\/\/api\.heygen\.com|\/deploy\/production|fetch\(.+method:\s*["']POST/);
 });
