@@ -73,6 +73,11 @@ try {
   await page.getByTestId("app-entry-yes").click({ timeout: 12000 });
   await page.getByTestId("app-entry-gate").waitFor({ state: "detached", timeout: 10000 });
   await page.getByTestId("seated-program-warning").waitFor();
+  await page.getByTestId("legacy-workout-start").click();
+  await page.getByTestId("legacy-safety-gate").waitFor();
+  assert.equal(await page.getByTestId("legacy-acknowledge").isDisabled(), true);
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.getByTestId("legacy-safety-gate").waitFor({ state: "detached" });
   assert.ok(
     (await page.getByTestId("seated-program-warning").innerText()).includes("not been fully converted"),
     "Legacy weekly plan must not appear cleared for seated-only training",
