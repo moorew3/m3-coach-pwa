@@ -45,7 +45,7 @@ function validate() {
     assert.ok(x.url.endsWith(x.file));
     assert.ok(player.includes(x.file), "Current Recovery Coach no longer references " + x.id);
   }
-  console.log("Verified 7 approved videos + 9 Marcus recordings. NO files downloaded or changed.");
+  console.log("Validated exact inventory of 7 approved videos + 9 Marcus recordings.");
 }
 validate();
 
