@@ -34,3 +34,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Owner-only binary backups and SHA-256 receipts: never publish raw approved likeness files.
+approved-media-backup/
+**/sha256-backup-report.json
