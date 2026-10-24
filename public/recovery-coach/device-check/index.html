@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1521">
+  <title>M3 FLEX · Device Acceptance</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1521;--fg:#f0f7fb;--muted:#b0c8d5;--edge:#35556a;--green:#c5f08c}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif}
+    main{max-width:720px;margin:0 auto;padding:20px 16px 90px}
+    h1{font-size:clamp(24px,6vw,35px);line-height:1.15;margin:9px 0}
+    h2{font-size:19px;margin:0 0 7px}
+    p{margin:9px 0;color:var(--muted)}
+    a{color:var(--green)}
+    .panel{background:#142536;border:1px solid var(--edge);border-radius:17px;padding:16px;margin:15px 0}
+    .action{appearance:none;border:1px solid #69859a;color:#fff;background:#263f54;padding:12px 16px;min-height:47px;border-radius:11px;font:700 15px system-ui,sans-serif;cursor:pointer}
+    .action.primary{background:var(--green);color:#142536;border-color:var(--green)}
+    .action:disabled{opacity:.48;cursor:not-allowed}
+    .buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
+    .status{background:#0b1926;border:1px solid #3b596e;padding:8px 11px;border-radius:9px;min-height:39px;color:var(--fg)}
+    .small{font-size:12px}
+    .meter{height:18px;border:1px solid #5b7481;background:#0b1926;border-radius:8px;margin:12px 0;overflow:hidden}
+    #level{height:100%;background:var(--green);width:0;transition:width .1s}
+    video{display:block;width:100%;max-width:440px;max-height:250px;object-fit:contain;background:black;border-radius:10px;margin:10px auto}
+    label{display:flex;align-items:start;gap:10px;margin:12px 0}
+    input[type=checkbox]{width:19px;height:19px;flex:none;accent-color:var(--green)}
+  </style>
+</head>
+<body>
+<main>
+  <a href="/recovery-coach/">← Back to approved Recovery Coach</a>
+  <h1>M3 FLEX · Phone and headset check</h1>
+  <p>Use this page on the actual Samsung Galaxy Fold before release. It checks permissions and approved audio locally. It does <strong>not</strong> approve exercise form, detect actual repetitions, or verify Marcus lip sync. No clips, photos, camera frames or microphone recordings are uploaded or saved.</p>
+  <section class="panel">
+    <h2>1. Original Marcus English · audio output</h2>
+    <p>Tap Play to test the <strong>original approved Marcus breathing MP3</strong>. Try the phone speaker, Bluetooth earbuds and any other intended output separately. A browser starting playback does not prove sound was audible; confirm what you hear.</p>
+    <audio id="approvedMarcus" preload="none" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3"></audio>
+    <div class="buttons">
+      <button class="action primary" type="button" id="playMarcus">Play approved Marcus</button>
+      <button class="action" type="button" id="stopMarcus">Stop</button>
+    </div>
+    <p role="status" id="speakerStatus" class="status" aria-live="polite">Not tested</p>
+    <label><input type="checkbox" id="heardMarcus">I personally heard the correct Marcus male voice on my intended output device.</label>
+  </section>
+  <section class="panel">
+    <h2>2. Microphone · local activity</h2>
+    <p>Microphone access starts only after you tap Test. Speak normally for about five seconds. The local audio meter checks whether a signal arrives; it does not transcribe, upload, or store your voice. Browsers may use online services for their separate speech-recognition features, which this check does not invoke.</p>
+    <div class="buttons">
+      <button class="action primary" type="button" id="testMic">Test microphone for 5 seconds</button>
+      <button class="action" type="button" id="stopMic">Stop microphone</button>
+    </div>
+    <div class="meter" aria-label="Incoming microphone volume"><div id="level"></div></div>
+    <p role="status" id="micStatus" class="status" aria-live="polite">Not tested</p>
+  </section>
+  <section class="panel">
+    <h2>3. Front camera · private preview</h2>
+    <p>This checks that the browser can open a front-facing camera and display local live video. It cannot validate the athlete's form or an AI pose detector. Nothing is captured or sent to a server. Tap Stop when finished.</p>
+    <div class="buttons">
+      <button class="action primary" type="button" id="testCamera">Start camera preview</button>
+      <button class="action" type="button" id="stopCamera">Stop camera</button>
+    </div>
+    <video id="cameraPreview" playsinline autoplay muted aria-label="Local front camera preview"></video>
+    <p role="status" id="cameraStatus" class="status" aria-live="polite">Not tested</p>
+  </section>
+  <section class="panel">
+    <h2>4. Release readiness on this phone</h2>
+    <p>Internet is needed for your original HeyGen/CloudFront recordings. This page cannot establish offline video support or continuous hands-free voice control.</p>
+    <p class="small" id="environment">Checking secure device context…</p>
+    <label><input type="checkbox" id="testedWorkout">I separately tested the full seated circuit, set/rest timers and video on this physical phone.</label>
+    <label><input type="checkbox" id="testedHeadset">I separately tested Marcus through the headset or speakers I intend to use.</label>
+    <div class="buttons">
+      <button type="button" class="action primary" id="saveReport">Save private local QA report</button>
+    </div>
+    <p role="status" id="reportStatus" class="status" aria-live="polite">No report saved.</p>
+  </section>
+</main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const completed = {speaker:"not_tested",microphone:"not_tested",camera:"not_tested"};
+const media = $("approvedMarcus");
+let micStream=null,camStream=null,audioContext=null,frameId=null,micRun=0;
+const status=(id,message)=>{$(id).textContent=message};
+function stopMediaTracks(stream){if(stream)for(const t of stream.getTracks())t.stop()}
+function stopMicrophone(){
+ micRun++;
+ if(frameId!==null){cancelAnimationFrame(frameId);frameId=null}
+ stopMediaTracks(micStream);micStream=null;
+ if(audioContext){void audioContext.close().catch(()=>{});audioContext=null}
+ $("level").style.width="0%";
+ $("testMic").disabled=false;
+}
+function stopCamera(){
+ stopMediaTracks(camStream);camStream=null;
+ $("cameraPreview").srcObject=null;
+ $("testCamera").disabled=false;
+}
+$("environment").textContent="Secure context: "+(window.isSecureContext?"yes":"no")+
+  " · Camera/mic API: "+(navigator.mediaDevices?.getUserMedia?"available":"unavailable")+
+  " · Speech-recognition feature: "+(window.SpeechRecognition||window.webkitSpeechRecognition?"present (may need online service)":"unavailable")+
+  " · This report never grants exercise clearance.";
+$("playMarcus").addEventListener("click",async()=>{
+ try{
+  media.currentTime=0;
+  await media.play();
+  status("speakerStatus","Original Marcus audio is playing. Confirm that you actually hear it.");
+  completed.speaker="browser_playing";
+ }catch(e){
+  completed.speaker="failed";
+  status("speakerStatus","Original Marcus playback failed: "+(e?.name||"device/browser error")+". No alternate voice was substituted.");
+ }
+});
+$("stopMarcus").addEventListener("click",()=>{media.pause();media.currentTime=0;status("speakerStatus","Audio stopped.");});
+media.addEventListener("error",()=>{completed.speaker="failed";status("speakerStatus","Original Marcus audio source unavailable; do not substitute an unapproved voice.");});
+$("testMic").addEventListener("click",async()=>{
+ stopMicrophone();
+ const run=micRun;
+ $("testMic").disabled=true;
+ completed.microphone="testing";
+ status("micStatus","Requesting local microphone permission…");
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw Error("Secure browser microphone API is unavailable");
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true},video:false});
+  if(run!==micRun){stopMediaTracks(stream);return}
+  micStream=stream;
+  const Ctor=window.AudioContext||window.webkitAudioContext;
+  if(!Ctor)throw Error("Local audio analyser unavailable");
+  audioContext=new Ctor();
+  await audioContext.resume();
+  const source=audioContext.createMediaStreamSource(stream);
+  const analyser=audioContext.createAnalyser();
+  analyser.fftSize=1024;
+  source.connect(analyser);
+  const array=new Uint8Array(analyser.fftSize);
+  let peak=0,frames=0;
+  const started=performance.now();
+  const sample=()=>{
+   if(run!==micRun)return;
+   analyser.getByteTimeDomainData(array);
+   let total=0;
+   for(const v of array){const delta=(v-128)/128;total+=delta*delta}
+   const rms=Math.sqrt(total/array.length);
+   if(rms>peak)peak=rms;
+   $("level").style.width=Math.min(100,Math.round(rms*650))+"%";
+   frames++;
+   if(performance.now()-started<5000){frameId=requestAnimationFrame(sample);return}
+   completed.microphone=peak>0.012&&frames>8?"signal_detected":"no_detectable_signal";
+   status("micStatus",completed.microphone==="signal_detected"?"Local microphone signal detected. Speech understanding is NOT tested.":"No clear microphone signal detected; check permission/input and speak closer.");
+   stopMicrophone();
+  };
+  frameId=requestAnimationFrame(sample);
+  status("micStatus","Listening locally for five seconds. Speak now.");
+ }catch(e){
+  completed.microphone="failed";
+  status("micStatus","Microphone test failed: "+(e?.name||e?.message||"unknown device error"));
+  stopMicrophone();
+ }
+});
+$("stopMic").addEventListener("click",()=>{stopMicrophone();status("micStatus","Microphone stopped. No recording saved.");});
+$("testCamera").addEventListener("click",async()=>{
+ stopCamera();
+ $("testCamera").disabled=true;
+ completed.camera="testing";
+ status("cameraStatus","Requesting front camera permission…");
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw Error("Secure browser camera API is unavailable");
+  const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:"user",width:{ideal:640},height:{ideal:480}}});
+  camStream=stream;
+  $("cameraPreview").srcObject=stream;
+  await $("cameraPreview").play();
+  completed.camera="preview_playing";
+  status("cameraStatus","Private live camera preview active. This is NOT a movement/form analysis result.");
+ }catch(e){
+  completed.camera="failed";
+  stopCamera();
+  status("cameraStatus","Camera preview failed: "+(e?.name||e?.message||"unknown device error"));
+ }
+});
+$("stopCamera").addEventListener("click",()=>{stopCamera();status("cameraStatus","Camera stopped. No frames saved.");});
+$("saveReport").addEventListener("click",()=>{
+ const report={
+   product:"M3 FLEX",schema:1,recordedAt:new Date().toISOString(),
+   browserChecks:{...completed,heardApprovedMarcus:$("heardMarcus").checked},
+   manualAcceptance:{testedSeatedWorkout:$("testedWorkout").checked,testedHeadset:$("testedHeadset").checked},
+   note:"Device-user assertions, not automated form assessment or live coach lipsync certification."
+ };
+ const blob=new Blob([JSON.stringify(report,null,2)],{type:"application/json"});
+ const objectURL=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=objectURL;a.download="m3-flex-device-qa.json";
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(objectURL),2000);
+ status("reportStatus","Saved to this device only. No permission, recording, photo or report sent to M3 servers.");
+});
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){stopMicrophone();stopCamera();media.pause();}
+});
+window.addEventListener("pagehide",()=>{stopMicrophone();stopCamera();media.pause();});
+</script>
+</body>
+</html>
