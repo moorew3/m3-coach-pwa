@@ -154,6 +154,8 @@ const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
 let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable rounds; no inferred completed reps
+// Each navigation/pause/retry supersedes unresolved video/audio play promises.
+let playbackGeneration=0;
 const PROGRESS_KEY="m3-flex-recovery-progress-v1";
 const PROGRESS_VALID_MS=24*60*60*1000;
 let lastProgressText="";
@@ -214,7 +216,7 @@ function label(){return stages[phase].label}
 function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function duration(){return (phase===1?Number($("workDuration").value):step().sec)*1000}
 function clearTick(){if(interval!==null){clearInterval(interval);interval=null}}
-function stopMedia(rewind){clearMediaBufferChecks();video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
+function stopMedia(rewind){playbackGeneration++;clearMediaBufferChecks();video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
 function playRestVoice(){
  audio.pause();audio.src=REST_MARCUS;audio.loop=false;audio.currentTime=0;
  audio.play().catch(()=>tell("Rest timer running. Tap Resume if your phone blocks automatic Marcus audio."));
@@ -280,21 +282,29 @@ function render(){
  setMedia();cards();drawTimer();
 }
 async function playMedia(loop){
+ const generation=++playbackGeneration;
  const it=step();
  if(!it.video){
   if(!it.voice)return true;
   audio.loop=false;
-  try{if(!it.voiceOnce||!audio.ended)await audio.play();return true;}
-  catch(err){tell("Your phone blocked Marcus audio. Tap Enable audio & continue.");return false;}
+  try{
+   if(!it.voiceOnce||!audio.ended)await audio.play();
+   return generation===playbackGeneration?true:null;
+  }catch(err){
+   if(generation!==playbackGeneration)return null;
+   tell("Your phone blocked Marcus audio. Tap Retry approved media.");
+   return false;
+  }
  }
  video.loop=loop;
  video.muted=!!it.voice;
  if(it.voice)audio.loop=loop&&!it.voiceOnce;
  try{
   const outcomes=await Promise.allSettled([video.play(),it.voice&&(!it.voiceOnce||!audio.ended)?audio.play():Promise.resolve()]);
-  if(outcomes.some(o=>o.status==="rejected")){stopMedia(false);tell("Your phone blocked video or Marcus audio. Tap Enable audio & continue to retry; the timer is paused.");return false;}
+  if(generation!==playbackGeneration)return null;
+  if(outcomes.some(o=>o.status==="rejected")){stopMedia(false);tell("Your phone blocked video or Marcus audio. Tap Retry approved media to retry; the timer is paused.");return false;}
   return true;
- }catch(e){stopMedia(false);return false}
+ }catch(e){if(generation!==playbackGeneration)return null;stopMedia(false);return false}
 }
 function beginTicker(){clearTick();deadline=Date.now()+secondsLeft;interval=setInterval(()=>{
  secondsLeft=Math.max(0,deadline-Date.now());
@@ -306,7 +316,7 @@ async function runCurrent(){
  if(!sessionStarted){targetRounds=Number($("setRounds").value);sessionStarted=true}
  if(mode==="ready"&&completed.size===0&&phase!==0){/* selected phase may start directly */}
  mode="running";secondsLeft=duration();drawTimer();
- if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
+ if(step().video||step().voice){const ok=await playMedia(true);if(ok===null)return;if(!ok){if(mode==="running"){mode="waiting";drawTimer()}return}}
  if(mode!=="running")return;beginTicker();tell(phase===1?"Follow your approved Flex video and Marcus narration.":"Follow Marcus voice guidance. Keep the cast supported.");
 }
 function advance(){
@@ -347,7 +357,7 @@ function advanceAfterRest(){
 }
 function pause(){
  if(mode!=="running"&&mode!=="rest")return;
- secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);mode="paused";drawTimer();tell("Paused. Tap Resume when you're ready.");
+ if(interval!==null)secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);mode="paused";drawTimer();tell("Paused. Tap Resume when you're ready.");
 }
 async function resume(){
  if(mode!=="paused"&&mode!=="waiting")return;
@@ -357,7 +367,8 @@ async function resume(){
  }
  const wasWaiting=mode==="waiting";mode="running";
  if(restNext){mode="rest";beginTicker();if(audio.src!==REST_MARCUS)playRestVoice();else audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
- if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
+ if(step().video||step().voice){const ok=await playMedia(true);if(ok===null)return;if(!ok){if(mode==="running"){mode="waiting";drawTimer()}return}}
+ if(mode!=="running")return;
  beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
 }
 function stopForNavigation(p,i){
@@ -388,7 +399,9 @@ $("preview").addEventListener("click",async()=>{
  if(!step().video&&!step().voice)return;
  clearTick();stopMedia(true);restNext=null;mode="preview";drawTimer();
  const ok=await playMedia(false);
- if(!ok){mode="ready";drawTimer();return}
+ if(ok===null)return;
+ if(!ok){if(mode==="preview"){mode="ready";drawTimer()}return}
+ if(mode!=="preview")return;
  tell("Previewing "+step().name+" with Marcus. This is not a timed workout.");
 });
 function endPreview(){
