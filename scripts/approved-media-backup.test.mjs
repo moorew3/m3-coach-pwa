@@ -5,6 +5,7 @@ const root = new URL("../", import.meta.url);
 const data=JSON.parse(readFileSync(new URL("approved-recovery-media.json",root),"utf8"));
 const player=readFileSync(new URL("public/recovery-coach/index.html",root),"utf8");
 const script=readFileSync(new URL("scripts/backup-approved-media.mjs",root),"utf8");
+const reachability=readFileSync(new URL("scripts/check-approved-media-availability.mjs",root),"utf8");
 
 test("portable backup inventory is exactly original approved seven clips plus nine voice tracks",()=>{
  assert.equal(data.schema,1);
@@ -36,4 +37,15 @@ test("backup tool never uploads or rewrites production videos",()=>{
  assert.match(script,/Existing approved backup protected from overwrite/);
  assert.match(script,/source exceeds size cap|Source exceeds size cap/);
  assert.doesNotMatch(script,/https:\/\/api\.openai\.com|https:\/\/api\.heygen\.com|\/deploy\/production|fetch\(.+method:\s*["']POST/);
+});
+
+test("media reachability QA uses only read-only HEAD/range probes and never changes original sources",()=>{
+ assert.match(reachability,/method: "HEAD"/);
+ assert.match(reachability,/method: "GET"/);
+ assert.match(reachability,/Range": "bytes=0-0"/);
+ assert.match(reachability,/AbortSignal\.timeout\(12000\)/);
+ assert.match(reachability,/await response\.body\.cancel\(\)/);
+ assert.match(reachability,/const allowed = new Set/);
+ assert.match(reachability,/This is NOT a backup/);
+ assert.doesNotMatch(reachability,/createWriteStream|writeFile|unlink|upload|fetch\(.+method:\s*"POST"/);
 });
