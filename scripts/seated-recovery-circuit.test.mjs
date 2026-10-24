@@ -22,7 +22,7 @@ test("only owner-approved seven motion scene IDs are used in active seated progr
 test("seated session requires clinician signoff before the timer and set loop can begin", () => {
   assert.match(page, /function safetyOkay\(\)/);
   assert.match(page, /if\(!safetyOkay\(\)\)/);
-  assert.match(page, /My treating clinician cleared these particular seated movements and resistance/);
+  assert.match(page, /My treating clinician knows I cannot bear weight on my injured leg and specifically cleared these seated arm movements and resistance/);
   assert.match(page, /My cast support, non-weight-bearing restrictions and transfers are cleared/);
   assert.match(page, /My exercise duration and effort are cleared/);
 });
@@ -35,7 +35,7 @@ test("one/two optional demonstrated sets do not multiply, log, or invent athlete
   assert.match(page, /if\(phase===1&&workRound<targetRounds\)/);
   assert.match(page, /restNext=\{phase:1,idx\}/);
   assert.match(page, /completed\.add\(phase\+":"\+idx\)/);
-  assert.match(page, /sessionStarted=false;targetRounds=Number/);
+  assert.match(page, /sessionStarted=false;safetyLock=false;for\(const input of document.querySelectorAll\("#clearance \.check"\)\)input.checked=false;targetRounds=Number/);
   assert.match(page, /btn\.addEventListener\("click",\(\)=>stopForNavigation\(phase,i\)\)/);
   assert.match(page, /name:"Controlled arm reaches"/);
   assert.match(page, /existing Marcus recording is general shoulder-mobility audio/);
