@@ -250,6 +250,14 @@ try {
       waitUntil: "domcontentloaded",
     });
     assert.equal(recoveryResponse?.status(), 200);
+    // The same-screen camera pane must not load until opened; closing the
+    // pane navigates away to unload getUserMedia and on-device pose code.
+    assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "about:blank");
+    await recoveryPage.locator("#formObservation summary").click();
+    await recoveryPage.frameLocator("#formFrame").locator("#start").waitFor();
+    assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "./form-check/");
+    await recoveryPage.locator("#formObservation summary").click();
+    assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "about:blank");
     await recoveryPage.locator('[data-stage="1"]').click();
     await recoveryPage.locator("#setRounds").selectOption("2");
     assert.match((await recoveryPage.locator("#position").textContent())?.trim() ?? "", /Set 1 of 2/, "Selecting 2 rounds must update the visible stage before workout");
@@ -391,6 +399,42 @@ try {
     step("Delayed original-media play cancelled on Pause/Next; no phantom timer or completed step");
   } finally {
     await delayedContext.close();
+  }
+
+  // On-device form-check camera is strictly opt-in. A denied permission
+  // must never invoke pose inference or report medically correct movement.
+  const formContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await formContext.addInitScript(() => {
+    window.__formRequests = [];
+    if (navigator.mediaDevices) {
+      navigator.mediaDevices.getUserMedia = async (constraints) => {
+        window.__formRequests.push(constraints);
+        throw new DOMException("Camera access denied for QA", "NotAllowedError");
+      };
+    }
+  });
+  const formPage = await formContext.newPage();
+  formPage.setDefaultTimeout(12000);
+  try {
+    const res = await formPage.goto(base + "/recovery-coach/form-check/", { waitUntil: "networkidle" });
+    assert.equal(res?.status(), 200);
+    assert.equal(await formPage.evaluate(() => window.__formRequests.length), 0,
+      "No camera requested during form-check page load");
+    await formPage.locator("#start").click();
+    assert.match((await formPage.locator("#status").textContent()) ?? "", /Check consent first/);
+    assert.equal(await formPage.evaluate(() => window.__formRequests.length), 0);
+    await formPage.locator("#consent").check();
+    await formPage.locator("#start").click();
+    await formPage.locator("#status").getByText(/Camera\/pose model unavailable/).waitFor();
+    const requests = await formPage.evaluate(() => window.__formRequests);
+    assert.equal(requests.length, 1, "A single deliberate start requested only the camera");
+    assert.equal(requests[0].audio, false, "The pose view must never request microphone access");
+    assert.match((await formPage.locator("#status").textContent()) ?? "", /No images were uploaded/);
+    step("Optional on-device pose screen requests no camera until consent+tap; handles denial and no audio access");
+  } finally {
+    await formContext.close();
   }
 
   // Audio-only preparation is not permitted to finish silently if its
