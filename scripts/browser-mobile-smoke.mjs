@@ -255,6 +255,14 @@ try {
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
     assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 2 of 2/);
     assert.match(await recoveryPage.locator("#progressText").innerText(), /^0 of 10 steps completed/);
+    // Rest narration is helpful, but never misclassify a silent rest as a
+    // shortened workout; the rest countdown continues and warns clearly.
+    await recoveryPage.locator("#coachVoice").dispatchEvent("error");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    assert.match((await recoveryPage.locator("#note").textContent()) ?? "", /Marcus rest recording unavailable/);
+    const restBeforeErrorTick = (await recoveryPage.locator("#clock").textContent())?.trim();
+    await recoveryPage.clock.fastForward(1100);
+    assert.notEqual((await recoveryPage.locator("#clock").textContent())?.trim(), restBeforeErrorTick);
     // Phone tab reload/relaunch must preserve the EXACT pending rest and
     // current set; never auto-play and NEVER restore medical clearance.
     const beforeReload = (await recoveryPage.locator("#clock").textContent())?.trim();
