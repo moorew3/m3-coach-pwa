@@ -376,6 +376,11 @@ try {
 
     // A stream can stall without emitting an error. The audio watchdog
     // must suspend only the active step, not invent elapsed reps/steps.
+    // Force zero playable bytes; a bare waiting event on fast CI can have
+    // readyState=4 because external audio already buffered successfully.
+    await voicePage.locator("#coachVoice").evaluate((element) => {
+      Object.defineProperty(element, "readyState", { configurable: true, get: () => 0 });
+    });
     await voicePage.locator("#coachVoice").dispatchEvent("waiting");
     await voicePage.clock.fastForward(3200);
     assert.equal((await voicePage.locator("#runState").textContent())?.trim(), "Tap to enable sound");
