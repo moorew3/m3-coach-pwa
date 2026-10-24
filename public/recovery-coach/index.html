@@ -158,6 +158,13 @@ const stages=[
 ]}];
 const $=x=>document.getElementById(x);
 const video=$("coachVideo"),audio=$("coachVoice");
+const LOCAL_POSE_SCENES=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+function syncFormExercise(){
+ if(!$("formObservation").open||!LOCAL_POSE_SCENES.has(step().id))return;
+ const frame=$("formFrame");
+ if(frame.contentWindow)frame.contentWindow.postMessage({type:"m3-flex-active-scene",id:step().id},location.origin);
+}
+$("formFrame").addEventListener("load",syncFormExercise);
 $("formObservation").addEventListener("toggle",()=>{
  const iframe=$("formFrame");
  iframe.src=$("formObservation").open?"./form-check/":"about:blank";
@@ -303,7 +310,7 @@ function render(){
  document.querySelectorAll(".phase").forEach(b=>b.setAttribute("aria-selected",Number(b.dataset.stage)===phase?"true":"false"));
  if(phase===0)$("textBox").innerHTML="<strong>Before the workout</strong><p>Your first breathing step uses the approved C09 moving Flex video and Marcus. The remaining hand and shoulder preparation steps are still audio guided.</p>";
  if(phase===2)$("textBox").innerHTML="<strong>After the workout</strong><p>Your first cooldown step uses approved moving Flex C10 and Marcus; the shoulder-and-hand relaxation step still has Marcus audio only.</p>";
- setMedia();cards();drawTimer();
+ setMedia();cards();drawTimer();syncFormExercise();
 }
 async function playMedia(loop){
  const generation=++playbackGeneration;
