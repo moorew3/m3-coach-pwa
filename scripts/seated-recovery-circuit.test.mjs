@@ -139,7 +139,7 @@ test("Marcus audio buffering is watched independently of video without replacing
   assert.match(page, /clearMediaBufferChecks\(\)/);
   assert.match(page, /kind==="video"\?2300:3000/);
   assert.match(page, /Approved Marcus audio buffering stopped/);
-  assert.match(page, /function stopMedia\(rewind\)\{clearMediaBufferChecks\(\)/);
+  assert.match(page, /function stopMedia\(rewind\)\{playbackGeneration\+\+;clearMediaBufferChecks\(\)/);
 });
 
 test("Chrome verifies no phantom step completion on real audio errors and watchdog stalls", () => {
