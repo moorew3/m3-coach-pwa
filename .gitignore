@@ -34,3 +34,10 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Generated local third-party pose runtime assets (recreated by scripts/stage-pose-runtime.mjs).
+public/recovery-coach/form-check/vendor/
+
+# Owner-only binary backups and SHA-256 receipts: never publish raw approved likeness files.
+approved-media-backup/
+**/sha256-backup-report.json

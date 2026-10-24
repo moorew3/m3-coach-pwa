@@ -26,6 +26,13 @@ select{width:100%;margin-top:4px;border:1px solid #57768b;background:#263c4e;col
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
 .btn{background:#263f54;color:white;border:1px solid #47637a;border-radius:11px;padding:12px 10px;min-height:45px;font-size:14px;font-weight:800}
 .btn.primary{background:var(--green);color:#112118;border-color:var(--green)}.btn.wide{grid-column:1/-1}
+.voiceAccessPanel{border:1px solid #406078;border-radius:13px;background:#0e2030;padding:10px 12px;margin:12px 0 0;color:var(--fg)}
+.voiceAccessPanel summary{font-size:14px;color:var(--green);min-height:30px;cursor:pointer;font-weight:850}
+.voiceAccessPanel p{font-size:12px;color:var(--dim);line-height:1.55;margin:9px 0}
+.voiceActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:11px 0}
+.voiceActions .btn{min-height:55px;font-weight:850;font-size:15px}
+.voiceActions .btn:last-child{grid-column:1/-1}
+.voiceAccessPanel .hint{font-size:11px;color:#f4d7ab}
 .notice{font-size:12px;color:#e8e3b3;min-height:20px;line-height:1.55;margin:10px 0 0}
 .stepHeader{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:2px 0 12px;font-size:13px;color:var(--dim)}
 .steps{display:grid;gap:8px}.item{display:flex;align-items:center;text-align:left;width:100%;gap:10px;background:#1e3345;border:1px solid #36566a;color:#f0f6fa;border-radius:11px;padding:11px 10px}
@@ -43,7 +50,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 .hidden{display:none!important}
 @media(min-width:680px){main{padding:30px 24px 70px}.future{grid-template-columns:1fr 1fr}.videoWrap video{max-height:440px}}
 </style></head><body><main>
-<header class="top"><div class="brand">M3 <b>FLEX</b></div><div class="version">Recovery Coach · 7 approved scenes</div></header>
+<header class="top"><div class="brand">M3 <b>FLEX</b></div><a href="/" style="color:#c5f08c;font-size:12px;font-weight:800">← App home</a><div class="version">Recovery Coach · 7 approved scenes</div></header>
 <h1>Your guided recovery workout</h1>
 <p class="lead">One simple session, using your five approved Flex videos and Marcus – Warm &amp; Friendly English coaching. No rejected clips or replacement avatars.</p>
 <div class="trust"><span>✓ 7 approved moving scenes</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
@@ -59,9 +66,17 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <div class="guidePlaceholder" id="textBox"><strong>Before your workout</strong><p>Prepare gently while keeping your injured left leg supported. No exercise video has been approved for this new warm-up yet.</p></div>
 <p class="cue" id="cue">Sit comfortably with the cast supported. Breathe slowly without forcing movement.</p>
 <div class="timer"><div class="small muted" id="runState">Ready</div><div class="clock" id="clock">00:30</div><div class="small muted" id="progressText">0 of 10 steps completed</div></div>
+<details id="formObservation" class="voiceAccessPanel">
+<summary>Live camera · observe upper-body movement (optional)</summary>
+<p>See your own camera and local shoulder, elbow and wrist landmarks alongside the approved moving Flex video. Camera consent is required; no image is uploaded by M3 FLEX. Google MediaPipe may collect runtime metrics. This is NOT a rep counter, cast assessment, injury assessment, or clinician-approved form certification.</p>
+<iframe id="formFrame" title="Optional local upper-body movement observation" loading="lazy" allow="camera" style="display:block;width:100%;height:545px;max-height:75vh;border:1px solid #395970;border-radius:10px;background:#0b1521" src="about:blank"></iframe>
+<p class="small">Closing this panel unloads its camera view and stops its live stream. Pause the workout if monitoring affects performance on your Galaxy Fold.</p>
+</details>
 <div class="opts">
 <label>Exercise time <select id="workDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></label>
-<label>Rest between exercises <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
+<label>Rest after each movement/set <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
+<label>Sets per approved exercise <select id="setRounds" aria-label="Approved exercise sets; not a repetition count"><option value="1" selected>1 set per exercise</option><option value="2">2 sets per exercise</option></select></label>
+<label>Training order <select id="pairMode" aria-label="Training order, straight sets or paired supersets"><option value="straight" selected>Straight sets · rest each set</option><option value="paired">Paired supersets · rest after both</option></select></label>
 </div>
 <div class="controls">
 <button id="startPause" type="button" class="btn primary wide">▶ Start full session</button>
@@ -69,7 +84,21 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <button id="next" type="button" class="btn">Next step →</button>
 <button id="reset" type="button" class="btn wide">↺ Restart session</button>
 </div>
-<p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance.</p>
+<details class="voiceAccessPanel" id="voiceAccessPanel">
+<summary>Hands-free controls · Android Voice Access and Bluetooth</summary>
+<p>On your Galaxy Fold, enable Android <strong>Voice Access</strong> in Settings → Accessibility. You can then say “Tap Start workout,” “Tap Pause workout,” “Tap Resume workout,” or “Tap Next exercise.” These buttons have unique stable names for voice control. Voice Access is an Android feature; M3 FLEX does not turn on its microphone or listen to speech.</p>
+<div class="voiceActions" aria-label="Hands-free workout controls">
+<button type="button" id="handsfreeStart" class="btn primary" aria-label="Start workout">Start workout</button>
+<button type="button" id="handsfreePause" class="btn" aria-label="Pause workout" disabled>Pause workout</button>
+<button type="button" id="handsfreeResume" class="btn" aria-label="Resume workout" disabled>Resume workout</button>
+<button type="button" id="handsfreeNext" class="btn" aria-label="Next exercise">Next exercise</button>
+<button type="button" id="handsfreeExplain" class="btn" aria-label="Show exercise guidance">Show exercise guidance</button>
+</div>
+<p id="handsfreeStatus" role="status">Ready. Active exercise still requires today's clinician-clearance checks.</p>
+<p class="hint">Optional Bluetooth keyboard: Space = Start/Pause/Resume, N = Next exercise, E = Show guidance, Escape = Pause. Android Voice Access may process speech through Google depending on its settings; M3 FLEX never sends voice recordings to paid AI. These controls cannot listen with the screen off or answer open-ended questions.</p>
+</details>
+<p class="small muted" style="margin-top:9px">Optional paired mode: shrugs → hammer curls → rest; front raises → alternating curls → rest; INNSTAR press separately. No foot loading. Ask your clinician before increasing intensity or grouping exercises.</p>
+<p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance. Sets count timed demonstrations, not verified athlete repetitions.</p>
 </section>
 <section class="panel"><div class="stepHeader"><strong id="listHeading">Before workout</strong><span id="listCounter">3 gentle steps</span></div><div class="steps" id="steps"></div></section>
 <section class="approve" id="clearance" aria-label="Medical clearance confirmation">
@@ -79,7 +108,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <label><input type="checkbox" class="check">My cast support, non-weight-bearing restrictions and transfers are cleared.</label>
 <label><input type="checkbox" class="check">My exercise duration and effort are cleared.</label>
 </section>
-<p class="safety">Keep the injured left leg supported and never use it to anchor bands or push against the floor. Stop if pain, swelling, dizziness, or cast pressure develops. Warm-up/cooldown steps are gentle text suggestions, not approved Flex videos.</p>
+<p class="safety">Keep the injured left leg supported and never use it to anchor bands or push against the floor. Stop if pain, swelling, dizziness, or cast pressure develops. The approved breathing scenes have moving Flex videos; the other warm-up/cooldown steps remain text or existing audio guidance only.</p>
 <section class="panel"><h3>Next programs: Workout A &amp; Workout B</h3><p class="small"><a href="./programs/" target="_blank" rel="noopener noreferrer">Open Workout A/B exercise preview and new animation reviews ↗</a></p><p class="small"><a href="./programs/" style="color:#c5f08c;font-weight:800">▶ Open Workout A/B development player</a> — preview only verified Flex videos and Marcus audio. Missing exercises are clearly blocked until approved.</p><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
 <div class="future">
 <div><strong>Workout A · Dumbbells and arm cardio</strong><p>Bring forward your previously approved seated wrist-curl, seated lateral-raise, and arm-only boxing visuals from the archive. Verify the playable video and Marcus voice for each before activation.</p><span class="tag">Video integration next</span></div>
@@ -97,6 +126,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <p><strong>Post:</strong> chest/shoulder stretching (animated Flex missing). <strong>Cooldown:</strong> existing Marcus recordings (moving Flex videos missing).</p>
 <p class="small">Proposed 2 × 8 controlled reps for verified strength movements; AMYCO exercise cannot be activated before correct equipment testing. The program remains IN DEVELOPMENT.</p></details>
 </section>
+<details><summary>Galaxy Fold, earbuds and camera · physical device check</summary><p>Optional local setup test before accepting the app for release. It tests actual playback of approved Marcus, microphone signal and a private front camera preview. No recording is uploaded, and this is not exercise-form analysis.</p><a href="./device-check/" style="color:#c5f08c;font-weight:800">Open privacy-safe phone/headset diagnostics →</a></details>
 <details><summary>Owner's development archive and QA</summary><p>Old Equipment A/B drafts, rejected videos, prior reviews, and the full pre-cleanup page source were archived before this cleanup.</p><a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Xe9pBlXGdC4jgKoAjMSQiPsBcd71-1MJPMAT0YJ0E0o/edit">Open archive in Google Drive</a></details>
 <details><summary>Complete exercise-by-exercise QA checklist</summary>
 <p>Five original Recovery Coach clips are OWNER APPROVED and protected; full lip sync, rep-count timing, and hands-free complete-session validation are NOT YET VERIFIED.</p>
@@ -113,7 +143,7 @@ const stages=[
 {label:"Before workout",subtitle:"Gentle preparation · approved Flex breathing video + Marcus",items:[
 {id:"C09-PRE-BREATH-R2",name:"Calm seated breathing",sec:30,video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3",voiceOnce:true,approved:true,note:"Approved C09-R2: seated Flex breathing with white left cast supported. Follow Marcus English instructions once; the visible breathing animation continues while the preparation timer runs."},
 {name:"Easy hand openings",sec:30,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2dcdf842-9177-4bc6-a6a4-a274fc726876.mp3",note:"With forearms supported if needed, gently open and close your hands. No weights; stay within your clinician's restrictions.",text:true},
-{name:"Unloaded shoulder mobility",sec:30,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",note:"If cleared, make small comfortable shoulder circles without weights. Keep the torso steady and injured leg fully supported.",text:true}
+{name:"Controlled arm reaches",sec:30,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",note:"Controlled arm reaches: while seated and only if cleared, reach one arm gently forward within a comfortable range, then return. Keep the injured leg fully supported. This text guidance has no approved moving demonstration; the existing Marcus recording is general shoulder-mobility audio.",text:true}
 ]},
 {label:"Approved Flex workout",subtitle:"Five locked demonstrations · original Flex and Marcus",items:[
 {id:"C01-R3",name:"Seated dumbbell shrugs",video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",embedded:true,note:"Approved original black-tank-top shrug video with the white left cast. Lift shoulders under control; keep cast supported."},
@@ -128,9 +158,88 @@ const stages=[
 ]}];
 const $=x=>document.getElementById(x);
 const video=$("coachVideo"),audio=$("coachVoice");
+const LOCAL_POSE_SCENES=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+function syncFormExercise(){
+ if(!$("formObservation").open||!LOCAL_POSE_SCENES.has(step().id))return;
+ const frame=$("formFrame");
+ if(frame.contentWindow)frame.contentWindow.postMessage({type:"m3-flex-active-scene",id:step().id},location.origin);
+}
+$("formFrame").addEventListener("load",syncFormExercise);
+$("formObservation").addEventListener("toggle",()=>{
+ const iframe=$("formFrame");
+ iframe.src=$("formObservation").open?"./form-check/":"about:blank";
+});
 const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3";
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
+let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable rounds; no inferred completed reps
+const finishedSets=new Map(); // timed demos only; never inferred athlete reps
+// Each navigation/pause/retry supersedes unresolved video/audio play promises.
+let playbackGeneration=0;
+const PROGRESS_KEY="m3-flex-recovery-progress-v1";
+const PROGRESS_VALID_MS=24*60*60*1000;
+let lastProgressText="";
+/** Stores this browser's demonstrated phase only, NOT medical clearance or personal reps. */
+function persistProgress(){
+ if(!sessionStarted||mode==="complete"){
+  try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
+  lastProgressText="";return;
+ }
+ const snapshot={
+  v:1, savedAt:Date.now(), phase,idx,workRound,targetRounds,
+  secondsLeft:Math.max(0,Math.ceil(secondsLeft/1000)*1000),
+  mode, restNext, completed:[...completed],finishedSets:Object.fromEntries(finishedSets),pairMode:$("pairMode").value,
+  workDuration:$("workDuration").value,restDuration:$("restDuration").value
+ };
+ // Avoid 200ms storage writes from the ticker. A new second, phase or
+ // explicit Pause/Resume still commits immediately.
+ const signature=JSON.stringify({...snapshot,savedAt:0});
+ if(signature===lastProgressText)return;
+ try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(snapshot));lastProgressText=signature}catch(e){}
+}
+function restoreProgress(){
+ let saved;
+ try{saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null")}catch(e){return false}
+ if(!saved||saved.v!==1||!Number.isFinite(saved.savedAt)||
+    Date.now()-saved.savedAt>PROGRESS_VALID_MS||saved.savedAt>Date.now()+60_000)return false;
+ const p=saved.phase,n=saved.idx;
+ if(!Number.isInteger(p)||p<0||p>=stages.length||
+    !Number.isInteger(n)||n<0||n>=stages[p].items.length||
+    ![1,2].includes(saved.targetRounds)||
+    !Number.isInteger(saved.workRound)||saved.workRound<1||saved.workRound>saved.targetRounds||
+    !Number.isFinite(saved.secondsLeft)||saved.secondsLeft<0||saved.secondsLeft>180_000||
+    !["ready","running","rest","paused","waiting","preview"].includes(saved.mode)||
+    !["straight","paired"].includes(saved.pairMode??"straight")||
+    !["20","30","45","60"].includes(saved.workDuration)||
+    !["15","20","30","45"].includes(saved.restDuration)||
+    !Array.isArray(saved.completed))return false;
+ const validSteps=new Set(stages.flatMap((st,pi)=>st.items.map((_,i)=>pi+":"+i)));
+ if(saved.completed.some(key=>typeof key!=="string"||!validSteps.has(key)))return false;
+ const restoredSets=saved.finishedSets??{};
+ if(!restoredSets||typeof restoredSets!=="object"||Array.isArray(restoredSets)||
+    Object.entries(restoredSets).some(([key,count])=>!validSteps.has(key)||!key.startsWith("1:")||
+      !Number.isInteger(count)||count<0||count>saved.targetRounds))return false;
+ const next=saved.restNext;
+ if(next!==null&&next!==undefined&&
+    (!Number.isInteger(next.phase)||next.phase!==1||
+     !Number.isInteger(next.idx)||next.idx<0||next.idx>=stages[1].items.length))return false;
+ if(saved.mode==="rest"&&!next)return false;
+ phase=p;idx=n;workRound=saved.workRound;targetRounds=saved.targetRounds;
+ secondsLeft=saved.secondsLeft;completed=new Set(saved.completed);
+ finishedSets.clear();
+ for(const [key,count] of Object.entries(restoredSets))finishedSets.set(key,count);
+ // Old local snapshots did not store set-by-set counts. Preserve already
+ // completed timed demonstrations without inventing new repetitions.
+ if(saved.finishedSets===undefined)for(const key of saved.completed)if(key.startsWith("1:"))finishedSets.set(key,saved.targetRounds);
+ restNext=next??null;sessionStarted=true;
+ $("setRounds").value=String(targetRounds);
+ $("pairMode").value=saved.pairMode??"straight";
+ $("workDuration").value=saved.workDuration;
+ $("restDuration").value=saved.restDuration;
+ // Never auto-play audio, move the cast, or reuse previous clearance after
+ // browser restore. The user must re-acknowledge and tap Resume.
+ mode="paused";return true;
+}
 const elapsedState={phase:0,idx:0};
 function step(){return stages[phase].items[idx]}
 function total(){return stages.reduce((n,s)=>n+s.items.length,0)}
@@ -138,7 +247,7 @@ function label(){return stages[phase].label}
 function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function duration(){return (phase===1?Number($("workDuration").value):step().sec)*1000}
 function clearTick(){if(interval!==null){clearInterval(interval);interval=null}}
-function stopMedia(rewind){video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
+function stopMedia(rewind){playbackGeneration++;clearMediaBufferChecks();video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
 function playRestVoice(){
  audio.pause();audio.src=REST_MARCUS;audio.loop=false;audio.currentTime=0;
  audio.play().catch(()=>tell("Rest timer running. Tap Resume if your phone blocks automatic Marcus audio."));
@@ -151,11 +260,24 @@ function safetyOkay(){return [...document.querySelectorAll(".check")].every(c=>c
 function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
 function drawTimer(){
+$("setRounds").disabled=sessionStarted;$("pairMode").disabled=sessionStarted;
+$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed"})[mode]||"Ready";
-$("progressText").textContent=completed.size+" of "+total()+" steps completed";
-$("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
+$("progressText").textContent=completed.size+" of "+total()+" steps completed — manually skipped steps do not count";
+$("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Retry approved media":mode==="complete"?"✓ Session complete":"▶ Start full session";
 $("startPause").disabled=mode==="complete";
 $("preview").disabled=(!step().voice&&!step().video&&mode!=="complete")||mode==="running"||mode==="rest";$("preview").textContent=mode==="complete"?"▶ Hear Marcus finish":step().video?"▶ Preview Flex + Marcus":"▶ Hear Marcus";
+$("handsfreeStart").disabled=mode!=="ready";
+$("handsfreePause").disabled=mode!=="running"&&mode!=="rest";
+$("handsfreeResume").disabled=mode!=="paused"&&mode!=="waiting";
+$("handsfreeNext").disabled=mode==="complete"||(phase===2&&idx===stages[2].items.length-1);
+$("handsfreeExplain").disabled=mode==="complete";
+const guidance=mode==="rest"?"Rest is running. Say Tap Pause workout if needed.":
+ mode==="running"?"Timed demonstration is running. Say Tap Pause workout or Tap Next exercise.":
+ mode==="paused"||mode==="waiting"?"Workout paused. Say Tap Resume workout after checking clearance.":
+ mode==="complete"?"Session complete. Hands-free actions are disabled.":"Ready. Say Tap Start workout after clinician clearance.";
+if($("handsfreeStatus").textContent!==guidance)$("handsfreeStatus").textContent=guidance;
+persistProgress();
 }
 function cards(){
 const box=$("steps");box.replaceChildren();
@@ -167,7 +289,7 @@ stages[phase].items.forEach((it,i)=>{
  body.append(h,details);
  const tag=document.createElement("span");tag.className="status";tag.textContent=completed.has(phase+":"+i)?"✓ Done":it.video?"✓ Approved":(i===idx?"Current":"");
  btn.append(num,body,tag);
- btn.addEventListener("click",()=>{clearTick();stopMedia(true);phase=Number(phase);idx=i;mode="ready";secondsLeft=duration();render();});
+ btn.addEventListener("click",()=>stopForNavigation(phase,i));
  box.append(btn);
 });
 }
@@ -182,30 +304,38 @@ function setMedia(){
  if(it.voice){audio.src=it.voice;audio.volume=1;audio.loop=false;}
 }
 function render(){
- const it=step();$("phaseLabel").textContent=label();$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length;$("moveTitle").textContent=it.name;$("moveDetail").textContent=stages[phase].subtitle;$("cue").textContent=it.note;
+ const it=step();$("phaseLabel").textContent=label();$("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");$("moveTitle").textContent=it.name;$("moveDetail").textContent=stages[phase].subtitle;$("cue").textContent=it.note;
  $("videoBox").classList.toggle("hidden",!it.video);$("textBox").classList.toggle("hidden",!!it.video);
  $("listHeading").textContent=label();$("listCounter").textContent=stages[phase].items.length+" steps";
  document.querySelectorAll(".phase").forEach(b=>b.setAttribute("aria-selected",Number(b.dataset.stage)===phase?"true":"false"));
  if(phase===0)$("textBox").innerHTML="<strong>Before the workout</strong><p>Your first breathing step uses the approved C09 moving Flex video and Marcus. The remaining hand and shoulder preparation steps are still audio guided.</p>";
  if(phase===2)$("textBox").innerHTML="<strong>After the workout</strong><p>Your first cooldown step uses approved moving Flex C10 and Marcus; the shoulder-and-hand relaxation step still has Marcus audio only.</p>";
- setMedia();cards();drawTimer();
+ setMedia();cards();drawTimer();syncFormExercise();
 }
 async function playMedia(loop){
+ const generation=++playbackGeneration;
  const it=step();
  if(!it.video){
   if(!it.voice)return true;
   audio.loop=false;
-  try{if(!it.voiceOnce||!audio.ended)await audio.play();return true;}
-  catch(err){tell("Your phone blocked Marcus audio. Tap Enable audio & continue.");return false;}
+  try{
+   if(!it.voiceOnce||!audio.ended)await audio.play();
+   return generation===playbackGeneration?true:null;
+  }catch(err){
+   if(generation!==playbackGeneration)return null;
+   tell("Your phone blocked Marcus audio. Tap Retry approved media.");
+   return false;
+  }
  }
  video.loop=loop;
  video.muted=!!it.voice;
  if(it.voice)audio.loop=loop&&!it.voiceOnce;
  try{
   const outcomes=await Promise.allSettled([video.play(),it.voice&&(!it.voiceOnce||!audio.ended)?audio.play():Promise.resolve()]);
-  if(outcomes.some(o=>o.status==="rejected")){stopMedia(false);tell("Your phone blocked video or Marcus audio. Tap Enable audio & continue to retry; the timer is paused.");return false;}
+  if(generation!==playbackGeneration)return null;
+  if(outcomes.some(o=>o.status==="rejected")){stopMedia(false);tell("Your phone blocked video or Marcus audio. Tap Retry approved media to retry; the timer is paused.");return false;}
   return true;
- }catch(e){stopMedia(false);return false}
+ }catch(e){if(generation!==playbackGeneration)return null;stopMedia(false);return false}
 }
 function beginTicker(){clearTick();deadline=Date.now()+secondsLeft;interval=setInterval(()=>{
  secondsLeft=Math.max(0,deadline-Date.now());
@@ -214,12 +344,14 @@ function beginTicker(){clearTick();deadline=Date.now()+secondsLeft;interval=setI
  },200);}
 async function runCurrent(){
  if(!safetyOkay()){tell("Please confirm all three clinician-clearance checks before starting a timed session. Preview videos remain available.");$("clearance").scrollIntoView({behavior:"smooth",block:"center"});return}
+ if(!sessionStarted){targetRounds=Number($("setRounds").value);sessionStarted=true}
  if(mode==="ready"&&completed.size===0&&phase!==0){/* selected phase may start directly */}
  mode="running";secondsLeft=duration();drawTimer();
- if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
+ if(step().video||step().voice){const ok=await playMedia(true);if(ok===null)return;if(!ok){if(mode==="running"){mode="waiting";drawTimer()}return}}
  if(mode!=="running")return;beginTicker();tell(phase===1?"Follow your approved Flex video and Marcus narration.":"Follow Marcus voice guidance. Keep the cast supported.");
 }
 function advance(){
+ workRound=1;
  if(idx+1<stages[phase].items.length){idx++;return true}
  if(phase<2){phase++;idx=0;return true}
  if(completed.size<total()){
@@ -232,9 +364,48 @@ function advance(){
  return false;
 }
 function advanceAfterStep(){
- stopMedia(true);completed.add(phase+":"+idx);
+ stopMedia(true);
+ if(phase===1){
+  const key="1:"+idx;
+  finishedSets.set(key,Math.min(targetRounds,(finishedSets.get(key)||0)+1));
+ }
+ if(phase===1&&$("pairMode").value==="paired"){
+  if(idx===0||idx===2){
+   const lead=step().name;
+   idx++;mode="ready";secondsLeft=duration();render();
+   tell("Superset: "+lead+" finished; perform its paired exercise next. No rest until both timed demonstrations finish.");
+   runCurrent();return;
+  }
+  if(idx===1||idx===3){
+   const leader=idx-1,partner=idx;
+   if(workRound<targetRounds){
+    workRound++;restNext={phase:1,idx:leader};mode="rest";
+    secondsLeft=Number($("restDuration").value)*1000;render();beginTicker();playRestVoice();
+    tell("Rest after BOTH exercises in paired superset. Next round "+workRound+" starts with "+stages[1].items[leader].name);
+    return;
+   }
+   if((finishedSets.get("1:"+leader)||0)>=targetRounds&&
+      (finishedSets.get("1:"+partner)||0)>=targetRounds){
+    completed.add("1:"+leader);completed.add("1:"+partner);
+   }
+   const next=idx+1;restNext={phase:1,idx:next};workRound=1;mode="rest";
+   secondsLeft=Number($("restDuration").value)*1000;render();beginTicker();playRestVoice();
+   tell("Both superset exercises reached their timed demonstration targets. Rest now. Next: "+stages[1].items[next].name);
+   return;
+  }
+ }
+ if(phase===1&&workRound<targetRounds){
+   // The clip timer only demonstrates the movement. Never invent actual reps.
+   workRound++;
+   restNext={phase:1,idx};
+   mode="rest";secondsLeft=Number($("restDuration").value)*1000;
+   render();beginTicker();playRestVoice();
+   tell("Rest after demonstration set "+(workRound-1)+". Confirm your own actual reps separately; same approved movement returns for set "+workRound+".");
+   return;
+ }
+ if(phase!==1||(finishedSets.get("1:"+idx)||0)>=targetRounds)completed.add(phase+":"+idx);
  if(phase===1&&idx<stages[phase].items.length-1){
-   restNext={phase:1,idx:idx+1};mode="rest";secondsLeft=Number($("restDuration").value)*1000;
+   restNext={phase:1,idx:idx+1};workRound=1;mode="rest";secondsLeft=Number($("restDuration").value)*1000;
    render();beginTicker();playRestVoice();tell("Marcus rest coaching. Keep the cast supported. Next: "+stages[1].items[idx+1].name);return
  }
  if(!advance()){if(mode!=="complete")secondsLeft=duration();render();if(mode==="complete")playCompleteVoice();return}
@@ -246,25 +417,51 @@ function advanceAfterRest(){
 }
 function pause(){
  if(mode!=="running"&&mode!=="rest")return;
- secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);mode="paused";drawTimer();tell("Paused. Tap Resume when you're ready.");
+ if(interval!==null)secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);mode="paused";drawTimer();tell("Paused. Tap Resume when you're ready.");
 }
 async function resume(){
  if(mode!=="paused"&&mode!=="waiting")return;
+ if(!safetyOkay()){
+  tell("Please re-confirm all three clinician clearance checks before resuming the paused workout. No exercise or audio will start.");
+  $("clearance").scrollIntoView({behavior:"smooth",block:"center"});return;
+ }
  const wasWaiting=mode==="waiting";mode="running";
- if(restNext){mode="rest";beginTicker();audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
- if(step().video||step().voice){const ok=await playMedia(true);if(!ok){mode="waiting";drawTimer();return}}
+ if(restNext){mode="rest";beginTicker();if(audio.src!==REST_MARCUS)playRestVoice();else audio.play().catch(()=>tell("Your phone blocked Marcus rest audio."));drawTimer();return}
+ if(step().video||step().voice){const ok=await playMedia(true);if(ok===null)return;if(!ok){if(mode==="running"){mode="waiting";drawTimer()}return}}
+ if(mode!=="running")return;
  beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
 }
 function stopForNavigation(p,i){
- clearTick();stopMedia(true);restNext=null;phase=p;idx=i;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
+ clearTick();stopMedia(true);restNext=null;phase=p;idx=i;workRound=1;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
 }
 $("startPause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")pause();else if(mode==="paused"||mode==="waiting")resume();else if(mode==="ready")runCurrent()});
+$("handsfreeStart").addEventListener("click",()=>{if(mode==="ready")$("startPause").click()});
+$("handsfreePause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")$("startPause").click()});
+$("handsfreeResume").addEventListener("click",()=>{if(mode==="paused"||mode==="waiting")$("startPause").click()});
+$("handsfreeNext").addEventListener("click",()=>{if(!$("handsfreeNext").disabled)$("next").click()});
+$("handsfreeExplain").addEventListener("click",()=>{if(mode==="complete")return;const guidance=step().note;const status="Guidance: "+guidance+" Marcus uses the original approved recording; free-form spoken replies are not yet available.";$("handsfreeStatus").textContent=status;tell(status)});
+document.addEventListener("keydown",event=>{
+ if(event.defaultPrevented||event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
+ if(event.target instanceof Element&&event.target.closest("input,select,textarea,button,summary,[contenteditable='true']"))return;
+ if(![" ","n","N","e","E","Escape"].includes(event.key))return;
+ if(event.key===" "){
+  if(mode==="ready"||mode==="paused"||mode==="waiting"||mode==="running"||mode==="rest"){event.preventDefault();$("startPause").click()}
+ }else if(event.key==="n"||event.key==="N"){
+  if(!$("handsfreeNext").disabled){event.preventDefault();$("handsfreeNext").click()}
+ }else if(event.key==="e"||event.key==="E"){
+  if(!$("handsfreeExplain").disabled){event.preventDefault();$("handsfreeExplain").click()}
+ }else if(event.key==="Escape"&&(mode==="running"||mode==="rest")){
+  event.preventDefault();$("handsfreePause").click();
+ }
+});
 $("preview").addEventListener("click",async()=>{
  if(mode==="complete"){audio.src=END_MARCUS;audio.currentTime=0;audio.play().catch(()=>tell("Please enable audio in Chrome."));return;}
  if(!step().video&&!step().voice)return;
  clearTick();stopMedia(true);restNext=null;mode="preview";drawTimer();
  const ok=await playMedia(false);
- if(!ok){mode="ready";drawTimer();return}
+ if(ok===null)return;
+ if(!ok){if(mode==="preview"){mode="ready";drawTimer()}return}
+ if(mode!=="preview")return;
  tell("Previewing "+step().name+" with Marcus. This is not a timed workout.");
 });
 function endPreview(){
@@ -273,24 +470,49 @@ function endPreview(){
 }
 video.addEventListener("ended",()=>{if(mode==="preview"&&!step().voice)endPreview()});
 audio.addEventListener("ended",endPreview);
-function playbackError(msg){
- if(mode!=="running"||!step().video)return;
- secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);
- mode="waiting";drawTimer();tell(msg+" Set NOT completed. Tap Enable audio & continue to retry.");
+// A failed or stalled REQUIRED Marcus track must never silently count an
+// audio-guided preparation/cooldown step as completed. Rest-track failure is
+// reported by playRestVoice while the safe rest clock is allowed to continue.
+let mediaBufferCheck=null,audioBufferCheck=null;
+function clearMediaBufferChecks(){
+ if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null}
+ if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null}
 }
-video.addEventListener("error",()=>playbackError("Approved Flex video failed to load."));
-audio.addEventListener("error",()=>{if(step().voice&&step().video)playbackError("Marcus voice track failed.");});
-let mediaBufferCheck=null;
-video.addEventListener("waiting",()=>{
- if(mode!=="running"||!step().video)return;
- if(mediaBufferCheck!==null)clearTimeout(mediaBufferCheck);
- mediaBufferCheck=setTimeout(()=>{
-  mediaBufferCheck=null;
-  if(mode==="running"&&step().video&&video.readyState<2)playbackError("Video buffering stopped.");
- },2300);
-});
+function playbackError(msg,source){
+ if(mode!=="running")return;
+ if(source==="video"&&!step().video)return;
+ if(source==="audio"&&!step().voice)return;
+ // Before autoplay resolves there is no deadline yet. Keep the entire
+ // prescribed time rather than resetting it to zero by using stale state.
+ if(interval!==null)secondsLeft=Math.max(0,deadline-Date.now());
+ clearTick();stopMedia(false);
+ mode="waiting";drawTimer();
+ tell(msg+" Timed step NOT completed. Tap Retry approved media; no automatic substitute will play.");
+}
+video.addEventListener("error",()=>playbackError("Approved Flex video failed to load.","video"));
+audio.addEventListener("error",()=>{if(mode==="rest"){tell("Marcus rest recording unavailable. The rest timer is still running; review audio before the next guided exercise.");return;}playbackError("Approved Marcus voice track failed.","audio");});
+function waitForBuffer(kind){
+ const element=kind==="video"?video:audio;
+ if(mode!=="running"||!(kind==="video"?step().video:step().voice))return;
+ const old=kind==="video"?mediaBufferCheck:audioBufferCheck;
+ if(old!==null)clearTimeout(old);
+ const sourceAtWait=element.currentSrc||element.src;
+ const timer=setTimeout(()=>{
+  if(kind==="video")mediaBufferCheck=null;else audioBufferCheck=null;
+  if(mode!=="running"||!(kind==="video"?step().video:step().voice))return;
+  if((element.currentSrc||element.src)!==sourceAtWait)return;
+  if(element.readyState<2)playbackError(kind==="video"?"Approved video buffering stopped.":"Approved Marcus audio buffering stopped.",kind);
+ },kind==="video"?2300:3000);
+ if(kind==="video")mediaBufferCheck=timer;else audioBufferCheck=timer;
+}
+video.addEventListener("waiting",()=>waitForBuffer("video"));
+video.addEventListener("stalled",()=>waitForBuffer("video"));
+audio.addEventListener("waiting",()=>waitForBuffer("audio"));
+audio.addEventListener("stalled",()=>waitForBuffer("audio"));
 video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&(mode==="running"||mode==="rest"))pause();});
+audio.addEventListener("playing",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
+audio.addEventListener("ended",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)return;if(mode==="running"||mode==="rest")pause();else if(mode==="preview"){stopMedia(false);mode="ready";drawTimer();tell("Preview stopped when this screen was hidden. Tap Preview to replay; no exercise was logged.");}});
 $("next").addEventListener("click",()=>{
  if(mode==="complete")return;
  if(phase===2&&idx===stages[2].items.length-1){tell("Complete the last cooldown timer before the session can be marked complete.");return;}
@@ -302,8 +524,12 @@ $("next").addEventListener("click",()=>{
  tell(mode==="complete"?"Session complete.": "Moved to "+step().name+". Skipped steps do not count as completed.");
  if(more&&continueSession){mode="ready";runCurrent().catch(()=>tell("Tap Start full session to resume."));}
 });
-$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();restNext=null;stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
+$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Start with the gentle before-workout preparation.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
-for(const id of ["workDuration","restDuration"])$(id).addEventListener("change",()=>{if(mode==="ready")secondsLeft=duration();drawTimer()});
-secondsLeft=duration();render();
+for(const id of ["workDuration","restDuration","setRounds","pairMode"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
+const restored=restoreProgress();
+if(!restored)secondsLeft=duration();
+render();
+if(restored)tell("Workout position restored in PAUSED mode. Confirm today's clinician-clearance checks again, then tap Resume. No video or audio was auto-played.");
+window.addEventListener("pagehide",persistProgress);
 </script></body></html>
