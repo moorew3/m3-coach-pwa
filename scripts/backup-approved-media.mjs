@@ -10,7 +10,7 @@
  */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { createWriteStream, readFileSync } from "node:fs";
+import { closeSync, createWriteStream, openSync, readFileSync, readSync } from "node:fs";
 import { mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -89,7 +89,10 @@ if (!process.argv.includes("--download")) {
       await pipeline(Readable.fromWeb(response.body), check, createWriteStream(temp, { flags: "wx", mode: 0o600 }));
       if (size < 128) throw new Error("Implausibly short media file");
       // Basic media signature check catches HTML error pages masquerading as assets.
-      const prefix = readFileSync(temp).subarray(0, 24);
+      const prefix = Buffer.alloc(24);
+      const handle = openSync(temp, "r");
+      try { readSync(handle, prefix, 0, prefix.length, 0); }
+      finally { closeSync(handle); }
       const formatOk = media.type === "video"
         ? prefix.subarray(4, 8).toString() === "ftyp"
         : prefix.subarray(0, 4).toString() === "RIFF" ||
