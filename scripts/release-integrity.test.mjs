@@ -8,6 +8,7 @@ const home=read("../src/routes/index.tsx");
 const browser=read("./browser-mobile-smoke.mjs");
 const docker=read("../Dockerfile");
 const meta=read("../src/routes/__root.tsx");
+const gate=read("../src/components/LegacyRouteGate.tsx");
 const ignore=read("../.dockerignore");
 
 test("unapproved backup media are isolated in development preview and never become active",()=>{
@@ -58,4 +59,20 @@ test("install metadata shows M3 FLEX and does not falsely promise offline hosted
   assert.match(meta,/M3 FLEX \| Recovery Coach & Workout Tracker/);
   assert.match(meta,/Approved videos and Marcus voice require a network connection/);
   assert.doesNotMatch(meta,/offline exercise diagrams/);
+});
+
+test("direct coach, workout and glasses links cannot bypass the seated-only warning",()=>{
+  assert.match(meta,/LegacyRouteGate pathname=\{pathname\}/);
+  assert.match(gate,/pathname === "\/glasses"/);
+  assert.match(gate,/pathname === "\/presentation"/);
+  assert.match(gate,/pathname\.startsWith\("\/display"\)/);
+  assert.match(gate,/data-testid="legacy-route-gate"/);
+  assert.match(gate,/data-testid="legacy-route-continue"/);
+  assert.match(gate,/disabled={!acknowledged}/);
+  assert.match(gate,/setAllowed\(true\)/);
+  assert.match(gate,/window\.sessionStorage\.getItem\(LEGACY_MODE_KEY\)/);
+  assert.match(home,/window\.sessionStorage\.setItem\(LEGACY_MODE_KEY, "acknowledged"\)/);
+  assert.match(browser,/acknowledgeLegacyDirectRoute\(pairingPage\)/);
+  assert.match(browser,/acknowledgeLegacyDirectRoute\(mediaPage\)/);
+  assert.match(browser,/acknowledgeLegacyDirectRoute\(page\)/);
 });
