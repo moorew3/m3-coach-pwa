@@ -45,7 +45,7 @@ test("one/two optional demonstrated sets do not multiply, log, or invent athlete
 
 test("home offers same-origin approved player before the legacy coach and marks A/B as pending", () => {
   const approvedStart = home.indexOf('data-testid="seated-recovery-start"');
-  const legacyStart = home.indexOf('if (log.completed) return openCoach();');
+  const legacyStart = home.indexOf('data-testid="legacy-workout-start"');
   assert.ok(approvedStart > 0 && legacyStart > approvedStart);
   assert.match(home, /href="\/recovery-coach\/"/);
   assert.match(home, /Workout A\/B are still in development/);
