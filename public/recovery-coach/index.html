@@ -33,6 +33,9 @@ select{width:100%;margin-top:4px;border:1px solid #57768b;background:#263c4e;col
 .voiceActions .btn{min-height:55px;font-weight:850;font-size:15px}
 .voiceActions .btn:last-child{grid-column:1/-1}
 .voiceAccessPanel .hint{font-size:11px;color:#f4d7ab}
+#coachQuestion{width:100%;min-height:46px;margin:8px 0 10px;padding:10px 12px;border:1px solid #57768b;border-radius:9px;background:#263c4e;color:#fff;font:15px system-ui,sans-serif}
+#localCoachAnswer{min-height:55px;padding:11px 12px;border-left:3px solid var(--green);border-radius:6px;background:#1a3440;color:#edf5f9;font-size:13px;line-height:1.6}
+.coachPrompts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.coachPrompts .btn{min-height:40px;font-size:12px}
 .notice{font-size:12px;color:#e8e3b3;min-height:20px;line-height:1.55;margin:10px 0 0}
 .stepHeader{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:2px 0 12px;font-size:13px;color:var(--dim)}
 .steps{display:grid;gap:8px}.item{display:flex;align-items:center;text-align:left;width:100%;gap:10px;background:#1e3345;border:1px solid #36566a;color:#f0f6fa;border-radius:11px;padding:11px 10px}
@@ -96,6 +99,22 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 </div>
 <p id="handsfreeStatus" role="status">Ready. Active exercise still requires today's clinician-clearance checks.</p>
 <p class="hint">Optional Bluetooth keyboard: Space = Start/Pause/Resume, N = Next exercise, E = Show guidance, Escape = Pause. Android Voice Access may process speech through Google depending on its settings; M3 FLEX never sends voice recordings to paid AI. These controls cannot listen with the screen off or answer open-ended questions.</p>
+</details>
+<details class="voiceAccessPanel" id="localCoachPanel">
+<summary>Ask about your workout · private local answers</summary>
+<p>Ask what comes next, how the timer works, where the INNSTAR band belongs, or how to pause. Answers come from built-in rules and approved exercise notes, not a paid AI service. You may type with Android Voice Access dictation, which is an Android service and may send speech to Google. M3 FLEX does not access your microphone for these questions.</p>
+<form id="localCoachForm">
+<label for="coachQuestion">Your workout question</label>
+<input id="coachQuestion" aria-label="Workout question" type="text" maxlength="220" autocomplete="off" placeholder="For example: Where does the INNSTAR band go?" required>
+<button type="submit" id="askLocalCoach" class="btn primary">Get a private answer</button>
+</form>
+<div class="coachPrompts">
+<button type="button" class="btn" data-coach-question="What exercise is next?">What's next?</button>
+<button type="button" class="btn" data-coach-question="How long is the rest?">Rest time?</button>
+<button type="button" class="btn" data-coach-question="How many reps have I done?">My reps?</button>
+</div>
+<p id="localCoachAnswer" role="status" aria-live="polite">Local answers are ready. Only the original approved Marcus recordings play during the workout; typed answers are not spoken in a substitute voice.</p>
+<p class="hint">Answers are not saved or uploaded. This is not a live conversational voice assistant, movement diagnosis, or medical clearance service.</p>
 </details>
 <p class="small muted" style="margin-top:9px">Optional paired mode: shrugs → hammer curls → rest; front raises → alternating curls → rest; INNSTAR press separately. No foot loading. Ask your clinician before increasing intensity or grouping exercises.</p>
 <p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance. Sets count timed demonstrations, not verified athlete repetitions.</p>
@@ -440,6 +459,53 @@ $("handsfreePause").addEventListener("click",()=>{if(mode==="running"||mode==="r
 $("handsfreeResume").addEventListener("click",()=>{if(mode==="paused"||mode==="waiting")$("startPause").click()});
 $("handsfreeNext").addEventListener("click",()=>{if(!$("handsfreeNext").disabled)$("next").click()});
 $("handsfreeExplain").addEventListener("click",()=>{if(mode==="complete")return;const guidance=step().note;const status="Guidance: "+guidance+" Marcus uses the original approved recording; free-form spoken replies are not yet available.";$("handsfreeStatus").textContent=status;tell(status)});
+function localCoachReply(raw){
+ const q=raw.trim().toLowerCase();
+ if(!q)return "Ask about the current exercise, rest, next step, or the cast precautions.";
+ if(/pain|swelling|dizz|tingl|numb|cast pressure|hurt|injur|unsafe|faint/.test(q)){
+  if(mode==="running"||mode==="rest")pause();
+  return "Stop the exercise if you have pain, swelling, dizziness, numbness, tingling or new cast pressure. Contact your treating clinician for medical guidance. This app cannot evaluate injury or confirm safety.";
+ }
+ if(/innstar|band.*(behind|where|neck|chair)|chest press/.test(q))
+  return "For the approved INNSTAR seated press, the center pad sits behind your back between the chair and back, never around the neck or cast. Keep the left leg supported. Only use resistance cleared by your clinician.";
+ if(/(how many|count|track).*(rep|set)|my reps|repetition/.test(q))
+  return "The timer counts demonstrations, not your actual repetitions. No automatic rep counter has been verified. Record real repetitions separately only if you choose.";
+ if(/pause|stop workout/.test(q)){
+  if(mode==="running"||mode==="rest"){pause();return "Workout paused. The exercise/rest countdown has stopped.";}
+  return "The workout is not actively counting down. Use Pause workout when a demonstration or rest is running.";
+ }
+ if(/resume|continue workout/.test(q)){
+  if(mode==="paused"||mode==="waiting"){resume();return "Resume requested. All three clinician-clearance checks still apply before anything starts.";}
+  return "Resume is available only when a workout is paused or waiting for approved media.";
+ }
+ if(/^(start|begin)( the)? workout\??$/.test(q)){
+  if(mode==="ready"){runCurrent();return "Start requested. All three clinician-clearance checks are required before timed movement begins.";}
+  return "The timed session is already underway, paused, or complete. Check the visible workout controls.";
+ }
+ if(/next|after this|following exercise/.test(q)){
+  const next=idx+1<stages[phase].items.length?stages[phase].items[idx+1]:
+   phase<2?stages[phase+1].items[0]:null;
+  return next?"Next on the selected sequence: "+next.name+". Switching exercises manually does not count an unfinished demonstration.":
+   "This is the final cooldown step. Finish its timer to complete the guided session.";
+ }
+ if(/rest|break|recover|time remaining|how long/.test(q))
+  return (mode==="rest"?"The current rest interval has "+time(secondsLeft)+" remaining.":"The current timed step has "+time(secondsLeft)+" remaining.")+
+   " Your selected rest between prescribed sets is "+$("restDuration").value+" seconds. In paired mode, rest begins after both exercises.";
+ if(/cast|leg|feet|standing|jump|squat|burpee/.test(q))
+  return "Only clinician-cleared seated movements are used here. Keep the injured cast supported; never stand, jump, perform a squat, or push against the injured foot. Stop for pain or pressure.";
+ if(/what|current|doing|exercise|form|technique|guide|explain|how/.test(q))
+  return "Current: "+step().name+". "+step().note+" This is approved media guidance, not a physical form assessment.";
+ return "I can help locally with the current exercise, cast precautions, rest, next movement, rep-tracking limits and simple Start/Pause/Resume controls. Open the approved Marcus video for recorded verbal instruction. I cannot provide live open-ended spoken answers.";
+}
+$("localCoachForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const prompt=$("coachQuestion").value.slice(0,220);
+ $("localCoachAnswer").textContent=localCoachReply(prompt);
+});
+document.querySelectorAll("[data-coach-question]").forEach(button=>button.addEventListener("click",()=>{
+ $("coachQuestion").value=button.dataset.coachQuestion;
+ $("localCoachAnswer").textContent=localCoachReply(button.dataset.coachQuestion);
+}));
 document.addEventListener("keydown",event=>{
  if(event.defaultPrevented||event.repeat||event.ctrlKey||event.altKey||event.metaKey)return;
  if(event.target instanceof Element&&event.target.closest("input,select,textarea,button,summary,[contenteditable='true']"))return;
