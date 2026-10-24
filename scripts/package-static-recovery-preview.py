@@ -21,6 +21,8 @@ FILES={
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
   "recovery-coach/device-check/index.html":ROOT/"public/recovery-coach/device-check/index.html",
   "recovery-coach/form-check/index.html":ROOT/"public/recovery-coach/form-check/index.html",
+  "recovery-coach/form-check/vendor/sha256-manifest.json":ROOT/"public/recovery-coach/form-check/vendor/sha256-manifest.json",
+  "recovery-coach/form-check/vendor/THIRD_PARTY_NOTICE.txt":ROOT/"public/recovery-coach/form-check/vendor/THIRD_PARTY_NOTICE.txt",
 }
 HOME="""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -47,6 +49,7 @@ What is included
 - /recovery-coach/programs/index.html — Workout A/B owner-review only, NOT active
 - /recovery-coach/device-check/index.html — Galaxy Fold diagnostics
 - /recovery-coach/form-check/index.html — optional on-device landmark/camera check
+- /recovery-coach/form-check/vendor/* — first-party MediaPipe runtime + lite pose model
 - sha256-manifest.json — exact file hashes for independently checking ZIP contents
 
 What is not included
@@ -70,6 +73,13 @@ may use Google services depending on device and settings. A/B scenes are
 not active until original approved footage has been reviewed.
 """
 def run():
+    vendor_dir=ROOT/"public/recovery-coach/form-check/vendor"
+    if not vendor_dir.is_dir():
+        raise RuntimeError("Run node scripts/stage-pose-runtime.mjs before static packaging")
+    for f in sorted(vendor_dir.rglob("*")):
+        if f.is_file():
+            logical="recovery-coach/form-check/vendor/"+f.relative_to(vendor_dir).as_posix()
+            FILES[logical]=f
     for logical,physical in FILES.items():
         if not physical.is_file() or not physical.stat().st_size:
             raise RuntimeError("Missing static Recovery Coach page: "+logical)
