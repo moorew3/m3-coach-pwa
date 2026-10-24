@@ -87,6 +87,12 @@ try {
     "testCamera",
     "No report saved.",
   ]);
+  await assertPage("/recovery-coach/form-check/", [
+    "Live camera",
+    "modelAssetPath:MODEL",
+    "Enable live form view",
+    "No footage is saved",
+  ]);
   await assertPage("/recovery-coach/programs/", [
     "Workout A",
     "Workout B",
