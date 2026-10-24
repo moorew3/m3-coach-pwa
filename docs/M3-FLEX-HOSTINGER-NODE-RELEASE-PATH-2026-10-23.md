@@ -30,8 +30,8 @@ Use the root `Dockerfile` with Node 22 only when the user **already** owns a com
 
 ## Current media dependency
 
-Even on a self-hosted Node server, owner-approved video and Marcus tracks reference HeyGen and CloudFront. The source includes `approved-recovery-media.json` and `scripts/backup-approved-media.mjs` for exact-original read-only export with a SHA-256 receipt. Backup is not complete until the owner-controlled machine retrieves and verifies all 16 files. Never replace with the review-only media candidates or infer a missing clip has been approved.
+Even on a self-hosted Node server, owner-approved video and Marcus tracks reference HeyGen and CloudFront. The source includes `approved-recovery-media.json` and `scripts/backup-approved-media.mjs` for exact-original read-only export with a SHA-256 receipt. The original 16 files have now been exported once, encrypted using the owner's offline-held key, verified byte-for-byte against the SHA-256 receipt and transferred to owner-only Google Drive storage. This secures disaster-recovery originals, but the live video host remains a separate external streaming dependency. Never replace with the review-only media candidates or infer a missing clip has been approved.
 
 ## Release blocker summary
 
-Staging source is ready for a preview host once account entitlements are checked. The team must still secure original-media backups, finish unapproved Workout A/B movement films, verify authentic Marcus voice and video synchronization, and test permissions/form on a physical Galaxy Fold. A successful HTTP health check alone is not product readiness.
+Staging source is ready for a preview host once account entitlements are checked. The team must still verify this Hostinger account's plan capabilities, deploy and accept a separate preview app, finish unapproved Workout A/B movement films, verify authentic Marcus voice and video synchronization, and test permissions/form on a physical Galaxy Fold. The encrypted approved-media backup is now complete. A successful HTTP health check alone is not product readiness.
