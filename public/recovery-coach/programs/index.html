@@ -94,6 +94,14 @@ footer{color:#acc2d2;text-align:center;font-size:11px;padding-top:16px}
 </div>
 <p class="warning">No new video was ordered or generated for this review. These original backup exports are used here solely for assessment and may be removed if they fail form or identity quality assurance.</p>
 </section>
+<section class="panel" id="new-owner-render-reviews" data-testid="m3-new-heygen-completed-candidates">
+<div class="caps">October 24 owner review · 11 completed render candidates · none activated</div>
+<h2>New M3 FLEX workout clips · inspect all 11</h2>
+<p class="note">All eleven render jobs finished in the connected M3 backup HeyGen account. They are <strong>not approved for exercise use</strong> until the avatar's original face, white LEFT cast, right shoe, technique, equipment, repeat count and true Marcus timing have been checked. Video previews remain muted; optional voice tracks are the exact existing <strong>Marcus – Warm &amp; Friendly English</strong> voice. Missing voice tracks stay clearly labeled, never silently substituted.</p>
+<p class="warning">Five-second visual clips may loop during longer Marcus cues, but repeating a clip is not proof of human exercise reps, safe load, lip sync or correct equipment. Nothing in this review page changes the active workouts.</p>
+<div id="m3NewRenderedGrid" class="future" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px"></div>
+<p class="note" id="newRenderReviewStatus" role="status">Select a clip to review. Correct any motion defects before activation.</p>
+</section>
 <section class="panel"><h2>Production rules</h2><p class="note">Every new movement must use the unchanged approved Flex face and hair, no added tattoos, the white left cast, and the exact Marcus – Warm &amp; Friendly English voice. No generated audio, wrong equipment, one-rep placeholders or stationary talking head.</p>
 <p class="warning">Both programs still require medical clearance for resistance, cast support and transitions. This preview is not an exercise prescription.</p><p class="note">Review the <a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">exercise QA and production sheets</a> and the <a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-ANIMATION-REFERENCE-SHEET-2026-10-19.md" target="_blank" rel="noopener noreferrer">researched movement reference and exact-animation shot list</a> before generating any new exercise. Research material is not embedded as replacement media.</p></section>
 <footer>Workout A/B are in development · Five original approved clips remain locked and live separately.</footer>
@@ -110,7 +118,7 @@ const $=id=>document.getElementById(id);
 let active=0,index=0,entry=null,playing=false;
 const video=$("sceneVideo"),voice=$("sceneAudio");
 function stop(){video.pause();voice.pause();video.loop=false;voice.loop=false;playing=false;}
-function readableStatus(x){return x.status==="approved"?"✓ Approved":x.status==="audio"?"Voice ready":x.status==="source"?"Source check":x.status==="pending"?"Awaiting approval":"Missing";}
+function readableStatus(x){return x.status==="review"?"Rendered · QA pending":x.status==="approved"?"✓ Approved":x.status==="audio"?"Voice ready":x.status==="source"?"Source check":x.status==="pending"?"Awaiting approval":"Missing";}
 function display(){
 const program=programs[active];$("programLabel").textContent=program.name+" · Not activated";$("programTitle").textContent=program.subtitle;$("programSummary").textContent=program.intro;
 $("approvedCount").textContent=program.steps.filter(x=>x.status==="approved").length;
@@ -186,6 +194,159 @@ document.querySelectorAll("[data-candidate]").forEach(v=>{
   $("playback").textContent="Owner review video playing; active Workout A/B preview stopped to prevent overlapping Marcus voices.";
  });
 });
+
+// Exact newly generated 2026-10-24 HeyGen shots, all already completed.
+// Keep this data outside the active stages[] and Workout A/B player until
+// the owner has explicitly approved anatomy, casting, equipment and Marcus.
+const completedRenderCandidates=[
+  {
+    "id": "C13",
+    "title": "Controlled arm reaches",
+    "program": "Shared preparation",
+    "videoId": "6f38f0bcc0144bf3b27c5a647f08844d",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8c-339a-7124-b525-c7f0b6a8fa54.mp4",
+    "audio": null,
+    "qa": "Forward reaching, not shoulder rolls; white left cast supported",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C14",
+    "title": "Wrist circles and elbow bends",
+    "program": "Workout A preparation",
+    "videoId": "6eb14d07da884288a999b2bdf1021f35",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8e-bfca-7555-b452-f1178329609a.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=020d22d6-bf94-4d6d-a84d-6ea9cd3bca8c.wav",
+    "qa": "Unloaded wrist circles; no shoulder swinging",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C15",
+    "title": "Easy hand openings",
+    "program": "Shared preparation",
+    "videoId": "5cd9361d65e64d2e947f5b650cfa38d9",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8f-0a7c-7f41-89b2-edd855d3d934.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=334aa2f0-17bf-42c7-a22b-61e6db996342.wav",
+    "qa": "Supported forearms and opening fingers without weights",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C16",
+    "title": "Unloaded forward pressing",
+    "program": "Workout B preparation",
+    "videoId": "c602d0434ba44b5d9d21ba25ec0c1160",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8e-d354-7d92-8874-3806d97d1874.mp4",
+    "audio": null,
+    "qa": "Hands empty; forward not overhead or standing",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C17",
+    "title": "Seated wrist curls",
+    "program": "Workout A",
+    "videoId": "e05f04ce5baa4284b9428de0a06adb7e",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-67d1-764c-b842-cefc9ea64110.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=f8ba0136-82cc-4c88-91b0-47805ebbf4c9.wav",
+    "qa": "Only wrists flex; NO elbow biceps curls",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C18",
+    "title": "Seated lateral raises",
+    "program": "Workout A",
+    "videoId": "10be4071c88444deb6658bc0998d3a21",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-7b6a-7e7e-853a-45f6798791fa.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=1b863f98-8496-4a1b-9e30-0cd6c5197430.wav",
+    "qa": "Both dumbbells move sideways, not forward",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C19",
+    "title": "Arm-only seated boxing",
+    "program": "Workout A",
+    "videoId": "fcee35d6321e4376bfcaf00afec7d209",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-8edf-7a30-8982-508aa4c6651c.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=176c89d1-0379-4761-aa5a-b72bdf5207c5.wav",
+    "qa": "Seated right/left straight jabs; no foot movement",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C20",
+    "title": "INNSTAR chest fly",
+    "program": "Workout B",
+    "videoId": "72101b121afd4d41b70ae9faa7202bca",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-a2b3-70e0-ad12-3bc88377ae13.mp4",
+    "audio": null,
+    "qa": "Band behind torso BETWEEN back and chair, not at neck; horizontal fly not press",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C21",
+    "title": "Gentle upper-body stretch",
+    "program": "Workout A cooldown",
+    "videoId": "340b7021730742f5b7acb2d16c14dfc4",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8e-e725-7da7-a8c9-9fc593a984f4.mp4",
+    "audio": null,
+    "qa": "Across chest gentle arm stretch; no lower limb pressure",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C22",
+    "title": "Gentle chest and shoulder stretch",
+    "program": "Workout B cooldown",
+    "videoId": "29e44b0298be4d14a6a3b4a513a38845",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8e-faec-742c-af30-cd7ba68f5213.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=8bc95adf-770a-4651-8220-4d98e6c65125.wav",
+    "qa": "Open chest in small comfortable range, no extreme shoulder extension",
+    "status": "rendered_review_only"
+  },
+  {
+    "id": "C23",
+    "title": "AMYCO wrist strengthener",
+    "program": "Workout B",
+    "videoId": "a31a767436bd40078527ccf620c229e2",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8f-1e09-77d8-867d-f02e2b4d3db0.mp4",
+    "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=9a08cc22-3a60-47d2-bb2b-2fea1e197d4f.wav",
+    "qa": "Correct AMYCO spring/foam forearm pad, isolated wrist flexion—not a generic curl",
+    "status": "rendered_review_only"
+  }
+];
+const gridNew=document.getElementById("m3NewRenderedGrid");
+for(const clip of completedRenderCandidates){
+ const card=document.createElement("article");card.className="panel";card.style.margin="0";card.id="m3-render-"+clip.id;
+ const title=document.createElement("h3");title.style.cssText="font-size:15px;margin:2px 0 7px";title.textContent=clip.id+" · "+clip.title;
+ const context=document.createElement("p");context.className="note";context.textContent=clip.program+" · HeyGen rendered, NOT owner-approved";
+ const media=document.createElement("video");media.controls=true;media.muted=true;media.defaultMuted=true;media.playsInline=true;media.preload="none";media.src=clip.video;media.dataset.newCandidate=clip.id;media.setAttribute("aria-label","Unapproved M3 FLEX movement draft "+clip.title);
+ const qa=document.createElement("p");qa.className="warning";qa.textContent="Check: "+clip.qa;
+ const group=document.createElement("div");group.className="actions";group.style.gridTemplateColumns=clip.audio?"1fr 1fr":"1fr";
+ let narration=null;
+ if(clip.audio){
+  narration=document.createElement("audio");narration.src=clip.audio;narration.preload="none";
+  const play=document.createElement("button");play.type="button";play.className="btn primary";play.textContent="▶ Video + Marcus";
+  play.addEventListener("click",async()=>{
+   // Review is intentionally NOT an active workout or synced lip track.
+   document.querySelectorAll("video").forEach(v=>{if(v!==media)v.pause()});
+   document.querySelectorAll("audio").forEach(a=>{if(a!==narration)a.pause()});
+   try{
+    media.currentTime=0;narration.currentTime=0;media.loop=true;media.muted=true;
+    const result=await Promise.allSettled([media.play(),narration.play()]);
+    if(result.some(x=>x.status==="rejected"))throw Error("Playback not permitted");
+    document.getElementById("newRenderReviewStatus").textContent=clip.id+": playing silent animation with separate original Marcus voice. Lip sync and biomechanics NOT certified.";
+   }catch{media.pause();narration.pause();document.getElementById("newRenderReviewStatus").textContent=clip.id+": browser blocked media. Tap the native video controls and enable audio before reviewing."}
+  });
+  narration.addEventListener("ended",()=>{media.pause();media.loop=false});
+  const stop=document.createElement("button");stop.type="button";stop.className="btn";stop.textContent="■ Stop both";stop.addEventListener("click",()=>{media.pause();media.loop=false;narration.pause()});
+  group.append(play,stop);
+ }else{
+  const missing=document.createElement("p");missing.className="warning";missing.textContent="Marcus speech cue unavailable for this draft; video-only review. No substitute voice.";
+  group.append(missing);
+ }
+ const links=document.createElement("p");links.className="directLinks";const link=document.createElement("a");link.href=clip.video;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open movement MP4";links.append(link);
+ if(clip.audio){const al=document.createElement("a");al.href=clip.audio;al.target="_blank";al.rel="noopener noreferrer";al.textContent="Hear exact Marcus WAV";links.append(al)}
+ card.append(title,context,media,qa,group,links);if(narration)card.append(narration);gridNew.append(card);
+ media.addEventListener("play",()=>{
+  document.querySelectorAll("video").forEach(other=>{if(other!==media)other.pause()});
+ });
+}
 async function copyC09(textValue){
  const status=$("c09ApprovalHelp");
  try{
