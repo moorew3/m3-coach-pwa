@@ -23,8 +23,8 @@ test("seated session requires clinician signoff before the timer and set loop ca
   assert.match(page, /function safetyOkay\(\)/);
   assert.match(page, /if\(!safetyOkay\(\)\)/);
   assert.match(page, /My treating clinician knows I cannot bear weight on my injured leg and specifically cleared these seated arm movements and resistance/);
-  assert.match(page, /I will stay seated for this entire session, with my injured leg supported and absolutely no weight or pushing through that foot/);
-  assert.match(page, /My clinician cleared the intended exercise duration and effort despite my inability to stand/);
+  assert.match(page, /I will use the seated setup for this selected session, position the cast comfortably, and follow my actual weight-bearing restrictions/);
+  assert.match(page, /My clinician cleared the intended exercise duration and effort/);
 });
 
 test("one/two optional demonstrated sets do not multiply, log, or invent athlete repetitions", () => {
@@ -74,6 +74,13 @@ test("locked motion and Marcus recording sources remain byte-for-byte referenced
   for (const sourceId of sourceIds) {
     assert.ok(page.includes(sourceId), "Original approved asset changed or missing: " + sourceId);
   }
+});
+
+test("owner-reported weight-bearing ability is reflected without unlocking loaded leg movements", () => {
+  assert.match(page,/WEIGHT-BEARING ABILITY REPORTED/);
+  assert.match(page,/You have said you can put weight on the injured foot/);
+  assert.match(page,/does not establish clearance for loaded squats, jumping/);
+  assert.doesNotMatch(page,/NON-WEIGHT-BEARING RECOVERY|despite my inability to stand|Still NO weight on the injured leg|Do not stand or bear weight/);
 });
 
 test("restore stores only same-browser playback progress and requires fresh clearance", () => {
