@@ -122,7 +122,8 @@ test("Android page lock pauses the timer and saving a completed session clears i
 });
 
 test("required audio-only Marcus errors pause the timer before any fake completion", () => {
-  assert.match(page, /audio\.addEventListener\("error",\(\)=>playbackError\("Approved Marcus voice track failed.","audio"\)\)/);
+  assert.match(page, /audio\.addEventListener\("error",\(\)=>\{if\(mode==="rest"\)\{tell\("Marcus rest recording unavailable/);
+  assert.match(page, /playbackError\("Approved Marcus voice track failed.","audio"\)/);
   assert.match(page, /function playbackError\(msg,source\)/);
   assert.match(page, /if\(source==="audio"&&!step\(\)\.voice\)return/);
   assert.match(page, /if\(interval!==null\)secondsLeft=Math\.max\(0,deadline-Date\.now\(\)\)/);
