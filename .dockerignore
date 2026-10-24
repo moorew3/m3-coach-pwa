@@ -16,3 +16,9 @@ artifacts
 .DS_Store
 .cache
 .vite
+approved-media-backup
+**/sha256-backup-report.json
+**/*.incomplete
+*.zip
+*.sqlite
+*.db
