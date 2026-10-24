@@ -7,6 +7,7 @@ const active=read("../public/recovery-coach/index.html");
 const home=read("../src/routes/index.tsx");
 const browser=read("./browser-mobile-smoke.mjs");
 const docker=read("../Dockerfile");
+const meta=read("../src/routes/__root.tsx");
 const ignore=read("../.dockerignore");
 
 test("unapproved backup media are isolated in development preview and never become active",()=>{
@@ -50,4 +51,11 @@ test("portable Node image uses unprivileged runtime, no Railway and defaults to 
   assert.match(ignore,/^\.env\.\*$/m);
   assert.match(ignore,/^node_modules$/m);
   assert.match(ignore,/^\.git$/m);
+});
+
+test("install metadata shows M3 FLEX and does not falsely promise offline hosted-video playback",()=>{
+  assert.match(meta,/apple-mobile-web-app-title", content: "M3 FLEX"/);
+  assert.match(meta,/M3 FLEX \| Recovery Coach & Workout Tracker/);
+  assert.match(meta,/Approved videos and Marcus voice require a network connection/);
+  assert.doesNotMatch(meta,/offline exercise diagrams/);
 });
