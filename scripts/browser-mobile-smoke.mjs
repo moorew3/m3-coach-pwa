@@ -394,11 +394,12 @@ try {
     assert.equal((await delayedPage.locator("#clock").textContent())?.trim(), "00:30",
       "Pausing pending audio/video play must not zero the full unused set duration");
     await delayedPage.locator("#handsfreeNext").click();
-    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Ready");
+    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Paused",
+      "Selecting the next exercise while paused must not auto-start it");
     assert.equal(await delayedPage.locator("#moveTitle").innerText(), "Seated hammer curls");
     await delayedPage.evaluate(() => window.__pendingMediaPlays.splice(0).forEach((resolve) => resolve()));
     await delayedPage.clock.fastForward(33_000);
-    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Ready",
+    assert.equal((await delayedPage.locator("#runState").textContent())?.trim(), "Paused",
       "Old asynchronous media play response must not restart a new workout");
     assert.equal((await delayedPage.locator("#clock").textContent())?.trim(), "00:30");
     assert.match((await delayedPage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
