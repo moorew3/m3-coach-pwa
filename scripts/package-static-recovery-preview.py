@@ -76,6 +76,15 @@ def run():
     vendor_dir=ROOT/"public/recovery-coach/form-check/vendor"
     if not vendor_dir.is_dir():
         raise RuntimeError("Run node scripts/stage-pose-runtime.mjs before static packaging")
+    vendor_manifest=json.loads((vendor_dir/"sha256-manifest.json").read_text("utf-8"))
+    if vendor_manifest.get("schema")!=1:
+        raise RuntimeError("Invalid MediaPipe vendor manifest")
+    for filename,expected in vendor_manifest["files"].items():
+        path=vendor_dir/filename
+        if not path.is_file() or path.stat().st_size!=expected["bytes"]:
+            raise RuntimeError("MediaPipe local runtime file size mismatch: "+filename)
+        if hashlib.sha256(path.read_bytes()).hexdigest()!=expected["sha256"]:
+            raise RuntimeError("MediaPipe local runtime hash mismatch: "+filename)
     for f in sorted(vendor_dir.rglob("*")):
         if f.is_file():
             logical="recovery-coach/form-check/vendor/"+f.relative_to(vendor_dir).as_posix()
