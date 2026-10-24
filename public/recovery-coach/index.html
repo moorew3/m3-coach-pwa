@@ -66,6 +66,12 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <div class="guidePlaceholder" id="textBox"><strong>Before your workout</strong><p>Prepare gently while keeping your injured left leg supported. No exercise video has been approved for this new warm-up yet.</p></div>
 <p class="cue" id="cue">Sit comfortably with the cast supported. Breathe slowly without forcing movement.</p>
 <div class="timer"><div class="small muted" id="runState">Ready</div><div class="clock" id="clock">00:30</div><div class="small muted" id="progressText">0 of 10 steps completed</div></div>
+<details id="formObservation" class="voiceAccessPanel">
+<summary>Live camera · observe upper-body movement (optional)</summary>
+<p>See your own camera and local shoulder, elbow and wrist landmarks alongside the approved moving Flex video. Camera consent is required; no image is uploaded by M3 FLEX. Google MediaPipe may collect runtime metrics. This is NOT a rep counter, cast assessment, injury assessment, or clinician-approved form certification.</p>
+<iframe id="formFrame" title="Optional local upper-body movement observation" loading="lazy" allow="camera" style="display:block;width:100%;height:545px;max-height:75vh;border:1px solid #395970;border-radius:10px;background:#0b1521" src="about:blank"></iframe>
+<p class="small">Closing this panel unloads its camera view and stops its live stream. Pause the workout if monitoring affects performance on your Galaxy Fold.</p>
+</details>
 <div class="opts">
 <label>Exercise time <select id="workDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></label>
 <label>Rest after each movement/set <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
@@ -150,6 +156,10 @@ const stages=[
 ]}];
 const $=x=>document.getElementById(x);
 const video=$("coachVideo"),audio=$("coachVoice");
+$("formObservation").addEventListener("toggle",()=>{
+ const iframe=$("formFrame");
+ iframe.src=$("formObservation").open?"./form-check/":"about:blank";
+});
 const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3";
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
