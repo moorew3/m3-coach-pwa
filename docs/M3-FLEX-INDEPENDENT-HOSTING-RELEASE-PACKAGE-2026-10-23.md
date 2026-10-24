@@ -22,6 +22,15 @@ curl --fail http://127.0.0.1:3000/recovery-coach/programs/
 
 Open `http://127.0.0.1:3000/` in a separate browser tab and verify the original seven approved assets and rest timings. The image is built as an unprivileged `node` user and only publishes port 3000 behind the operator's TLS proxy. Docker defaults to chargeable AI features **off**. No secrets are baked into the image. Don't expose port 3000 publicly without TLS or authentication protections.
 
+## Container CI and physical Galaxy Fold acceptance checks (October 23)
+
+- The GitHub pull request checks now run two separate jobs: a full Node TypeScript/Chrome suite and a portable **production Docker image build plus actual container HTTP smoke**. The container starts as the non-root `node` user, serves health, the original Recovery Coach and the Workout A/B review gallery, and rejects paid coach API calls with HTTP 503. These tests never change production.
+- `/recovery-coach/device-check/` is a one-screen phone diagnostic linked from the seated player. With user-initiated clicks, it plays the **original** approved Marcus file, analyses microphone *level locally* for five seconds, and previews the front camera **without uploading any data**. Closing, hiding, or stopping the page releases the camera and microphone tracks. It saves a local JSON QA receipt, not a server-side log.
+- The diagnostic does **not** establish accurate voice recognition, coach listening on a locked phone, actual headset audibility (user must confirm), AI movement-form detection, virtual trainer lip-sync, foot-cast clearance, or real Galaxy Fold hardware compatibility. These remain release-blocking acceptance tests.
+- Advisory `scripts/check-approved-media-availability.mjs` sends only HEAD/range requests to each original media URL. It neither creates a backup nor downloads full recordings. External CDN failure is reported but does not corrupt or alter the independent build.
+
+**Privacy**: The linked GitHub repository is publicly visible. Do **not** commit owner-original video, voice, private QA reports, identifiers or media backup archives to it, and do **not** upload a binary backup into public GitHub Actions artifacts. Use an owner-controlled private storage destination. Current existing public source URLs are not proof of privately preserved master media.
+
 ## Migration and release gates
 
 1. Take a verified backup of the existing deployment and keep a stable rollback route. Do not rename the public domain before the replacement instance is ready.
