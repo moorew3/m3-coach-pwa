@@ -28,6 +28,7 @@ import {
 import { COACH_REFERENCE } from "@/data/coach-identity";
 import { ExerciseLibraryButton } from "@/components/ExerciseLibrary";
 import { ReadinessCheck } from "@/components/ReadinessCheck";
+import { LEGACY_MODE_KEY } from "@/components/LegacyRouteGate";
 import { SubstitutionSelect } from "@/components/SubstitutionSelect";
 
 export const Route = createFileRoute("/")({
@@ -419,6 +420,13 @@ function Today() {
               disabled={!legacyRiskConfirmed}
               data-testid="legacy-acknowledge"
               onClick={() => {
+                try {
+                  window.sessionStorage.setItem(LEGACY_MODE_KEY, "acknowledged");
+                } catch {
+                  setNavError("Cannot safely open the old workout in this browser. Use Seated Recovery Coach.");
+                  setLegacyGateOpen(false);
+                  return;
+                }
                 setLegacyModeAllowed(true);
                 setLegacyGateOpen(false);
                 launchLegacyCoach();
