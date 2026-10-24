@@ -49,8 +49,10 @@ test("approved speech remains attached and does not repeat every breathing-loop 
 test("cast safety affirmation remains required and media failure does not count a set", () => {
   assert.match(production, /function safetyOkay\(\)/);
   assert.match(production, /if\(!safetyOkay\(\)\)/);
-  assert.match(production, /function playbackError\(msg\)/);
-  assert.match(production, /Set NOT completed/);
+  assert.match(production, /function playbackError\(msg,source\)/);
+  assert.match(production, /if\(source==="audio"&&!step\(\)\.voice\)return/);
+  assert.match(production, /Timed step NOT completed/);
+  assert.match(production, /mode="waiting";drawTimer\(\)/);
 });
 
 test("unapproved Workout A/B demonstration candidates are still blocked", () => {
