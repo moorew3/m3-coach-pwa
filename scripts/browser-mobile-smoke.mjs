@@ -385,6 +385,7 @@ try {
     await delayedPage.locator('[data-stage="1"]').click();
     await delayedPage.locator("#workDuration").selectOption("30");
     for (const box of await delayedPage.locator("#clearance .check").all()) await box.check();
+    await delayedPage.locator("#voiceAccessPanel summary").click();
     await delayedPage.locator("#handsfreeStart").click();
     await delayedPage.waitForFunction(() => window.__pendingMediaPlays.length >= 1);
     assert.equal((await delayedPage.locator("#clock").textContent())?.trim(), "00:30");
