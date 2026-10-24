@@ -31,6 +31,22 @@ Open `http://127.0.0.1:3000/` in a separate browser tab and verify the original 
 
 **Privacy**: The GitHub repository is public. Original **plaintext** media, the owner recovery key, and private QA reports must never enter GitHub source or Actions artifacts. A single-use CI job temporarily uploaded **AES-256-GCM encrypted ciphertext only**, then the workflow job was removed after owner-private Drive transfer. Never put the private recovery key in GitHub or beside the encrypted archive.
 
+## Accessible hands-free control without a paid or remote coach API (October 24)
+
+Recovery Coach now offers an optional expanded **Hands-free controls** panel for Android Voice Access and Bluetooth keyboard/remote use. The buttons have clear names `Start workout`, `Pause workout`, `Resume workout`, `Next exercise` and `Show exercise guidance`. They delegate to the **exact existing workout timer**, preserving clinician clearance and pause/rest rules. Bluetooth keyboard controls: Space starts/pauses/resumes, N skips without credit, E shows the current cue, Escape pauses. The screen remains readable and functional without enabling accessibility services.
+
+This does **not** claim M3 FLEX has native speech recognition or interactive spoken Q&A. Android Voice Access is a system accessibility option, not M3 FLEX's microphone. Depending on Android Voice Access settings and language, Google may process recognized speech remotely. Browser on-device `SpeechRecognition.processLocally` is experimental and is not reliably available in Chrome for Android; M3 FLEX deliberately does not enable a browser speech recognizer that might send audio to a third party, incur a charge or start background listening.
+
+Official Google references:
+- https://support.google.com/accessibility/android/answer/6151848?hl=en
+- https://support.google.com/accessibility/android/answer/6151854?hl=en
+
+## Static Recovery Coach review package (no Node, not a full release)
+
+The CI job now produces `m3-flex-seated-recovery-static-preview.zip` containing only `index.html`, the unchanged approved `/recovery-coach/` page, the A/B **unapproved preview only**, and the consent-first Galaxy Fold device diagnostics. It includes a SHA-256 manifest and setup README. It contains **no plaintext owner-media binaries, no private key, no login or full historical workout application**.
+
+This enables a separate temporary HTTPS review site on **existing ordinary/static Hostinger hosting**, even if the owner's plan does not support Node.js or Docker. The ZIP is **not deployed automatically** and must not overwrite any existing domain, WordPress site or production app. All approved Flex/Marcus clips still stream from verified external sources. Camera and microphone diagnostics need HTTPS; opening the ZIP directly under `file://` is not equivalent to an online test.
+
 ## Migration and release gates
 
 1. Take a verified backup of the existing deployment and keep a stable rollback route. Do not rename the public domain before the replacement instance is ready.
