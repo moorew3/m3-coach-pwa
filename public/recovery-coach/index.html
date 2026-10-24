@@ -61,7 +61,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <h1>Your guided recovery workout</h1>
 <p class="lead">One simple session, using your five approved Flex videos and Marcus – Warm &amp; Friendly English coaching. No rejected clips or replacement avatars.</p>
 <div class="trust"><span>✓ 7 approved moving scenes</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
-<div class="nonWeightBanner" role="note" id="nonWeightWarning"><strong>NON-WEIGHT-BEARING RECOVERY — NO STANDING.</strong> Stay seated with the injured leg fully supported. No foot pressure, standing, walking drills, squats, steps, jumping, or using the leg to push through a transfer. If you have newly lost the ability to stand or bear weight, seek urgent medical assessment before exercising. Only start arm work when your treating clinician approves.</div>
+<div class="nonWeightBanner" role="note" id="nonWeightWarning"><strong>FOOT CAST · WEIGHT-BEARING ABILITY REPORTED.</strong> You have said you can put weight on the injured foot. This approved circuit remains seated by design, not because you are unable to stand. Weight-bearing ability alone does not establish clearance for loaded squats, jumping or other specific movements. Follow your clinician's restrictions and keep the cast positioned comfortably throughout each exercise.</div>
 <button id="emergencyStop" type="button" aria-label="Stop workout immediately">■ STOP WORKOUT — PAIN OR LEG CONCERN</button>
 <nav class="phases" aria-label="Workout stages">
 <button class="phase" type="button" data-stage="0" aria-selected="true">1 · Before</button>
@@ -129,11 +129,11 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <section class="approve" id="clearance" aria-label="Medical clearance confirmation">
 <strong>Before starting an active workout</strong>
 <p class="muted small">Your treating clinician decides what is safe while you're wearing a cast. Previewing an exercise is not exercising.</p>
-<label><input type="checkbox" class="check">My treating clinician knows I cannot bear weight on my injured leg and specifically cleared these seated arm movements and resistance.</label>
-<label><input type="checkbox" class="check">I will stay seated for this entire session, with my injured leg supported and absolutely no weight or pushing through that foot.</label>
-<label><input type="checkbox" class="check">My clinician cleared the intended exercise duration and effort despite my inability to stand; I will stop for new pain or swelling.</label>
+<label><input type="checkbox" class="check">My treating clinician knows about my foot cast and has specifically cleared these seated arm movements and resistance.</label>
+<label><input type="checkbox" class="check">I will use the seated setup for this selected session, position the cast comfortably, and follow my actual weight-bearing restrictions.</label>
+<label><input type="checkbox" class="check">My clinician cleared the intended exercise duration and effort; I will stop for new pain, swelling or cast pressure.</label>
 </section>
-<p class="safety">Keep the injured left leg supported and never use it to anchor bands or push against the floor. Stop if pain, swelling, dizziness, or cast pressure develops. The approved breathing scenes have moving Flex videos; the other warm-up/cooldown steps remain text or existing audio guidance only.</p>
+<p class="safety">Keep the casted left leg comfortably positioned and never use it as a band anchor. Follow your actual clinician-specified weight-bearing limits. Stop if pain, swelling, dizziness, or cast pressure develops. The approved breathing scenes have moving Flex videos; the other warm-up/cooldown steps remain text or existing audio guidance only.</p>
 <section class="panel"><h3>Next programs: Workout A &amp; Workout B</h3><p class="small"><a href="./programs/" target="_blank" rel="noopener noreferrer">Open Workout A/B exercise preview and new animation reviews ↗</a></p><p class="small"><a href="./programs/" style="color:#c5f08c;font-weight:800">▶ Open Workout A/B development player</a> — preview only verified Flex videos and Marcus audio. Missing exercises are clearly blocked until approved.</p><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
 <div class="future">
 <div><strong>Workout A · Dumbbells and arm cardio</strong><p>Bring forward your previously approved seated wrist-curl, seated lateral-raise, and arm-only boxing visuals from the archive. Verify the playable video and Marcus voice for each before activation.</p><span class="tag">Video integration next</span></div>
@@ -501,7 +501,7 @@ function localCoachReply(raw){
   return (mode==="rest"?"The current rest interval has "+time(secondsLeft)+" remaining.":"The current timed step has "+time(secondsLeft)+" remaining.")+
    " Your selected rest between prescribed sets is "+$("restDuration").value+" seconds. In paired mode, rest begins after both exercises.";
  if(/cast|leg|feet|standing|jump|squat|burpee/.test(q))
-  return "Only clinician-cleared seated movements are used here. Keep the injured cast supported; never stand, jump, perform a squat, or push against the injured foot. Stop for pain or pressure.";
+  return "You have said you can put weight on the injured foot. This particular workout uses seated movements only; it does not determine whether separate standing exercises, squats or impact are safe for you. Follow your clinician's specific limits and stop for pain or cast pressure.";
  if(/what|current|doing|exercise|form|technique|guide|explain|how/.test(q))
   return "Current: "+step().name+". "+step().note+" This is approved media guidance, not a physical form assessment.";
  return "I can help locally with the current exercise, cast precautions, rest, next movement, rep-tracking limits and simple Start/Pause/Resume controls. Open the approved Marcus video for recorded verbal instruction. I cannot provide live open-ended spoken answers.";
@@ -605,10 +605,10 @@ $("emergencyStop").addEventListener("click",()=>{
  for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;
  if($("formObservation").open)$("formObservation").open=false;
  drawTimer();
- tell("Workout stopped. No exercise or Marcus audio is playing. Do not stand or bear weight. If inability to stand is new or worsening, seek urgent medical care; do not resume until cleared by your clinician.");
+ tell("Workout stopped. No exercise or Marcus audio is playing. You reported being able to put weight on your foot; follow your clinician's restrictions, and stop for new or worsening pain, swelling, or cast pressure.");
  try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
 });
-$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Still NO weight on the injured leg. Exercise requires new clinician clearance before any timed movement.");});
+$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Your reported ability to bear weight is noted; follow your clinician's restrictions. The seated workout requires fresh clearance confirmations before timed movement.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
 for(const id of ["workDuration","restDuration","setRounds","pairMode"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
 const restored=restoreProgress();
