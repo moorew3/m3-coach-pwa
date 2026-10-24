@@ -61,7 +61,7 @@ try {
     headless: true,
     executablePath: process.env.M3_CHROME_PATH || undefined,
     channel: process.env.M3_CHROME_PATH ? undefined : "chrome",
-    args: ["--no-sandbox", "--disable-dev-shm-usage"],
+    args: ["--no-sandbox", "--disable-dev-shm-usage", "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"],
   });
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -495,6 +495,37 @@ try {
     step("Optional on-device pose screen requests no camera until consent+tap; handles denial and no audio access");
   } finally {
     await formContext.close();
+  }
+
+  // Exercise the real self-hosted MediaPipe model and WASM pipeline with a
+  // fake CI webcam: unlike a source-only check this reaches model startup.
+  // This does NOT validate exercise biomechanics, real Galaxy Fold camera or
+  // athlete image privacy on external devices.
+  const modelContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+    permissions: ["camera"],
+  });
+  const modelPage = await modelContext.newPage();
+  modelPage.setDefaultTimeout(55000);
+  try {
+    await modelPage.goto(base + "/recovery-coach/form-check/", { waitUntil: "domcontentloaded" });
+    assert.equal((await modelPage.locator("#start").isDisabled()), false);
+    await modelPage.locator("#consent").check();
+    await modelPage.locator("#start").click();
+    await modelPage.waitForFunction(() => {
+      const status = document.querySelector("#status")?.textContent ?? "";
+      return status.includes("Local pose view is active") ||
+        status.includes("No automatic rep count") ||
+        status.includes("landmarks tracked") ||
+        status.includes("Standby:");
+    }, null, { timeout: 50000 });
+    assert.equal(await modelPage.locator("#stop").isDisabled(), false);
+    await modelPage.locator("#stop").click();
+    assert.equal(await modelPage.locator("#stop").isDisabled(), true);
+    assert.match((await modelPage.locator("#status").textContent()) ?? "", /Camera and local pose analysis stopped/);
+    step("Real first-party MediaPipe WASM/model initialized on fake local camera and shut down correctly");
+  } finally {
+    await modelContext.close();
   }
 
   // Audio-only preparation is not permitted to finish silently if its
