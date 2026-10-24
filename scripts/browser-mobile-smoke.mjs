@@ -250,6 +250,18 @@ try {
       waitUntil: "domcontentloaded",
     });
     assert.equal(recoveryResponse?.status(), 200);
+    await recoveryPage.locator("#localCoachPanel summary").click();
+    await recoveryPage.locator("#coachQuestion").fill("How many reps have I done?");
+    await recoveryPage.locator("#askLocalCoach").click();
+    assert.match((await recoveryPage.locator("#localCoachAnswer").textContent()) ?? "", /timer counts demonstrations, not your actual repetitions/i);
+    await recoveryPage.locator("#coachQuestion").fill("Where does the INNSTAR band go?");
+    await recoveryPage.locator("#askLocalCoach").click();
+    assert.match((await recoveryPage.locator("#localCoachAnswer").textContent()) ?? "", /between the chair and back, never around the neck/);
+    await recoveryPage.locator("#coachQuestion").fill("What is next?");
+    await recoveryPage.locator("#askLocalCoach").click();
+    assert.match((await recoveryPage.locator("#localCoachAnswer").textContent()) ?? "", /Easy hand openings/);
+    await recoveryPage.locator("#localCoachPanel summary").click();
+    step("Same-screen free local Q&A explains cast-safe band, next exercise and no fabricated reps");
     // The same-screen camera pane must not load until opened; closing the
     // pane navigates away to unload getUserMedia and on-device pose code.
     assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "about:blank");
