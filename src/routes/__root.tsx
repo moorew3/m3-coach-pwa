@@ -15,6 +15,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomNav } from "../components/BottomNav";
 import { AppEntryGate } from "../components/AppEntryIntro";
+import { LegacyRouteGate } from "../components/LegacyRouteGate";
 import { useApp } from "../lib/store";
 import { clearStaleChunkFlag, isStaleChunkError, recoverFromStaleChunk } from "../lib/stale-chunk";
 import { cleanupLegacyServiceWorkers } from "../lib/sw-cleanup";
@@ -175,7 +176,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync />
-      <AppEntryGate>
+      <LegacyRouteGate pathname={pathname}>
+        <AppEntryGate>
         <div
           className={
             displayMode
@@ -189,7 +191,8 @@ function RootComponent() {
           <Outlet />
         </div>
         {!displayMode && <BottomNav />}
-      </AppEntryGate>
+        </AppEntryGate>
+      </LegacyRouteGate>
     </QueryClientProvider>
   );
 }
