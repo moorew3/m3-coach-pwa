@@ -129,7 +129,8 @@ def main() -> None:
         path = args.input / name
         if path.stat().st_size != item["bytes"]:
             raise ValueError("Media size differs from receipt: " + name)
-        digest = hashlib.file_digest(path.open("rb"), "sha256").hexdigest()
+        with path.open("rb") as media_stream:
+            digest = hashlib.file_digest(media_stream, "sha256").hexdigest()
         if digest != item["sha256"]:
             raise ValueError("Media hash differs from receipt: " + name)
     plain = args.output.with_suffix(".temporary-plaintext.zip")
