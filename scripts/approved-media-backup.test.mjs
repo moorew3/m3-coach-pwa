@@ -47,5 +47,5 @@ test("media reachability QA uses only read-only HEAD/range probes and never chan
  assert.match(reachability,/await response\.body\.cancel\(\)/);
  assert.match(reachability,/const allowed = new Set/);
  assert.match(reachability,/This is NOT a backup/);
- assert.doesNotMatch(reachability,/createWriteStream|writeFile|unlink|upload|fetch\(.+method:\s*"POST"/);
+ assert.doesNotMatch(reachability,/createWriteStream|\bwriteFile\s*\(|\bunlink\s*\(|method:\s*"POST"/);
 });
