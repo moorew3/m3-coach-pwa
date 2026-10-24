@@ -193,7 +193,7 @@ function label(){return stages[phase].label}
 function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function duration(){return (phase===1?Number($("workDuration").value):step().sec)*1000}
 function clearTick(){if(interval!==null){clearInterval(interval);interval=null}}
-function stopMedia(rewind){video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
+function stopMedia(rewind){clearMediaBufferChecks();video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
 function playRestVoice(){
  audio.pause();audio.src=REST_MARCUS;audio.loop=false;audio.currentTime=0;
  audio.play().catch(()=>tell("Rest timer running. Tap Resume if your phone blocks automatic Marcus audio."));
@@ -210,7 +210,7 @@ $("setRounds").disabled=sessionStarted;
 $("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed"})[mode]||"Ready";
 $("progressText").textContent=completed.size+" of "+total()+" steps completed — manually skipped steps do not count";
-$("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Enable audio & continue":mode==="complete"?"✓ Session complete":"▶ Start full session";
+$("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="paused"?"▶ Resume":mode==="waiting"?"▶ Retry approved media":mode==="complete"?"✓ Session complete":"▶ Start full session";
 $("startPause").disabled=mode==="complete";
 $("preview").disabled=(!step().voice&&!step().video&&mode!=="complete")||mode==="running"||mode==="rest";$("preview").textContent=mode==="complete"?"▶ Hear Marcus finish":step().video?"▶ Preview Flex + Marcus":"▶ Hear Marcus";
 persistProgress();
@@ -347,23 +347,48 @@ function endPreview(){
 }
 video.addEventListener("ended",()=>{if(mode==="preview"&&!step().voice)endPreview()});
 audio.addEventListener("ended",endPreview);
-function playbackError(msg){
- if(mode!=="running"||!step().video)return;
- secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);
- mode="waiting";drawTimer();tell(msg+" Set NOT completed. Tap Enable audio & continue to retry.");
+// A failed or stalled REQUIRED Marcus track must never silently count an
+// audio-guided preparation/cooldown step as completed. Rest-track failure is
+// reported by playRestVoice while the safe rest clock is allowed to continue.
+let mediaBufferCheck=null,audioBufferCheck=null;
+function clearMediaBufferChecks(){
+ if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null}
+ if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null}
 }
-video.addEventListener("error",()=>playbackError("Approved Flex video failed to load."));
-audio.addEventListener("error",()=>{if(step().voice&&step().video)playbackError("Marcus voice track failed.");});
-let mediaBufferCheck=null;
-video.addEventListener("waiting",()=>{
- if(mode!=="running"||!step().video)return;
- if(mediaBufferCheck!==null)clearTimeout(mediaBufferCheck);
- mediaBufferCheck=setTimeout(()=>{
-  mediaBufferCheck=null;
-  if(mode==="running"&&step().video&&video.readyState<2)playbackError("Video buffering stopped.");
- },2300);
-});
+function playbackError(msg,source){
+ if(mode!=="running")return;
+ if(source==="video"&&!step().video)return;
+ if(source==="audio"&&!step().voice)return;
+ // Before autoplay resolves there is no deadline yet. Keep the entire
+ // prescribed time rather than resetting it to zero by using stale state.
+ if(interval!==null)secondsLeft=Math.max(0,deadline-Date.now());
+ clearTick();stopMedia(false);
+ mode="waiting";drawTimer();
+ tell(msg+" Timed step NOT completed. Tap Retry approved media; no automatic substitute will play.");
+}
+video.addEventListener("error",()=>playbackError("Approved Flex video failed to load.","video"));
+audio.addEventListener("error",()=>playbackError("Approved Marcus voice track failed.","audio"));
+function waitForBuffer(kind){
+ const element=kind==="video"?video:audio;
+ if(mode!=="running"||!(kind==="video"?step().video:step().voice))return;
+ const old=kind==="video"?mediaBufferCheck:audioBufferCheck;
+ if(old!==null)clearTimeout(old);
+ const sourceAtWait=element.currentSrc||element.src;
+ const timer=setTimeout(()=>{
+  if(kind==="video")mediaBufferCheck=null;else audioBufferCheck=null;
+  if(mode!=="running"||!(kind==="video"?step().video:step().voice))return;
+  if((element.currentSrc||element.src)!==sourceAtWait)return;
+  if(element.readyState<2)playbackError(kind==="video"?"Approved video buffering stopped.":"Approved Marcus audio buffering stopped.",kind);
+ },kind==="video"?2300:3000);
+ if(kind==="video")mediaBufferCheck=timer;else audioBufferCheck=timer;
+}
+video.addEventListener("waiting",()=>waitForBuffer("video"));
+video.addEventListener("stalled",()=>waitForBuffer("video"));
+audio.addEventListener("waiting",()=>waitForBuffer("audio"));
+audio.addEventListener("stalled",()=>waitForBuffer("audio"));
 video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
+audio.addEventListener("playing",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
+audio.addEventListener("ended",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)return;if(mode==="running"||mode==="rest")pause();else if(mode==="preview"){stopMedia(false);mode="ready";drawTimer();tell("Preview stopped when this screen was hidden. Tap Preview to replay; no exercise was logged.");}});
 $("next").addEventListener("click",()=>{
  if(mode==="complete")return;
