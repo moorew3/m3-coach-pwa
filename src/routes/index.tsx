@@ -63,6 +63,9 @@ function Today() {
   const [startChoice, setStartChoice] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [navError, setNavError] = useState("");
+  const [legacyGateOpen, setLegacyGateOpen] = useState(false);
+  const [legacyRiskConfirmed, setLegacyRiskConfirmed] = useState(false);
+  const [legacyModeAllowed, setLegacyModeAllowed] = useState(false);
 
   const doneSets = list.reduce(
     (n, e) => n + (log.exercises[e.id]?.sets.filter((s) => s.done).length ?? 0),
@@ -100,6 +103,21 @@ function Today() {
 
   const openWorkout = () => go(`/workout/${day}`, "/workout/$day");
   const openCoach = () => go(`/coach/${day}`, "/coach/$day");
+  const launchLegacyCoach = () => {
+    if (log.completed) return openCoach();
+    if (hasActiveSession(state, day)) return setStartChoice(true);
+    if (!ready) return setChecking(true);
+    startWorkoutOnce(day);
+    openCoach();
+  };
+  const requestLegacyCoach = () => {
+    if (!legacyModeAllowed && !log.completed) {
+      setLegacyRiskConfirmed(false);
+      setLegacyGateOpen(true);
+      return;
+    }
+    launchLegacyCoach();
+  };
 
   return (
     <main className="px-4 pt-6">
@@ -212,7 +230,7 @@ function Today() {
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={openCoach}
+                    onClick={requestLegacyCoach}
                     className="tap-target rounded-xl bg-primary text-xs font-bold uppercase text-primary-foreground"
                   >
                     Resume coached session
@@ -278,13 +296,8 @@ function Today() {
 
             <button
               type="button"
-              onClick={() => {
-                if (log.completed) return openCoach();
-                if (hasActiveSession(state, day)) return setStartChoice(true);
-                if (!ready) return setChecking(true);
-                startWorkoutOnce(day);
-                openCoach();
-              }}
+              onClick={requestLegacyCoach}
+              data-testid="legacy-workout-start"
               className="tap-target mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3 text-center text-base font-bold uppercase leading-tight tracking-wide text-primary-foreground"
             >
               {started ? (
@@ -365,6 +378,65 @@ function Today() {
           </p>
         )}
       </section>
+
+      {legacyGateOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Legacy standing workout confirmation"
+          data-testid="legacy-safety-gate"
+          className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-background/95 p-4 backdrop-blur"
+        >
+          <div className="surface-card w-full max-w-lg rounded-2xl p-5">
+            <h2 className="text-xl font-bold">This is not the seated Recovery Coach</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The historical weekly workout includes squats, steps, kicks, standing
+              exercises and foot loading. It is not cleared for training with a
+              foot cast or seated-only restrictions. General readiness answers
+              do not make these exercises safe.
+            </p>
+            <a
+              href="/recovery-coach/"
+              className="tap-target mt-4 flex w-full items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground"
+            >
+              Open approved seated Recovery Coach
+            </a>
+            <label className="mt-5 flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1 size-5 accent-primary"
+                checked={legacyRiskConfirmed}
+                onChange={(event) => setLegacyRiskConfirmed(event.target.checked)}
+              />
+              <span>
+                I understand the old workout is not a seated-only program.
+                I will not perform its standing or weight-bearing movements
+                while those restrictions apply.
+              </span>
+            </label>
+            <button
+              type="button"
+              disabled={!legacyRiskConfirmed}
+              data-testid="legacy-acknowledge"
+              onClick={() => {
+                setLegacyModeAllowed(true);
+                setLegacyGateOpen(false);
+                launchLegacyCoach();
+              }}
+              className="tap-target mt-4 w-full rounded-xl border border-border bg-elevated px-3 text-sm font-bold disabled:opacity-40"
+            >
+              Continue to legacy workout options
+            </button>
+            <button
+              type="button"
+              onClick={() => setLegacyGateOpen(false)}
+              className="tap-target mt-2 w-full rounded-xl border border-border bg-card text-sm font-bold"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {checking && (
         <div
