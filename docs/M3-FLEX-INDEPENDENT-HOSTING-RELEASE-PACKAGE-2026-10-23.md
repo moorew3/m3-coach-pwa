@@ -32,6 +32,22 @@ Open `http://127.0.0.1:3000/` in a separate browser tab and verify the original 
 6. Confirm exact approved mouth motion/Marcus lipsync, movement biomechanics and missing Workout A/B media. Until this happens, release should explicitly be labeled preview and not described as a fully finished interactive trainer.
 7. Only then switch production traffic after owner acceptance and leave a reversible rollback. This repo's CI **never** automatically changes a live domain or starts a production server.
 
+## Exact-media owner backup — not yet completed
+
+The source now inventories the **seven originally approved Flex MP4 videos and nine approved Marcus audio tracks** in `approved-recovery-media.json`.
+
+```sh
+# No external downloads or media-generation charges:
+node scripts/backup-approved-media.mjs --check
+
+# On an owner-controlled machine with actual HTTPS access, when ready to export:
+node scripts/backup-approved-media.mjs --download
+```
+
+The export reads only the exact original URLs, validates the HTTPS origin and media file signatures, caps download sizes, saves local files and creates `approved-media-backup/sha256-backup-report.json` with per-file SHA-256 hashes and failures. No content is uploaded, transformed, swapped into production, or sent to a paid generation API. A partial or failed export must **never** be described as a successful backup. The output folder and report are excluded from Git to protect the owner's original likeness/voice assets.
+
+This branch's GitHub CI runs only `--check` to prevent unintended network usage. Export was not run here because this environment cannot access the media-host download endpoints.
+
 ## Media licensing/availability caveat
 
 Current original owner-approved clips are hosted on HeyGen and CloudFront URLs. Their continued availability is an external dependency even if the app itself is independently hosted. Exporting the actual approved original files to storage controlled by the owner is still a separate task; a URL or GitHub file does not prove the media are backed up. Never silently replace them with other people or expired-preview links.
