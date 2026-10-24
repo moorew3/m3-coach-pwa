@@ -49,6 +49,19 @@ Protected staging now saves a minimal progress snapshot to **the current browser
 
 The original approved media IDs are unchanged. This is an interruption/recovery feature, **not full PWA offline support, physical Galaxy Fold QA, or verification of speech-to-lip synchronization**.
 
+## Approved Marcus audio load and buffering safeguards
+
+The seated player now treats an **active** approved Marcus track as a necessary part of a timed audio-guided step. The original missing-audio behavior was incomplete: audio-only hand/mobility/cooldown guidance could fail while the timer kept running and later marked that guided step completed.
+
+- A genuine `audio.error` while timed guidance is active now stops both media players, freezes the exact remaining time and changes to a clear **Retry approved media** state. It does not increment the demonstrated-step count. Recovery is only by explicit user tap and uses the **same original** owner-approved Marcus source, not a replacement voice.
+- `audio.waiting` / `audio.stalled` also start a limited three-second watchdog. If the audio remains without playable data, the current step freezes. A matching `playing` event cancels the watchdog. The video stream independently retains its existing stall check.
+- Pause, stop, scene changes and browser reload clear pending media-stall checks so an earlier clip cannot time out a later clip.
+- If a failure arrives before browser autoplay promises complete and no timer is running, the full remaining duration is preserved rather than accidentally setting it to zero from a stale deadline.
+- Rest-track autoplay errors are reported separately. The rest countdown may continue quietly rather than treating the rest itself as an exercise requiring Marcus narration.
+- Chrome tests generate simulated audio error and stalled/waiting events during a **text-and-Marcus-only** preparation step. The app must freeze the timer and preserve uncompleted progress, then resume only on explicit Retry. The tests mock playback and do not establish real physical speaker audibility, voice/video lip sync or availability of external media hosts.
+
+These changes are isolated to the approved-media seated Recovery Coach and remain on the draft branch.
+
 ## Required release implementation
 
 1. Create a dedicated **seated-only plan** with explicit chair/back support, protected foot positioning, equipment and adjustable ranges, pre/post-workout and set/rest timing. Confirm biomechanics and limitations with the user's treating clinician when necessary.
