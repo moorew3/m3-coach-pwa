@@ -47,6 +47,12 @@ const LIBRARY="./vendor/vision_bundle.mjs";
 const WASM="./vendor/wasm";
 const MODEL="./vendor/pose_landmarker_lite.task";
 let session=0,stream=null,tracker=null,frame=null,lastFrameAt=0,lastFeedbackAt=0;
+const approvedSceneIds=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+window.addEventListener("message",event=>{
+ if(event.source!==window.parent||event.origin!==location.origin)return;
+ if(event.data?.type!=="m3-flex-active-scene"||!approvedSceneIds.has(event.data.id))return;
+ $("exercise").value=event.data.id;
+});
 const display=message=>{$("status").textContent=message;};
 function closeTracks(value){if(value)for(const track of value.getTracks())track.stop();}
 function cleanup(){
