@@ -68,8 +68,8 @@ export function LegacyRouteGate({
           checked={acknowledged}
           onChange={(event) => setAcknowledged(event.target.checked)}
         />
-        I understand the old workout is not a seated-only plan and will not
-        use standing or weight-bearing movements while those restrictions apply.
+        I understand I can bear weight, but this older workout has not been
+        individually reviewed for my cast, my permitted loading, or my current restrictions.
       </label>
       <button
         type="button"
