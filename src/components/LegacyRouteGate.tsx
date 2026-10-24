@@ -4,8 +4,8 @@ export const LEGACY_MODE_KEY = "m3-flex-legacy-workout-ack-v1";
 
 export function isLegacyWorkoutRoute(pathname: string): boolean {
   return (
-    /^\\/coach\\/\\d+(?:\\/|$)/.test(pathname) ||
-    /^\\/workout\\/\\d+(?:\\/|$)/.test(pathname) ||
+    /^\/coach\/\d+(?:\/|$)/.test(pathname) ||
+    /^\/workout\/\d+(?:\/|$)/.test(pathname) ||
     pathname === "/glasses" ||
     pathname === "/presentation" ||
     pathname.startsWith("/display")
