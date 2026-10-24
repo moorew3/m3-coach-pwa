@@ -256,17 +256,36 @@ try {
     await recoveryPage.locator("#workDuration").selectOption("20");
     await recoveryPage.locator("#restDuration").selectOption("15");
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
-    // A full timed session cannot run without explicit safety acknowledgment.
-    await recoveryPage.locator("#startPause").click();
+    // Android Voice Access operates the actual named buttons; no app-level
+    // speech recognition, paid TTS, or automatic microphone activation.
+    const voiceControl = recoveryPage.locator("#voiceAccessPanel");
+    await voiceControl.locator("summary").click();
+    assert.equal(await recoveryPage.locator("#handsfreeStart").isDisabled(), false);
+    assert.equal(await recoveryPage.locator("#handsfreePause").isDisabled(), true);
+    assert.equal(await recoveryPage.locator("#handsfreeResume").isDisabled(), true);
+    assert.match((await voiceControl.innerText()), /Tap Start workout/);
+    // Even a spoken "Tap Start workout" cannot bypass clinical clearance.
+    await recoveryPage.locator("#handsfreeStart").click();
     assert.match(await recoveryPage.locator("#note").innerText(), /clearance/i);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Ready");
     for (const box of await recoveryPage.locator("#clearance .check").all()) {
       await box.check();
     }
-    await recoveryPage.locator("#startPause").click();
+    await recoveryPage.locator("#handsfreeStart").click();
     assert.equal(await recoveryPage.locator("#setRounds").isDisabled(), true);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Workout in progress");
     assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 1 of 2/);
+    assert.equal(await recoveryPage.locator("#handsfreeStart").isDisabled(), true);
+    assert.equal(await recoveryPage.locator("#handsfreePause").isDisabled(), false);
+    await recoveryPage.locator("#handsfreePause").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
+    assert.equal(await recoveryPage.locator("#handsfreeResume").isDisabled(), false);
+    const voicePausedAt = await recoveryPage.locator("#clock").textContent();
+    await recoveryPage.clock.fastForward(2100);
+    assert.equal(await recoveryPage.locator("#clock").textContent(), voicePausedAt);
+    await recoveryPage.locator("#handsfreeResume").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Workout in progress");
+    step("Android Voice Access-compatible controls gate Start, Pause and Resume without false reps or mic access");
     await recoveryPage.clock.fastForward(21_000);
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
     assert.match((await recoveryPage.locator("#position").textContent())?.trim(), /Set 2 of 2/);
