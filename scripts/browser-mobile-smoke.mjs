@@ -406,6 +406,59 @@ try {
     await delayedContext.close();
   }
 
+  // Approved seated superset mode must rest only AFTER BOTH partner
+  // demonstrations and must never fabricate user-entered repetitions.
+  const pairsContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await pairsContext.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const pairsPage = await pairsContext.newPage();
+  pairsPage.setDefaultTimeout(12000);
+  try {
+    await pairsPage.clock.install();
+    await pairsPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    await pairsPage.locator('[data-stage="1"]').click();
+    await pairsPage.locator("#pairMode").selectOption("paired");
+    await pairsPage.locator("#setRounds").selectOption("2");
+    await pairsPage.locator("#workDuration").selectOption("20");
+    await pairsPage.locator("#restDuration").selectOption("15");
+    await pairsPage.locator("#handsfreeStart").click();
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Ready",
+      "Paired supersets must never bypass clinician clearance");
+    for (const box of await pairsPage.locator("#clearance .check").all()) await box.check();
+    await pairsPage.locator("#handsfreeStart").click();
+    assert.equal(await pairsPage.locator("#pairMode").isDisabled(), true, "Paired mode locks after session starts");
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated hammer curls");
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Workout in progress",
+      "No rest may be inserted between C01 and its C02 superset partner");
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    assert.match((await pairsPage.locator("#note").textContent()) ?? "", /Rest after BOTH exercises/);
+    assert.match((await pairsPage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
+    await pairsPage.clock.fastForward(16_000);
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
+    assert.match((await pairsPage.locator("#position").textContent()) ?? "", /Set 2 of 2/);
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated hammer curls");
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Workout in progress");
+    await pairsPage.clock.fastForward(21_000);
+    assert.equal((await pairsPage.locator("#runState").textContent())?.trim(), "Rest interval");
+    assert.match((await pairsPage.locator("#progressText").textContent()) ?? "", /^2 of 10 steps completed/,
+      "Both timed partner demonstrations finish only after both sets of each movement");
+    await pairsPage.clock.fastForward(16_000);
+    assert.equal(await pairsPage.locator("#moveTitle").innerText(), "Seated front raises");
+    assert.match((await pairsPage.locator("#position").textContent()) ?? "", /Set 1 of 2/);
+    step("Recovery Superset C01→C02→rest→C01→C02→rest→C03, no premature rest or reps");
+  } finally {
+    await pairsContext.close();
+  }
+
   // On-device form-check camera is strictly opt-in. A denied permission
   // must never invoke pose inference or report medically correct movement.
   const formContext = await browser.newContext({
