@@ -41,6 +41,9 @@ jobs:
       - name: Smoke test actual compiled Node server without paid AI
         run: node scripts/node-runtime-smoke.mjs
 
+      - name: Verify backup inventory without contacting media hosts
+        run: node scripts/backup-approved-media.mjs --check
+
       # Browser tooling is CI-only: it is never installed for app users or deployed.
       - name: Install Chrome for interaction smoke test
         uses: browser-actions/setup-chrome@v2
