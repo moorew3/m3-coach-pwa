@@ -394,6 +394,42 @@ try {
     await voiceContext.close();
   }
 
+  // A real phone must explicitly grant camera/mic permission. The diagnostic
+  // page must NEVER request either on initial load, and must report denial
+  // without uploading recordings, spawning TTS, or crashing.
+  const deviceContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await deviceContext.addInitScript(() => {
+    window.__permissionRequests = [];
+    if (navigator.mediaDevices?.getUserMedia) {
+      navigator.mediaDevices.getUserMedia = async (constraints) => {
+        window.__permissionRequests.push(constraints);
+        throw new DOMException("Permission denied for CI test", "NotAllowedError");
+      };
+    }
+  });
+  const devicePage = await deviceContext.newPage();
+  try {
+    const deviceResponse = await devicePage.goto(base + "/recovery-coach/device-check/", {
+      waitUntil: "domcontentloaded",
+    });
+    assert.equal(deviceResponse?.status(), 200);
+    assert.match((await devicePage.locator("#approvedMarcus").getAttribute("src")) ?? "", /9226f649-9808-4275-b269-bcc93d3b0342\.mp3/);
+    assert.equal((await devicePage.locator("#speakerStatus").textContent())?.trim(), "Not tested");
+    assert.equal((await devicePage.locator("#micStatus").textContent())?.trim(), "Not tested");
+    assert.equal((await devicePage.locator("#cameraStatus").textContent())?.trim(), "Not tested");
+    assert.equal(await devicePage.evaluate(() => window.__permissionRequests.length), 0, "No mic/camera permissions requested on page load");
+    await devicePage.locator("#testMic").click();
+    await devicePage.locator("#micStatus").getByText(/Microphone test failed/).waitFor();
+    await devicePage.locator("#testCamera").click();
+    await devicePage.locator("#cameraStatus").getByText(/Camera preview failed/).waitFor();
+    assert.equal(await devicePage.evaluate(() => window.__permissionRequests.length), 2, "Both explicit test buttons must separately request permission");
+    step("Galaxy Fold diagnostics require user clicks before camera/mic access and handle denied permissions");
+  } finally {
+    await deviceContext.close();
+  }
+
   // Simulate a failure from the approved external MP4 host in another clean
   // browser context. The app must remain usable and never display a random
   // replacement clip as though it were the actual coach.
