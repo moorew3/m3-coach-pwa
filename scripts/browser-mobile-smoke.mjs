@@ -308,6 +308,63 @@ try {
     await recoveryContext.close();
   }
 
+  // Audio-only preparation is not permitted to finish silently if its
+  // approved Marcus recording errors or stalls. Simulate media events in
+  // Chrome without fetching/altering or replacing owner-approved assets.
+  const voiceContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await voiceContext.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const voicePage = await voiceContext.newPage();
+  voicePage.setDefaultTimeout(12000);
+  try {
+    await voicePage.clock.install();
+    const voiceResponse = await voicePage.goto(base + "/recovery-coach/", {
+      waitUntil: "domcontentloaded",
+    });
+    assert.equal(voiceResponse?.status(), 200);
+    await voicePage.locator("#steps .item").nth(1).click();
+    assert.equal(await voicePage.locator("#moveTitle").innerText(), "Easy hand openings");
+    for (const box of await voicePage.locator("#clearance .check").all()) await box.check();
+    await voicePage.locator("#startPause").click();
+    assert.equal((await voicePage.locator("#runState").textContent())?.trim(), "Workout in progress");
+    const originalMarcus = await voicePage.locator("#coachVoice").getAttribute("src");
+    assert.match(originalMarcus ?? "", /2dcdf842-9177-4bc6-a6a4-a274fc726876\.mp3/);
+    await voicePage.clock.fastForward(4100);
+    await voicePage.locator("#coachVoice").dispatchEvent("error");
+    assert.equal((await voicePage.locator("#runState").textContent())?.trim(), "Tap to enable sound");
+    assert.match((await voicePage.locator("#note").textContent()) ?? "", /Marcus voice track failed/);
+    const frozenAt = await voicePage.locator("#clock").textContent();
+    await voicePage.clock.fastForward(45_000);
+    assert.equal(await voicePage.locator("#clock").textContent(), frozenAt, "Broken Marcus audio must freeze workout timer");
+    assert.match((await voicePage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
+    assert.equal(await voicePage.locator("#moveTitle").innerText(), "Easy hand openings");
+    await voicePage.locator("#startPause").click();
+    assert.equal((await voicePage.locator("#runState").textContent())?.trim(), "Workout in progress");
+    assert.equal(await voicePage.locator("#coachVoice").getAttribute("src"), originalMarcus);
+    await voicePage.clock.fastForward(1100);
+    assert.notEqual(await voicePage.locator("#clock").textContent(), frozenAt, "Timer resumes only after explicit Retry");
+    step("Failed Marcus audio freezes preparation timer, preserves progress, and retries same recording");
+
+    // A stream can stall without emitting an error. The audio watchdog
+    // must suspend only the active step, not invent elapsed reps/steps.
+    await voicePage.locator("#coachVoice").dispatchEvent("waiting");
+    await voicePage.clock.fastForward(3200);
+    assert.equal((await voicePage.locator("#runState").textContent())?.trim(), "Tap to enable sound");
+    const stalledAt = await voicePage.locator("#clock").textContent();
+    await voicePage.clock.fastForward(32_000);
+    assert.equal(await voicePage.locator("#clock").textContent(), stalledAt);
+    assert.match((await voicePage.locator("#note").textContent()) ?? "", /Marcus audio buffering stopped/);
+    assert.match((await voicePage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
+    step("Stalled Marcus audio pauses timed guidance instead of silently completing the step");
+  } finally {
+    await voiceContext.close();
+  }
+
   // Simulate a failure from the approved external MP4 host in another clean
   // browser context. The app must remain usable and never display a random
   // replacement clip as though it were the actual coach.
