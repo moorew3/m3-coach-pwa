@@ -257,6 +257,11 @@ try {
     await recoveryPage.frameLocator("#formFrame").locator("#start").waitFor();
     assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "./form-check/");
     await recoveryPage.locator("#formObservation summary").click();
+    await recoveryPage.waitForFunction(
+      () => document.querySelector("#formFrame")?.getAttribute("src") === "about:blank",
+      null,
+      { timeout: 4000 },
+    );
     assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "about:blank");
     await recoveryPage.locator('[data-stage="1"]').click();
     await recoveryPage.locator("#setRounds").selectOption("2");
