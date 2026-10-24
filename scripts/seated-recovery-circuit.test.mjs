@@ -120,3 +120,32 @@ test("Android page lock pauses the timer and saving a completed session clears i
   assert.match(page, /if\(!sessionStarted\|\|mode==="complete"\)/);
   assert.match(page, /localStorage\.removeItem\(PROGRESS_KEY\)/);
 });
+
+test("required audio-only Marcus errors pause the timer before any fake completion", () => {
+  assert.match(page, /audio\.addEventListener\("error",\(\)=>playbackError\("Approved Marcus voice track failed.","audio"\)\)/);
+  assert.match(page, /function playbackError\(msg,source\)/);
+  assert.match(page, /if\(source==="audio"&&!step\(\)\.voice\)return/);
+  assert.match(page, /if\(interval!==null\)secondsLeft=Math\.max\(0,deadline-Date\.now\(\)\)/);
+  assert.match(page, /mode="waiting";drawTimer\(\)/);
+  assert.match(page, /Timed step NOT completed\. Tap Retry approved media/);
+  assert.match(page, /mode==="waiting"\?"▶ Retry approved media"/);
+});
+
+test("Marcus audio buffering is watched independently of video without replacing sources", () => {
+  assert.match(page, /audio\.addEventListener\("waiting",\(\)=>waitForBuffer\("audio"\)\)/);
+  assert.match(page, /audio\.addEventListener\("stalled",\(\)=>waitForBuffer\("audio"\)\)/);
+  assert.match(page, /audio\.addEventListener\("playing",/);
+  assert.match(page, /clearMediaBufferChecks\(\)/);
+  assert.match(page, /kind==="video"\?2300:3000/);
+  assert.match(page, /Approved Marcus audio buffering stopped/);
+  assert.match(page, /function stopMedia\(rewind\)\{clearMediaBufferChecks\(\)/);
+});
+
+test("Chrome verifies no phantom step completion on real audio errors and watchdog stalls", () => {
+  assert.match(chrome, /dispatchEvent\("error"\)/);
+  assert.match(chrome, /dispatchEvent\("waiting"\)/);
+  assert.match(chrome, /Broken Marcus audio must freeze workout timer/);
+  assert.match(chrome, /Timer resumes only after explicit Retry/);
+  assert.match(chrome, /Stalled Marcus audio pauses timed guidance/);
+  assert.match(chrome, /originalMarcus/);
+});
