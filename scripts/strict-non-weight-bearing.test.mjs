@@ -25,5 +25,5 @@ test("medical stop instantly kills all media, invalidates the timer and forces f
  assert.match(html,/startPause"\)\.disabled=mode==="complete"\|\|safetyLock/);
  assert.match(html,/handsfreeResume"\)\.disabled=safetyLock/);
  assert.match(html,/safetyLock=false;for\(const input of document\.querySelectorAll\("#clearance \.check"\)\)input\.checked=false/);
- assert.match(chrome,/Strict non-weight-bearing safety Stop silences workout/);
+ assert.match(chrome,/Conservative seated-cast medical Stop silences workout/);
 });
