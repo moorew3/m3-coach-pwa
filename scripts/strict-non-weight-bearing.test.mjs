@@ -4,13 +4,13 @@ import { readFileSync } from "node:fs";
 const html=readFileSync(new URL("../public/recovery-coach/index.html",import.meta.url),"utf8");
 const chrome=readFileSync(new URL("./browser-mobile-smoke.mjs",import.meta.url),"utf8");
 
-test("zero-load leg restriction is explicit at app entrance and before every timed movement",()=>{
- assert.match(html,/NON-WEIGHT-BEARING RECOVERY — NO STANDING/);
- assert.match(html,/No foot pressure, standing, walking drills, squats, steps, jumping/);
- assert.match(html,/if you have newly lost the ability to stand|If you have newly lost the ability to stand/);
- assert.match(html,/My treating clinician knows I cannot bear weight on my injured leg/);
- assert.match(html,/I will stay seated for this entire session/);
- assert.match(html,/absolutely no weight or pushing through that foot/);
+test("owner-reported weight-bearing ability never overrides seated-only clinician restrictions",()=>{
+ assert.match(html,/FOOT CAST · WEIGHT-BEARING ABILITY REPORTED/);
+ assert.match(html,/Weight-bearing ability alone does not establish clearance for loaded squats/);
+ assert.match(html,/Follow your clinician's restrictions/);
+ assert.match(html,/My treating clinician knows about my foot cast/);
+ assert.match(html,/I will use the seated setup for this selected session/);
+ assert.match(html,/Follow your actual clinician-specified weight-bearing limits/);
  assert.match(html,/function safetyOkay\(\)\{return !safetyLock&&/);
  assert.match(html,/if\(!safetyOkay\(\)\)/);
 });
