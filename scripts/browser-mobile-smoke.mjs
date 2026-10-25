@@ -585,8 +585,8 @@ try {
   noWeightPage.setDefaultTimeout(12000);
   try {
     await noWeightPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
-    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /NO STANDING/);
-    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /no foot pressure/i);
+    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /FOOT CAST · WEIGHT-BEARING ABILITY REPORTED/);
+    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /does not establish clearance for loaded squats/);
     await noWeightPage.locator('[data-stage="1"]').click();
     await noWeightPage.locator("#startPause").click();
     assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /confirm all three clinician-clearance checks/);
@@ -605,7 +605,7 @@ try {
     assert.equal(await noWeightPage.locator("#clearance .check:checked").count(), 0);
     await noWeightPage.locator("#startPause").click();
     assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /confirm all three clinician-clearance checks/);
-    step("Strict non-weight-bearing safety Stop silences workout, blocks resume and requires NEW clearance after reset");
+    step("Conservative seated-cast medical Stop silences workout, blocks resume and requires NEW clearance after reset");
   } finally {
     await noWeightContext.close();
   }
