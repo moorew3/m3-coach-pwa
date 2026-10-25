@@ -22,7 +22,7 @@ test("only owner-approved seven motion scene IDs are used in active seated progr
 test("seated session requires clinician signoff before the timer and set loop can begin", () => {
   assert.match(page, /function safetyOkay\(\)/);
   assert.match(page, /if\(!safetyOkay\(\)\)/);
-  assert.match(page, /My treating clinician knows I cannot bear weight on my injured leg and specifically cleared these seated arm movements and resistance/);
+  assert.match(page, /My treating clinician knows about my foot cast and has specifically cleared these seated arm movements and resistance/);
   assert.match(page, /I will use the seated setup for this selected session, position the cast comfortably, and follow my actual weight-bearing restrictions/);
   assert.match(page, /My clinician cleared the intended exercise duration and effort/);
 });
