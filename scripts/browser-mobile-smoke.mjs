@@ -599,7 +599,7 @@ try {
     assert.equal(await noWeightPage.locator("#preview").isDisabled(), true);
     assert.equal(await noWeightPage.locator("#handsfreeResume").isDisabled(), true);
     assert.equal(await noWeightPage.locator("#clearance .check:checked").count(), 0);
-    assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /urgent medical care/);
+    assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /follow your clinician.s restrictions/);
     await noWeightPage.locator("#reset").click();
     assert.equal((await noWeightPage.locator("#runState").textContent())?.trim(), "Ready");
     assert.equal(await noWeightPage.locator("#clearance .check:checked").count(), 0);
