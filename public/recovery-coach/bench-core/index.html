@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1521"><title>M3 FLEX · Bench-Supported Core Workouts</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1521;--panel:#162a3a;--edge:#37576c;--fg:#edf5fa;--dim:#b6cbd7;--green:#c5f08c;--amber:#ffd5a3}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--fg);margin:0;font:15px/1.55 system-ui,-apple-system,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 15px 70px}a{color:var(--green)}h1{font-size:clamp(24px,6vw,35px);line-height:1.16;margin:7px 0}h2{font-size:20px;line-height:1.3;margin:3px 0 8px}p{margin:8px 0;color:var(--dim)}small,.small{font-size:12px;color:var(--dim)}
+.badge{font-size:11px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.panel{border:1px solid var(--edge);border-radius:16px;background:var(--panel);margin:14px 0;padding:15px}
+.warning{border-left:4px solid #f6bd7e;padding:11px;background:#372b27;color:#f9dec6;border-radius:6px;font-size:13px;line-height:1.6}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label{font-size:13px;color:#dce7ef}label select{margin-top:5px}
+select{width:100%;padding:12px 8px;border:1px solid #59778b;border-radius:8px;background:#243c4e;color:#fff;font-size:14px;min-height:45px}
+button{border:1px solid #668296;background:#29485b;color:#fff;border-radius:10px;font:750 14px system-ui,sans-serif;min-height:50px;padding:10px 13px;cursor:pointer}
+button.primary{background:var(--green);color:#152b1b;border-color:var(--green)}
+button:disabled{opacity:.46;cursor:not-allowed}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.actions .wide{grid-column:1/-1}
+.timer{text-align:center;padding:16px 8px;margin:12px 0;border:1px solid var(--edge);border-radius:12px;background:#091925}
+#clock{font-size:clamp(40px,12vw,66px);font-weight:850;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+#runState{font-size:13px;font-weight:850;color:var(--green)}
+#cue{padding:12px;border-left:3px solid var(--green);background:#193240;border-radius:6px;line-height:1.7;color:#eef5f9}
+#setup{font-size:13px;line-height:1.7}
+.steps{display:grid;gap:8px}
+.step{display:flex;align-items:start;gap:9px;border:1px solid #436176;background:#203b4f;color:#eef4f7;padding:11px;border-radius:10px;font-size:13px;text-align:left;width:100%}
+.step[aria-current="step"]{border:2px solid var(--green);background:#285041}
+.step strong{display:block;font-size:14px}
+.step small{display:block;line-height:1.5;margin-top:2px}
+.number{background:#3e5563;min-width:29px;height:29px;border-radius:50%;display:grid;place-items:center;flex:none;font-weight:900}
+.clearance label{display:flex;align-items:start;gap:9px;margin:12px 0;line-height:1.55}
+.clearance input{min-width:19px;height:19px;accent-color:var(--green);margin-top:2px}
+.stats{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+#notice,#report{font-size:13px;line-height:1.65;color:#f9dcaa;min-height:32px;margin:12px 0}
+footer{font-size:12px;text-align:center;color:#aec3d0;padding-top:10px}
+</style></head>
+<body><main>
+<a href="../">← Approved Recovery Coach</a>
+<div class="badge" style="margin-top:17px">M3 FLEX · Core training</div>
+<h1>Bench-supported core workouts</h1>
+<p>Two optional core circuits you can perform <strong>seated on your adjustable weight bench</strong> with your injured leg supported. This is a separate guided <strong>text-and-timer workout</strong>, not a new approved Flex motion video or Marcus recording.</p>
+<div class="warning" role="note"><strong>Foot cast · clinician clearance required.</strong> Weight-bearing ability does not automatically clear abdominal bracing, resisted anti-rotation or bench exercise. Use a stable, locked bench with secure back support as needed; never push through the cast, use it as an anchor, or place the casted foot under a weight. Do not attempt leg raises, planks, sit-ups, bench crunches or forceful twisting under the current recovery plan. Stop for pain, swelling, dizziness or cast pressure. Have your clinician clear each movement, load and duration first.</div>
+<section class="panel">
+<h2>Choose your core session</h2>
+<div class="controls">
+<label>Workout<select id="plan" aria-label="Bench-supported core workout">
+<option value="foundation">Core A · Bench foundation</option><option value="resistance">Core B · Anti-rotation</option>
+</select></label>
+<label>Timed hold / controlled activity<select id="duration" aria-label="Exercise timer in seconds">
+<option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option>
+</select></label>
+<label>Circuit rounds<select id="rounds" aria-label="Number of circuit rounds">
+<option value="1">1 round</option><option value="2" selected>2 rounds</option><option value="3">3 rounds</option>
+</select></label>
+<label>Rest between activities<select id="rest" aria-label="Rest interval">
+<option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option>
+</select></label>
+</div>
+<p class="small" id="planInfo">Bench Core A builds breathing and trunk control without resistance.</p>
+<div class="stats"><span id="roundLabel">Round 1 of 2</span><span id="progress">0 of 8 timed activities completed</span><span id="skipCount">0 skipped</span></div>
+</section>
+<section class="panel">
+<div class="badge" id="category">CORE A · FOUNDATION</div>
+<h2 id="title">Seated 360° abdominal brace</h2>
+<p id="setup">Sit on a stable bench with your back supported as needed, shoulders relaxed and injured leg supported independently of the floor.</p>
+<p id="cue">Exhale slowly, lightly tighten your abdomen without breath-holding or pushing through the cast, then relax.</p>
+<p class="small" id="movementNotice">Text-only guidance. No new Flex motion or matched Marcus narration is approved for this exercise.</p>
+<div class="timer"><div id="runState" role="status" aria-live="polite">Ready</div><div id="clock">00:20</div></div>
+<div class="actions">
+<button type="button" id="startPause" class="primary wide">Start core timer</button>
+<button type="button" id="next">Skip activity · no completion credit</button>
+<button type="button" id="reset">Restart core session</button>
+<button type="button" id="emergency" class="wide">■ STOP — pain or cast concern</button>
+</div>
+<div id="notice" role="status" aria-live="polite">Select the plan and get clinician clearance before starting.</div>
+</section>
+<section class="panel">
+<h2>Core movement order</h2><div id="steps" class="steps"></div>
+<p class="small">The timer counts <strong>timed activities completed by the app</strong>, not actual repetitions, correct form, breath quality, or exercises performed. Skipped activities never receive credit. All cues are text-only until dedicated Flex/Marcus footage receives separate approval.</p>
+</section>
+<section class="panel clearance" id="clearance"><h2>Required clearance for this core session</h2>
+<label><input type="checkbox" class="check">My treating clinician has specifically cleared the selected bench-supported core movements and any band or dumbbell resistance while I am in a cast.</label>
+<label><input type="checkbox" class="check">My injured leg can remain supported throughout without using the cast to brace, anchor, push, twist or bear more weight than allowed.</label>
+<label><input type="checkbox" class="check">My clinician approved the chosen effort and timed activities; I will stop for pain, swelling, dizziness or cast pressure.</label>
+<p class="small">Clearance checkboxes are intentionally not saved between visits; resuming an interrupted session requires fresh confirmation.</p>
+</section>
+<section class="panel"><h2>Local core workout record</h2>
+<p id="report" role="status">No completed core workout is recorded on this device yet.</p>
+<button id="clearHistory" type="button">Clear local core history</button>
+<p class="small">Stores only the plan name, timed completion count, skipped count and date in this browser; no camera frames, audio recordings, medical permission, or personal repetitions are stored or uploaded.</p>
+</section>
+<footer>Bench core plan · text-only until motion/Marcus is separately approved · private local timers and records</footer>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const KEY="m3-flex-bench-core-progress-v1",HISTORY="m3-flex-bench-core-history-v1",MAX_AGE=86400000;
+const movements={
+ brace:{name:"Seated 360° abdominal brace",setup:"Sit on a stable, locked bench with back support if needed and the injured casted leg comfortably supported, not pushing into the floor.",cue:"Breathe out slowly. Gently firm your midsection without holding your breath, moving the cast or tensing into pain. Reset between gentle contractions.",limit:"Unloaded · gentle effort · no breath-holding"},
+ palms:{name:"Seated palms-together midline press",setup:"Sit upright on the bench with the cast supported. Place palms lightly together at chest height; stay in a comfortable shoulder range.",cue:"Press your palms together lightly while keeping ribs stacked over hips. Exhale softly without leaning or leg bracing. Release as needed.",limit:"Unloaded · no forceful shoulder pressing"},
+ rotation:{name:"Seated small-range torso turns",setup:"Sit tall with supported back and injured leg stable. Cross arms loosely over chest; move only if your clinician specifically cleared trunk rotation.",cue:"Gently turn your upper body a small comfortable distance, return to center, then alternate. Do not twist through your cast or push with either foot.",limit:"No weights · small range · skip if spine/hip/leg symptoms"},
+ reach:{name:"Bench-supported alternating forward reach",setup:"Sit upright with the bench back supporting you and the leg supported. Keep both arms near torso before each reach.",cue:"Reach one hand a short comfortable distance forward and return without leaning or pushing with the injured foot. Alternate slowly.",limit:"Unloaded · controlled range · shoulder clearance required"},
+ pallofL:{name:"Seated Pallof hold · band pulling from left",setup:"Secure a very light resistance band to a stable chest-height rack anchor to your LEFT side, away from the cast. Sit on a locked bench with the leg supported; no band behind the neck or around the cast.",cue:"Hold the band at your chest or gently press forward within your shoulder clearance. Keep torso facing straight ahead and breathe. Do not push your foot into the floor.",limit:"Optional very light resistance · stable chest-height rack anchor"},
+ pallofR:{name:"Seated Pallof hold · band pulling from right",setup:"Move the very light band to a stable chest-height rack anchor on your RIGHT side, far from the injured cast. Keep bench stable and cast independently supported.",cue:"Maintain a tall neutral torso without twisting toward the band. Exhale as you hold or press gently in your cleared range; no leg bracing.",limit:"Optional very light resistance · independent cast support"},
+ offsetL:{name:"Seated offset dumbbell hold · left hand",setup:"On a locked bench with supported cast and torso, hold one clinician-cleared light dumbbell in your LEFT hand at your side. Keep neck and shoulders relaxed.",cue:"Stay upright against the gentle side pull without leaning or holding your breath. Set weight down safely if shoulder, grip or leg pressure develops.",limit:"Clinician-cleared light load only · no leaning"},
+ offsetR:{name:"Seated offset dumbbell hold · right hand",setup:"On a locked bench with supported cast, hold one clinician-cleared light dumbbell in your RIGHT hand at your side. Do not prop it against your leg.",cue:"Maintain upright ribs over hips. Keep the cast relaxed and supported; do not lean, sway or brace with the injured foot.",limit:"Clinician-cleared light load only · no leaning"}
+};
+const routines={
+ foundation:{label:"Core A · Bench foundation",info:"Four unloaded movements emphasizing gentle bracing, posture and controlled upper-body motion.",ids:["brace","palms","rotation","reach"]},
+ resistance:{label:"Core B · Anti-rotation",info:"A bench-based core circuit using very light, clinician-cleared resistance. Requires a stable chest-height band anchor and an appropriately light dumbbell.",ids:["brace","pallofL","pallofR","offsetL","offsetR"]}
+};
+let mode="ready",phase="work",idx=0,round=1,completed=0,skipped=0,ms=20000,deadline=0,ticker=null,started=false;
+const plan=()=>routines[$("plan").value],ids=()=>plan().ids,seconds=()=>Number($("duration").value)*1000,restMs=()=>Number($("rest").value)*1000,rounds=()=>Number($("rounds").value);
+const format=value=>"00:"+String(Math.ceil(Math.max(0,value)/1000)).padStart(2,"0");
+const cleared=()=>[...document.querySelectorAll("#clearance .check")].every(x=>x.checked);
+function stopTicker(){if(ticker!==null){clearInterval(ticker);ticker=null;}}
+function persist(){
+ try{
+  if(mode==="done"||!started){localStorage.removeItem(KEY);return;}
+  const snapshot={createdAt:Date.now(),plan:$("plan").value,duration:$("duration").value,
+   rest:$("rest").value,rounds:$("rounds").value,idx,round,completed,skipped,ms,
+   phase,mode:"paused",started:true};
+  localStorage.setItem(KEY,JSON.stringify(snapshot));
+ }catch{}
+}
+function showMessage(message){$("notice").textContent=message;}
+function draw(){
+ const entries=ids(),current=movements[entries[Math.min(idx,entries.length-1)]];
+ $("category").textContent=plan().label.toUpperCase();
+ $("title").textContent=mode==="done"?"Core circuit summary":current.name;
+ $("setup").textContent=mode==="done"?"Circuit ended. Timed activity counts are demonstrations, not verified repetitions.":current.setup;
+ $("cue").textContent=mode==="done"?"Return to the Recovery Coach or review your local core record.":current.cue;
+ $("movementNotice").textContent=mode==="done"?"No medical or form certification was issued.":"Text-only, not an approved Flex or Marcus demonstration · "+current.limit;
+ $("planInfo").textContent=plan().info;
+ $("roundLabel").textContent="Round "+round+" of "+rounds();
+ $("progress").textContent=completed+" of "+(entries.length*rounds())+" timed activities completed";
+ $("skipCount").textContent=skipped+" skipped";
+ $("runState").textContent=mode==="done"?"Session ended":mode==="rest"?"Rest interval":mode==="paused"?"Paused":mode==="running"?"Core timer running":"Ready";
+ $("clock").textContent=format(ms);
+ $("startPause").textContent=mode==="running"||mode==="rest"?"Pause":mode==="paused"?"Resume":"Start core timer";
+ $("startPause").disabled=mode==="done";
+ $("next").disabled=mode==="done";
+ for(const id of ["plan","duration","rounds","rest"])$(id).disabled=started;
+ $("steps").replaceChildren(...entries.map((id,n)=>{
+   const button=document.createElement("button");button.type="button";button.className="step";
+   button.setAttribute("aria-current",n===idx?"step":"false");button.disabled=started;
+   const number=document.createElement("span");number.className="number";number.textContent=String(n+1);
+   const body=document.createElement("span");
+   const name=document.createElement("strong");name.textContent=movements[id].name;
+   const note=document.createElement("small");note.textContent=movements[id].limit;
+   body.append(name,note);button.append(number,body);
+   button.addEventListener("click",()=>{if(started)return;idx=n;ms=seconds();draw();});
+   return button;
+ }));
+ persist();
+}
+function saveHistory(){
+ try{
+  const previous=JSON.parse(localStorage.getItem(HISTORY)||"[]");
+  const list=Array.isArray(previous)?previous.filter(x=>x&&typeof x==="object").slice(-19):[];
+  list.push({date:new Date().toISOString(),plan:$("plan").value,completed,skipped,total:ids().length*rounds()});
+  localStorage.setItem(HISTORY,JSON.stringify(list));
+ }catch{}
+ renderHistory();
+}
+function renderHistory(){
+ let records=[];try{const x=JSON.parse(localStorage.getItem(HISTORY)||"[]");if(Array.isArray(x))records=x;}catch{}
+ const last=records.at(-1);
+ $("report").textContent=last?
+ (routines[last.plan]?.label||"Core")+" · "+last.completed+"/"+last.total+" timed activities · "+last.skipped+" skipped · "+new Date(last.date).toLocaleDateString():
+ "No completed core workout is recorded on this device yet.";
+}
+function finish(){
+ stopTicker();mode="done";started=false;saveHistory();draw();
+ showMessage(completed===ids().length*rounds()?
+  "Every timed core activity finished. These are timer completions, not verified athlete reps or medically confirmed technique.":
+  "Circuit ended with skipped activities. No completion credit was awarded to skipped work.");
+}
+function increment(credit){
+ if(credit)completed++;else skipped++;
+ if(idx<ids().length-1){idx++;}else if(round<rounds()){round++;idx=0;}else{finish();return;}
+ phase="work";ms=seconds();mode="ready";draw();
+}
+function elapsed(){
+ if(mode!=="running"&&mode!=="rest")return;
+ ms=Math.max(0,deadline-Date.now());
+ if(ms>0){draw();return;}
+ stopTicker();
+ if(mode==="rest"){
+  mode="running";phase="work";ms=seconds();deadline=Date.now()+ms;draw();ticker=setInterval(elapsed,150);
+  showMessage("Rest complete. Continue the timed movement without pushing through the cast.");
+  return;
+ }
+ const finishedIdx=idx,finishedRound=round;
+ increment(true);
+ if(mode==="done")return;
+ phase="rest";mode="rest";ms=restMs();deadline=Date.now()+ms;draw();ticker=setInterval(elapsed,150);
+ showMessage("Timed movement "+(finishedIdx+1)+" of round "+finishedRound+" completed. Rest before the next activity. No repetitions were counted.");
+}
+function startClock(){
+ if(!cleared()){showMessage("Cannot start: confirm all three clinician, cast-position and exertion clearance checks.");return;}
+ if(mode==="done")return;
+ if(mode==="running"||mode==="rest"){ms=Math.max(0,deadline-Date.now());stopTicker();mode="paused";draw();showMessage("Paused. Time and completion counts preserved.");return;}
+ if(mode==="ready"||mode==="paused"){
+  started=true;mode=phase==="rest"?"rest":"running";deadline=Date.now()+ms;
+  draw();stopTicker();ticker=setInterval(elapsed,150);
+  showMessage(mode==="rest"?"Rest resumed. No cast or foot loading.":"Timer running. Follow the text cues only within your clinician-cleared effort.");
+ }
+}
+function skip(){
+ if(mode==="done")return;
+ stopTicker();
+ increment(false);
+ if(mode==="done")return;
+ showMessage("Activity skipped without completion credit. Check technique and medical clearance before starting the next.");
+}
+function reset(){
+ stopTicker();started=false;phase="work";idx=0;round=1;completed=0;skipped=0;mode="ready";ms=seconds();
+ for(const box of document.querySelectorAll("#clearance .check"))box.checked=false;
+ try{localStorage.removeItem(KEY)}catch{}
+ draw();showMessage("New core session. Obtain fresh clearance before starting.");
+}
+function restore(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY)||"null");if(!saved||typeof saved!=="object")return;
+  const validPlan=Object.hasOwn(routines,saved.plan),entries=validPlan?routines[saved.plan].ids:[];
+  if(!validPlan||!["15","20","30"].includes(saved.duration)||
+    !["15","30","45"].includes(saved.rest)||!["1","2","3"].includes(saved.rounds)||
+    !Number.isInteger(saved.round)||saved.round<1||saved.round>Number(saved.rounds)||
+    !Number.isInteger(saved.idx)||saved.idx<0||saved.idx>=entries.length||
+    !Number.isInteger(saved.completed)||saved.completed<0||saved.completed>entries.length*Number(saved.rounds)||
+    !Number.isInteger(saved.skipped)||saved.skipped<0||saved.skipped>entries.length*Number(saved.rounds)||
+    !Number.isFinite(saved.ms)||saved.ms<0||saved.ms>45000||
+    !["work","rest"].includes(saved.phase)||
+    !Number.isFinite(saved.createdAt)||Date.now()-saved.createdAt>MAX_AGE)return;
+  $("plan").value=saved.plan;$("duration").value=saved.duration;
+  $("rest").value=saved.rest;$("rounds").value=saved.rounds;
+  idx=saved.idx;round=saved.round;completed=saved.completed;skipped=saved.skipped;ms=saved.ms;
+  phase=saved.phase;started=true;mode="paused";
+  showMessage("Interrupted core session restored paused. Reconfirm all clinician clearances before resuming. No camera or audio started.");
+ }catch{}
+}
+$("startPause").addEventListener("click",startClock);
+$("next").addEventListener("click",skip);
+$("reset").addEventListener("click",reset);
+$("emergency").addEventListener("click",()=>{reset();showMessage("Workout stopped for a safety concern. Do not restart until the appropriate clinician clears it.");});
+$("clearHistory").addEventListener("click",()=>{
+ try{localStorage.removeItem(HISTORY)}catch{}
+ renderHistory();
+});
+for(const id of ["plan","duration","rounds","rest"])$(id).addEventListener("change",()=>{if(started)return;idx=0;round=1;ms=seconds();draw();});
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden&&(mode==="running"||mode==="rest")){
+  ms=Math.max(0,deadline-Date.now());stopTicker();mode="paused";draw();
+ }
+});
+window.addEventListener("pagehide",()=>{
+ if(mode==="running"||mode==="rest"){ms=Math.max(0,deadline-Date.now());stopTicker();mode="paused";persist();}
+});
+restore();draw();renderHistory();
+</script></body></html>
