@@ -228,6 +228,58 @@ try {
     await pairingContext.close();
   }
 
+  // The first visible workout must feel like one guided Marcus experience,
+  // without fabricating audio content or bypassing clinician clearance.
+  const marcusContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await marcusContext.addInitScript(() => {
+    window.__marcusWakeRequests = 0;
+    Object.defineProperty(navigator, "wakeLock", {
+      configurable: true, value: { request: async () => {
+        window.__marcusWakeRequests++;
+        return { released: false, addEventListener() {}, release: async function () {this.released = true;} };
+      } },
+    });
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const marcusPage = await marcusContext.newPage();
+  marcusPage.setDefaultTimeout(12000);
+  try {
+    await marcusPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    assert.equal(await marcusPage.locator("#marcusBegin").isVisible(), true);
+    assert.match(await marcusPage.locator("#marcusTestAudio").getAttribute("src") ?? "",
+      /9226f649-9808-4275-b269-bcc93d3b0342\.mp3/);
+    await marcusPage.locator('[data-stage="1"]').click();
+    assert.equal(await marcusPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
+    await marcusPage.locator("#marcusBegin").click();
+    assert.equal(await marcusPage.locator("#moveTitle").innerText(), "Calm seated breathing");
+    assert.match((await marcusPage.locator("#note").textContent()) ?? "", /clinician-clearance/i);
+    assert.equal((await marcusPage.locator("#runState").textContent())?.trim(), "Ready");
+    await marcusPage.locator("#marcusAudioCheck").click();
+    assert.match((await marcusPage.locator("#note").textContent()) ?? "", /original approved Marcus recording/i);
+    await marcusPage.locator("#marcusFocus").click();
+    assert.equal(await marcusPage.locator("body").evaluate(el => el.classList.contains("coachFocus")), true);
+    await marcusPage.locator("#marcusFocus").click();
+    assert.equal(await marcusPage.locator("body").evaluate(el => el.classList.contains("coachFocus")), false);
+    for (const box of await marcusPage.locator("#clearance .check").all()) await box.check();
+    await marcusPage.locator("#marcusBegin").click();
+    assert.equal((await marcusPage.locator("#runState").textContent())?.trim(), "Workout in progress");
+    assert.match((await marcusPage.locator("#marcusNext").textContent()) ?? "", /Easy hand openings/);
+    assert.match((await marcusPage.locator("#marcusVoiceStatus").textContent()) ?? "", /original Marcus track/);
+    assert.equal(await marcusPage.locator("#marcusAudioCheck").isDisabled(), true,
+      "Audio test must not interrupt the guided workout");
+    await marcusPage.waitForFunction(() => window.__marcusWakeRequests >= 1);
+    await marcusPage.locator("#marcusBegin").click();
+    assert.equal((await marcusPage.locator("#runState").textContent())?.trim(), "Paused");
+    assert.match((await marcusPage.locator("#marcusOnScreen").textContent()) ?? "", /PAUSED/);
+    step("Marcus one-tap full guided session: original voice, preview audio, focus screen, wake request and safety gate");
+  } finally {
+    await marcusContext.close();
+  }
+
   // The standalone seated recovery sequence is the ONLY currently active
   // owner-approved Flex+Marcus circuit. Exercise time measures demonstration
   // duration, not completed reps. Media play is mocked in this timing check;
