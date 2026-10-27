@@ -84,6 +84,13 @@ jobs:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: node scripts/browser-mobile-smoke.mjs
 
+      - name: Advisory real hosted M3 FLEX preview smoke
+        continue-on-error: true
+        env:
+          M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+          M3_FLEX_HOSTED_PREVIEW: https://dochost.co/d/vgddy7ju
+        run: node scripts/check-published-flex-preview.mjs
+
       - name: Save browser failure screenshot
         if: failure()
         uses: actions/upload-artifact@v4
