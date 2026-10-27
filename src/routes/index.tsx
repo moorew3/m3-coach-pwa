@@ -295,6 +295,19 @@ function Today() {
               Workout A/B are still in development.
             </p>
 
+            <a
+              href="/recovery-coach/bench-core/"
+              data-testid="bench-core-workouts"
+              className="tap-target mt-3 flex w-full items-center justify-center rounded-xl border border-accent/70 bg-elevated px-4 py-3 text-center text-sm font-bold text-accent"
+            >
+              Bench-Supported Core A &amp; Core B · Timed workouts
+            </a>
+            <p className="mt-1 text-center text-[11px] text-muted-foreground">
+              Separate core and abdominal-bracing circuits with real sets, rest and tracking.
+              Text-only until exercise footage and Marcus coaching are approved.
+              Clinician clearance for cast positioning and core movements is required.
+            </p>
+
             <button
               type="button"
               onClick={requestLegacyCoach}
