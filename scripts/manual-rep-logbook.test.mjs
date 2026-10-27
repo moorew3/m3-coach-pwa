@@ -29,7 +29,7 @@ test("local-only JSON export and strict import avoid silent cross-device sync or
  assert.match(log,/const ids=new Set\(records\.map\(r=>r\.id\)\)/);
  assert.match(log,/localStorage\.removeItem\(KEY\)/);
  assert.match(log,/window\.confirm\("Delete all locally saved real reps/);
- assert.match(log,/r\.reps+" actual reps"/);
+ assert.match(log,/r\.reps\+" actual reps"/);
 });
 
 test("same-screen coach sends only currently approved exercise ID when panel open",()=>{
