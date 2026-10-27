@@ -108,6 +108,12 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <iframe id="formFrame" title="Optional local upper-body movement observation" loading="lazy" allow="camera" style="display:block;width:100%;height:545px;max-height:75vh;border:1px solid #395970;border-radius:10px;background:#0b1521" src="about:blank"></iframe>
 <p class="small">Closing this panel unloads its camera view and stops its live stream. Pause the workout if monitoring affects performance on your Galaxy Fold.</p>
 </details>
+<details id="repsPanel" class="voiceAccessPanel">
+<summary>Log my actual reps, weights &amp; measurements (private)</summary>
+<p>Enter repetitions YOU performed and weight YOU used; video timers do not count actual reps. Records stay on this phone/browser unless you export and restore your private JSON backup on another device. No invented reps, no medical clearance stored and no cloud sync.</p>
+<iframe id="logFrame" title="M3 FLEX local actual rep and measurement logbook" loading="lazy" style="display:block;width:100%;height:680px;max-height:80vh;border:1px solid #395970;border-radius:10px;background:#0b1521" src="about:blank"></iframe>
+<p><a href="./logbook/" style="color:#c5f08c">Open full-screen logbook</a> if your device keyboard needs more space. Use only clinician-approved resistance.</p>
+</details>
 <div class="opts">
 <label>Exercise time <select id="workDuration"><option value="20">20 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></label>
 <label>Rest after each movement/set <select id="restDuration"><option value="15">15 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option></select></label>
@@ -284,6 +290,15 @@ $("formObservation").addEventListener("toggle",()=>{
  lastSentFormScene=undefined;
  iframe.src=$("formObservation").open?"./form-check/":"about:blank";
 });
+function syncActualRepExercise(){
+ if(!$("repsPanel").open)return;
+ const id=phase===1&&LOCAL_POSE_SCENES.has(step().id)?step().id:null;
+ if(id&&$("logFrame").contentWindow)$("logFrame").contentWindow.postMessage({kind:"m3-flex-exercise-selection",id},location.origin);
+}
+$("logFrame").addEventListener("load",syncActualRepExercise);
+$("repsPanel").addEventListener("toggle",()=>{
+ $("logFrame").src=$("repsPanel").open?"./logbook/":"about:blank";
+});
 const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3";
 const END_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3";
 let phase=0,idx=0,mode="ready",secondsLeft=30,deadline=0,interval=null,restNext=null,played=false,completed=new Set(),waiting=false;
@@ -430,7 +445,7 @@ function render(){
  document.querySelectorAll(".phase").forEach(b=>b.setAttribute("aria-selected",Number(b.dataset.stage)===phase?"true":"false"));
  if(phase===0)$("textBox").innerHTML="<strong>Before the workout</strong><p>Your first breathing step uses the approved C09 moving Flex video and Marcus. The remaining hand and shoulder preparation steps are still audio guided.</p>";
  if(phase===2)$("textBox").innerHTML="<strong>After the workout</strong><p>Your first cooldown step uses approved moving Flex C10 and Marcus; the shoulder-and-hand relaxation step still has Marcus audio only.</p>";
- setMedia();cards();drawTimer();syncFormExercise();
+ setMedia();cards();drawTimer();syncActualRepExercise();syncFormExercise();
 }
 async function playMedia(loop){
  const generation=++playbackGeneration;
@@ -590,7 +605,7 @@ function localCoachReply(raw){
  if(/innstar|band.*(behind|where|neck|chair)|chest press/.test(q))
   return "For the approved INNSTAR seated press, the center pad sits behind your back between the chair and back, never around the neck or cast. Keep the left leg supported. Only use resistance cleared by your clinician.";
  if(/(how many|count|track).*(rep|set)|my reps|repetition/.test(q))
-  return "The timer counts demonstrations, not your actual repetitions. No automatic rep counter has been verified. Record real repetitions separately only if you choose.";
+  return "The timer counts demonstrations, not your actual repetitions. Open Log my actual reps and enter ONLY the repetitions and weight you personally performed; your entries stay on this device and can be backed up as JSON.";
  if(/pause|stop workout/.test(q)){
   if(mode==="running"||mode==="rest"){pause();return "Workout paused. The exercise/rest countdown has stopped.";}
   return "The workout is not actively counting down. Use Pause workout when a demonstration or rest is running.";
