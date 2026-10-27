@@ -287,12 +287,12 @@ function Today() {
               className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-accent bg-accent/15 px-3 py-3 text-center text-sm font-black uppercase leading-snug text-accent"
             >
               <Play className="size-5 shrink-0" aria-hidden />
-              Seated Recovery Coach · 7 approved scenes
+              ▶ Marcus Guided Flex · 7 approved animated scenes
             </a>
             <p className="mt-1 text-center text-[11px] text-muted-foreground">
-              Start inside M3 FLEX with the existing approved video sequence.
-              Clinician-clearance confirmation is required for timed exercise.
-              Workout A/B are still in development.
+              Marcus leads your approved seated sequence with the original voice,
+              moving Flex avatar, timed sets and rest. Clinician clearance is
+              required; Workout A/B animations are still being completed.
             </p>
 
             <a
