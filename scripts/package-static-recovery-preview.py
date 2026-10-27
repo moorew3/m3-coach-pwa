@@ -19,6 +19,7 @@ ZIP=DEST / "m3-flex-seated-recovery-static-preview.zip"
 FILES={
   "recovery-coach/index.html":ROOT/"public/recovery-coach/index.html",
   "recovery-coach/bench-core/index.html":ROOT/"public/recovery-coach/bench-core/index.html",
+  "recovery-coach/logbook/index.html":ROOT/"public/recovery-coach/logbook/index.html",
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
   "recovery-coach/device-check/index.html":ROOT/"public/recovery-coach/device-check/index.html",
   "recovery-coach/form-check/index.html":ROOT/"public/recovery-coach/form-check/index.html",
@@ -49,6 +50,7 @@ What is included
 - /index.html — preview homepage
 - /recovery-coach/index.html — approved recovery workout (7 locked video scenes)
 - /recovery-coach/bench-core/index.html — separate timed bench-supported Core A and Core B (text only; clearance required)
+- /recovery-coach/logbook/index.html — manually entered REAL reps, weight and measurements, private JSON export/import
 - /recovery-coach/programs/index.html — Workout A/B owner-review only, NOT active
 - /recovery-coach/device-check/index.html — Galaxy Fold diagnostics
 - /recovery-coach/form-check/index.html — optional on-device landmark/camera check
