@@ -41,3 +41,11 @@ public/recovery-coach/form-check/vendor/
 # Owner-only binary backups and SHA-256 receipts: never publish raw approved likeness files.
 approved-media-backup/
 **/sha256-backup-report.json
+
+# Native Android APK build outputs are generated in CI (not user media or signed release keys).
+android-recovery-web/
+android/
+*.apk
+*.aab
+*.jks
+*.keystore
