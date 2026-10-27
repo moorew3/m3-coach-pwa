@@ -40,6 +40,7 @@ jobs:
           test -s .output/server/index.mjs
           test -f .output/public/recovery-coach/index.html
           test -s .output/public/recovery-coach/bench-core/index.html
+          test -s .output/public/recovery-coach/logbook/index.html
           test -f .output/public/recovery-coach/programs/index.html
           test -f .output/public/recovery-coach/device-check/index.html
           test -f .output/public/recovery-coach/form-check/index.html
@@ -125,6 +126,7 @@ jobs:
             test -s /app/.output/server/index.mjs &&
             test -s /app/.output/public/recovery-coach/index.html &&
             test -s /app/.output/public/recovery-coach/bench-core/index.html &&
+            test -s /app/.output/public/recovery-coach/logbook/index.html &&
             test -s /app/.output/public/recovery-coach/programs/index.html &&
             test -s /app/.output/public/recovery-coach/form-check/index.html &&
             test -s /app/.output/public/recovery-coach/form-check/vendor/pose_landmarker_lite.task
@@ -152,6 +154,8 @@ jobs:
           grep -q 'C09-PRE-BREATH-R2' /tmp/m3-recovery.html
           curl --silent --fail http://127.0.0.1:17371/recovery-coach/bench-core/ >/tmp/m3-bench-core.html
           grep -q 'Bench-supported core workouts' /tmp/m3-bench-core.html
+          curl --silent --fail http://127.0.0.1:17371/recovery-coach/logbook/ >/tmp/m3-logbook.html
+          grep -q 'm3-flex-real-reps-and-metrics-v1' /tmp/m3-logbook.html
           curl --silent --fail http://127.0.0.1:17371/recovery-coach/programs/ >/tmp/m3-programs.html
           grep -q 'recovered-heygen-candidate-review' /tmp/m3-programs.html
           curl --silent --fail http://127.0.0.1:17371/recovery-coach/device-check/ >/tmp/m3-device-check.html
