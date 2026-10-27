@@ -809,6 +809,58 @@ try {
     await voiceContext.close();
   }
 
+  // Real manual athlete data must not be fabricated by workout timers or
+  // exported to a cloud server. Save, reload, validate and merge a local log.
+  const logContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+    acceptDownloads: true,
+  });
+  const logPage = await logContext.newPage();
+  logPage.setDefaultTimeout(12000);
+  try {
+    await logPage.goto(base + "/recovery-coach/logbook/", { waitUntil: "domcontentloaded" });
+    assert.match((await logPage.locator("#summary").textContent()) ?? "", /0 saved personal records/);
+    await logPage.locator("#exercise").selectOption("C02");
+    await logPage.locator("#reps").fill("12");
+    await logPage.locator("#weight").fill("15");
+    await logPage.locator("#saveSet").click();
+    assert.match((await logPage.locator("#history").textContent()) ?? "", /Seated hammer curls · 12 actual reps · 15 lb/);
+    const storage = await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")));
+    assert.equal(storage.records.length, 1);
+    assert.equal(storage.records[0].reps, 12);
+    assert.equal(storage.records[0].lb, 15);
+    await logPage.locator("#reps").fill("101");
+    await logPage.locator("#saveSet").click();
+    assert.equal((await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 1,
+      "Out-of-range actual reps must not be saved");
+    await logPage.reload({ waitUntil: "domcontentloaded" });
+    assert.match((await logPage.locator("#history").textContent()) ?? "", /12 actual reps/);
+    await logPage.locator("#bodyWeight").fill("198");
+    await logPage.locator("#waist").fill("38");
+    await logPage.locator("#metricForm button[type=submit]").click();
+    assert.match((await logPage.locator("#summary").textContent()) ?? "", /2 saved personal records/);
+    const downloadPromise = logPage.waitForEvent("download");
+    await logPage.locator("#export").click();
+    const download = await downloadPromise;
+    assert.equal(download.suggestedFilename(), "m3-flex-private-workout-log.json");
+    const exported = await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")));
+    await logPage.locator("#importFile").setInputFiles({
+      name: "restore.json", mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify({schema:1,records:exported.records})),
+    });
+    assert.match((await logPage.locator("#status").textContent()) ?? "", /Imported 0 distinct valid records/);
+    assert.equal((await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 2);
+    await logPage.locator("#importFile").setInputFiles({
+      name: "poison.json", mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify({schema:1,records:[{id:"bad","type":"set",exercise:"C99",reps:500}]})),
+    });
+    assert.match((await logPage.locator("#status").textContent()) ?? "", /Import rejected/);
+    assert.equal((await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 2);
+    step("Real manual reps, resistance and measurements persist, export privately and reject invalid/import duplicates");
+  } finally {
+    await logContext.close();
+  }
+
   // A real phone must explicitly grant camera/mic permission. The diagnostic
   // page must NEVER request either on initial load, and must report denial
   // without uploading recordings, spawning TTS, or crashing.
