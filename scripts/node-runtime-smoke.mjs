@@ -80,6 +80,11 @@ try {
     "C10-POST-BREATH-R1",
     "C08-PRESS-R3",
   ]);
+  await assertPage("/recovery-coach/logbook/", [
+    "My actual reps",
+    "m3-flex-real-reps-and-metrics-v1",
+    "Export private JSON backup",
+  ]);
   await assertPage("/recovery-coach/bench-core/", [
     "Bench-supported core workouts",
     "Core A",
