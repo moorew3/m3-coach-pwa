@@ -56,7 +56,7 @@ test("Bench core countdown, rounds and safe progression never certify exercise r
  assert.match(core,/The timer counts <strong>timed activities completed by the app<\/strong>, not actual repetitions/);
  assert.match(core,/Skipped activities never receive credit/);
  assert.match(core,/No medical or form certification was issued/);
- assert.match(core,/saved.*"paused"/);
+ assert.match(core,/mode:"paused"/);
 });
 
 test("Core does not start camera or third-party media, and session continuity is local/private",()=>{
