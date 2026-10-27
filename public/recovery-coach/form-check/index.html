@@ -48,12 +48,36 @@ const WASM="./vendor/wasm";
 const MODEL="./vendor/pose_landmarker_lite.task";
 let session=0,stream=null,tracker=null,frame=null,lastFrameAt=0,lastFeedbackAt=0;
 const approvedSceneIds=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+const embedded=window.parent!==window;
+let activeCoachScene=embedded?null:$("exercise").value;
+const display=message=>{$("status").textContent=message;};
+if(embedded){
+ $("exercise").disabled=true;
+ $("start").disabled=true;
+ display("Waiting for the coach to select an approved seated exercise. Camera is off.");
+}
 window.addEventListener("message",event=>{
  if(event.source!==window.parent||event.origin!==location.origin)return;
- if(event.data?.type!=="m3-flex-active-scene"||!approvedSceneIds.has(event.data.id))return;
- $("exercise").value=event.data.id;
+ if(event.data?.type!=="m3-flex-active-scene")return;
+ const id=event.data.id;
+ if(id===null){
+  activeCoachScene=null;
+  cleanup();
+  $("exercise").disabled=true;
+  $("start").disabled=true;
+  display("No approved lifting movement is active. Camera stopped for warm-up, rest or cooldown.");
+  return;
+ }
+ if(!approvedSceneIds.has(id))return;
+ const previous=activeCoachScene;
+ activeCoachScene=id;
+ $("exercise").value=id;
+ $("exercise").disabled=embedded;
+ if(embedded){
+  if(!stream)$("start").disabled=false;
+  if(!stream||previous!==id)display("Coach exercise synced: "+$("exercise").selectedOptions[0].text+". Local camera requires your consent and a tap to start.");
+ }
 });
-const display=message=>{$("status").textContent=message;};
 function closeTracks(value){if(value)for(const track of value.getTracks())track.stop();}
 function cleanup(){
  session++;
@@ -63,7 +87,7 @@ function cleanup(){
  if(tracker){try{tracker.close()}catch{}tracker=null;}
  const canvas=$("overlay"),ctx=canvas.getContext("2d");
  if(ctx)ctx.clearRect(0,0,canvas.width,canvas.height);
- $("start").disabled=false;$("stop").disabled=true;
+ $("start").disabled=embedded&&!activeCoachScene;$("stop").disabled=true;
 }
 function visible(point){return point&&Number.isFinite(point.x)&&Number.isFinite(point.y)&&(point.visibility??1)>=0.55}
 function feedback(points){
@@ -118,6 +142,7 @@ function observe(now,expected){
  frame=requestAnimationFrame(t=>observe(t,expected));
 }
 $("start").addEventListener("click",async()=>{
+ if(embedded&&!activeCoachScene){display("No approved seated exercise is active. Camera remains off.");return;}
  if(!$("consent").checked){display("Check consent first. No camera permission was requested.");return;}
  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){display("HTTPS and a camera-capable browser are required. No recording started.");return;}
  cleanup();
