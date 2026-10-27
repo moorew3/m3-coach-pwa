@@ -261,7 +261,7 @@ function drawMarcusStage(){
  $("marcusBegin").disabled=mode==="complete"||mode==="safety";
  $("marcusBegin").textContent=mode==="running"||mode==="rest"?"Ⅱ PAUSE WITH MARCUS":
   mode==="paused"||mode==="waiting"?"▶ RESUME WITH MARCUS":"▶ BEGIN WITH MARCUS";
- $("marcusAudioCheck").disabled=mode==="running"||mode==="rest"||mode==="complete"||mode==="safety";
+ $("marcusAudioCheck").disabled=mode==="running"||mode==="rest"||mode==="preview"||mode==="complete"||mode==="safety";
 }
 const LOCAL_POSE_SCENES=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
 function syncFormExercise(){
@@ -469,7 +469,7 @@ function advance(){
    tell("This cooldown is finished, but "+(total()-completed.size)+" steps were skipped. Go back to complete them before the full session can be marked complete.");
    return false;
  }
- mode="complete";
+ mode="complete";releaseScreenAwake();
  tell("You completed your full guided session. All five approved Flex videos remain available.");
  return false;
 }
@@ -548,6 +548,7 @@ function stopForNavigation(p,i){
 $("marcusBegin").addEventListener("click",()=>{
  if(safetyLock)return;
  stopMarcusAudioTest();
+ if(mode==="preview"){stopMedia(true);mode="ready";drawTimer();}
  if(!sessionStarted&&mode==="ready")stopForNavigation(0,0);
  $("startPause").click();
 });
@@ -708,12 +709,12 @@ $("emergencyStop").addEventListener("click",()=>{
  tell("Workout stopped. No exercise or Marcus audio is playing. You reported being able to put weight on your foot; follow your clinician's restrictions, and stop for new or worsening pain, swelling, or cast pressure.");
  try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
 });
-$("reset").addEventListener("click",()=>{clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Your reported ability to bear weight is noted; follow your clinician's restrictions. The seated workout requires fresh clearance confirmations before timed movement.");});
+$("reset").addEventListener("click",()=>{releaseScreenAwake();stopMarcusAudioTest();clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Your reported ability to bear weight is noted; follow your clinician's restrictions. The seated workout requires fresh clearance confirmations before timed movement.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
 for(const id of ["workDuration","restDuration","setRounds","pairMode"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
 const restored=restoreProgress();
 if(!restored)secondsLeft=duration();
 render();
 if(restored)tell("Workout position restored in PAUSED mode. Confirm today's clinician-clearance checks again, then tap Resume. No video or audio was auto-played.");
-window.addEventListener("pagehide",persistProgress);
+window.addEventListener("pagehide",()=>{releaseScreenAwake();stopMarcusAudioTest();persistProgress()});
 </script></body></html>
