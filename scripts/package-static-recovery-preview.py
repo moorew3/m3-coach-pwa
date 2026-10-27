@@ -18,6 +18,7 @@ DEST=ROOT / "artifacts"
 ZIP=DEST / "m3-flex-seated-recovery-static-preview.zip"
 FILES={
   "recovery-coach/index.html":ROOT/"public/recovery-coach/index.html",
+  "recovery-coach/bench-core/index.html":ROOT/"public/recovery-coach/bench-core/index.html",
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
   "recovery-coach/device-check/index.html":ROOT/"public/recovery-coach/device-check/index.html",
   "recovery-coach/form-check/index.html":ROOT/"public/recovery-coach/form-check/index.html",
@@ -38,6 +39,7 @@ p{color:#b4ccda}small{color:#eecba1}</style></head><body>
 and phone diagnostics. This is the recovery component only, not the complete
 interactive AI trainer or final Workout A/B product.</p>
 <a href="./recovery-coach/">Open approved seated Recovery Coach →</a>
+<a href="./recovery-coach/bench-core/" style="background:#d0e8ff">Open Bench Core A &amp; B →</a>
 <small>Clinician clearance required before exercising. External videos and
 Marcus recordings require internet. No paid speech APIs.</small></main>
 </body></html>"""
@@ -46,6 +48,7 @@ README="""M3 FLEX — STANDALONE SEATED RECOVERY PREVIEW
 What is included
 - /index.html — preview homepage
 - /recovery-coach/index.html — approved recovery workout (7 locked video scenes)
+- /recovery-coach/bench-core/index.html — separate timed bench-supported Core A and Core B (text only; clearance required)
 - /recovery-coach/programs/index.html — Workout A/B owner-review only, NOT active
 - /recovery-coach/device-check/index.html — Galaxy Fold diagnostics
 - /recovery-coach/form-check/index.html — optional on-device landmark/camera check
@@ -64,7 +67,7 @@ Do NOT overwrite any current WordPress site or production domain.
 
 Upload the CONTENTS of this ZIP into the separate review site's document root,
 preserving /recovery-coach/ subfolders exactly. HTTPS is required for local
-camera and microphone permission tests. Verify /, /recovery-coach/,
+camera and microphone permission tests. Verify /, /recovery-coach/, /recovery-coach/bench-core/,
 /recovery-coach/device-check/ and /recovery-coach/form-check/ before sharing a preview URL.
 
 Android hands-free: use optional Voice Access to tap named buttons; it is
