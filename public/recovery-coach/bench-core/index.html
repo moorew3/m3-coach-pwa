@@ -108,7 +108,7 @@ const routines={
  foundation:{label:"Core A · Bench foundation",info:"Four unloaded movements emphasizing gentle bracing, posture and controlled upper-body motion.",ids:["brace","palms","rotation","reach"]},
  resistance:{label:"Core B · Anti-rotation",info:"A bench-based core circuit using very light, clinician-cleared resistance. Requires a stable chest-height band anchor and an appropriately light dumbbell.",ids:["brace","pallofL","pallofR","offsetL","offsetR"]}
 };
-let mode="ready",phase="work",idx=0,round=1,completed=0,skipped=0,ms=20000,deadline=0,ticker=null,started=false;
+let mode="ready",phase="work",idx=0,round=1,completed=0,skipped=0,ms=20000,deadline=0,ticker=null,started=false,lastSavedSecond=-1;
 const plan=()=>routines[$("plan").value],ids=()=>plan().ids,seconds=()=>Number($("duration").value)*1000,restMs=()=>Number($("rest").value)*1000,rounds=()=>Number($("rounds").value);
 const format=value=>"00:"+String(Math.ceil(Math.max(0,value)/1000)).padStart(2,"0");
 const cleared=()=>[...document.querySelectorAll("#clearance .check")].every(x=>x.checked);
@@ -183,7 +183,14 @@ function increment(credit){
 function elapsed(){
  if(mode!=="running"&&mode!=="rest")return;
  ms=Math.max(0,deadline-Date.now());
- if(ms>0){draw();return;}
+ if(ms>0){
+  // Do not rebuild interactive movement buttons 6× per second on a phone.
+  // Render the clock continuously, persist at most once per second.
+  $("clock").textContent=format(ms);
+  const currentSecond=Math.ceil(ms/1000);
+  if(currentSecond!==lastSavedSecond){lastSavedSecond=currentSecond;persist();}
+  return;
+ }
  stopTicker();
  if(mode==="rest"){
   mode="running";phase="work";ms=seconds();deadline=Date.now()+ms;draw();ticker=setInterval(elapsed,150);
