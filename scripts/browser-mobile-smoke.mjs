@@ -320,6 +320,12 @@ try {
     await recoveryPage.locator("#formObservation summary").click();
     await recoveryPage.frameLocator("#formFrame").locator("#start").waitFor();
     assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "./form-check/");
+    await recoveryPage.waitForFunction(
+      () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#status")?.textContent?.includes("No approved lifting movement is active"),
+      null, { timeout: 6000 },
+    );
+    assert.equal(await recoveryPage.frameLocator("#formFrame").locator("#start").isDisabled(), true,
+      "Warm-up without an approved lifting scene must not activate the form camera");
     await recoveryPage.locator('[data-stage="1"]').click();
     await recoveryPage.waitForFunction(
       () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#exercise")?.value === "C01-R3",
@@ -330,6 +336,16 @@ try {
       () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#exercise")?.value === "C03",
       null, { timeout: 6000 },
     );
+    assert.equal(await recoveryPage.frameLocator("#formFrame").locator("#exercise").isDisabled(), true,
+      "When embedded, camera exercise selection must follow the coach, not stale manual entries");
+    await recoveryPage.locator('[data-stage="0"]').click();
+    await recoveryPage.waitForFunction(
+      () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#status")?.textContent?.includes("No approved lifting movement is active"),
+      null, { timeout: 6000 },
+    );
+    assert.equal(await recoveryPage.frameLocator("#formFrame").locator("#start").isDisabled(), true,
+      "Camera must switch off when the user returns to preparation");
+    await recoveryPage.locator('[data-stage="1"]').click();
     await recoveryPage.locator("#steps .item").nth(0).click();
     await recoveryPage.waitForFunction(
       () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#exercise")?.value === "C01-R3",
