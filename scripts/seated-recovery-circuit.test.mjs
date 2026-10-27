@@ -48,7 +48,7 @@ test("home offers same-origin approved player before the legacy coach and marks 
   const legacyStart = home.indexOf('data-testid="legacy-workout-start"');
   assert.ok(approvedStart > 0 && legacyStart > approvedStart);
   assert.match(home, /href="\/recovery-coach\/"/);
-  assert.match(home, /Workout A\/B are still in development/);
+  assert.match(home, /Workout A\/B animations are still being completed/);
 });
 
 test("browser scheduler verifies actual second set and rest instead of source-only assertions", () => {
@@ -121,9 +121,9 @@ test("rest after device restart uses approved rest Marcus recording, not stale e
 
 test("Android page lock pauses the timer and saving a completed session clears its cache", () => {
   assert.match(page, /document\.addEventListener\("visibilitychange"/);
-  assert.match(page, /if\(!document\.hidden\)return;if\(mode==="running"\|\|mode==="rest"\)pause\(\)/);
+  assert.match(page, /if\(!document\.hidden\)\{if\(mode==="running"\|\|mode==="rest"\)void requestScreenAwake\(\);return;\}releaseScreenAwake\(\);stopMarcusAudioTest\(\);if\(mode==="running"\|\|mode==="rest"\)pause\(\)/);
   assert.match(page, /else if\(mode==="preview"\)\{stopMedia\(false\);mode="ready"/);
-  assert.match(page, /window\.addEventListener\("pagehide",persistProgress\)/);
+  assert.match(page, /window\.addEventListener\("pagehide",\(\)=>\{releaseScreenAwake\(\);stopMarcusAudioTest\(\);persistProgress\(\)\}\)/);
   assert.match(page, /if\(!sessionStarted\|\|mode==="complete"\)/);
   assert.match(page, /localStorage\.removeItem\(PROGRESS_KEY\)/);
 });
