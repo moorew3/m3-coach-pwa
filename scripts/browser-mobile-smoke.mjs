@@ -848,13 +848,13 @@ try {
       name: "restore.json", mimeType: "application/json",
       buffer: Buffer.from(JSON.stringify({schema:1,records:exported.records})),
     });
-    assert.match((await logPage.locator("#status").textContent()) ?? "", /Imported 0 distinct valid records/);
+    await logPage.locator("#status").getByText(/Imported 0 distinct valid records/).waitFor();
     assert.equal((await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 2);
     await logPage.locator("#importFile").setInputFiles({
       name: "poison.json", mimeType: "application/json",
       buffer: Buffer.from(JSON.stringify({schema:1,records:[{id:"bad","type":"set",exercise:"C99",reps:500}]})),
     });
-    assert.match((await logPage.locator("#status").textContent()) ?? "", /Import rejected/);
+    await logPage.locator("#status").getByText(/Import rejected/).waitFor();
     assert.equal((await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 2);
     step("Real manual reps, resistance and measurements persist, export privately and reject invalid/import duplicates");
   } finally {
