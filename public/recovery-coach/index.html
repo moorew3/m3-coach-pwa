@@ -21,6 +21,21 @@ h2{font-size:22px;line-height:1.2;margin:9px 0 5px}.muted{color:var(--dim)}.smal
 .timer{text-align:center;margin:12px 0 0;padding:12px 7px;background:#0a1925;border:1px solid #294458;border-radius:12px}
 .clock{font-size:clamp(42px,12vw,62px);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.015em;margin:7px 0}
 #runState{color:var(--green);font-size:12px;font-weight:850;text-transform:uppercase}
+.marcusStage{padding:14px 15px;border:2px solid #92b879;background:linear-gradient(145deg,#203d38,#162c42);border-radius:15px;margin:12px 0 8px}
+.marcusStage .head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.marcusStage .name{font-weight:950;font-size:19px;color:#e8f9cd;letter-spacing:.015em}
+.marcusStage .voiceState{font-size:11px;border:1px solid #b1c9a6;border-radius:15px;padding:4px 8px;color:#e4f5d6}
+.marcusStage .line{font-size:15px;font-weight:780;margin:10px 0 4px;color:#f6fdf4;line-height:1.45}
+.marcusStage .next{font-size:12px;color:#bad6df;min-height:18px;margin:7px 0 11px}
+.marcusActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.marcusActions button:first-child{grid-column:1/-1;min-height:57px;font-size:17px}
+.marcusStage .disclaimer{font-size:11px;line-height:1.4;color:#d0e2e8;margin:8px 0 0}
+body.coachFocus main{max-width:990px}
+body.coachFocus .videoWrap{max-width:560px}
+body.coachFocus .videoWrap video{max-height:58vh}
+body.coachFocus .panel,body.coachFocus .phases,body.coachFocus .future,body.coachFocus #benchCoreProgram{display:none}
+body.coachFocus .player{border:2px solid #769678}
+@media(max-width:400px){.marcusActions{grid-template-columns:1fr}.marcusActions button:first-child{grid-column:auto}}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.opts label{font-size:12px;color:var(--dim);font-weight:730}
 select{width:100%;margin-top:4px;border:1px solid #57768b;background:#263c4e;color:white;padding:9px;border-radius:9px}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 0}
@@ -74,6 +89,18 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <div class="videoWrap hidden" id="videoBox"><video id="coachVideo" playsinline preload="metadata" aria-label="Approved Flex demonstration"></video><audio id="coachVoice" preload="metadata"></audio></div>
 <div class="guidePlaceholder" id="textBox"><strong>Before your workout</strong><p>Prepare gently while keeping your injured left leg supported. No exercise video has been approved for this new warm-up yet.</p></div>
 <p class="cue" id="cue">Sit comfortably with the cast supported. Breathe slowly without forcing movement.</p>
+<section class="marcusStage" id="marcusStage" aria-label="Marcus guided trainer">
+<div class="head"><strong class="name">MARCUS · Your workout coach</strong><span class="voiceState" id="marcusVoiceStatus" role="status">Original approved voice ready</span></div>
+<p class="line" id="marcusOnScreen">Follow the approved Flex demonstration and Marcus recordings. Start your full session from the warm-up.</p>
+<p class="next" id="marcusNext" aria-live="off">Next: Easy hand openings</p>
+<div class="marcusActions">
+<button id="marcusBegin" type="button" class="btn primary" aria-label="Begin guided workout with Marcus">▶ BEGIN WITH MARCUS</button>
+<button id="marcusAudioCheck" type="button" class="btn" aria-label="Test original Marcus voice">▶ Test Marcus sound</button>
+<button id="marcusFocus" type="button" class="btn" aria-pressed="false">Expand coach view</button>
+</div>
+<audio id="marcusTestAudio" preload="none" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3"></audio>
+<p class="disclaimer">Real Marcus voice comes from the original approved video/audio. Displayed guidance is on-screen text, not newly generated Marcus speech. Only approved exercises have moving demonstrations; other preparation/cooldown steps are audio-guided.</p>
+</section>
 <div class="timer"><div class="small muted" id="runState">Ready</div><div class="clock" id="clock">00:30</div><div class="small muted" id="progressText">0 of 10 steps completed</div></div>
 <details id="formObservation" class="voiceAccessPanel">
 <summary>Live camera · observe upper-body movement (optional)</summary>
@@ -189,7 +216,53 @@ const stages=[
 {name:"Relax shoulders and hands",sec:45,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/3ca174e3-16e6-42f5-91f2-332713cd6d69.mp3",note:"Gently release shoulder and hand tension within comfortable limits. Avoid pulling on the injured leg or moving the cast.",text:true}
 ]}];
 const $=x=>document.getElementById(x);
-const video=$("coachVideo"),audio=$("coachVoice");
+const video=$("coachVideo"),audio=$("coachVoice"),marcusTest=$("marcusTestAudio");
+let awakeScreen=null;
+async function requestScreenAwake(){
+ if(awakeScreen||document.hidden||!navigator.wakeLock||!window.isSecureContext)return;
+ try{const sentinel=await navigator.wakeLock.request("screen");
+  if(mode==="running"||mode==="rest"){awakeScreen=sentinel;sentinel.addEventListener("release",()=>{if(awakeScreen===sentinel)awakeScreen=null;});}
+  else await sentinel.release();
+ }catch(e){/* Screen wake support is optional and never blocks approved media. */}
+}
+function releaseScreenAwake(){if(awakeScreen){const sentinel=awakeScreen;awakeScreen=null;void sentinel.release().catch(()=>{});}}
+function stopMarcusAudioTest(){marcusTest.pause();try{marcusTest.currentTime=0}catch(e){}}
+function nextMarcusCue(){
+ if(mode==="complete")return "Session finished";
+ if(mode==="safety")return "Workout stopped for medical safety";
+ if(mode==="rest"&&restNext)return stages[restNext.phase].items[restNext.idx].name;
+ if(phase===1&&$("pairMode").value==="paired"){
+  if(idx===0||idx===2)return stages[1].items[idx+1].name+" · same superset";
+  if((idx===1||idx===3)&&workRound<targetRounds)return stages[1].items[idx-1].name+" · next paired round";
+ }
+ if(phase===1&&workRound<targetRounds)return step().name+" · next set";
+ if(idx+1<stages[phase].items.length)return stages[phase].items[idx+1].name;
+ return phase<2?stages[phase+1].items[0].name:"Finish recovery";
+}
+function drawMarcusStage(){
+ const it=step();
+ const state=$("marcusVoiceStatus");
+ if(safetyLock)state.textContent="Session stopped";
+ else if(mode==="waiting")state.textContent="Original audio/video needs retry";
+ else if(mode==="rest")state.textContent="Marcus original rest recording";
+ else if(mode==="complete")state.textContent="Marcus original finish recording";
+ else if(it.video&&it.voice)state.textContent="Approved Flex + original Marcus track";
+ else if(it.video)state.textContent="Approved Flex video · embedded Marcus";
+ else if(it.voice)state.textContent="Original Marcus audio · no moving clip";
+ else state.textContent="Missing approved recording";
+ const coachLine=mode==="rest"?"REST "+time(secondsLeft)+" · Marcus guides recovery before the next timed set.":
+  mode==="running"?"FOLLOW FLEX · "+it.name+" · "+time(secondsLeft)+" remaining.":
+  mode==="paused"?"PAUSED · "+it.name+" · "+time(secondsLeft)+" remaining.":
+  mode==="complete"?"Guided session completed. These are timed demonstrations, not verified repetitions.":
+  mode==="safety"?"Workout stopped. Do not resume without appropriate medical clearance.":
+  "UP NEXT · "+it.name+" — "+(it.video?"approved moving demonstration":"original Marcus audio only");
+ $("marcusOnScreen").textContent=coachLine;
+ $("marcusNext").textContent="Next: "+nextMarcusCue();
+ $("marcusBegin").disabled=mode==="complete"||mode==="safety";
+ $("marcusBegin").textContent=mode==="running"||mode==="rest"?"Ⅱ PAUSE WITH MARCUS":
+  mode==="paused"||mode==="waiting"?"▶ RESUME WITH MARCUS":"▶ BEGIN WITH MARCUS";
+ $("marcusAudioCheck").disabled=mode==="running"||mode==="rest"||mode==="complete"||mode==="safety";
+}
 const LOCAL_POSE_SCENES=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
 function syncFormExercise(){
  if(!$("formObservation").open||!LOCAL_POSE_SCENES.has(step().id))return;
@@ -293,6 +366,7 @@ function safetyOkay(){return !safetyLock&&[...document.querySelectorAll(".check"
 function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
 function drawTimer(){
+drawMarcusStage();
 $("setRounds").disabled=sessionStarted;$("pairMode").disabled=sessionStarted;
 $("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed",safety:"STOPPED — MEDICAL SAFETY"})[mode]||"Ready";
@@ -372,12 +446,13 @@ async function playMedia(loop){
   return true;
  }catch(e){if(generation!==playbackGeneration)return null;stopMedia(false);return false}
 }
-function beginTicker(){clearTick();deadline=Date.now()+secondsLeft;interval=setInterval(()=>{
+function beginTicker(){clearTick();void requestScreenAwake();deadline=Date.now()+secondsLeft;interval=setInterval(()=>{
  secondsLeft=Math.max(0,deadline-Date.now());
  if(secondsLeft<=0){clearTick();if(mode==="rest")advanceAfterRest();else advanceAfterStep();return}
  drawTimer();
  },200);}
 async function runCurrent(){
+ stopMarcusAudioTest();
  if(!safetyOkay()){tell("Please confirm all three clinician-clearance checks before starting a timed session. Preview videos remain available.");$("clearance").scrollIntoView({behavior:"smooth",block:"center"});return}
  if(!sessionStarted){targetRounds=Number($("setRounds").value);sessionStarted=true}
  if(mode==="ready"&&completed.size===0&&phase!==0){/* selected phase may start directly */}
@@ -452,6 +527,7 @@ function advanceAfterRest(){
 }
 function pause(){
  if(mode!=="running"&&mode!=="rest")return;
+ releaseScreenAwake();
  if(interval!==null)secondsLeft=Math.max(0,deadline-Date.now());clearTick();stopMedia(false);mode="paused";drawTimer();tell("Paused. Tap Resume when you're ready.");
 }
 async function resume(){
@@ -467,8 +543,25 @@ async function resume(){
  beginTicker();drawTimer();tell(wasWaiting?"Audio enabled. Continue at your pace.":"Resumed.");
 }
 function stopForNavigation(p,i){
- clearTick();stopMedia(true);restNext=null;phase=p;idx=i;workRound=1;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
+ releaseScreenAwake();clearTick();stopMedia(true);restNext=null;phase=p;idx=i;workRound=1;mode="ready";secondsLeft=duration();render();tell("Selected "+step().name+". Preview videos anytime; start timed activity after clearance.");
 }
+$("marcusBegin").addEventListener("click",()=>{
+ if(safetyLock)return;
+ stopMarcusAudioTest();
+ if(!sessionStarted&&mode==="ready")stopForNavigation(0,0);
+ $("startPause").click();
+});
+$("marcusFocus").addEventListener("click",()=>{
+ const on=document.body.classList.toggle("coachFocus");
+ $("marcusFocus").textContent=on?"Exit coach view":"Expand coach view";
+ $("marcusFocus").setAttribute("aria-pressed",String(on));
+});
+$("marcusAudioCheck").addEventListener("click",async()=>{
+ if(["running","rest","complete","safety"].includes(mode))return;
+ stopMarcusAudioTest();
+ try{await marcusTest.play();tell("Playing the original approved Marcus recording. Confirm sound on your actual Galaxy Fold speaker or earbuds.");}
+ catch(e){tell("Original Marcus recording could not play. Check your audio output and connection. No substitute voice will be used.");}
+});
 $("startPause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")pause();else if(mode==="paused"||mode==="waiting")resume();else if(mode==="ready")runCurrent()});
 $("handsfreeStart").addEventListener("click",()=>{if(mode==="ready")$("startPause").click()});
 $("handsfreePause").addEventListener("click",()=>{if(mode==="running"||mode==="rest")$("startPause").click()});
@@ -594,7 +687,7 @@ audio.addEventListener("stalled",()=>waitForBuffer("audio"));
 video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
 audio.addEventListener("playing",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
 audio.addEventListener("ended",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)return;if(mode==="running"||mode==="rest")pause();else if(mode==="preview"){stopMedia(false);mode="ready";drawTimer();tell("Preview stopped when this screen was hidden. Tap Preview to replay; no exercise was logged.");}});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){if(mode==="running"||mode==="rest")void requestScreenAwake();return;}releaseScreenAwake();stopMarcusAudioTest();if(mode==="running"||mode==="rest")pause();else if(mode==="preview"){stopMedia(false);mode="ready";drawTimer();tell("Preview stopped when this screen was hidden. Tap Preview to replay; no exercise was logged.");}});
 $("next").addEventListener("click",()=>{
  if(mode==="complete")return;
  if(phase===2&&idx===stages[2].items.length-1){tell("Complete the last cooldown timer before the session can be marked complete.");return;}
@@ -607,7 +700,7 @@ $("next").addEventListener("click",()=>{
  if(more&&continueSession){mode="ready";runCurrent().catch(()=>tell("Tap Start full session to resume."));}
 });
 $("emergencyStop").addEventListener("click",()=>{
- clearTick();stopMedia(true);restNext=null;completed.clear();finishedSets.clear();
+ releaseScreenAwake();stopMarcusAudioTest();clearTick();stopMedia(true);restNext=null;completed.clear();finishedSets.clear();
  sessionStarted=false;safetyLock=true;mode="safety";secondsLeft=0;
  for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;
  if($("formObservation").open)$("formObservation").open=false;
