@@ -503,6 +503,75 @@ try {
     await pairsContext.close();
   }
 
+  // Seated BENCH CORE A/B are real timed circuits, not approved Marcus clips.
+  // Verify fresh clinician clearance, pause/reload, rest, skipped activity,
+  // both workout choices and no invented repetitions.
+  const coreContext=await browser.newContext({
+    viewport:{width:390,height:844},isMobile:true,hasTouch:true,
+  });
+  const corePage=await coreContext.newPage();
+  corePage.setDefaultTimeout(12000);
+  try {
+    await corePage.clock.install();
+    const coreRes=await corePage.goto(base+"/recovery-coach/bench-core/",{waitUntil:"domcontentloaded"});
+    assert.equal(coreRes?.status(),200);
+    assert.equal(await corePage.locator("#plan option").count(),2);
+    assert.equal(await corePage.locator("video").count(),0,"Unapproved core demo videos must not be invented");
+    assert.equal(await corePage.locator("audio").count(),0,"No invented Marcus narration");
+    await corePage.locator("#rounds").selectOption("1");
+    await corePage.locator("#duration").selectOption("15");
+    await corePage.locator("#rest").selectOption("15");
+    await corePage.locator("#startPause").click();
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Ready",
+      "Bench workouts cannot start without three independent clearance checks");
+    for(const check of await corePage.locator("#clearance .check").all())await check.check();
+    await corePage.locator("#startPause").click();
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Core timer running");
+    assert.equal(await corePage.locator("#plan").isDisabled(),true);
+    await corePage.clock.fastForward(16_000);
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Rest interval");
+    assert.match((await corePage.locator("#progress").textContent())??"",/^1 of 4 timed activities completed/);
+    await corePage.locator("#startPause").click();
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Paused");
+    const corePausedAt=await corePage.locator("#clock").textContent();
+    await corePage.clock.fastForward(20000);
+    assert.equal(await corePage.locator("#clock").textContent(),corePausedAt);
+    await corePage.reload({waitUntil:"domcontentloaded"});
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Paused");
+    assert.equal(await corePage.locator("#clearance .check:checked").count(),0);
+    await corePage.locator("#startPause").click();
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Paused",
+      "Restored core cannot resume with old medical clearance");
+    for(const check of await corePage.locator("#clearance .check").all())await check.check();
+    await corePage.locator("#startPause").click();
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Rest interval");
+    await corePage.clock.fastForward(16_000);
+    assert.equal(await corePage.locator("#title").innerText(),"Seated palms-together midline press");
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Core timer running");
+    await corePage.locator("#next").click();
+    assert.equal(await corePage.locator("#title").innerText(),"Seated small-range torso turns");
+    assert.match((await corePage.locator("#progress").textContent())??"",/^1 of 4 timed activities completed/);
+    assert.match((await corePage.locator("#skipCount").textContent())??"",/^1 skipped/);
+    step("Bench Core A: clinician gate, timed rest, pause/reload, fresh clearance, skip without credit");
+    // Core B follows a second truly separate session; selecting it cannot
+    // silently replace the in-progress workout or inherit clearance.
+    await corePage.locator("#reset").click();
+    await corePage.locator("#plan").selectOption("resistance");
+    assert.equal(await corePage.locator("#steps .step").count(),5);
+    assert.match((await corePage.locator("#steps").textContent())??"",/Pallof hold/);
+    assert.match((await corePage.locator("#steps").textContent())??"",/offset dumbbell hold/);
+    assert.equal((await corePage.locator("#clearance .check:checked").count()),0);
+    for(const check of await corePage.locator("#clearance .check").all())await check.check();
+    await corePage.locator("#startPause").click();
+    await corePage.clock.fastForward(16_000);
+    assert.match((await corePage.locator("#progress").textContent())??"",/^1 of 5 timed activities completed/);
+    await corePage.locator("#emergency").click();
+    assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Ready");
+    assert.equal((await corePage.locator("#clearance .check:checked").count(),0);
+    assert.match((await corePage.locator("#notice").textContent())??"",/Workout stopped for a safety concern/);
+    step("Bench Core B includes both-sided Pallof/offset holds and immediate emergency reset");
+  }finally{await coreContext.close();}
+
   // On-device form-check camera is strictly opt-in. A denied permission
   // must never invoke pose inference or report medically correct movement.
   const formContext = await browser.newContext({
