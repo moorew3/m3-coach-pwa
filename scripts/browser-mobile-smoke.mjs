@@ -567,7 +567,7 @@ try {
     assert.match((await corePage.locator("#progress").textContent())??"",/^1 of 5 timed activities completed/);
     await corePage.locator("#emergency").click();
     assert.equal((await corePage.locator("#runState").textContent())?.trim(),"Ready");
-    assert.equal((await corePage.locator("#clearance .check:checked").count(),0);
+    assert.equal(await corePage.locator("#clearance .check:checked").count(),0);
     assert.match((await corePage.locator("#notice").textContent())??"",/Workout stopped for a safety concern/);
     step("Bench Core B includes both-sided Pallof/offset holds and immediate emergency reset");
   }finally{await coreContext.close();}
