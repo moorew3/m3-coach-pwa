@@ -264,14 +264,24 @@ function drawMarcusStage(){
  $("marcusAudioCheck").disabled=mode==="running"||mode==="rest"||mode==="preview"||mode==="complete"||mode==="safety";
 }
 const LOCAL_POSE_SCENES=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+let lastSentFormScene=undefined;
 function syncFormExercise(){
- if(!$("formObservation").open||!LOCAL_POSE_SCENES.has(step().id))return;
+ if(!$("formObservation").open)return;
+ // Stop the child camera during warm-up, cooldown, rest or emergency stop.
+ // Never let a stale selection give the next exercise's biomechanics cues.
+ const id=phase===1&&mode!=="rest"&&mode!=="safety"&&!safetyLock&&
+   LOCAL_POSE_SCENES.has(step().id)?step().id:null;
+ if(lastSentFormScene===id)return;
  const frame=$("formFrame");
- if(frame.contentWindow)frame.contentWindow.postMessage({type:"m3-flex-active-scene",id:step().id},location.origin);
+ if(frame.contentWindow){
+  frame.contentWindow.postMessage({type:"m3-flex-active-scene",id},location.origin);
+  lastSentFormScene=id;
+ }
 }
-$("formFrame").addEventListener("load",syncFormExercise);
+$("formFrame").addEventListener("load",()=>{lastSentFormScene=undefined;syncFormExercise()});
 $("formObservation").addEventListener("toggle",()=>{
  const iframe=$("formFrame");
+ lastSentFormScene=undefined;
  iframe.src=$("formObservation").open?"./form-check/":"about:blank";
 });
 const REST_MARCUS="https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3";
@@ -387,6 +397,7 @@ const guidance=safetyLock?"Workout stopped for medical safety. Do not restart un
  mode==="complete"?"Session complete. Hands-free actions are disabled.":"Ready. Say Tap Start workout after clinician clearance.";
 if($("handsfreeStatus").textContent!==guidance)$("handsfreeStatus").textContent=guidance;
 persistProgress();
+syncFormExercise();
 }
 function cards(){
 const box=$("steps");box.replaceChildren();
