@@ -35,6 +35,16 @@ strong{color:var(--text)}.note{font-size:12px;color:#edcea9}
 <p class="note">Enter actual reps yourself; 0 is allowed for an attempted but unfinished set. Weight is optional and not a recommendation. Do not increase resistance beyond clinician-cleared limits, including the INNSTAR band.</p>
 <div class="buttons"><button class="primary" type="submit" id="saveSet">Save actual set</button></div>
 </form>
+<aside aria-label="Last actual performance and optional progression discussion" style="margin-top:15px;padding:12px;border:1px solid #54728a;border-radius:11px;background:#102536">
+<h2>My last actual performance</h2>
+<div class="fields">
+<label>Personal rep target for comparison <select id="targetReps" aria-label="Rep target for past performance comparison"><option value="8">8 reps</option><option value="10">10 reps</option><option value="12" selected>12 reps</option><option value="15">15 reps</option></select></label>
+<div style="display:flex;align-items:end"><button id="useLastWeight" type="button" disabled>Use last logged lb</button></div>
+</div>
+<p id="lastSet" role="status">No prior actual set recorded for this exercise.</p>
+<p id="progressionCue" class="note">No automatic load increases. Your clinician's limits take priority.</p>
+<p class="note">Only manually entered sets from separate calendar days can establish repeat performance. A progression cue is a discussion prompt, not a new prescribed weight. INNSTAR band resistance is not automatically converted to pounds. No increases during cast restrictions unless individually cleared.</p>
+</aside>
 </section>
 <section>
 <h2>Body measurements (optional)</h2>
@@ -50,6 +60,7 @@ strong{color:var(--text)}.note{font-size:12px;color:#edcea9}
 <section>
 <h2>My recorded history</h2>
 <p id="summary" class="note">No actual workout entries yet.</p>
+<p id="measurementTrend" class="note">Measurement changes will appear after two independently logged values.</p>
 <div id="history" aria-label="Real workouts and measurements"></div>
 <div class="buttons">
 <button id="export" type="button">Export private JSON backup</button>
@@ -115,7 +126,59 @@ function formatRecord(r){
  const vals=[r.weight!==null?"Body "+r.weight+" lb":null,r.waist!==null?"Waist "+r.waist+" in":null,r.arm!==null?"Arm "+r.arm+" in":null].filter(Boolean);
  return "Measurements · "+vals.join(" · ");
 }
+function localTrainingDay(at){
+ const d=new Date(at);
+ return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+}
+function recentSetsByDay(exercise){
+ const sorted=records.filter(r=>r.type==="set"&&r.exercise===exercise)
+  .sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+ const found=new Set(),sessions=[];
+ for(const item of sorted){
+  const day=localTrainingDay(item.at);
+  if(!found.has(day)){found.add(day);sessions.push(item)}
+ }
+ return sessions;
+}
+function renderProgression(){
+ const exercise=$("exercise").value,days=recentSetsByDay(exercise),latest=days[0],target=Number($("targetReps").value);
+ const use=$("useLastWeight");
+ use.disabled=!latest||latest.lb===null||exercise==="C08-PRESS-R3";
+ if(!latest){
+  $("lastSet").textContent="No personally logged set yet. Finish a real set and enter your actual repetitions.";
+  $("progressionCue").textContent="No progression assessment from video timers. Clinician-cleared resistance only.";
+  return;
+ }
+ $("lastSet").textContent="Most recent actual session: "+new Date(latest.at).toLocaleDateString()+
+  " · "+latest.reps+" reps"+(latest.lb===null?" · weight not entered":" · "+latest.lb+" lb entered")+
+  ". Previous distinct logged days: "+Math.max(0,days.length-1)+".";
+ if(exercise==="C08-PRESS-R3"){
+  $("progressionCue").textContent="INNSTAR band load has no verified pound conversion. Check equipment setup and clinician-approved resistance; no automated load increase.";
+ }else if(latest.lb===null){
+  $("progressionCue").textContent="No weight entered for the last set. Record a real load if you want to compare resistance across sessions.";
+ }else if(days.length<2){
+  $("progressionCue").textContent="One logged training day. Keep the clinician-cleared resistance; a separate-day comparison is needed.";
+ }else if(days[1].lb===latest.lb&&latest.reps>target&&days[1].reps>target){
+  $("progressionCue").textContent="Across two separate days, you exceeded "+target+
+   " reps at the same logged "+latest.lb+
+   " lb. Only if separately cleared for progression, review the smallest available increase with your clinician. No automatic change was made.";
+ }else{
+  $("progressionCue").textContent="No consistent above-target result at the same weight across two training days. Continue logging actual sets without an automatic load change.";
+ }
+}
+function renderMeasurementTrend(){
+ const names=[["weight","Body weight","lb"],["waist","Waist","in"],["arm","Arm","in"]];
+ const result=[];
+ for(const [key,label,unit] of names){
+  const two=records.filter(r=>r.type==="metrics"&&r[key]!==null).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,2);
+  if(two.length===0)continue;
+  const delta=two.length===2?+(two[0][key]-two[1][key]).toFixed(2):null;
+  result.push(label+": "+two[0][key]+" "+unit+(delta===null?" (one entry)":", change "+(delta>0?"+":"")+delta+" "+unit+" versus previous entry"));
+ }
+ $("measurementTrend").textContent=result.length?result.join(" · ")+". These are self-reported measurements, not automatic assessments.":"Measurement changes will appear after two independently logged values.";
+}
 function render(){
+ renderProgression();renderMeasurementTrend();
  const list=$("history");list.replaceChildren();
  $("summary").textContent=records.length+" saved personal records ("+records.filter(r=>r.type==="set").length+" actual exercise sets, "+records.filter(r=>r.type==="metrics").length+" measurements).";
  for(const r of [...records].reverse().slice(0,35)){
@@ -129,6 +192,14 @@ function render(){
  }
  if(records.length>35){const note=document.createElement("p");note.textContent="Showing the newest 35 entries. Export includes all saved records.";list.append(note)}
 }
+$("exercise").addEventListener("change",renderProgression);
+$("targetReps").addEventListener("change",renderProgression);
+$("useLastWeight").addEventListener("click",()=>{
+ const latest=recentSetsByDay($("exercise").value)[0];
+ if(!latest||latest.lb===null||$("exercise").value==="C08-PRESS-R3")return;
+ $("weight").value=String(latest.lb);
+ message("Copied your previous self-reported weight. This is a reference only, not approval to use that load today.");
+});
 $("setForm").addEventListener("submit",event=>{
  event.preventDefault();
  const reps=inputNum("reps",0,100,true),lb=inputNum("weight",0,300);
@@ -175,10 +246,12 @@ window.addEventListener("message",event=>{
  if(event.origin!==window.location.origin||event.source!==window.parent)return;
  if(event.data?.kind==="m3-flex-exercise-selection"&&Object.hasOwn(EXERCISES,event.data.id)){
   $("exercise").value=event.data.id;
+  renderProgression();
   message("Selected current approved Flex exercise: "+EXERCISES[event.data.id]+". Log actual reps only after doing the set.");
  }
 });
 load();render();
 const param=new URL(location.href).searchParams.get("exercise");
 if(Object.hasOwn(EXERCISES,param))$("exercise").value=param;
+renderProgression();
 </script></body></html>
