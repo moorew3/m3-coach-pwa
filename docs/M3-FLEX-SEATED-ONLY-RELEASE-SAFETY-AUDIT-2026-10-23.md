@@ -115,3 +115,10 @@ The logbook is available on the same screen or at a direct link. All records sta
 This improves truthful progress tracking but is **not verified two-device live sync**. Browser and native Android app storage can be separate, so the owner must export/import a private backup to move data; avoid storing JSON publicly. No automatic rep counter is claimed. It remains a rehab-support prototype, not an autonomous medical fitness prescription.
 
 The logbook page is packaged with the static website, independent Node/Docker image and installable Android debug APK. Real 390px Chromium integration tests verify manual set and measurement entry, reload preservation, private export, de-duplication and malicious/invalid import rejection. Physical Galaxy Fold testing remains a separate gate.
+
+
+## Password-protected personal data transfer (October 27 continued)
+
+The existing manual plaintext export remains for compatibility, but the logbook now offers an optional **password-protected** workout-data export/import. It encrypts in the browser with authenticated AES-256-GCM using a random salt and nonce, PBKDF2-SHA-256 with 310,000 derivation iterations, and never writes the private password into browser storage, app source, GitHub Actions or a server. Restore prompts for a user-entered password and validates/de-duplicates records *after* successful GCM authentication. Wrong-password or modified-ciphertext imports are rejected, not merged. Browsers need a secure origin for WebCrypto; mobile devices must retain the password separately from the archived file. An unprotected JSON export **remains readable** and should not be treated as encrypted.
+
+The approved Recovery Coach also reads previously **user-entered** real set data from the existing same-origin private logbook and shows the most recent actual reps/date with a plainly qualified reference weight. For the INNSTAR band, it explicitly declines to invent pounds. No video demonstration, simulated pose result or timer generates those records. The phone and computer still do **not** sync automatically; live two-device auth/back-end sync and clinician signoff remain blocked.
