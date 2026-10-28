@@ -52,6 +52,8 @@ jobs:
           node scripts/stage-android-recovery.mjs
           test -s android-recovery-web/index.html
           test -s android-recovery-web/recovery-coach/index.html
+          test -s android-recovery-web/recovery-coach/update-safety/index.html
+          grep -q '"stableUpgradeSignature": false' android-recovery-web/build-info.json
           test -s android-recovery-web/recovery-coach/form-check/vendor/pose_landmarker_lite.task
 
       - name: Install pinned Capacitor Android build toolchain
