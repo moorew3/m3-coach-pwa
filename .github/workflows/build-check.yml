@@ -43,6 +43,7 @@ jobs:
           test -s .output/public/recovery-coach/logbook/index.html
           test -f .output/public/recovery-coach/programs/index.html
           test -f .output/public/recovery-coach/device-check/index.html
+          test -f .output/public/recovery-coach/update-safety/index.html
           test -f .output/public/recovery-coach/form-check/index.html
           test -s .output/public/recovery-coach/form-check/vendor/pose_landmarker_lite.task
           test -s .output/public/recovery-coach/form-check/vendor/wasm/vision_wasm_internal.wasm
