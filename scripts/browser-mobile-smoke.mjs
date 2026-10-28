@@ -941,7 +941,10 @@ try {
       await liveLog.locator("#setForm").waitFor();
       await liveLog.locator("#reps").fill("8");
       await liveLog.locator("#saveSet").click();
-      await lastSetPage.locator("#lastActualReference").getByText(/LAST ACTUAL SET · 8 reps you logged · Band load not verified/).waitFor();
+      await lastSetPage.waitForFunction(
+        () => document.querySelector("#lastActualReference")?.textContent?.includes("LAST ACTUAL SET · 8 reps you logged · Band load not verified"),
+        null, {timeout:8000}
+      );
       step("Current approved workout shows last ACTUAL reps and refreshes from local logbook without fictitious loads");
     } finally {
       await lastSetPage.close();
