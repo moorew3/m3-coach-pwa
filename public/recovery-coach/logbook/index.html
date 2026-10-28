@@ -64,9 +64,15 @@ strong{color:var(--text)}.note{font-size:12px;color:#edcea9}
 <div id="history" aria-label="Real workouts and measurements"></div>
 <div class="buttons">
 <button id="export" type="button">Export private JSON backup</button>
+<button id="exportProtected" type="button">Export password-protected backup</button>
 <label for="importFile" style="align-self:center;font-size:12px">Restore from backup</label><input type="file" id="importFile" accept="application/json,.json" aria-label="Import workout log backup" style="max-width:230px">
 <button id="erase" type="button">Delete local records</button>
 </div>
+<div class="fields" style="margin-top:12px">
+<label class="wide">Password for protected export or restore (12–128 characters; never saved)
+<input id="backupPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Type the same private password on both devices" aria-label="Password for encrypted workout backup"></label>
+</div>
+<p class="note">Select <strong>Export password-protected backup</strong>, keep the file and password separately, then choose that file under Restore on your second device. Encryption uses PBKDF2-SHA-256 (310,000 rounds) and AES-256-GCM in your browser. No password, reps, measurements or keys are uploaded by M3 FLEX. If the password is lost, the protected backup cannot be recovered. The original plain JSON export is NOT encrypted.</p>
 <p class="note">Exports are saved to your chosen device. Import merges only valid records and skips duplicates. Use backup files to move logs between devices; automatic cross-device synchronization is not available. Deleting clears this browser's records only.</p>
 </section>
 <p role="status" id="status" aria-live="polite">Ready. Your data stays in this browser.</p>
@@ -213,6 +219,68 @@ $("metricForm").addEventListener("submit",event=>{
  if([weight,waist,arm].some(v=>v===undefined)||[weight,waist,arm].every(v=>v===null))return message("Enter at least one measurement in its valid range.");
  add({id:crypto.randomUUID(),at:new Date().toISOString(),type:"metrics",weight,waist,arm});
 });
+const BACKUP_PBKDF_ITERATIONS=310000, BACKUP_MAGIC="m3-flex-password-protected-v1";
+const backupEncoder=new TextEncoder(),backupDecoder=new TextDecoder();
+function bytesToBase64(bytes){
+ let result="";
+ for(let i=0;i<bytes.length;i+=32768)result+=String.fromCharCode(...bytes.subarray(i,i+32768));
+ return btoa(result);
+}
+function base64ToBytes(value,maxLength){
+ if(typeof value!=="string"||value.length>maxLength||!/^[A-Za-z0-9+/]*={0,2}$/.test(value)||value.length%4!==0)
+  throw Error("Protected backup has invalid encoded data.");
+ const data=atob(value),out=new Uint8Array(data.length);
+ for(let i=0;i<data.length;i++)out[i]=data.charCodeAt(i);
+ return out;
+}
+async function deriveBackupKey(password,salt,usage){
+ const base=await crypto.subtle.importKey("raw",backupEncoder.encode(password),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey(
+  {name:"PBKDF2",salt,iterations:BACKUP_PBKDF_ITERATIONS,hash:"SHA-256"},base,
+  {name:"AES-GCM",length:256},false,[usage]
+ );
+}
+function privateBackupPassword(){
+ const password=$("backupPassword").value;
+ if(password.length<12||password.length>128)throw Error("Enter a 12–128 character backup password. It will not be saved.");
+ return password;
+}
+function downloadProtectedBackup(body){
+ const blob=new Blob([JSON.stringify(body,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="m3-flex-password-protected-workout-log.json";
+ document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500);
+}
+async function decryptProtectedBackup(envelope,password){
+ if(envelope.schema!==2||envelope.format!==BACKUP_MAGIC||
+    envelope.iterations!==BACKUP_PBKDF_ITERATIONS||!crypto.subtle)throw Error("Unsupported encrypted backup format.");
+ const salt=base64ToBytes(envelope.salt,64),iv=base64ToBytes(envelope.iv,32);
+ const ciphertext=base64ToBytes(envelope.ciphertext,1900000);
+ if(salt.length!==16||iv.length!==12||ciphertext.length<17)throw Error("Protected backup is incomplete.");
+ try{
+  const key=await deriveBackupKey(password,salt,"decrypt");
+  const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ciphertext);
+  return JSON.parse(backupDecoder.decode(plain));
+ }catch{throw Error("Wrong password, damaged protected backup, or authentication failed.");}
+}
+$("exportProtected").addEventListener("click",async()=>{
+ try{
+  const password=privateBackupPassword();
+  if(!crypto.subtle||!crypto.getRandomValues)throw Error("Secure HTTPS browser encryption is required.");
+  $("exportProtected").disabled=true;
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveBackupKey(password,salt,"encrypt");
+  const payload=backupEncoder.encode(JSON.stringify({schema:1,exportedAt:new Date().toISOString(),records}));
+  const ciphertext=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,payload);
+  downloadProtectedBackup({
+   schema:2,format:BACKUP_MAGIC,iterations:BACKUP_PBKDF_ITERATIONS,
+   salt:bytesToBase64(salt),iv:bytesToBase64(iv),
+   ciphertext:bytesToBase64(new Uint8Array(ciphertext))
+  });
+  message("Encrypted private backup downloaded. Keep its password separately; no records or password uploaded.");
+ }catch(e){message("Protected export unavailable: "+(e?.message||"encryption failed"));}
+ finally{$("backupPassword").value="";$("exportProtected").disabled=false;}
+});
 $("export").addEventListener("click",()=>{
  const blob=new Blob([JSON.stringify({schema:1,exportedAt:new Date().toISOString(),records},null,2)],{type:"application/json"});
  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="m3-flex-private-workout-log.json";
@@ -223,8 +291,12 @@ $("importFile").addEventListener("change",async()=>{
  const file=$("importFile").files?.[0];
  if(!file)return;
  try{
-  if(file.size>850000)throw Error("File exceeds the 850 KB import limit.");
-  const parsed=JSON.parse(await file.text());
+  if(file.size>1900000)throw Error("File exceeds the 1.9 MB import limit.");
+  let parsed=JSON.parse(await file.text());
+  if(parsed?.schema===2){
+   const password=privateBackupPassword();
+   parsed=await decryptProtectedBackup(parsed,password);
+  }else if(file.size>850000)throw Error("Unencrypted JSON backup exceeds the 850 KB limit.");
   if(parsed.schema!==1||!Array.isArray(parsed.records)||parsed.records.length>MAX_RECORDS||
       parsed.records.some(r=>!validRecord(r)))throw Error("Backup schema or record values are invalid.");
   const ids=new Set(records.map(r=>r.id));let merged=0;
@@ -237,6 +309,7 @@ $("importFile").addEventListener("change",async()=>{
   const saved=persist();render();message("Imported "+merged+" distinct valid records. "+(saved?"Stored locally.":"Export before closing this page."));
  }catch(e){message("Import rejected: "+(e?.message||"invalid file"))}
  $("importFile").value="";
+ $("backupPassword").value="";
 });
 $("erase").addEventListener("click",()=>{
  if(!window.confirm("Delete all locally saved real reps and measurements from this browser? Keep a backup first."))return;
