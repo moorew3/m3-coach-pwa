@@ -92,6 +92,11 @@ try {
     "Seated Pallof hold",
     "m3-flex-bench-core-progress-v1",
   ]);
+  await assertPage("/recovery-coach/update-safety/", [
+    "Protect your workout records before updating",
+    "m3-flex-real-reps-and-metrics-v1",
+    "Export password-protected backup",
+  ]);
   await assertPage("/recovery-coach/device-check/", [
     "M3 FLEX",
     "playMarcus",
