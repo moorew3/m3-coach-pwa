@@ -22,6 +22,7 @@ FILES={
   "recovery-coach/logbook/index.html":ROOT/"public/recovery-coach/logbook/index.html",
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
   "recovery-coach/device-check/index.html":ROOT/"public/recovery-coach/device-check/index.html",
+  "recovery-coach/update-safety/index.html":ROOT/"public/recovery-coach/update-safety/index.html",
   "recovery-coach/form-check/index.html":ROOT/"public/recovery-coach/form-check/index.html",
   "recovery-coach/form-check/vendor/sha256-manifest.json":ROOT/"public/recovery-coach/form-check/vendor/sha256-manifest.json",
   "recovery-coach/form-check/vendor/THIRD_PARTY_NOTICE.txt":ROOT/"public/recovery-coach/form-check/vendor/THIRD_PARTY_NOTICE.txt",
@@ -53,6 +54,7 @@ What is included
 - /recovery-coach/logbook/index.html — manually entered REAL reps, weight and measurements, private JSON export/import
 - /recovery-coach/programs/index.html — Workout A/B owner-review only, NOT active
 - /recovery-coach/device-check/index.html — Galaxy Fold diagnostics
+- /recovery-coach/update-safety/index.html — Android update and encrypted records backup checklist
 - /recovery-coach/form-check/index.html — optional on-device landmark/camera check
 - /recovery-coach/form-check/vendor/* — first-party MediaPipe runtime + lite pose model
 - sha256-manifest.json — exact file hashes for independently checking ZIP contents
