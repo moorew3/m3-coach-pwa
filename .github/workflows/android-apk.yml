@@ -107,6 +107,8 @@ jobs:
           printf '%s\n' "This is a real installable Android debug APK, not a web link or finished conversational coach." > artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "Approved media streams need internet. Actual phone camera/headset and full Workout A/B are not release-certified." >> artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "Future debug builds may be signed with a different temporary developer key and require uninstall/reinstall." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "IMPORTANT: Before replacing this app, open Recovery Coach > Check my records and encrypted backup. Export password-protected logbook JSON, verify file/password, then restore and check records on the new install." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "An APK reinstall can erase local workout logs and the interrupted session; only manual actual reps and measurements are in exported logbook backups." >> artifacts/ANDROID-INSTALL-README.txt
 
       - name: Deliver Android APK for authorized Galaxy Fold testing
         uses: actions/upload-artifact@v4
