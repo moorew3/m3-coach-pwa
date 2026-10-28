@@ -856,6 +856,32 @@ try {
     });
     await logPage.locator("#status").getByText(/Import rejected/).waitFor();
     assert.equal((await logPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 2);
+    await logPage.locator("#exercise").selectOption("C02");
+    await logPage.locator("#targetReps").selectOption("10");
+    assert.match((await logPage.locator("#lastSet").textContent()) ?? "", /12 reps · 15 lb entered/);
+    assert.match((await logPage.locator("#progressionCue").textContent()) ?? "", /One logged training day/);
+    await logPage.locator("#useLastWeight").click();
+    assert.equal(await logPage.locator("#weight").inputValue(), "15");
+    assert.match((await logPage.locator("#status").textContent()) ?? "", /reference only, not approval/);
+    // Import a *different real-day self-reported* set. Neither mock media nor
+    // elapsed timers may create it.
+    const previousDay = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+    await logPage.locator("#importFile").setInputFiles({
+      name: "previous-day.json", mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify({schema:1,records:[
+        {id:"b8e737d2-0d52-4f81-a341-b0f2dd18354b",at:previousDay,type:"set",exercise:"C02",reps:14,lb:15},
+        {id:"de414735-fb43-452e-9383-d27d836ade61",at:previousDay,type:"metrics",weight:200,waist:39,arm:16},
+      ]})),
+    });
+    await logPage.locator("#status").getByText(/Imported 2 distinct valid records/).waitFor();
+    assert.match((await logPage.locator("#progressionCue").textContent()) ?? "", /Across two separate days, you exceeded 10 reps/);
+    assert.match((await logPage.locator("#measurementTrend").textContent()) ?? "", /Body weight: 198 lb, change -2 lb versus previous entry/);
+    assert.match((await logPage.locator("#measurementTrend").textContent()) ?? "", /Waist: 38 in, change -1 in versus previous entry/);
+    await logPage.locator("#targetReps").selectOption("12");
+    assert.match((await logPage.locator("#progressionCue").textContent()) ?? "", /No consistent above-target result/);
+    await logPage.locator("#exercise").selectOption("C08-PRESS-R3");
+    assert.equal(await logPage.locator("#useLastWeight").isDisabled(), true);
+    step("Manual previous-session reps, last weight and measurement trend show safe nonautomatic progression guidance");
     step("Real manual reps, resistance and measurements persist, export privately and reject invalid/import duplicates");
   } finally {
     await logContext.close();
