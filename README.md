@@ -52,3 +52,12 @@ The workflow `.github/workflows/android-apk.yml` builds the bundled seated Recov
 2. Verify real Marcus voice sync, real Galaxy Fold headphones, speech/permission behavior and shoulder/cast-safe biomechanics.
 3. Deliver secure account-backed cross-device workout sync and real interactive Marcus **only after** an approved architecture/provider and transparent cost/privacy controls exist.
 4. Test and explicitly accept a preview deployment and rollback before changing production. No purchases, media generation, live deployment or PR merge from a successful CI run alone.
+
+
+## Protected, manual workout-history transfer between devices
+
+Open `/recovery-coach/logbook/`, enter only real completed reps and measurements, then choose **Export password-protected backup**. Enter a memorable password of at least 12 characters and save the resulting `m3-flex-password-protected-workout-log.json` privately. The browser derives an AES-256-GCM key through PBKDF2-SHA-256 with a fresh 16-byte salt and 310,000 iterations, then generates a fresh 12-byte nonce. On your second device open the logbook, supply the **same password**, and select that file through Restore. The existing plain-text JSON export still works but is **not encrypted**.
+
+Neither the password nor workout history is uploaded by M3 FLEX. The app does not automatically synchronize your phone and computer; this is an authenticated *manual* backup. Losing the password means losing access to the protected file. When reinstalling a debug-signed Android test APK, back up actual reps/measurements first because an app uninstall can clear local workout history. An encrypted archive is not a medical-record service, a login or a replacement for an accepted cloud architecture.
+
+The approved seated workout now displays the most recent **self-reported** set next to each loaded movement. It does not fabricate repetitions based on the video timer, auto-select resistance or infer a pound load for the INNSTAR band. If the logbook changes in another same-origin window, its view updates via the browser's local storage notification; this is **not** cross-device cloud sync.
