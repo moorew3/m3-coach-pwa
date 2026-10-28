@@ -32,4 +32,10 @@ const main=[
 '<a href="./recovery-coach/">Open your workout</a></main></body></html>',
 ].join("\n");
 await writeFile(join(dest,"index.html"),main+"\n");
+const buildCommit=(process.env.GITHUB_SHA||"").toLowerCase();
+const buildInfo={platform:"android-debug",commit:/^[a-f0-9]{40}$/.test(buildCommit)?buildCommit:null,
+  releaseSigned:false,stableUpgradeSignature:false,
+  warning:"This temporary debug build may require uninstalling an earlier test APK. Export and verify private records first."};
+await writeFile(join(dest,"build-info.json"),JSON.stringify(buildInfo,null,2)+"\n");
+assert.ok((await stat(join(dest,"recovery-coach","update-safety","index.html"))).size>1000,"Upgrade-safety page missing");
 console.log("Android app assets staged: native WebView opens approved recovery workflow; original 16 media URLs unchanged.");
