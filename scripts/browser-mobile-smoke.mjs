@@ -5,7 +5,7 @@
  */
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium } from "playwright-core";
 
@@ -881,6 +881,49 @@ try {
     assert.match((await logPage.locator("#progressionCue").textContent()) ?? "", /No consistent above-target result/);
     await logPage.locator("#exercise").selectOption("C08-PRESS-R3");
     assert.equal(await logPage.locator("#useLastWeight").isDisabled(), true);
+    // Private two-device transfer: encrypt locally, confirm no plaintext
+    // in the ZIP-less JSON envelope, deny the wrong password, and decrypt
+    // on a NEW browser profile with zero preexisting workout records.
+    await logPage.locator("#backupPassword").fill("correct-horse-battery-secret");
+    const protectedPromise = logPage.waitForEvent("download");
+    await logPage.locator("#exportProtected").click();
+    const protectedDownload = await protectedPromise;
+    assert.equal(protectedDownload.suggestedFilename(), "m3-flex-password-protected-workout-log.json");
+    const protectedText = await readFile(await protectedDownload.path(), "utf8");
+    const protectedFile = JSON.parse(protectedText);
+    assert.equal(protectedFile.schema, 2);
+    assert.equal(protectedFile.iterations, 310000);
+    assert.ok(protectedFile.ciphertext.length > 50);
+    assert.ok(!protectedText.includes("m3-flex-real-reps-and-metrics-v1"));
+    assert.ok(!protectedText.includes("b8e737d2-0d52-4f81-a341-b0f2dd18354b"));
+    assert.equal(await logPage.locator("#backupPassword").inputValue(), "");
+    const otherDevice = await browser.newContext({
+      viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+    });
+    try {
+      const otherPage = await otherDevice.newPage();
+      await otherPage.goto(base + "/recovery-coach/logbook/", { waitUntil: "domcontentloaded" });
+      assert.match((await otherPage.locator("#summary").textContent()) ?? "", /^0 saved personal records/,
+        "Separate device cannot magically see another device's private data");
+      await otherPage.locator("#backupPassword").fill("wrong-but-long-enough-pass");
+      await otherPage.locator("#importFile").setInputFiles({
+        name: "protected.json", mimeType: "application/json", buffer: Buffer.from(protectedText),
+      });
+      await otherPage.locator("#status").getByText(/Import rejected: Wrong password, damaged protected backup/).waitFor();
+      assert.match((await otherPage.locator("#summary").textContent()) ?? "", /^0 saved personal records/);
+      assert.equal(await otherPage.locator("#backupPassword").inputValue(), "");
+      await otherPage.locator("#backupPassword").fill("correct-horse-battery-secret");
+      await otherPage.locator("#importFile").setInputFiles({
+        name: "protected.json", mimeType: "application/json", buffer: Buffer.from(protectedText),
+      });
+      await otherPage.locator("#status").getByText(/Imported 4 distinct valid records/).waitFor();
+      assert.match((await otherPage.locator("#history").textContent()) ?? "", /Seated hammer curls · 12 actual reps/);
+      assert.equal(await otherPage.locator("#backupPassword").inputValue(), "");
+      assert.equal((await otherPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")))).records.length, 4);
+      step("AES-256-GCM workout log transferred to second browser with correct password; wrong password rejected");
+    } finally {
+      await otherDevice.close();
+    }
     step("Manual previous-session reps, last weight and measurement trend show safe nonautomatic progression guidance");
     step("Real manual reps, resistance and measurements persist, export privately and reject invalid/import duplicates");
   } finally {
