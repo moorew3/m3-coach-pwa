@@ -7,3 +7,9 @@ The player now invalidates pending media requests whenever playback is stopped, 
 All approved stage definitions—including exact video and Marcus voice URLs, exercise order and durations—are byte-identical to the base commit. No media was generated or replaced. No dependency was added. The test command is `npm run test:recovery`; it uses Node's built-in test runner and a synthetic DOM/media clock rather than a real clinical session.
 
 Validation: nine regression tests pass. Seven of those tests fail against the unmodified base player; successful-start and normal-completion behavior also remain covered. Tests cover stale start/resume, early error, early pause, audio-only failure/retry, late video buffering, audio-only buffering, navigation from rest, and normal completion. JavaScript syntax and whitespace checks pass. These tests do not certify physical Android playback, clinical suitability, audio synchronization or biomechanics.
+
+## Release checks
+
+The cloud-sync server functions used a validator method absent from the installed TanStack Start types. All six chains now use `.validator(...)`, as supported by the framework; their validation callbacks, Supabase RPCs, permissions and returned data remain unchanged. The pull-request build check also runs `npm run test:recovery` before the production build.
+
+The local production build, post-build TypeScript check and all nine Recovery Coach regression tests pass. The build generates the route types before type checking, matching CI's order. The connected Railway account’s only visible workspace has no projects; this does not verify access to the established M3 Coach production service.
