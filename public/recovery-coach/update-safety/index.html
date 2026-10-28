@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1521">
+<title>M3 FLEX · Protect your workout records before updating</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1521;--fg:#f1f8fd;--dim:#c0d3df;--accent:#c5f08c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif}
+main{max-width:660px;margin:auto;padding:20px 16px 54px}h1{font-size:clamp(23px,5vw,31px);line-height:1.2}
+p{color:var(--dim);margin:10px 0}section{margin:14px 0;background:#142839;border:1px solid #446176;border-radius:15px;padding:15px}
+a{color:var(--accent)}.action{display:block;background:var(--accent);color:#172b1a;text-align:center;text-decoration:none;padding:14px;border-radius:11px;font-weight:850;margin:14px 0;min-height:48px}
+.small{font-size:12px}.warn{color:#f5d3af;font-weight:650}strong{color:var(--fg)}
+label{display:flex;align-items:start;gap:10px;margin:10px 0;color:var(--dim)}
+input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);flex:none;margin-top:3px}
+button{background:#29485d;color:var(--fg);border:1px solid #7490a0;border-radius:9px;min-height:45px;padding:10px;font:750 14px system-ui}
+button:disabled{opacity:.48}#summary,#version,#confirmStatus{border-left:3px solid var(--accent);padding:10px;background:#0c1d2a;min-height:40px}
+</style></head><body><main>
+<a href="../">← Return to Recovery Coach</a>
+<h1>Protect your records before installing another M3 FLEX APK</h1>
+<p class="warn">Current Android test installers can be signed by a different temporary developer key. Android may require removing the old test app, which can erase local reps, body measurements and saved workout progress. Do not uninstall the current APK until you have a verified backup.</p>
+<section>
+<h2>What is stored on this device?</h2>
+<div id="summary" role="status">Checking this device's local record counts…</div>
+<p id="version" role="status">Installed build: checking…</p>
+<p class="small">This count reads only your current browser/app's local storage. A browser, a separate app install and another phone can have different data. No logs leave this device during this check.</p>
+</section>
+<section>
+<h2>Back up your actual records</h2>
+<p>Open the private logbook, enter a strong 12–128 character password and select <strong>Export password-protected backup</strong>. Confirm the downloaded file exists on this phone or another storage location you control. Store the password separately.</p>
+<a class="action" href="../logbook/#backup">Open logbook and export my encrypted records</a>
+<p class="small">The logbook also allows plaintext JSON export, but that file is not encrypted. Use the password-protected option for personal data transfer. If you have no actual records yet, no personal logbook backup is needed; the separate session timer snapshot is not part of that export.</p>
+</section>
+<section>
+<h2>Do not delete the current app until these are true</h2>
+<label><input id="hasFile" type="checkbox"> I personally located the encrypted JSON backup file in my device's Files/Downloads or private storage.</label>
+<label><input id="hasPassword" type="checkbox"> I have the correct private backup password saved separately from that file.</label>
+<label><input id="knowLimits" type="checkbox"> I understand the interrupted workout countdown, camera settings and clinician-clearance checks do not transfer to another installation.</label>
+<button id="checkReady" type="button" disabled>Check my update preparation</button>
+<p id="confirmStatus" role="status" aria-live="polite">Nothing has been backed up by this page. Use the logbook export first.</p>
+<p class="small">This is a self-check, not proof that a backup can be decrypted. After installing the replacement app, open the logbook and restore the encrypted backup using its password. Verify the record count and actual reps before deleting the saved backup file.</p>
+</section>
+</main><script>
+"use strict";
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="m3-flex-real-reps-and-metrics-v1";
+const PROGRESS_KEY="m3-flex-recovery-progress-v1";
+function refresh(){
+ let count=0,session=false,warning="";
+ try{
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
+  if(data?.schema===1&&Array.isArray(data.records)){
+   count=data.records.length;
+   if(count>1500)warning=" Stored record count looks unusual; check your logbook before updating.";
+  }else if(data!==null)warning=" Stored records could not be verified; inspect the logbook before updating.";
+  session=localStorage.getItem(PROGRESS_KEY)!==null;
+ }catch{warning=" Device storage could not be read. Do not uninstall until you export and verify your data.";}
+ $("summary").textContent=count+" locally reported workout/measurement records. "+
+   (session?"An interrupted workout session snapshot is also on this device. ":"No saved in-progress workout snapshot was detected. ")+warning;
+}
+async function getBuild(){
+ try{
+  const response=await fetch("../../build-info.json",{cache:"no-store"});
+  if(!response.ok)throw Error("No local Android build metadata");
+  const data=await response.json();
+  if(!/^[a-f0-9]{40}$/.test(data.commit||""))throw Error("No verified Android build commit");
+  $("version").textContent="Installed app build: "+data.commit.slice(0,12)+" · "+data.platform+".";
+ }catch{$("version").textContent="Installed build ID not provided in this website preview. Check your APK filename and source.";}
+}
+const choices=["hasFile","hasPassword","knowLimits"];
+function update(){
+ $("checkReady").disabled=!choices.every(k=>$(k).checked);
+}
+for(const id of choices)$(id).addEventListener("change",update);
+$("checkReady").addEventListener("click",()=>{
+ $("confirmStatus").textContent=
+  "You confirmed a backup file and password exist. Now RESTORE and VERIFY its actual records in the replacement M3 FLEX logbook before discarding the old file. This screen did not test decryption or copy anything.";
+});
+window.addEventListener("pageshow",refresh);
+window.addEventListener("storage",refresh);
+refresh();void getBuild();
+</script></body></html>
