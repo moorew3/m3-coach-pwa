@@ -949,6 +949,35 @@ try {
     } finally {
       await lastSetPage.close();
     }
+    // The Android update preflight must use the *same device* data and
+    // never silently erase records, export unencrypted data, or certify a
+    // backup based solely on clicking a button.
+    const updatePage = await logContext.newPage();
+    try {
+      const recordsBefore = await logPage.evaluate(
+        () => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")).records.length,
+      );
+      await updatePage.goto(base + "/recovery-coach/update-safety/", {waitUntil:"domcontentloaded"});
+      assert.match((await updatePage.locator("#summary").textContent()) ?? "",
+        new RegExp("^"+recordsBefore+" locally reported workout/measurement records"));
+      assert.equal(await updatePage.locator("#checkReady").isDisabled(), true);
+      assert.equal(await updatePage.locator("#hasFile").isChecked(), false);
+      assert.match((await updatePage.locator("#confirmStatus").textContent()) ?? "", /Nothing has been backed up by this page/);
+      assert.match(await updatePage.locator("a[href='../logbook/#backup']").getAttribute("href"), /logbook\/\#backup/);
+      assert.match((await updatePage.locator("#version").textContent()) ?? "", /Installed build ID not provided/);
+      await updatePage.locator("#hasFile").check();
+      await updatePage.locator("#hasPassword").check();
+      assert.equal(await updatePage.locator("#checkReady").isDisabled(), true);
+      await updatePage.locator("#knowLimits").check();
+      await updatePage.locator("#checkReady").click();
+      assert.match((await updatePage.locator("#confirmStatus").textContent()) ?? "", /did not test decryption or copy anything/);
+      assert.equal(await updatePage.evaluate(
+        () => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")).records.length
+      ), recordsBefore);
+      step("Android update preflight reads actual device log count and cannot claim or perform a backup");
+    } finally {
+      await updatePage.close();
+    }
     step("Manual previous-session reps, last weight and measurement trend show safe nonautomatic progression guidance");
     step("Real manual reps, resistance and measurements persist, export privately and reject invalid/import duplicates");
   } finally {
