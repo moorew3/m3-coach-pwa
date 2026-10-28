@@ -14,6 +14,16 @@ Open a successful GitHub Actions run titled **Android APK — M3 FLEX Recovery**
 
 This is an **Android developer-signed debug APK** suitable for testing only. Its temporary debug signature may change on another CI run, requiring uninstalling the earlier test app and losing data stored only inside it. A user-owned long-lived release signing key is required for safe upgrades and final publication.
 
+## Protect workout logs before replacing the test APK
+
+From the currently installed M3 FLEX Recovery app, open the prominent **Check my records and encrypted backup before installing an update** link, or visit `/recovery-coach/update-safety/` within the same app. It reports how many locally stored records this installation can see and the build commit ID where available. The page reads local storage only; it **does not create, test, or upload any backup**.
+
+Open **My actual reps and measurements → Export password-protected backup**, choose a unique 12–128-character password, save the downloaded JSON to a location you control, and verify the file is actually present in Android Files/Downloads (or your private storage). Keep the password separately. Do not uninstall the old APK until both the file and its password have been checked. After replacing the debug app, import the protected JSON using the password and verify the actual records and reps.
+
+The APK's debug signing key is temporary, so Android may refuse an upgrade with "App not installed" and require uninstalling the previous version. Removing the app can erase **all** localStorage workout entries and the interrupted session snapshot. The encrypted logbook export preserves manual reps and measurements only, **not** clearance choices, camera permissions, or in-progress timer state. Do not delete the downloaded backup after reinstall until a successful restore is independently confirmed. Never commit either file/password to public GitHub.
+
+A stable user-owned release keystore and production-signed updates remain an outstanding release prerequisite; this safeguard is **not** a substitute for stable signing.
+
 ## Privacy and phone permissions
 
 The app declares INTERNET, CAMERA and RECORD_AUDIO solely to support the original streamed media, an optional camera model and an **explicit** microphone diagnostic. The pose system does not record/upload frames or access the microphone. It does not activate automatically on app launch. Check Android Settings → Apps → M3 FLEX Recovery → Permissions if a consent dialog was refused.
