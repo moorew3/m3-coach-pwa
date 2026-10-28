@@ -89,6 +89,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <div class="videoWrap hidden" id="videoBox"><video id="coachVideo" playsinline preload="metadata" aria-label="Approved Flex demonstration"></video><audio id="coachVoice" preload="metadata"></audio></div>
 <div class="guidePlaceholder" id="textBox"><strong>Before your workout</strong><p>Prepare gently while keeping your injured left leg supported. No exercise video has been approved for this new warm-up yet.</p></div>
 <p class="cue" id="cue">Sit comfortably with the cast supported. Breathe slowly without forcing movement.</p>
+<p id="lastActualReference" class="notice" role="status" aria-live="polite">No personal set logged for this movement yet. Video time is not a repetition count.</p>
 <section class="marcusStage" id="marcusStage" aria-label="Marcus guided trainer">
 <div class="head"><strong class="name">MARCUS · Your workout coach</strong><span class="voiceState" id="marcusVoiceStatus" role="status">Original approved voice ready</span></div>
 <p class="line" id="marcusOnScreen">Follow the approved Flex demonstration and Marcus recordings. Start your full session from the warm-up.</p>
@@ -290,6 +291,35 @@ $("formObservation").addEventListener("toggle",()=>{
  lastSentFormScene=undefined;
  iframe.src=$("formObservation").open?"./form-check/":"about:blank";
 });
+const REAL_LOG_KEY="m3-flex-real-reps-and-metrics-v1";
+function renderLastActualSet(){
+ const label=$("lastActualReference");
+ if(phase!==1||!LOCAL_POSE_SCENES.has(step().id)){
+  label.textContent="Actual-rep history is displayed only for approved seated loaded movements.";
+  return;
+ }
+ let history;
+ try{
+  history=JSON.parse(localStorage.getItem(REAL_LOG_KEY)||"null")?.records;
+ }catch{history=null}
+ const approved=step().id;
+ const last=Array.isArray(history)?history.filter(x=>
+   x&&x.type==="set"&&x.exercise===approved&&Number.isInteger(x.reps)&&x.reps>=0&&x.reps<=100&&
+   typeof x.at==="string"&&Number.isFinite(Date.parse(x.at))&&Date.parse(x.at)<=Date.now()+86400000&&
+   (x.lb===null||(typeof x.lb==="number"&&Number.isFinite(x.lb)&&x.lb>=0&&x.lb<=300))
+ ).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at))[0]:null;
+ if(!last){
+  label.textContent="No personal set logged for this exercise yet. Timed videos do not measure actual reps.";
+  return;
+ }
+ const date=new Date(last.at).toLocaleDateString();
+ const weight=approved==="C08-PRESS-R3"?" · Band load not verified":
+   last.lb===null?" · Weight not logged":" · "+last.lb+" lb reported";
+ label.textContent="LAST ACTUAL SET · "+last.reps+" reps you logged"+weight+
+   " · "+date+". This is history, not a safe-load prescription; use only clinician-cleared resistance.";
+}
+window.addEventListener("storage",event=>{if(event.key===REAL_LOG_KEY||event.key===null)renderLastActualSet()});
+window.addEventListener("focus",renderLastActualSet);
 function syncActualRepExercise(){
  if(!$("repsPanel").open)return;
  const id=phase===1&&LOCAL_POSE_SCENES.has(step().id)?step().id:null;
@@ -445,7 +475,7 @@ function render(){
  document.querySelectorAll(".phase").forEach(b=>b.setAttribute("aria-selected",Number(b.dataset.stage)===phase?"true":"false"));
  if(phase===0)$("textBox").innerHTML="<strong>Before the workout</strong><p>Your first breathing step uses the approved C09 moving Flex video and Marcus. The remaining hand and shoulder preparation steps are still audio guided.</p>";
  if(phase===2)$("textBox").innerHTML="<strong>After the workout</strong><p>Your first cooldown step uses approved moving Flex C10 and Marcus; the shoulder-and-hand relaxation step still has Marcus audio only.</p>";
- setMedia();cards();drawTimer();syncActualRepExercise();syncFormExercise();
+ setMedia();cards();drawTimer();renderLastActualSet();syncActualRepExercise();syncFormExercise();
 }
 async function playMedia(loop){
  const generation=++playbackGeneration;
