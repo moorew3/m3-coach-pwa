@@ -924,6 +924,28 @@ try {
     } finally {
       await otherDevice.close();
     }
+    // The approved moving Flex demo must display last REAL owner-entered
+    // reps without claiming the video counted them or recommending weight.
+    const lastSetPage = await logContext.newPage();
+    try {
+      await lastSetPage.goto(base + "/recovery-coach/", {waitUntil:"domcontentloaded"});
+      await lastSetPage.locator('[data-stage="1"]').click();
+      await lastSetPage.locator("#steps .item").nth(1).click();
+      assert.equal(await lastSetPage.locator("#moveTitle").innerText(), "Seated hammer curls");
+      assert.match((await lastSetPage.locator("#lastActualReference").textContent()) ?? "", /LAST ACTUAL SET · 12 reps you logged · 15 lb reported/);
+      assert.match((await lastSetPage.locator("#lastActualReference").textContent()) ?? "", /not a safe-load prescription/);
+      await lastSetPage.locator("#steps .item").nth(4).click();
+      assert.match((await lastSetPage.locator("#lastActualReference").textContent()) ?? "", /No personal set logged/);
+      await lastSetPage.locator("#repsPanel summary").click();
+      const liveLog = lastSetPage.frameLocator("#logFrame");
+      await liveLog.locator("#setForm").waitFor();
+      await liveLog.locator("#reps").fill("8");
+      await liveLog.locator("#saveSet").click();
+      await lastSetPage.locator("#lastActualReference").getByText(/LAST ACTUAL SET · 8 reps you logged · Band load not verified/).waitFor();
+      step("Current approved workout shows last ACTUAL reps and refreshes from local logbook without fictitious loads");
+    } finally {
+      await lastSetPage.close();
+    }
     step("Manual previous-session reps, last weight and measurement trend show safe nonautomatic progression guidance");
     step("Real manual reps, resistance and measurements persist, export privately and reject invalid/import duplicates");
   } finally {
