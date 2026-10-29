@@ -242,6 +242,31 @@ const stages=[
 {id:"C10-POST-BREATH-R1",name:"Return to steady breathing",sec:45,video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3",voiceOnce:true,approved:true,note:"Approved C10-R1: seated Flex cooldown breathing with the white left cast supported. Marcus guides you to settle your breathing, while the approved moving animation continues."},
 {name:"Relax shoulders and hands",sec:45,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/3ca174e3-16e6-42f5-91f2-332713cd6d69.mp3",note:"Gently release shoulder and hand tension within comfortable limits. Avoid pulling on the injured leg or moving the cast.",text:true}
 ]}];
+const ALL_APPROVED_EXERCISES=stages[1].items.slice();
+const APPROVED_BY_ID=new Map(ALL_APPROVED_EXERCISES.map(item=>[item.id,item]));
+const APPROVED_WORKOUT_CHOICES={
+ recovery:["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"],
+ A:["C01-R3","C02"],
+ B:["C08-PRESS-R3","C03","C04-R2"]
+};
+const WORKOUT_NOTES={
+ recovery:"Recovery: all five original approved seated exercises with warm-up/cooldown, timers and Marcus.",
+ A:"Equipment A: approved shrugs and hammer curls run as guided sets. Previously approved Flow boxing/lateral raises and all rendered drafts are available in the scene library for video inspection.",
+ B:"Equipment B: approved INNSTAR chest press, front raises and alternating curls run as guided sets. The chest fly, AMYCO, and completed drafts remain available in the scene library for video/equipment review."
+};
+let activeWorkout="recovery";
+function applyWorkout(choice){
+ if(!APPROVED_WORKOUT_CHOICES[choice])return;
+ activeWorkout=choice;
+ stages[1].items=APPROVED_WORKOUT_CHOICES[choice].map(id=>APPROVED_BY_ID.get(id));
+ $("pairMode").value="straight";
+ $("pairMode").disabled=choice!=="recovery";
+ document.querySelectorAll("[data-workout]").forEach(el=>{
+  const on=el.dataset.workout===choice;
+  el.setAttribute("aria-pressed",String(on));el.classList.toggle("primary",on);
+ });
+ $("workoutDescription").textContent=WORKOUT_NOTES[choice];
+}
 const $=x=>document.getElementById(x);
 const video=$("coachVideo"),audio=$("coachVoice"),marcusTest=$("marcusTestAudio");
 let awakeScreen=null;
@@ -369,7 +394,7 @@ function persistProgress(){
  const snapshot={
   v:1, savedAt:Date.now(), phase,idx,workRound,targetRounds,
   secondsLeft:Math.max(0,Math.ceil(secondsLeft/1000)*1000),
-  mode, restNext, completed:[...completed],finishedSets:Object.fromEntries(finishedSets),pairMode:$("pairMode").value,
+  mode,program:activeWorkout,restNext,completed:[...completed],finishedSets:Object.fromEntries(finishedSets),pairMode:$("pairMode").value,
   workDuration:$("workDuration").value,restDuration:$("restDuration").value
  };
  // Avoid 200ms storage writes from the ticker. A new second, phase or
@@ -383,6 +408,9 @@ function restoreProgress(){
  try{saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null")}catch(e){return false}
  if(!saved||saved.v!==1||!Number.isFinite(saved.savedAt)||
     Date.now()-saved.savedAt>PROGRESS_VALID_MS||saved.savedAt>Date.now()+60_000)return false;
+ const requested=saved.program??"recovery";
+ if(!APPROVED_WORKOUT_CHOICES[requested])return false;
+ applyWorkout(requested);
  const p=saved.phase,n=saved.idx;
  if(!Number.isInteger(p)||p<0||p>=stages.length||
     !Number.isInteger(n)||n<0||n>=stages[p].items.length||
@@ -442,7 +470,7 @@ function tell(msg){$("note").textContent=msg}
 function setMode(m){mode=m;drawTimer()}
 function drawTimer(){
 drawMarcusStage();
-$("setRounds").disabled=sessionStarted;$("pairMode").disabled=sessionStarted;
+$("setRounds").disabled=sessionStarted;$("pairMode").disabled=sessionStarted||activeWorkout!=="recovery";
 $("position").textContent="Step "+(idx+1)+" / "+stages[phase].items.length+(phase===1?" · Set "+workRound+" of "+targetRounds:"");
 $("clock").textContent=time(secondsLeft);$("runState").textContent=({ready:"Ready",running:"Workout in progress",rest:"Rest interval",paused:"Paused",preview:"Video preview",waiting:"Tap to enable sound",complete:"Session completed",safety:"STOPPED — MEDICAL SAFETY"})[mode]||"Ready";
 $("progressText").textContent=completed.size+" of "+total()+" steps completed — manually skipped steps do not count";
