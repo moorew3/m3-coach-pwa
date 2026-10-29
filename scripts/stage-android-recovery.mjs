@@ -31,10 +31,10 @@ assert.match(index,/<html\b/);
 assert.match(index,/<script/);
 await rm(dest,{recursive:true,force:true});
 await cp(source,dest,{recursive:true,force:true});
-const commit=(process.env.GITHUB_SHA||"").toLowerCase();
+const buildCommit=(process.env.GITHUB_SHA||"").toLowerCase();
 await writeFile(join(dest,"build-info.json"),JSON.stringify({
  platform:"android-debug",scope:"original-app-plus-integrated-recovery",
- commit:/^[a-f0-9]{40}$/.test(commit)?commit:null,
+ commit:/^[a-f0-9]{40}$/.test(buildCommit)?buildCommit:null,
  releaseSigned:false,stableUpgradeSignature:false,
  warning:"Unstable debug signature. Export and verify protected local data before replacing any installed copy.",
  note:"Web client bundle is pre-rendered. SSR-only server features and external paid AI APIs are not bundled."
