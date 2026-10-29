@@ -808,7 +808,7 @@ async function tryTvFullscreen(){
 }
 $("tvEnable").addEventListener("click",()=>{
  const form=$("formObservation");if(form.open)form.open=false;
- const reps=$("repsPanel");if(reps.open)reps.open=false;
+ const reps=$("repsPanel");if(reps?.open)reps.open=false;
  document.body.classList.add("tvMode");document.body.classList.remove("coachFocus","tvFill");
  $("tvLaunchStatus").textContent="TV layout active. Use Samsung Smart View or Chrome Cast to mirror the screen.";
  syncTVControls();
