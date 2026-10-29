@@ -508,13 +508,21 @@ const finishedSets=new Map(); // timed demos only; never inferred athlete reps
 // Each navigation/pause/retry supersedes unresolved video/audio play promises.
 let playbackGeneration=0;
 const PROGRESS_KEY="m3-flex-recovery-progress-v1";
+const LAST_SESSION_KEY="m3-flex-recovery-last-session-v1";
+function notifyOriginalApp(){
+ // Only same-origin M3 FLEX parent can receive status; no rep, health, camera
+ // or private user data sent. Standalone recovery page remains fully usable.
+ if(window.parent!==window){
+  try{window.parent.postMessage({type:"m3-flex-recovery-progress-updated"},location.origin)}catch(e){}
+ }
+}
 const PROGRESS_VALID_MS=24*60*60*1000;
 let lastProgressText="";
 /** Stores this browser's demonstrated phase only, NOT medical clearance or personal reps. */
 function persistProgress(){
  if(!sessionStarted||mode==="complete"){
   try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
-  lastProgressText="";return;
+  lastProgressText="";notifyOriginalApp();return;
  }
  const snapshot={
   v:1, savedAt:Date.now(), phase,idx,workRound,targetRounds,
@@ -526,7 +534,7 @@ function persistProgress(){
  // explicit Pause/Resume still commits immediately.
  const signature=JSON.stringify({...snapshot,savedAt:0});
  if(signature===lastProgressText)return;
- try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(snapshot));lastProgressText=signature}catch(e){}
+ try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(snapshot));lastProgressText=signature;notifyOriginalApp()}catch(e){}
 }
 function restoreProgress(){
  let saved;
@@ -699,6 +707,13 @@ function advance(){
    return false;
  }
  mode="complete";releaseScreenAwake();
+ // A real completion receipt represents *timed guided demonstrations*, never
+ // manually entered/automatically verified actual reps or medical clearance.
+ try{localStorage.setItem(LAST_SESSION_KEY,JSON.stringify({
+  program:activeWorkout,finishedAt:Date.now(),demonstratedSteps:total(),
+  disclaimer:"Timed demonstrations only; actual reps not verified."
+ }))}catch(e){}
+ notifyOriginalApp();
  tell("You completed your full guided session. All five approved Flex videos remain available.");
  return false;
 }
