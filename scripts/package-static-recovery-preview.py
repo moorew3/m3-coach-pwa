@@ -18,6 +18,7 @@ DEST=ROOT / "artifacts"
 ZIP=DEST / "m3-flex-seated-recovery-static-preview.zip"
 FILES={
   "recovery-coach/index.html":ROOT/"public/recovery-coach/index.html",
+  "recovery-coach/scene-library.js":ROOT/"public/recovery-coach/scene-library.js",
   "recovery-coach/bench-core/index.html":ROOT/"public/recovery-coach/bench-core/index.html",
   "recovery-coach/logbook/index.html":ROOT/"public/recovery-coach/logbook/index.html",
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
