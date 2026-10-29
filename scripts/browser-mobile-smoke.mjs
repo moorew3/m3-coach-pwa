@@ -339,6 +339,74 @@ try {
     await marcusContext.close();
   }
 
+  // Test the actual approved Recovery Coach in full-width TV mirror mode.
+  // Native full-screen can be blocked or unavailable; the stage must still
+  // fill a 16:9 display without distortion or clipping the controls.
+  const tvContext = await browser.newContext({
+    viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1,
+    reducedMotion: "reduce",
+  });
+  await tvContext.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+    Element.prototype.requestFullscreen = () => Promise.reject(new Error("Fullscreen unsupported on simulated screen"));
+  });
+  const tvPage = await tvContext.newPage();
+  tvPage.setDefaultTimeout(14000);
+  try {
+    const response = await tvPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    assert.equal(response?.status(), 200);
+    await tvPage.locator('[data-stage="1"]').click();
+    const approvedSource = await tvPage.locator("#coachVideo").getAttribute("src");
+    assert.match(approvedSource ?? "", /9a48369a-ec51-4abc-9f50-f8966f19dc1e\.mp4/);
+    await tvPage.locator("#tvEnable").click();
+    assert.equal(await tvPage.evaluate(() => document.body.classList.contains("tvMode")), true);
+    for (const [width, height] of [[1280,720],[1920,1080],[3840,2160],[900,500]]) {
+      await tvPage.setViewportSize({ width, height });
+      const details = await tvPage.evaluate(() => {
+        const rect = id => {
+          const x = document.querySelector(id).getBoundingClientRect();
+          return {left:x.left,right:x.right,top:x.top,bottom:x.bottom,width:x.width,height:x.height};
+        };
+        return {
+          width:innerWidth,height:innerHeight,
+          rootWidth:document.documentElement.scrollWidth,
+          stage:rect(".player"),videoBox:rect("#videoBox"),video:rect("#coachVideo"),
+          timer:rect(".player > .timer"),marcus:rect("#marcusStage"),
+          cue:rect("#cue"),toolbar:rect("#tvToolbar"),stop:rect("#tvStop"),
+          fit:getComputedStyle(document.querySelector("#coachVideo")).objectFit,
+        };
+      });
+      assert.ok(details.rootWidth <= width + 2, "TV layout has horizontal overflow: " + JSON.stringify(details));
+      assert.ok(details.stage.width >= width - 2, "TV stage should use full television width");
+      assert.ok(details.stage.bottom <= height + 2, "TV stage should not run off bottom");
+      for (const key of ["videoBox","video","timer","marcus","cue","stop"]) {
+        const el=details[key];
+        assert.ok(el.width > 24 && el.height > 15, key + " must remain visible");
+        assert.ok(el.left >= -2 && el.right <= width + 2 && el.top >= -2 && el.bottom <= height + 2,
+          "TV element clipped off screen: " + key + " " + JSON.stringify(details));
+      }
+      assert.equal(details.fit,"contain", "Approved portrait video must default to full-body uncropped view");
+    }
+    await tvPage.setViewportSize({width:1920,height:1080});
+    await tvPage.locator("#tvFit").click();
+    assert.equal(await tvPage.evaluate(() => getComputedStyle(document.querySelector("#coachVideo")).objectFit),"cover");
+    assert.equal(await tvPage.locator("#tvFit").getAttribute("aria-pressed"),"true");
+    await tvPage.locator("#tvFit").click();
+    assert.equal(await tvPage.evaluate(() => getComputedStyle(document.querySelector("#coachVideo")).objectFit),"contain");
+    assert.equal(await tvPage.locator("#coachVideo").getAttribute("src"),approvedSource,
+      "Never swap or restart the approved source when switching TV fit");
+    await tvPage.locator("#tvStartPause").click();
+    assert.equal((await tvPage.locator("#runState").textContent())?.trim(),"Ready",
+      "TV remote start never bypasses clinician clearance");
+    await tvPage.locator("#tvExit").click();
+    assert.equal(await tvPage.evaluate(() => document.body.classList.contains("tvMode")),false);
+    step("Full TV stage fits 720p, 1080p, 4K and Fold landscape; approved full-body video stays uncropped by default");
+  } finally {
+    await tvContext.close();
+  }
+
   // The standalone seated recovery sequence is the ONLY currently active
   // owner-approved Flex+Marcus circuit. Exercise time measures demonstration
   // duration, not completed reps. Media play is mocked in this timing check;
