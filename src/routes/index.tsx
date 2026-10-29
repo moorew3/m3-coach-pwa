@@ -29,6 +29,7 @@ import { COACH_REFERENCE } from "@/data/coach-identity";
 import { ExerciseLibraryButton } from "@/components/ExerciseLibrary";
 import { ReadinessCheck } from "@/components/ReadinessCheck";
 import { LEGACY_MODE_KEY } from "@/components/LegacyRouteGate";
+import { readRecoveryProgress, safeLocalRecoveryStorage, recoveryTitle, type RecoveryProgress } from "@/lib/recovery-progress";
 import { SubstitutionSelect } from "@/components/SubstitutionSelect";
 
 export const Route = createFileRoute("/")({
@@ -67,6 +68,17 @@ function Today() {
   const [legacyGateOpen, setLegacyGateOpen] = useState(false);
   const [legacyRiskConfirmed, setLegacyRiskConfirmed] = useState(false);
   const [legacyModeAllowed, setLegacyModeAllowed] = useState(false);
+  const [recoverySession, setRecoverySession] = useState<RecoveryProgress | null>(null);
+  useEffect(() => {
+    const refresh = () => setRecoverySession(readRecoveryProgress(safeLocalRecoveryStorage()));
+    refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+    };
+  }, []);
 
   const doneSets = list.reduce(
     (n, e) => n + (log.exercises[e.id]?.sets.filter((s) => s.done).length ?? 0),
@@ -141,27 +153,40 @@ function Today() {
           original Flex and Marcus media stay protected.
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          <a href="/recovery-coach/?program=recovery"
+          <Link to="/recovery" search={{ program: "recovery" }}
             className="tap-target flex items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground">
             Recovery · 5 approved moves
-          </a>
-          <a href="/recovery-coach/?program=A"
+          </Link>
+          <Link to="/recovery" search={{ program: "A" }}
             className="tap-target flex items-center justify-center rounded-xl border border-primary px-3 text-center text-sm font-bold">
             Workout A · Dumbbells &amp; boxing scenes
-          </a>
-          <a href="/recovery-coach/?program=B"
+          </Link>
+          <Link to="/recovery" search={{ program: "B" }}
             className="tap-target flex items-center justify-center rounded-xl border border-primary px-3 text-center text-sm font-bold">
             Workout B · INNSTAR &amp; arms
-          </a>
+          </Link>
           <button type="button" onClick={requestLegacyCoach}
             className="tap-target rounded-xl border border-border bg-elevated px-3 text-center text-sm font-bold">
             Original weekly strength &amp; cardio
           </button>
         </div>
-        <a href="/recovery-coach/#allScenesCatalog"
+        <Link to="/recovery" search={{ program: "recovery" }}
           className="mt-3 block text-center text-sm font-semibold text-primary">
-          View every finished scene in one library
-        </a>
+          Open your complete approved/review scene library
+        </Link>
+        {recoverySession && (
+          <div data-testid="m3-recovery-saved-progress" className="mt-3 rounded-xl border border-primary/50 bg-primary/10 p-3">
+            <p className="text-sm font-bold">Resume {recoveryTitle(recoverySession.program)} in this app</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {recoverySession.completedSteps} timed demonstration stages saved · Set {recoverySession.workRound} of {recoverySession.targetRounds}
+              {" · "}No actual reps or medical clearance inferred
+            </p>
+            <Link to="/recovery" search={{ program: recoverySession.program }}
+              className="tap-target mt-2 flex items-center justify-center rounded-lg bg-primary px-3 text-sm font-bold text-primary-foreground">
+              Continue your saved Recovery Coach session
+            </Link>
+          </div>
+        )}
         <p className="mt-2 text-xs text-muted-foreground">
           Training requires exercise-specific medical clearance. Historical
           standing workouts remain behind their safety acknowledgement.
