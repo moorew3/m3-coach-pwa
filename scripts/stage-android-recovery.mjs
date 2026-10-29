@@ -18,7 +18,7 @@ const files=[
  "index.html","program/index.html","nutrition/index.html",
  "progress/index.html","settings/index.html","recovery/index.html",
  "recovery-coach/index.html","recovery-coach/form-check/index.html",
- "recovery-coach/logbook/index.html",
+ "recovery-coach/logbook/index.html","recovery-coach/full-backup/index.html",
  "recovery-coach/form-check/vendor/pose_landmarker_lite.task",
 ];
 for(const file of files)assert.ok((await stat(join(source,file))).size>0,"Unified original app missing "+file);
