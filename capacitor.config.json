@@ -1,6 +1,6 @@
 {
   "appId": "com.m3legacy.flexrecovery",
-  "appName": "M3 FLEX Recovery",
+  "appName": "M3 FLEX",
   "webDir": "android-recovery-web",
   "android": {
     "allowMixedContent": false,
