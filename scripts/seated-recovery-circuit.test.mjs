@@ -93,7 +93,7 @@ test("restore stores only same-browser playback progress and requires fresh clea
   assert.match(page, /const restored=restoreProgress\(\)/);
   const save = page.slice(page.indexOf("function persistProgress()"),page.indexOf("function restoreProgress()"));
   assert.doesNotMatch(save, /document\.querySelectorAll\("\.check"\)|readiness:|clearance:|userReps:|recordedReps:/);
-  assert.match(save, /restNext, completed:\[\.\.\.completed\]/);
+  assert.match(save, /program:activeWorkout,restNext,completed:\[\.\.\.completed\]/);
   assert.match(save, /mode==="complete"/);
   assert.match(save, /Math\.ceil\(secondsLeft\/1000\)\*1000/);
 });
