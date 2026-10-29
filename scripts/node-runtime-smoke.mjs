@@ -95,7 +95,12 @@ try {
   await assertPage("/recovery-coach/update-safety/", [
     "Protect your workout records before updating",
     "m3-flex-real-reps-and-metrics-v1",
-    "Export password-protected backup",
+    "Encrypt, download &amp; verify my COMPLETE M3 FLEX data",
+  ]);
+  await assertPage("/recovery-coach/full-backup/", [
+    "Back up the entire M3 FLEX app",
+    "m3-flex-full-device-encrypted-v1",
+    "Restore verified file into empty app",
   ]);
   await assertPage("/recovery-coach/device-check/", [
     "M3 FLEX",
