@@ -1209,7 +1209,7 @@ try {
       assert.equal(await updatePage.locator("#checkReady").isDisabled(), true);
       assert.equal(await updatePage.locator("#hasFile").isChecked(), false);
       assert.match((await updatePage.locator("#confirmStatus").textContent()) ?? "", /Nothing has been backed up by this page/);
-      assert.match(await updatePage.locator("a[href='../logbook/#backup']").getAttribute("href"), /logbook\/\#backup/);
+      assert.match(await updatePage.locator("a[href='../full-backup/']").getAttribute("href"), /full-backup\//);
       assert.match((await updatePage.locator("#version").textContent()) ?? "", /Installed build ID not provided/);
       await updatePage.locator("#hasFile").check();
       await updatePage.locator("#hasPassword").check();
