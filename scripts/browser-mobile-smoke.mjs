@@ -474,9 +474,11 @@ try {
     });
     await backupPage.locator("#password").fill("wrong-password-12characters");
     await backupPage.locator("#verify").click();
+    await backupPage.waitForFunction(() => document.querySelector("#status")?.textContent?.includes("Verification failed"));
     assert.match((await backupPage.locator("#status").textContent()) ?? "", /Verification failed/);
     await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
     await backupPage.locator("#verify").click();
+    await backupPage.waitForFunction(() => document.querySelector("#preview")?.textContent?.includes("1 actual Recovery sets"));
     assert.match((await backupPage.locator("#preview").textContent()) ?? "", /1 actual Recovery sets/);
     await backupPage.locator("#confirmRestore").check();
     assert.equal(await backupPage.locator("#restore").isDisabled(), true,
@@ -492,6 +494,7 @@ try {
     });
     await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
     await backupPage.locator("#verify").click();
+    await backupPage.waitForFunction(() => document.querySelector("#preview")?.textContent?.includes("Verified with password"));
     await backupPage.locator("#confirmRestore").check();
     assert.equal(await backupPage.locator("#restore").isDisabled(), true,
       "Do not import local backup into an already linked cloud account");
@@ -502,6 +505,7 @@ try {
     });
     await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
     await backupPage.locator("#verify").click();
+    await backupPage.waitForFunction(() => document.querySelector("#preview")?.textContent?.includes("Verified with password"));
     await backupPage.locator("#confirmRestore").check();
     assert.equal(await backupPage.locator("#restore").isDisabled(), false);
     backupPage.once("dialog", dialog => dialog.accept());
