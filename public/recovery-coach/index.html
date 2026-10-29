@@ -192,6 +192,14 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <p id="sceneCount" role="status" class="small muted">Loading original scene library…</p>
 <div id="sceneGrid" class="steps" style="max-height:660px;overflow:auto"></div>
 <video id="sceneReviewVideo" controls muted playsinline preload="none" style="display:none;width:100%;max-height:350px;background:#050b12;margin-top:12px" aria-label="Existing Flex scene owner preview"></video>
+<audio id="sceneReviewAudio" preload="none"></audio>
+<div id="sceneApprovalControls" class="approve hidden" aria-label="Approve completed existing scene for timed program">
+<strong id="sceneApprovalTitle">Check the exact scene before using it</strong>
+<p class="small muted">Watch the original moving scene AND hear the matching candidate recording. Do not approve if face, cast/boot, motion, equipment, or Marcus voice are incorrect. Visual approval does NOT grant medical clearance.</p>
+<button id="listenScene" type="button" class="btn">▶ Hear existing narration</button>
+<label><input type="checkbox" id="sceneOwnerCheck">I personally checked this movement, unchanged Flex identity, equipment, and the exact Marcus voice.</label>
+<button id="approveScene" type="button" class="btn primary" disabled>Include reviewed scene in Workout A/B</button>
+</div>
 <p id="sceneReviewStatus" class="notice" role="status">Select any existing scene to review it. Owner approval and exercise clearance are distinct.</p>
 </section>
 <details><summary>Original A/B development notes and scene production history</summary><section class="panel"><h3>Prior Workout A and B notes</h3><p class="small"><a href="./programs/" target="_blank" rel="noopener noreferrer">Open Workout A/B exercise preview and new animation reviews ↗</a></p><p class="small"><a href="./programs/" style="color:#c5f08c;font-weight:800">▶ Open Workout A/B development player</a> — preview only verified Flex videos and Marcus audio. Missing exercises are clearly blocked until approved.</p><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
@@ -242,6 +250,8 @@ const stages=[
 {id:"C10-POST-BREATH-R1",name:"Return to steady breathing",sec:45,video:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3",voiceOnce:true,approved:true,note:"Approved C10-R1: seated Flex cooldown breathing with the white left cast supported. Marcus guides you to settle your breathing, while the approved moving animation continues."},
 {name:"Relax shoulders and hands",sec:45,voice:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/3ca174e3-16e6-42f5-91f2-332713cd6d69.mp3",note:"Gently release shoulder and hand tension within comfortable limits. Avoid pulling on the injured leg or moving the cast.",text:true}
 ]}];
+const BASE_PREPARATION=stages[0].items.slice();
+const BASE_COOLDOWN=stages[2].items.slice();
 const ALL_APPROVED_EXERCISES=stages[1].items.slice();
 const APPROVED_BY_ID=new Map(ALL_APPROVED_EXERCISES.map(item=>[item.id,item]));
 const APPROVED_WORKOUT_CHOICES={
@@ -254,11 +264,38 @@ const WORKOUT_NOTES={
  A:"Equipment A: approved shrugs and hammer curls run as guided sets. Previously approved Flow boxing/lateral raises and all rendered drafts are available in the scene library for video inspection.",
  B:"Equipment B: approved INNSTAR chest press, front raises and alternating curls run as guided sets. The chest fly, AMYCO, and completed drafts remain available in the scene library for video/equipment review."
 };
+const OPTIONAL_REVIEW_PROGRAMS={
+ A:{before:["C14","C15"],main:["C17","C18","C19"],after:[]},
+ B:{before:["C15"],main:["C23"],after:["C22"]}
+};
+const SCENE_OWNER_KEY="m3-flex-review-approval-v1";
+function getSceneApprovals(){
+ try{const data=JSON.parse(localStorage.getItem(SCENE_OWNER_KEY)||"{}");
+  if(data&&typeof data==="object"&&!Array.isArray(data))return data;
+ }catch{}
+ return {};
+}
+function reviewedScene(id){
+ const item=window.M3_FLEX_SCENE_LIBRARY?.find(x=>x.id===id);
+ return item&&item.video&&item.audio&&getSceneApprovals()[id]===true?{
+  id:item.id,name:item.name,video:item.video,voice:item.audio,approved:true,
+  sec:30,note:"Owner reviewed existing moving Flex and voice: "+item.note+
+  " Audio/video sync remains subject to real-device checks. Athlete repetitions are NOT measured. Use only clinician-cleared technique and load."
+ }:null;
+}
 let activeWorkout="recovery";
 function applyWorkout(choice){
  if(!APPROVED_WORKOUT_CHOICES[choice])return;
  activeWorkout=choice;
  stages[1].items=APPROVED_WORKOUT_CHOICES[choice].map(id=>APPROVED_BY_ID.get(id));
+ stages[0].items=BASE_PREPARATION.slice();
+ stages[2].items=BASE_COOLDOWN.slice();
+ const extras=OPTIONAL_REVIEW_PROGRAMS[choice];
+ if(extras){
+  for(const id of extras.before){const item=reviewedScene(id);if(item)stages[0].items.push(item)}
+  for(const id of extras.main){const item=reviewedScene(id);if(item)stages[1].items.push(item)}
+  for(const id of extras.after){const item=reviewedScene(id);if(item)stages[2].items.push(item)}
+ }
  $("pairMode").value="straight";
  $("pairMode").disabled=choice!=="recovery";
  document.querySelectorAll("[data-workout]").forEach(el=>{
