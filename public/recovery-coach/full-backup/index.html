@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1521"><title>M3 FLEX · Encrypted Full App Backup</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1521;--fg:#eef7fb;--muted:#b9d1dd;--edge:#426078;--accent:#c5f08c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.52 system-ui,sans-serif}
+main{max-width:720px;margin:auto;padding:20px 15px 64px}h1{font-size:clamp(23px,5vw,33px);line-height:1.18}
+p{color:var(--muted)}section{background:#142b3a;border:1px solid var(--edge);padding:16px;border-radius:14px;margin:15px 0}
+h2{font-size:19px;margin:0 0 8px}label{display:block;margin:12px 0}input[type=password],input[type=file]{display:block;width:100%;padding:11px;background:#244052;color:#fff;border:1px solid var(--edge);border-radius:8px;margin-top:5px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+button{border:1px solid #7891a4;background:#294960;color:white;border-radius:10px;padding:12px;min-height:46px;font:700 14px system-ui;cursor:pointer}
+button.primary{background:var(--accent);color:#11251b;border-color:var(--accent)}button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.note{color:#f1d4a9;font-size:12px}
+#status{background:#0a1a29;padding:12px;border-left:3px solid var(--accent);min-height:50px}
+a{color:var(--accent)}.small{font-size:12px;color:var(--muted)}
+</style></head><body><main>
+<a href="../../settings">← Return to M3 FLEX Settings</a>
+<h1>Back up the entire M3 FLEX app</h1>
+<p>Protect your original 22-day workout history, nutrition, preferences, optional progress photos, and <strong>separately recorded actual Recovery reps and measurements</strong> in one encrypted file.</p>
+<p class="note">This does NOT include cloud sync credentials, camera footage, microphone recordings, medical clearance, or unfinished workout timers. Local app records do not automatically synchronize across installs. Keep the password and encrypted file separate.</p>
+<section>
+<h2>1 · Review records on this installation</h2>
+<p id="counts" role="status">Checking this device…</p>
+<button id="refresh" type="button">Refresh record counts</button>
+</section>
+<section>
+<h2>2 · Create or verify your encrypted backup</h2>
+<label>Private backup password (12–128 characters; never stored)
+<input id="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="A strong password you can remember"></label>
+<div class="actions"><button class="primary" id="export" type="button">Download encrypted full-app backup</button></div>
+<label>Check an existing backup file (and optionally restore on a clean install)
+<input id="file" type="file" accept=".json,application/json"></label>
+<button type="button" id="verify">Decrypt &amp; verify backup — do not restore</button>
+<p class="small">Encryption: PBKDF2-SHA-256 with 310,000 iterations and AES-256-GCM. This tool works locally in your HTTPS/app browser; the file and password are never uploaded.</p>
+<p id="preview" role="status">No backup file verified. Verification does not change your existing records.</p>
+</section>
+<section>
+<h2>3 · Restore only on a new, empty app install</h2>
+<p class="note">Restoring replaces the original workout state and local Recovery logbook. This tool REFUSES to restore if either already contains data or if this device is linked to cloud sync. It cannot upgrade an APK signature, repair a corrupted Android install, or preserve an unfinished session.</p>
+<label><input id="confirmRestore" type="checkbox"> This is a clean app install, and I want to restore the verified file into its empty local storage.</label>
+<button id="restore" type="button" disabled>Restore verified file into empty app</button>
+<p class="small">After restoring, re-open the original app to load the saved state. Always compare actual reps and measurements before deleting the backup file.</p>
+</section>
+<p id="status" role="status" aria-live="polite">Ready. Nothing has been uploaded or modified.</p>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const K_APP="arm-growth-tracker:v1",K_LOG="m3-flex-real-reps-and-metrics-v1";
+const K_LAST="m3-flex-recovery-last-session-v1",K_SYNC="agt.sync.key.v1";
+const MAGIC="m3-flex-full-device-encrypted-v1",ITERATIONS=310000,MAX_BYTES=18*1024*1024,MAX_FILE=26*1024*1024;
+const encoder=new TextEncoder(),decoder=new TextDecoder();
+const APPROVED=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+let verified=null;
+const status=message=>$("status").textContent=message;
+function safeJson(raw){return raw===null?null:JSON.parse(raw)}
+function isObject(x){return !!x&&typeof x==="object"&&!Array.isArray(x)}
+function safeTree(x,depth=0,budget={count:0}){
+ if(++budget.count>180000||depth>24)throw Error("Backup record nesting or size is unsafe");
+ if(x===null||typeof x==="boolean"||typeof x==="number"||typeof x==="string")return;
+ if(Array.isArray(x)){for(const v of x)safeTree(v,depth+1,budget);return}
+ if(!isObject(x))throw Error("Unsupported backup value");
+ for(const [key,value] of Object.entries(x)){
+  if(["__proto__","constructor","prototype"].includes(key))throw Error("Unsafe object key");
+  safeTree(value,depth+1,budget);
+ }
+}
+function validApp(app){
+ if(!isObject(app)||typeof app.startDate!=="string"||
+    !/^\d{4}-\d{2}-\d{2}$/.test(app.startDate)||!isObject(app.days)||
+    !Array.isArray(app.measurements)||!isObject(app.settings)||!isObject(app.nutrition)||
+    !Array.isArray(app.favorites)||!isObject(app.targets)||
+    !Array.isArray(app.savedWorkouts)||!isObject(app.userAvatar))return false;
+ if(Object.keys(app.days).length>100||app.measurements.length>3000||
+    app.favorites.length>1200||app.savedWorkouts.length>1200)return false;
+ if(Object.keys(app.days).some(k=>!/^\d{1,2}$/.test(k)||Number(k)<1||Number(k)>22))return false;
+ return true;
+}
+function validNum(n,lo,hi,integer=false){return typeof n==="number"&&Number.isFinite(n)&&n>=lo&&n<=hi&&(!integer||Number.isInteger(n))}
+function validRecord(x){
+ if(!isObject(x)||typeof x.id!=="string"||!/^[-a-z0-9]{12,80}$/i.test(x.id)||
+    typeof x.at!=="string"||!Number.isFinite(Date.parse(x.at))||
+    Date.parse(x.at)<Date.UTC(2020,0,1)||Date.parse(x.at)>Date.now()+86400000)return false;
+ if(x.type==="set")return APPROVED.has(x.exercise)&&validNum(x.reps,0,100,true)&&
+    (x.lb===null||validNum(x.lb,0,300))&&
+    Object.keys(x).every(k=>["id","at","type","exercise","reps","lb"].includes(k));
+ if(x.type==="metrics")return ["weight","waist","arm"].some(k=>x[k]!==null)&&
+    (x.weight===null||validNum(x.weight,40,600))&&
+    (x.waist===null||validNum(x.waist,10,90))&&(x.arm===null||validNum(x.arm,5,40))&&
+    Object.keys(x).every(k=>["id","at","type","weight","waist","arm"].includes(k));
+ return false;
+}
+function validate(payload){
+ if(!isObject(payload)||payload.schema!==1||payload.scope!=="full-original-app-and-recovery-log"||
+    !validApp(payload.app)||!isObject(payload.logbook)||payload.logbook.schema!==1||
+    !Array.isArray(payload.logbook.records)||payload.logbook.records.length>1500||
+    payload.logbook.records.some(r=>!validRecord(r)))throw Error("Backup state or actual workout records failed validation");
+ if(payload.lastSession!==null&&
+    (!isObject(payload.lastSession)||!["recovery","A","B"].includes(payload.lastSession.program)||
+     !validNum(payload.lastSession.finishedAt,0,Date.now()+60000)||
+     !validNum(payload.lastSession.demonstratedSteps,1,30,true)||
+     payload.lastSession.disclaimer!=="Timed demonstrations only; actual reps not verified."))throw Error("Invalid last-session receipt");
+ safeTree(payload);
+ if(encoder.encode(JSON.stringify(payload)).length>MAX_BYTES)throw Error("Backup is larger than the permitted limit");
+ return payload;
+}
+function counts(){
+ try{
+  const app=safeJson(localStorage.getItem(K_APP)),log=safeJson(localStorage.getItem(K_LOG));
+  const valid=app!==null?validApp(app):false;
+  const validLog=log!==null&&log.schema===1&&Array.isArray(log.records)&&log.records.every(validRecord);
+  const appDays=valid?Object.keys(app.days).length:0;
+  const reps=validLog?log.records.filter(r=>r.type==="set").length:0;
+  const metrics=validLog?log.records.filter(r=>r.type==="metrics").length:0;
+  $("counts").textContent=(valid?"Original app: "+appDays+" workout day logs, "+app.measurements.length+" original measurements, "+app.savedWorkouts.length+" custom workouts.":"Original app: "+(app?"stored state needs review":"no saved state yet")+".")+
+   " Recovery: "+reps+" actual sets, "+metrics+" measurements."+
+   (localStorage.getItem(K_SYNC)?" Cloud-linked: restoration blocked on this device.":" Cloud sync not linked.");
+ }catch(e){$("counts").textContent="Could not verify local storage. Do not uninstall or reset this app.";status("Storage read failed; no backup was made.");}
+}
+function collect(){
+ const app=safeJson(localStorage.getItem(K_APP)),log=safeJson(localStorage.getItem(K_LOG));
+ if(app!==null&&!validApp(app))throw Error("Original tracker data is not valid; do not overwrite or delete it");
+ if(log!==null&&(!isObject(log)||log.schema!==1||!Array.isArray(log.records)||
+    log.records.some(r=>!validRecord(r))))throw Error("Recovery logbook contains invalid records; export its individual backup first");
+ const last=safeJson(localStorage.getItem(K_LAST));
+ // Use a fresh default state only when no historical original store exists;
+ // this never writes into localStorage or fabricates any workout history.
+ const empty={startDate:new Date().toISOString().slice(0,10),days:{},measurements:[],
+  settings:{},nutrition:{},favorites:[],targets:{},savedWorkouts:[],userAvatar:{kind:"default"}};
+ return validate({schema:1,scope:"full-original-app-and-recovery-log",
+  exportedAt:new Date().toISOString(),app:app??empty,logbook:log??{schema:1,records:[]},
+  lastSession:last??null});
+}
+function toB64(arr){
+ let text="";for(let i=0;i<arr.length;i+=8192)text+=String.fromCharCode(...arr.subarray(i,i+8192));
+ return btoa(text);
+}
+function fromB64(s,max){
+ if(typeof s!=="string"||s.length>max||s.length%4!==0||!/^[A-Za-z0-9+/]*={0,2}$/.test(s))throw Error("Invalid backup encoding");
+ const data=atob(s),out=new Uint8Array(data.length);
+ for(let i=0;i<data.length;i++)out[i]=data.charCodeAt(i);
+ return out;
+}
+async function key(password,salt,usage){
+ const input=await crypto.subtle.importKey("raw",encoder.encode(password),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:ITERATIONS,hash:"SHA-256"},
+  input,{name:"AES-GCM",length:256},false,[usage]);
+}
+function privatePassword(){
+ const password=$("password").value;
+ if(password.length<12||password.length>128)throw Error("Enter a private 12–128 character password");
+ if(!crypto?.subtle||!crypto?.getRandomValues||!window.isSecureContext)throw Error("Secure HTTPS/Android WebView encryption required");
+ return password;
+}
+function download(envelope){
+ const url=URL.createObjectURL(new Blob([JSON.stringify(envelope)],{type:"application/json"}));
+ const a=document.createElement("a");a.href=url;
+ a.download="m3-flex-full-device-encrypted-"+new Date().toISOString().slice(0,10)+".json";
+ document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+$("export").addEventListener("click",async()=>{
+ $("export").disabled=true;verified=null;$("restore").disabled=true;
+ try{
+  const password=privatePassword(),payload=collect();
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const cipher=await crypto.subtle.encrypt({name:"AES-GCM",iv},await key(password,salt,"encrypt"),encoder.encode(JSON.stringify(payload)));
+  download({schema:2,format:MAGIC,iterations:ITERATIONS,salt:toB64(salt),iv:toB64(iv),ciphertext:toB64(new Uint8Array(cipher))});
+  status("Encrypted FULL M3 FLEX backup downloaded. Locate the file and verify it using the password before uninstalling.");
+ }catch(e){status("Full backup failed: "+(e?.message||"invalid source")+". Nothing uploaded or modified.");}
+ finally{$("password").value="";$("export").disabled=false;}
+});
+$("verify").addEventListener("click",async()=>{
+ verified=null;$("restore").disabled=true;$("confirmRestore").checked=false;
+ $("verify").disabled=true;
+ try{
+  const file=$("file").files?.[0],password=privatePassword();
+  if(!file||file.size>MAX_FILE)throw Error("Choose an encrypted M3 FLEX backup file smaller than 26 MB");
+  const envelope=JSON.parse(await file.text());
+  if(envelope?.schema!==2||envelope.format!==MAGIC||envelope.iterations!==ITERATIONS)
+   throw Error("Unsupported or unencrypted full-app backup");
+  const salt=fromB64(envelope.salt,64),iv=fromB64(envelope.iv,32),cipher=fromB64(envelope.ciphertext,MAX_FILE*2);
+  if(salt.length!==16||iv.length!==12||cipher.length<17)throw Error("Encrypted file is incomplete");
+  const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv},await key(password,salt,"decrypt"),cipher);
+  verified=validate(JSON.parse(decoder.decode(plain)));
+  $("preview").textContent="Verified with password and authenticated encryption: "+
+   Object.keys(verified.app.days).length+" original workout day logs, "+
+   verified.app.measurements.length+" original measurements, "+
+   verified.logbook.records.filter(r=>r.type==="set").length+" actual Recovery sets, "+
+   verified.logbook.records.filter(r=>r.type==="metrics").length+" Recovery measurements. NO restore performed.";
+  status("Backup decrypted and validated successfully. Keep this file and password separate.");
+ }catch(e){
+  verified=null;$("preview").textContent="No verified file. Existing app records are unchanged.";
+  status("Verification failed: wrong password, corrupt file or unsupported data. No records were replaced.");
+ }finally{$("password").value="";$("verify").disabled=false;update();}
+});
+function targetEmpty(){
+ const app=localStorage.getItem(K_APP),log=localStorage.getItem(K_LOG);
+ return !app&&!log&&!localStorage.getItem(K_SYNC);
+}
+function update(){$("restore").disabled=!verified||!$("confirmRestore").checked||!targetEmpty();}
+$("confirmRestore").addEventListener("change",update);
+$("restore").addEventListener("click",()=>{
+ if(!verified||!$("confirmRestore").checked||!targetEmpty()){
+  status("Restore refused. Target must be empty and disconnected from cloud sync; verification and confirmation required.");return;
+ }
+ if(!window.confirm("Restore the verified original tracker and actual Recovery log into this EMPTY installation?"))return;
+ const backup=verified;
+ const rawApp=JSON.stringify(backup.app),rawLog=JSON.stringify(backup.logbook);
+ const rawLast=backup.lastSession===null?null:JSON.stringify(backup.lastSession);
+ try{
+  if(!targetEmpty())throw Error("Target changed; restore cancelled");
+  localStorage.setItem(K_APP,rawApp);
+  localStorage.setItem(K_LOG,rawLog);
+  if(rawLast!==null)localStorage.setItem(K_LAST,rawLast);
+  verified=null;update();counts();
+  status("Restored original app + Recovery log locally. Restart M3 FLEX and verify actual reps, photos and measurements. No cloud credentials or clinician clearance restored.");
+ }catch(e){
+  // A quota failure must not leave an apparently complete half-restore.
+  try{localStorage.removeItem(K_APP);localStorage.removeItem(K_LOG);if(rawLast!==null)localStorage.removeItem(K_LAST);}catch{}
+  status("Restore could not finish. Target records were rolled back; keep the encrypted backup. Nothing uploaded.");
+ }
+});
+window.addEventListener("pageshow",counts);
+counts();
+</script></main></body></html>
