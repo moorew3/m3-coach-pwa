@@ -39,6 +39,7 @@ jobs:
         run: |
           test -s .output/server/index.mjs
           test -f .output/public/recovery-coach/index.html
+          test -s .output/public/recovery-coach/scene-library.js
           test -s .output/public/recovery-coach/bench-core/index.html
           test -s .output/public/recovery-coach/logbook/index.html
           test -f .output/public/recovery-coach/programs/index.html
