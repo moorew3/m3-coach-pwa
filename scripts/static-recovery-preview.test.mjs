@@ -6,7 +6,7 @@ const action=readFileSync(new URL("../.github/workflows/build-check.yml",import.
 const page=readFileSync(new URL("../public/recovery-coach/index.html",import.meta.url),"utf8");
 
 test("portable reviewed Recovery Coach preview is HTML-only and preserves exact live approved sources",()=>{
-  for(const entry of ["recovery-coach/index.html","recovery-coach/bench-core/index.html","recovery-coach/programs/index.html","recovery-coach/device-check/index.html","recovery-coach/form-check/index.html"])
+  for(const entry of ["recovery-coach/index.html","recovery-coach/scene-library.js","recovery-coach/bench-core/index.html","recovery-coach/programs/index.html","recovery-coach/device-check/index.html","recovery-coach/form-check/index.html"])
     assert.ok(build.includes('"'+entry+'"'),"Missing original source page "+entry);
   assert.match(build,/NO Node\.js or paid app runtime/);
   assert.match(build,/No owner media binaries, credential files/);
