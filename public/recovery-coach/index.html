@@ -868,9 +868,18 @@ document.querySelectorAll("[data-workout]").forEach(btn=>btn.addEventListener("c
  try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
  const review=$("sceneReviewVideo");review.pause();review.removeAttribute("src");review.load();review.style.display="none";
  applyWorkout(target);
+ history.replaceState(null,"",location.pathname+"?program="+encodeURIComponent(target)+location.hash);
  phase=0;idx=0;workRound=1;mode="ready";secondsLeft=duration();render();
  tell("Workout "+(target==="recovery"?"Recovery":target)+" selected. Approved original exercises run in this same player. Check the scene library for every other completed render. Reconfirm your clinician clearance before starting.");
 }));
+// A link from the SAME M3 FLEX home selects the requested routine here.
+const queryProgram=new URLSearchParams(location.search).get("program");
+if(queryProgram&&APPROVED_WORKOUT_CHOICES[queryProgram]){
+ let oldProgram="recovery";
+ try{const prior=JSON.parse(localStorage.getItem(PROGRESS_KEY)||"null");oldProgram=prior?.program??"recovery"}catch{}
+ if(oldProgram!==queryProgram)try{localStorage.removeItem(PROGRESS_KEY)}catch{}
+ applyWorkout(queryProgram);
+}
 const restored=restoreProgress();
 if(!restored)secondsLeft=duration();
 render();
