@@ -376,21 +376,28 @@ function SettingsPage() {
       <section className="surface-card mt-5 space-y-3 rounded-2xl p-4">
         <h2 className="text-lg font-bold uppercase">Backup</h2>
         <p className="text-sm text-muted-foreground">
-          Export a JSON file of everything on this device, or restore from one.
+          The original tracker export below does not include separate Recovery Logbook records. For Android updates and phone changes, use the single password-protected FULL M3 FLEX backup first.
         </p>
+        <a
+          data-testid="m3-full-device-backup"
+          href="/recovery-coach/full-backup/"
+          className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 text-center text-sm font-bold uppercase text-primary-foreground"
+        >
+          <Download className="size-5" /> Back up entire M3 FLEX · Encrypted
+        </a>
         <button
           type="button"
           onClick={download}
           className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold uppercase text-primary-foreground"
         >
-          <Download className="size-5" /> Export data
+          <Download className="size-5" /> Export original tracker only (not Recovery logs)
         </button>
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-elevated text-sm font-bold uppercase"
         >
-          <Upload className="size-5" /> Import data
+          <Upload className="size-5" /> Import original tracker only
         </button>
         <input
           ref={fileRef}
