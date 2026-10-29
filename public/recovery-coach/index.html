@@ -277,7 +277,7 @@ function getSceneApprovals(){
 }
 function reviewedScene(id){
  const item=window.M3_FLEX_SCENE_LIBRARY?.find(x=>x.id===id);
- return item&&item.video&&item.audio&&getSceneApprovals()[id]===true?{
+ return item&&item.video&&item.audio&&getSceneApprovals()[id]===item.video?{
   id:item.id,name:item.name,video:item.video,voice:item.audio,approved:true,
   sec:30,note:"Owner reviewed existing moving Flex and voice: "+item.note+
   " Audio/video sync remains subject to real-device checks. Athlete repetitions are NOT measured. Use only clinician-cleared technique and load."
@@ -855,6 +855,8 @@ document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>st
 for(const id of ["workDuration","restDuration","setRounds","pairMode"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
 
 const ALL_EXISTING_FLEX_SCENES=Array.isArray(window.M3_FLEX_SCENE_LIBRARY)?window.M3_FLEX_SCENE_LIBRARY:[];
+const OPTIONAL_SCENE_IDS=new Set(["C14","C15","C17","C18","C19","C22","C23"]);
+let currentReviewScene=null;
 function showExistingScenes(){
  const f=$("sceneFilter").value;
  const items=ALL_EXISTING_FLEX_SCENES.filter(scene=>{
@@ -871,7 +873,10 @@ function showExistingScenes(){
   const card=document.createElement("div");card.className="item";card.style.alignItems="flex-start";
   const detail=document.createElement("div");detail.className="item-main";
   const heading=document.createElement("strong");heading.textContent=scene.id+" · "+scene.name;
-  const status=document.createElement("small");status.textContent=scene.source+" · "+scene.group+" · "+(scene.status==="archived-approved-link"?"Archived user-approved visual":"Existing completed scene / review");
+  const status=document.createElement("small");
+  status.textContent=scene.source+" · "+scene.group+" · "+
+   (getSceneApprovals()[scene.id]===scene.video?"✓ Owner reviewed for routine":
+   scene.status==="archived-approved-link"?"Archived user-approved visual":"Existing completed scene / review");
   const note=document.createElement("small");note.textContent=scene.note||"Verify face, movement and equipment before approving this scene for timed training.";
   detail.append(heading,status,note);
   const action=document.createElement(scene.video?"button":"a");
@@ -882,6 +887,16 @@ function showExistingScenes(){
    action.addEventListener("click",()=>{
     if(mode==="running"||mode==="rest")pause();
     stopMarcusAudioTest();
+    currentReviewScene=scene;
+    const listen=$("sceneReviewAudio");listen.pause();listen.removeAttribute("src");listen.load();
+    const canEnable=OPTIONAL_SCENE_IDS.has(scene.id)&&!!scene.audio;
+    $("sceneApprovalControls").classList.toggle("hidden",!canEnable);
+    $("sceneOwnerCheck").checked=false;
+    $("sceneApprovalTitle").textContent="Review "+scene.id+" · "+scene.name;
+    $("listenScene").disabled=!canEnable;
+    $("approveScene").disabled=!canEnable;
+    $("approveScene").textContent=getSceneApprovals()[scene.id]===scene.video?
+      "Remove my previous scene approval":"Include reviewed scene in Workout A/B";
     const view=$("sceneReviewVideo");view.pause();view.src=scene.video;
     view.muted=true;view.style.display="block";view.load();
     $("sceneReviewStatus").textContent="Now reviewing: "+scene.name+". This original scene is visible, but has not automatically replaced a locked approved workout video or generated an athlete rep.";
@@ -895,6 +910,39 @@ function showExistingScenes(){
  }
 }
 $("sceneFilter").addEventListener("change",showExistingScenes);
+$("listenScene").addEventListener("click",async()=>{
+ if(!currentReviewScene?.audio||!OPTIONAL_SCENE_IDS.has(currentReviewScene.id))return;
+ const audio=$("sceneReviewAudio");audio.pause();audio.src=currentReviewScene.audio;audio.currentTime=0;
+ try{await audio.play();$("sceneReviewStatus").textContent="Playing the EXISTING candidate recording. Verify it is your approved Marcus voice and actually matches "+currentReviewScene.name+"; this alone does not mean approved."}
+ catch{ $("sceneReviewStatus").textContent="Candidate audio could not play. Do NOT approve the scene with missing or wrong Marcus voice."}
+});
+$("approveScene").addEventListener("click",()=>{
+ const scene=currentReviewScene;
+ if(!scene?.video||!scene.audio||!OPTIONAL_SCENE_IDS.has(scene.id))return;
+ const approvals=getSceneApprovals();
+ const removing=approvals[scene.id]===scene.video;
+ if(!removing&&!$("sceneOwnerCheck").checked){
+  $("sceneReviewStatus").textContent="Review the video and voice yourself, then confirm the checkbox before enabling this scene.";
+  return;
+ }
+ if(removing)delete approvals[scene.id];else approvals[scene.id]=scene.video;
+ try{localStorage.setItem(SCENE_OWNER_KEY,JSON.stringify(approvals))}
+ catch{ $("sceneReviewStatus").textContent="Approval could not be stored. Scene was not activated.";return}
+ // A new approved scene changes the workout sequence: stop, clear the timer
+ // and medical confirmations so stale progress cannot transfer to new media.
+ releaseScreenAwake();stopMarcusAudioTest();clearTick();stopMedia(true);
+ completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;
+ for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;
+ try{localStorage.removeItem(PROGRESS_KEY)}catch{}
+ const original=activeWorkout;applyWorkout(original);
+ phase=0;idx=0;workRound=1;mode="ready";secondsLeft=duration();render();
+ $("sceneReviewStatus").textContent=(removing?"Removed":"Added")+" "+scene.name+
+  (original==="recovery"?" to its A/B workout option. Select Workout A or B to use it.":" to this guided program.")+
+  " Original locked clips remain unchanged. Fresh clinician clearance is required before exercise.";
+ $("sceneOwnerCheck").checked=false;
+ $("approveScene").textContent=removing?"Include reviewed scene in Workout A/B":"Remove my previous scene approval";
+ showExistingScenes();
+});
 showExistingScenes();
 document.querySelectorAll("[data-workout]").forEach(btn=>btn.addEventListener("click",()=>{
  const target=btn.dataset.workout;
