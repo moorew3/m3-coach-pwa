@@ -73,8 +73,18 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 @media(min-width:680px){main{padding:30px 24px 70px}.future{grid-template-columns:1fr 1fr}.videoWrap video{max-height:440px}}
 </style></head><body><main>
 <header class="top"><div class="brand">M3 <b>FLEX</b></div><a href="/" style="color:#c5f08c;font-size:12px;font-weight:800">← App home</a><div class="version">Recovery Coach · 7 approved scenes</div></header>
-<h1>Your guided recovery workout</h1>
-<p class="lead">One simple session, using your five approved Flex videos and Marcus – Warm &amp; Friendly English coaching. No rejected clips or replacement avatars.</p>
+<h1>Choose your M3 FLEX workout</h1>
+<p class="lead">One M3 FLEX app, multiple workout choices, all finished scene references in one exercise library. The original approved videos and Marcus voice stay unchanged.</p>
+<section class="panel" id="unifiedWorkoutChooser" aria-label="Choose M3 FLEX workout">
+ <h3>My workout choices</h3>
+ <nav class="future" id="workoutChoices" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" aria-label="Workout choices">
+  <button type="button" class="btn primary" data-workout="recovery" aria-pressed="true">Recovery · 5 moves</button>
+  <button type="button" class="btn" data-workout="A" aria-pressed="false">Workout A · Dumbbells / boxing</button>
+  <button type="button" class="btn" data-workout="B" aria-pressed="false">Workout B · INNSTAR / arms</button>
+  <a class="btn" href="/" style="text-decoration:none;text-align:center;display:grid;place-items:center">Original weekly workouts · same app</a>
+ </nav>
+ <p id="workoutDescription" class="small muted" role="status">Recovery: five approved movements with timed sets, rest, warm-up and cooldown.</p>
+</section>
 <div class="trust"><span>✓ 7 approved moving scenes</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
 <div class="nonWeightBanner" role="note" id="nonWeightWarning"><strong>FOOT CAST · WEIGHT-BEARING ABILITY REPORTED.</strong> You have said you can put weight on the injured foot. This approved circuit remains seated by design, not because you are unable to stand. Weight-bearing ability alone does not establish clearance for loaded squats, jumping or other specific movements. Follow your clinician's restrictions and keep the cast positioned comfortably throughout each exercise.</div>
 <button id="emergencyStop" type="button" aria-label="Stop workout immediately">■ STOP WORKOUT — PAIN OR LEG CONCERN</button>
@@ -176,7 +186,15 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <p class="small muted">These are text-and-timer workouts, not approved moving Flex demonstrations or new Marcus speech. A clinician must specifically clear each core movement, effort and cast setup; keep the injured leg supported without using the cast for leverage. No planks, sit-ups, leg raises or forceful twisting in the core plan.</p>
 <a href="./bench-core/" id="benchCoreLink" style="display:block;background:#c5f08c;color:#132b1e;padding:13px 15px;border-radius:11px;text-align:center;text-decoration:none;font-weight:900">▶ Open Core A / Core B · Bench training</a>
 </section>
-<section class="panel"><h3>Next programs: Workout A &amp; Workout B</h3><p class="small"><a href="./programs/" target="_blank" rel="noopener noreferrer">Open Workout A/B exercise preview and new animation reviews ↗</a></p><p class="small"><a href="./programs/" style="color:#c5f08c;font-weight:800">▶ Open Workout A/B development player</a> — preview only verified Flex videos and Marcus audio. Missing exercises are clearly blocked until approved.</p><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
+<section class="panel" id="allScenesCatalog"><h3>All existing M3 FLEX workout scenes · one library</h3>
+<p class="small muted">Here are the original Equipment A/B approvals, completed scenes from both HeyGen accounts, and previously rendered workout clips. Every scene can be inspected here; unapproved versions cannot silently replace locked videos or count as a completed exercise.</p>
+<label>Filter scenes <select id="sceneFilter" aria-label="Filter all original workout scenes"><option value="all">All completed scenes</option><option value="A">Equipment A</option><option value="B">Equipment B</option><option value="archive">Archived approved Flow/Drive</option><option value="primary">Original BIG FLEX scenes</option><option value="backup">HeyGen backup scenes</option></select></label>
+<p id="sceneCount" role="status" class="small muted">Loading original scene library…</p>
+<div id="sceneGrid" class="steps" style="max-height:660px;overflow:auto"></div>
+<video id="sceneReviewVideo" controls muted playsinline preload="none" style="display:none;width:100%;max-height:350px;background:#050b12;margin-top:12px" aria-label="Existing Flex scene owner preview"></video>
+<p id="sceneReviewStatus" class="notice" role="status">Select any existing scene to review it. Owner approval and exercise clearance are distinct.</p>
+</section>
+<details><summary>Original A/B development notes and scene production history</summary><section class="panel"><h3>Prior Workout A and B notes</h3><p class="small"><a href="./programs/" target="_blank" rel="noopener noreferrer">Open Workout A/B exercise preview and new animation reviews ↗</a></p><p class="small"><a href="./programs/" style="color:#c5f08c;font-weight:800">▶ Open Workout A/B development player</a> — preview only verified Flex videos and Marcus audio. Missing exercises are clearly blocked until approved.</p><p class="muted small">These are the next programs to build. The five approved Recovery Coach videos above are finished and won't be replaced.</p>
 <div class="future">
 <div><strong>Workout A · Dumbbells and arm cardio</strong><p>Bring forward your previously approved seated wrist-curl, seated lateral-raise, and arm-only boxing visuals from the archive. Verify the playable video and Marcus voice for each before activation.</p><span class="tag">Video integration next</span></div>
 <div><strong>Workout B · INNSTAR and wrist equipment</strong><p>Preserve the approved seated INNSTAR press. Verify the exact AMYCO wrist exerciser and finish the separate band chest-fly demonstration before adding new exercises.</p><span class="tag">Additional demos pending</span></div>
@@ -192,7 +210,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <p><strong>Main:</strong> C08-PRESS-R3 INNSTAR press (locked), separate band fly (not final-approved), C03 front raises (locked), C04-R2 alternating curls (locked), AMYCO wrists (equipment technique unverified).</p>
 <p><strong>Post:</strong> chest/shoulder stretching (animated Flex missing). <strong>Cooldown:</strong> existing Marcus recordings (moving Flex videos missing).</p>
 <p class="small">Proposed 2 × 8 controlled reps for verified strength movements; AMYCO exercise cannot be activated before correct equipment testing. The program remains IN DEVELOPMENT.</p></details>
-</section>
+</section></details>
 <details><summary>Galaxy Fold, earbuds and camera · physical device check</summary><p>Optional local setup test before accepting the app for release. It tests actual playback of approved Marcus, microphone signal and a private front camera preview. No recording is uploaded, and this is not exercise-form analysis.</p><a href="./device-check/" style="color:#c5f08c;font-weight:800">Open privacy-safe phone/headset diagnostics →</a></details>
 <details><summary>Owner's development archive and QA</summary><p>Old Equipment A/B drafts, rejected videos, prior reviews, and the full pre-cleanup page source were archived before this cleanup.</p><a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1Xe9pBlXGdC4jgKoAjMSQiPsBcd71-1MJPMAT0YJ0E0o/edit">Open archive in Google Drive</a></details>
 <details><summary>Complete exercise-by-exercise QA checklist</summary>
@@ -202,6 +220,7 @@ footer{text-align:center;font-size:11px;color:#96b0c0;margin:18px auto}
 <p><a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">Open detailed QA matrix, production specs and Workbook A/B build sheets</a></p></details>
 <footer>M3 Flex Recovery Coach · Five original approved videos locked · Marcus English only</footer>
 </main>
+<script src="./scene-library.js"></script>
 <script>
 "use strict";
 const base="https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/";
