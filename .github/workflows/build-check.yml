@@ -52,6 +52,14 @@ jobs:
       - name: Smoke test actual compiled Node server without paid AI
         run: node scripts/node-runtime-smoke.mjs
 
+      - name: Export original React app and approved Recovery together to a no-Node static site
+        run: |
+          node scripts/stage-unified-static.mjs
+          test -s unified-static-web/index.html
+          test -s unified-static-web/recovery/index.html
+          test -s unified-static-web/progress/index.html
+          test -s unified-static-web/recovery-coach/index.html
+
       - name: Verify backup inventory without contacting media hosts
         run: node scripts/backup-approved-media.mjs --check
 
@@ -86,6 +94,19 @@ jobs:
         env:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: node scripts/browser-mobile-smoke.mjs
+
+      - name: Verify unified original React and Recovery route on independent static host
+        env:
+          M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: node scripts/unified-static-browser-smoke.mjs
+
+      - name: Package ONE original M3 FLEX app plus approved Recovery for existing static hosting
+        uses: actions/upload-artifact@v4
+        with:
+          name: m3-flex-unified-original-app-static-site
+          path: unified-static-web/
+          retention-days: 7
+          if-no-files-found: error
 
       - name: Advisory real hosted M3 FLEX preview smoke
         continue-on-error: true
