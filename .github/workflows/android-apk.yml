@@ -62,6 +62,7 @@ jobs:
           test -s android-recovery-web/recovery/index.html
           test -s android-recovery-web/recovery-coach/index.html
           test -s android-recovery-web/recovery-coach/update-safety/index.html
+          test -s android-recovery-web/recovery-coach/full-backup/index.html
           grep -q '"scope": "original-app-plus-integrated-recovery"' android-recovery-web/build-info.json
           grep -q '"stableUpgradeSignature": false' android-recovery-web/build-info.json
           test -s android-recovery-web/recovery-coach/form-check/vendor/pose_landmarker_lite.task
@@ -117,7 +118,7 @@ jobs:
           printf '%s\n' "ONE original M3 FLEX app plus approved Recovery Coach in a single Android debug APK; not a finished conversational coach." > artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "Original Flex/Marcus media streams need internet. SSR/cloud-only features and actual phone camera/headset still require verification. Workout A/B include verified scenes only." >> artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "Future debug builds may be signed with a different temporary developer key and require uninstall/reinstall." >> artifacts/ANDROID-INSTALL-README.txt
-          printf '%s\n' "IMPORTANT: Before replacing this app, open Recovery Coach > Check my records and encrypted backup. Export password-protected logbook JSON, verify file/password, then restore and check records on the new install." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "IMPORTANT: Before replacing this app, open Settings > Back up entire M3 FLEX (or Recovery Coach > Check my records), export and VERIFY your password-protected FULL-APP backup. A Recovery logbook-only file does NOT include original tracker workouts or photos." >> artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "An APK reinstall can erase local workout logs and the interrupted session; only manual actual reps and measurements are in exported logbook backups." >> artifacts/ANDROID-INSTALL-README.txt
 
       - name: Deliver Android APK for authorized Galaxy Fold testing
