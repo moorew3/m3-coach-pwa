@@ -92,10 +92,31 @@ try {
     "Legacy weekly plan must not appear cleared for seated-only training",
   );
   await page.getByTestId("m3-unified-workout-picker").waitFor();
-  assert.equal(await page.locator('[href="/recovery-coach/?program=A"]').count(),1);
-  assert.equal(await page.locator('[href="/recovery-coach/?program=B"]').count(),1);
-  assert.equal(await page.locator('[href="/recovery-coach/?program=recovery"]').count(),1);
-  step("ONE M3 FLEX home exposes Recovery, Equipment A/B, and original weekly workouts");
+  for (const name of [
+    "Recovery · 5 approved moves",
+    "Workout A · Dumbbells & boxing scenes",
+    "Workout B · INNSTAR & arms",
+  ]) {
+    const link = page.getByTestId("m3-unified-workout-picker").getByRole("link", {name});
+    assert.equal(await link.count(), 1, "One M3 FLEX native workout choice: " + name);
+    assert.match(await link.getAttribute("href") ?? "", /^\/recovery\?program=/);
+  }
+  await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Recovery"}).click();
+  await page.getByTestId("m3-native-recovery").waitFor();
+  await page.getByTestId("m3-recovery-existing-player").waitFor();
+  assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),
+    "/recovery-coach/?program=recovery");
+  const embedded = page.frameLocator('[data-testid="m3-recovery-existing-player"]');
+  await embedded.locator("#workoutChoices").waitFor();
+  await embedded.locator('[data-stage="1"]').click();
+  for (const box of await embedded.locator("#clearance .check").all()) await box.check();
+  await embedded.locator("#workDuration").selectOption("20");
+  // Do not start media; explicitly verify shared same-origin progress
+  // without a fake rep log or separate M3 FLEX account.
+  await embedded.locator("#setRounds").selectOption("2");
+  await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Today"}).click();
+  await page.getByTestId("m3-unified-workout-picker").waitFor();
+  step("Existing M3 FLEX now includes a native Recovery tab, same-origin approved player and unchanged original Home");
 
   // All old and new approved/review scenes must be accessible from ONE
   // app with direct Recovery/A/B choices, not separate competing projects.
