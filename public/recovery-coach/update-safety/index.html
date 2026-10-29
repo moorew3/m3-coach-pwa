@@ -24,19 +24,19 @@ button:disabled{opacity:.48}#summary,#version,#confirmStatus{border-left:3px sol
 <p class="small">This count reads only your current browser/app's local storage. A browser, a separate app install and another phone can have different data. No logs leave this device during this check.</p>
 </section>
 <section>
-<h2>Back up your actual records</h2>
-<p>Open the private logbook, enter a strong 12–128 character password and select <strong>Export password-protected backup</strong>. Confirm the downloaded file exists on this phone or another storage location you control. Store the password separately.</p>
-<a class="action" href="../logbook/#backup">Open logbook and export my encrypted records</a>
-<p class="small">The logbook also allows plaintext JSON export, but that file is not encrypted. Use the password-protected option for personal data transfer. If you have no actual records yet, no personal logbook backup is needed; the separate session timer snapshot is not part of that export.</p>
+<h2>Back up the entire app, not just Recovery reps</h2>
+<p>Open the full-app backup and enter a strong 12–128 character password. It encrypts your original 22-day workout history, optional photos, preferences, nutrition, and your separately recorded real Recovery reps and measurements together. <strong>Verify the file with your password before uninstalling.</strong> Store the backup and its password separately.</p>
+<a class="action" href="../full-backup/">Encrypt, download &amp; verify my COMPLETE M3 FLEX data</a>
+<p class="small">The Recovery Logbook-only export and the original Settings export do not cover each other. Use the combined full-app backup above for updating Android. Neither a new signature nor a reinstall automatically moves data. An unfinished session and medical-clearance checkboxes are never restored.</p>
 </section>
 <section>
 <h2>Do not delete the current app until these are true</h2>
-<label><input id="hasFile" type="checkbox"> I personally located the encrypted JSON backup file in my device's Files/Downloads or private storage.</label>
+<label><input id="hasFile" type="checkbox"> I personally located the FULL-APP encrypted JSON backup file in my device's Files/Downloads or private storage.</label>
 <label><input id="hasPassword" type="checkbox"> I have the correct private backup password saved separately from that file.</label>
 <label><input id="knowLimits" type="checkbox"> I understand the interrupted workout countdown, camera settings and clinician-clearance checks do not transfer to another installation.</label>
 <button id="checkReady" type="button" disabled>Check my update preparation</button>
 <p id="confirmStatus" role="status" aria-live="polite">Nothing has been backed up by this page. Use the logbook export first.</p>
-<p class="small">This is a self-check, not proof that a backup can be decrypted. After installing the replacement app, open the logbook and restore the encrypted backup using its password. Verify the record count and actual reps before deleting the saved backup file.</p>
+<p class="small">This self-check is not proof of file integrity. Use the FULL-APP page to decrypt and verify the file on this device. On a clean install that is not linked to cloud sync, restore that verified file. Check both original tracker workouts and actual Recovery reps before deleting the saved file. Never force a restore into an app that already contains records.</p>
 </section>
 </main><script>
 "use strict";
