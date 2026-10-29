@@ -91,7 +91,49 @@ try {
     (await page.getByTestId("seated-program-warning").innerText()).includes("not been fully converted"),
     "Legacy weekly plan must not appear cleared for seated-only training",
   );
-  step("Fresh-session entrance accepted; seated-only program warning visible");
+  await page.getByTestId("m3-unified-workout-picker").waitFor();
+  assert.equal(await page.locator('[href="/recovery-coach/?program=A"]').count(),1);
+  assert.equal(await page.locator('[href="/recovery-coach/?program=B"]').count(),1);
+  assert.equal(await page.locator('[href="/recovery-coach/?program=recovery"]').count(),1);
+  step("ONE M3 FLEX home exposes Recovery, Equipment A/B, and original weekly workouts");
+
+  // All old and new approved/review scenes must be accessible from ONE
+  // app with direct Recovery/A/B choices, not separate competing projects.
+  const choiceContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  const choicePage = await choiceContext.newPage();
+  choicePage.setDefaultTimeout(12000);
+  try {
+    const aResponse = await choicePage.goto(base + "/recovery-coach/?program=A", {waitUntil:"domcontentloaded"});
+    assert.equal(aResponse?.status(),200);
+    await choicePage.locator("#workoutChoices").waitFor();
+    assert.equal(await choicePage.locator('[data-workout="A"]').getAttribute("aria-pressed"),"true");
+    assert.equal(await choicePage.locator("#pairMode").isDisabled(),true);
+    await choicePage.locator('[data-stage="1"]').click();
+    assert.equal(await choicePage.locator("#steps .item").count(),2,"Workout A uses verified original approved exercises");
+    assert.match((await choicePage.locator("#progressText").textContent())??"",/0 of 7 steps completed/);
+    await choicePage.locator('[data-workout="B"]').click();
+    assert.equal(await choicePage.locator('[data-workout="B"]').getAttribute("aria-pressed"),"true");
+    await choicePage.locator('[data-stage="1"]').click();
+    assert.equal(await choicePage.locator("#steps .item").count(),3,"Workout B uses approved INNSTAR/front/alternating");
+    await choicePage.locator('[data-workout="recovery"]').click();
+    await choicePage.locator('[data-stage="1"]').click();
+    assert.equal(await choicePage.locator("#steps .item").count(),5,"Original Recovery five scenes preserved");
+    assert.match((await choicePage.locator("#progressText").textContent())??"",/0 of 10 steps completed/);
+    assert.ok(Number((await choicePage.locator("#sceneCount").textContent())?.split(" total ")[0]?.match(/\d+/)?.[0])>=75);
+    await choicePage.locator("#sceneFilter").selectOption("archive");
+    assert.equal(await choicePage.locator("#sceneGrid .item").count(),3);
+    assert.equal(await choicePage.locator("#sceneGrid a").count(),3,"Original Flow/Drive approved links remain available");
+    await choicePage.locator("#sceneFilter").selectOption("A");
+    assert.ok((await choicePage.locator("#sceneGrid .item").count())>=5);
+    await choicePage.locator("#sceneGrid button").first().click();
+    assert.equal(await choicePage.locator("#sceneReviewVideo").isVisible(),true);
+    assert.match((await choicePage.locator("#sceneReviewStatus").textContent())??"",/original scene is visible/i);
+    step("Unified app switches Recovery/A/B, restores source scene gallery and previews prior completed render without exercising");
+  } finally {
+    await choiceContext.close();
+  }
 
   // Directly open the session to test its own entrance independent of
   // home-page onboarding defaults. Both entry screens are genuine React UI.
