@@ -194,10 +194,11 @@ $("verify").addEventListener("click",async()=>{
 });
 function targetEmpty(){
  const app=localStorage.getItem(K_APP),log=localStorage.getItem(K_LOG);
- return !app&&!log&&!localStorage.getItem(K_SYNC);
+ return !app&&!log&&!localStorage.getItem(K_SYNC)&&!localStorage.getItem(K_LAST)&&!localStorage.getItem("m3-flex-recovery-progress-v1");
 }
 function update(){$("restore").disabled=!verified||!$("confirmRestore").checked||!targetEmpty();}
 $("confirmRestore").addEventListener("change",update);
+$("file").addEventListener("change",()=>{verified=null;$("confirmRestore").checked=false;$("restore").disabled=true;$("preview").textContent="New file selected; verify its password before any restore.";});
 $("restore").addEventListener("click",()=>{
  if(!verified||!$("confirmRestore").checked||!targetEmpty()){
   status("Restore refused. Target must be empty and disconnected from cloud sync; verification and confirmation required.");return;
