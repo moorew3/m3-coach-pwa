@@ -42,6 +42,7 @@ jobs:
           test -s .output/public/recovery-coach/scene-library.js
           test -s .output/public/recovery-coach/bench-core/index.html
           test -s .output/public/recovery-coach/logbook/index.html
+          test -s .output/public/recovery-coach/full-backup/index.html
           test -f .output/public/recovery-coach/programs/index.html
           test -f .output/public/recovery-coach/device-check/index.html
           test -f .output/public/recovery-coach/update-safety/index.html
@@ -59,6 +60,7 @@ jobs:
           test -s unified-static-web/recovery/index.html
           test -s unified-static-web/progress/index.html
           test -s unified-static-web/recovery-coach/index.html
+          test -s unified-static-web/recovery-coach/full-backup/index.html
 
       - name: Verify backup inventory without contacting media hosts
         run: node scripts/backup-approved-media.mjs --check
