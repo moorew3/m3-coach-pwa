@@ -69,7 +69,8 @@ try{
     "recovery/index.html","recovery-coach/index.html",
     "recovery-coach/form-check/index.html",
     "recovery-coach/form-check/vendor/pose_landmarker_lite.task",
-    "recovery-coach/logbook/index.html"
+    "recovery-coach/logbook/index.html",
+    "recovery-coach/full-backup/index.html"
   ];
   for(const name of mandatory)assert.ok((await stat(join(OUT,name))).size>0,"Missing bundled original route: "+name);
   await writeFile(join(OUT,"UNIFIED-M3-FLEX-README.txt"),[
