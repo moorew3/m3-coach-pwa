@@ -130,7 +130,24 @@ try {
     await choicePage.locator("#sceneGrid button").first().click();
     assert.equal(await choicePage.locator("#sceneReviewVideo").isVisible(),true);
     assert.match((await choicePage.locator("#sceneReviewStatus").textContent())??"",/original scene is visible/i);
-    step("Unified app switches Recovery/A/B, restores source scene gallery and previews prior completed render without exercising");
+    // Once the OWNER explicitly reviews an existing matched visual+voice,
+    // the SAME workout player can incorporate it without creating another app.
+    await choicePage.locator("#sceneGrid .item").filter({hasText:"C17 · Seated wrist curls"})
+      .getByRole("button",{name:"Watch"}).click();
+    await choicePage.locator("#sceneApprovalControls").waitFor({state:"visible"});
+    await choicePage.locator("#sceneOwnerCheck").check();
+    await choicePage.locator("#approveScene").click();
+    await choicePage.locator('[data-workout="A"]').click();
+    await choicePage.locator('[data-stage="1"]').click();
+    assert.equal(await choicePage.locator("#steps .item").count(),3,
+      "Owner-review C17 becomes a third MOVING scene only after explicit owner verification");
+    assert.match((await choicePage.locator("#steps").textContent())??"",/Seated wrist curls/);
+    assert.equal(await choicePage.locator("#runState").textContent(),"Ready");
+    assert.equal(await choicePage.locator("#startPause").isDisabled(),false);
+    assert.match((await choicePage.locator("#progressText").textContent())??"",/0 of 8 steps completed/);
+    // No medical clearance carries across reviewed footage activation.
+    assert.equal(await choicePage.locator("#clearance .check:checked").count(),0);
+    step("ONE M3 FLEX player selects Recovery/A/B, inventories previous 79 scenes and adds owner-verified C17 without extra app");
   } finally {
     await choiceContext.close();
   }
