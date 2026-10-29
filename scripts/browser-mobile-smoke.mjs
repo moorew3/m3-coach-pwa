@@ -428,6 +428,100 @@ try {
     await tvContext.close();
   }
 
+  // Entire-app encrypted recovery backup: original workout history and
+  // manually entered Recovery sets must survive ONE verified file, not two
+  // disconnected exports. Restoring into a nonempty or cloud-linked app is
+  // explicitly forbidden, and the password is never stored.
+  const backupContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+    acceptDownloads: true,
+  });
+  const backupPage = await backupContext.newPage();
+  backupPage.setDefaultTimeout(20000);
+  try {
+    const response = await backupPage.goto(base + "/recovery-coach/full-backup/", {
+      waitUntil: "domcontentloaded",
+    });
+    assert.equal(response?.status(), 200);
+    const recordId = "11111111-1111-4111-8111-111111111111";
+    await backupPage.evaluate((id) => {
+      localStorage.setItem("arm-growth-tracker:v1", JSON.stringify({
+        startDate: "2026-10-29", days: { "1": { completed: false, cursor: 0, exercises: {} } },
+        measurements: [{ id: "original-photo-measurement", date: "2026-10-29", waist: "38" }],
+        settings: { theme: "dark" }, nutrition: {}, favorites: [], targets: {},
+        savedWorkouts: [], userAvatar: { kind: "default" }
+      }));
+      localStorage.setItem("m3-flex-real-reps-and-metrics-v1", JSON.stringify({
+        schema: 1, records: [{
+          id, at: new Date().toISOString(), type: "set",
+          exercise: "C02", reps: 12, lb: 15
+        }]
+      }));
+    }, recordId);
+    await backupPage.reload({ waitUntil: "domcontentloaded" });
+    assert.match((await backupPage.locator("#counts").textContent()) ?? "", /1 actual sets/);
+    await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
+    const downloadWait = backupPage.waitForEvent("download");
+    await backupPage.locator("#export").click();
+    const archive = await downloadWait;
+    const encryptedFile = await readFile(await archive.path());
+    const json = JSON.parse(encryptedFile.toString());
+    assert.equal(json.format, "m3-flex-full-device-encrypted-v1");
+    assert.ok(!encryptedFile.toString().includes(recordId),
+      "Full backup must never contain exposed plain-text actual reps");
+    await backupPage.locator("#file").setInputFiles({
+      name: "m3-flex-full-device.json", mimeType: "application/json", buffer: encryptedFile,
+    });
+    await backupPage.locator("#password").fill("wrong-password-12characters");
+    await backupPage.locator("#verify").click();
+    assert.match((await backupPage.locator("#status").textContent()) ?? "", /Verification failed/);
+    await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
+    await backupPage.locator("#verify").click();
+    assert.match((await backupPage.locator("#preview").textContent()) ?? "", /1 actual Recovery sets/);
+    await backupPage.locator("#confirmRestore").check();
+    assert.equal(await backupPage.locator("#restore").isDisabled(), true,
+      "Cannot overwrite original tracker or real recovery records during a restore");
+    await backupPage.evaluate(() => {
+      localStorage.removeItem("arm-growth-tracker:v1");
+      localStorage.removeItem("m3-flex-real-reps-and-metrics-v1");
+      localStorage.setItem("agt.sync.key.v1", "simulated-existing-cloud-link");
+    });
+    await backupPage.reload({ waitUntil: "domcontentloaded" });
+    await backupPage.locator("#file").setInputFiles({
+      name: "m3-flex-full-device.json", mimeType: "application/json", buffer: encryptedFile,
+    });
+    await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
+    await backupPage.locator("#verify").click();
+    await backupPage.locator("#confirmRestore").check();
+    assert.equal(await backupPage.locator("#restore").isDisabled(), true,
+      "Do not import local backup into an already linked cloud account");
+    await backupPage.evaluate(() => localStorage.removeItem("agt.sync.key.v1"));
+    await backupPage.reload({ waitUntil: "domcontentloaded" });
+    await backupPage.locator("#file").setInputFiles({
+      name: "m3-flex-full-device.json", mimeType: "application/json", buffer: encryptedFile,
+    });
+    await backupPage.locator("#password").fill("M3backup-StrongPassphrase-2026");
+    await backupPage.locator("#verify").click();
+    await backupPage.locator("#confirmRestore").check();
+    assert.equal(await backupPage.locator("#restore").isDisabled(), false);
+    backupPage.once("dialog", dialog => dialog.accept());
+    await backupPage.locator("#restore").click();
+    assert.match((await backupPage.locator("#status").textContent()) ?? "", /Restored original app \+ Recovery log locally/);
+    const restored = await backupPage.evaluate(() => ({
+      original: JSON.parse(localStorage.getItem("arm-growth-tracker:v1") ?? "null"),
+      log: JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1") ?? "null"),
+      passwordSaved: [...Object.keys(localStorage)].some(k => /password/i.test(k)),
+    }));
+    assert.equal(restored.original.days["1"].cursor, 0);
+    assert.equal(restored.original.measurements.length, 1);
+    assert.equal(restored.log.records.length, 1);
+    assert.equal(restored.log.records[0].reps, 12);
+    assert.equal(restored.passwordSaved, false);
+    step("Encrypted whole-app backup: wrong-password rejection, no overwrite/cloud restore, clean-install verified restore");
+  } finally {
+    await backupContext.close();
+  }
+
   // The standalone seated recovery sequence is the ONLY currently active
   // owner-approved Flex+Marcus circuit. Exercise time measures demonstration
   // duration, not completed reps. Media play is mocked in this timing check;
