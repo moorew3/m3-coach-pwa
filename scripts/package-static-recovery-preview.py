@@ -23,6 +23,7 @@ FILES={
   "recovery-coach/logbook/index.html":ROOT/"public/recovery-coach/logbook/index.html",
   "recovery-coach/programs/index.html":ROOT/"public/recovery-coach/programs/index.html",
   "recovery-coach/device-check/index.html":ROOT/"public/recovery-coach/device-check/index.html",
+  "recovery-coach/full-backup/index.html":ROOT/"public/recovery-coach/full-backup/index.html",
   "recovery-coach/update-safety/index.html":ROOT/"public/recovery-coach/update-safety/index.html",
   "recovery-coach/form-check/index.html":ROOT/"public/recovery-coach/form-check/index.html",
   "recovery-coach/form-check/vendor/sha256-manifest.json":ROOT/"public/recovery-coach/form-check/vendor/sha256-manifest.json",
