@@ -12,9 +12,9 @@ const scenes=JSON.parse(match[1]);
 
 test("one existing app provides Recovery, A, B and old weekly workout choice without another project",()=>{
   assert.match(html,/data-testid="m3-unified-workout-picker"/);
-  assert.match(html,/href="\/recovery-coach\/\?program=recovery"/);
-  assert.match(html,/href="\/recovery-coach\/\?program=A"/);
-  assert.match(html,/href="\/recovery-coach\/\?program=B"/);
+  assert.match(html,/to="\/recovery" search=\{\{ program: "recovery" \}\}/);
+  assert.match(html,/to="\/recovery" search=\{\{ program: "A" \}\}/);
+  assert.match(html,/to="\/recovery" search=\{\{ program: "B" \}\}/);
   assert.match(html,/onClick=\{requestLegacyCoach\}/);
   assert.match(player,/id="unifiedWorkoutChooser"/);
   assert.match(player,/data-workout="recovery"/);
