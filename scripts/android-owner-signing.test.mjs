@@ -6,7 +6,7 @@ const backup=readFileSync(new URL("../public/recovery-coach/full-backup/index.ht
 
 test("owner-stable signing workflow is opt-in and never triggered by pushes or pull requests",()=>{
  assert.match(workflow,/workflow_dispatch:/);
- assert.match(workflow,/OWNER_KEY_AND_BACKUP_READY/);
+ assert.match(workflow,/READY_FOR_OWNER_SIGNING/);
  assert.match(workflow,/m3-flex-android-owner-signing/);
  assert.doesNotMatch(workflow,/\n  (push|pull_request|schedule):/);
  assert.doesNotMatch(workflow,/deploy-pages|gh-pages|railway|hostinger|fastlane supply/);
