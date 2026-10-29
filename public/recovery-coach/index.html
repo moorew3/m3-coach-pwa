@@ -816,6 +816,61 @@ $("emergencyStop").addEventListener("click",()=>{
 $("reset").addEventListener("click",()=>{releaseScreenAwake();stopMarcusAudioTest();clearTick();stopMedia(true);completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;for(const input of document.querySelectorAll("#clearance .check"))input.checked=false;targetRounds=Number($("setRounds").value);stopForNavigation(0,0);tell("Session reset. Your reported ability to bear weight is noted; follow your clinician's restrictions. The seated workout requires fresh clearance confirmations before timed movement.");});
 document.querySelectorAll(".phase").forEach(b=>b.addEventListener("click",()=>stopForNavigation(Number(b.dataset.stage),0)));
 for(const id of ["workDuration","restDuration","setRounds","pairMode"])$(id).addEventListener("change",()=>{if(id==="setRounds"&&!sessionStarted)targetRounds=Number($("setRounds").value);if(mode==="ready")secondsLeft=duration();drawTimer()});
+
+const ALL_EXISTING_FLEX_SCENES=Array.isArray(window.M3_FLEX_SCENE_LIBRARY)?window.M3_FLEX_SCENE_LIBRARY:[];
+function showExistingScenes(){
+ const f=$("sceneFilter").value;
+ const items=ALL_EXISTING_FLEX_SCENES.filter(scene=>{
+  if(f==="A")return /Workout A|Archived Equipment A|Shared preparation/.test(scene.group);
+  if(f==="B")return /Workout B|Archived Equipment A and B|Shared preparation/.test(scene.group);
+  if(f==="archive")return scene.source==="Google Drive"||scene.source==="Google Flow";
+  if(f==="primary")return scene.source==="HeyGen primary";
+  if(f==="backup")return scene.source==="HeyGen backup";
+  return true;
+ });
+ $("sceneCount").textContent=items.length+" scenes in this view · "+ALL_EXISTING_FLEX_SCENES.length+" total recovered";
+ const grid=$("sceneGrid");grid.replaceChildren();
+ for(const scene of items){
+  const card=document.createElement("div");card.className="item";card.style.alignItems="flex-start";
+  const detail=document.createElement("div");detail.className="item-main";
+  const heading=document.createElement("strong");heading.textContent=scene.id+" · "+scene.name;
+  const status=document.createElement("small");status.textContent=scene.source+" · "+scene.group+" · "+(scene.status==="archived-approved-link"?"Archived user-approved visual":"Existing completed scene / review");
+  const note=document.createElement("small");note.textContent=scene.note||"Verify face, movement and equipment before approving this scene for timed training.";
+  detail.append(heading,status,note);
+  const action=document.createElement(scene.video?"button":"a");
+  action.className="btn";
+  if(scene.video){
+   action.textContent="▶ Watch";
+   action.type="button";
+   action.addEventListener("click",()=>{
+    if(mode==="running"||mode==="rest")pause();
+    stopMarcusAudioTest();
+    const view=$("sceneReviewVideo");view.pause();view.src=scene.video;
+    view.muted=true;view.style.display="block";view.load();
+    $("sceneReviewStatus").textContent="Now reviewing: "+scene.name+". This original scene is visible, but has not automatically replaced a locked approved workout video or generated an athlete rep.";
+    view.scrollIntoView({behavior:"smooth",block:"nearest"});
+   });
+  }else{
+   action.textContent="↗ Original";
+   action.href=scene.external;action.target="_blank";action.rel="noopener noreferrer";
+  }
+  card.append(detail,action);grid.append(card);
+ }
+}
+$("sceneFilter").addEventListener("change",showExistingScenes);
+showExistingScenes();
+document.querySelectorAll("[data-workout]").forEach(btn=>btn.addEventListener("click",()=>{
+ const target=btn.dataset.workout;
+ if(target===activeWorkout)return;
+ releaseScreenAwake();stopMarcusAudioTest();clearTick();stopMedia(true);
+ completed.clear();finishedSets.clear();restNext=null;sessionStarted=false;safetyLock=false;
+ for(const check of document.querySelectorAll("#clearance .check"))check.checked=false;
+ try{localStorage.removeItem(PROGRESS_KEY)}catch(e){}
+ const review=$("sceneReviewVideo");review.pause();review.removeAttribute("src");review.load();review.style.display="none";
+ applyWorkout(target);
+ phase=0;idx=0;workRound=1;mode="ready";secondsLeft=duration();render();
+ tell("Workout "+(target==="recovery"?"Recovery":target)+" selected. Approved original exercises run in this same player. Check the scene library for every other completed render. Reconfirm your clinician clearance before starting.");
+}));
 const restored=restoreProgress();
 if(!restored)secondsLeft=duration();
 render();
