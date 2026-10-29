@@ -120,6 +120,11 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
  body.tvMode .player > #cue{overflow:visible}
  body.tvMode .player > .timer{width:100%}
 }
+@media (max-width:1060px) and (orientation:landscape){
+ body.tvMode .tvToolbar strong{display:none}
+ body.tvMode .tvToolbar .tvActions{width:100%;justify-content:space-between;gap:3px}
+ body.tvMode .tvToolbar button{flex:1;min-width:0;padding:4px 3px;overflow:hidden;text-overflow:ellipsis}
+}
 @media (max-height:630px) and (orientation:landscape){
  body.tvMode .tvToolbar{height:48px;padding:4px 8px}
  body.tvMode .tvToolbar button{min-height:38px;padding:4px 7px;font-size:12px}
