@@ -133,6 +133,42 @@ function Today() {
         </p>
       </header>
 
+      <section data-testid="m3-unified-workout-picker" className="surface-card mb-5 rounded-2xl p-4">
+        <h2 className="text-xl font-bold">M3 FLEX · Choose your workout</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          One app for the approved seated Recovery Coach, Equipment A, Equipment B,
+          your original weekly workouts and the full scene library. The same
+          original Flex and Marcus media stay protected.
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <a href="/recovery-coach/?program=recovery"
+            className="tap-target flex items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground">
+            Recovery · 5 approved moves
+          </a>
+          <a href="/recovery-coach/?program=A"
+            className="tap-target flex items-center justify-center rounded-xl border border-primary px-3 text-center text-sm font-bold">
+            Workout A · Dumbbells &amp; boxing scenes
+          </a>
+          <a href="/recovery-coach/?program=B"
+            className="tap-target flex items-center justify-center rounded-xl border border-primary px-3 text-center text-sm font-bold">
+            Workout B · INNSTAR &amp; arms
+          </a>
+          <button type="button" onClick={requestLegacyCoach}
+            className="tap-target rounded-xl border border-border bg-elevated px-3 text-center text-sm font-bold">
+            Original weekly strength &amp; cardio
+          </button>
+        </div>
+        <a href="/recovery-coach/#allScenesCatalog"
+          className="mt-3 block text-center text-sm font-semibold text-primary">
+          View every finished scene in one library
+        </a>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Training requires exercise-specific medical clearance. Historical
+          standing workouts remain behind their safety acknowledgement.
+          Rendered drafts are viewable but not silently treated as approved.
+        </p>
+      </section>
+
       <section className="surface-card relative mb-5 overflow-hidden rounded-2xl">
         <button
           type="button"
