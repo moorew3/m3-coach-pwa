@@ -17,21 +17,22 @@ test("Android update safeguard reads current device record/snapshot without uplo
  assert.match(page,/localStorage\.getItem\(PROGRESS_KEY\)/);
  assert.match(page,/No logs leave this device/);
  assert.match(page,/Nothing has been backed up by this page/);
- assert.match(page,/did not test decryption or copy anything/);
+ assert.match(page,/This self-check is not proof of file integrity/);
  assert.doesNotMatch(page,/localStorage\.clear\(|localStorage\.removeItem\(|upload\(|XMLHttpRequest|sendBeacon/);
- assert.match(page,/I personally located the encrypted JSON backup file/);
+ assert.match(page,/I personally located the FULL-APP encrypted JSON backup file/);
  assert.match(page,/correct private backup password saved separately/);
  assert.match(page,/interrupted workout countdown, camera settings and clinician-clearance checks do not transfer/);
 });
 
-test("actual logbook encrypted backup path is easy to reach and not certified merely by tapping",()=>{
+test("unified full-app encrypted backup is accessible without removing the separate actual logbook",()=>{
  assert.match(coach,/href="\.\/update-safety\/"/);
- assert.match(page,/href="\.\.\/logbook\/#backup"/);
+ assert.match(page,/href="\.\.\/full-backup\/"/);
  assert.match(log,/<section id="backup">/);
  assert.match(log,/Export password-protected backup/);
  assert.match(log,/310,000 rounds/);
  assert.match(log,/No password, reps, measurements or keys are uploaded/);
  assert.match(browser,/Android update preflight reads actual device log count and cannot claim or perform a backup/);
+ assert.match(page,/Back up the entire app, not just Recovery reps/);
 });
 
 test("Android build metadata comes from actual CI SHA, never claims stable signing or release certification",()=>{
