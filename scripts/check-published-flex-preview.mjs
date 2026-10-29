@@ -42,6 +42,37 @@ try{
  const links=await appFrame.locator('a[href*="dochost.co/d/"]').evaluateAll(els=>els.map(a=>a.href));
  for(const required of ["https://dochost.co/d/ysd4nkks","https://dochost.co/d/wyaem63h"])
   assert.ok(links.includes(required),"Preview missing working companion app link: "+required);
+ // The already-published owner preview runs in a host sandbox iframe.
+ // Confirm the new 16:9 TV layout also works in THAT real public page, and
+ // measure host iframe restrictions separately from the actual workout stage.
+ await page.setViewportSize({width:1920,height:1080});
+ const source=await appFrame.locator("#coachVideo").getAttribute("src");
+ await appFrame.locator("#tvEnable").click();
+ await appFrame.waitForFunction(() => document.body.classList.contains("tvMode"));
+ const frameMetrics=await appFrame.evaluate(() => {
+  const rect=document.querySelector(".player").getBoundingClientRect();
+  const video=document.querySelector("#coachVideo");
+  const stop=document.querySelector("#tvStop").getBoundingClientRect();
+  return {innerWidth,innerHeight,
+    stageWidth:rect.width,stageHeight:rect.height,stageBottom:rect.bottom,
+    videoFit:getComputedStyle(video).objectFit,
+    overflowX:document.documentElement.scrollWidth>innerWidth+2,
+    stopVisible:stop.left>=0&&stop.right<=innerWidth&&stop.bottom<=innerHeight};
+ });
+ assert.equal(frameMetrics.videoFit,"contain","Published preview must preserve full original portrait video");
+ assert.ok(frameMetrics.stageWidth>=frameMetrics.innerWidth-2,"Published TV stage fills hosting frame width");
+ assert.equal(frameMetrics.overflowX,false,"Published TV mode may not overflow sideways");
+ assert.equal(frameMetrics.stopVisible,true,"Published TV must always show emergency STOP");
+ assert.equal(await appFrame.locator("#coachVideo").getAttribute("src"),source);
+ await appFrame.locator("#tvFit").click();
+ assert.equal(await appFrame.evaluate(() => getComputedStyle(document.querySelector("#coachVideo")).objectFit),"cover");
+ await appFrame.locator("#tvFit").click();
+ await appFrame.locator("#tvExit").click();
+ assert.equal(await appFrame.evaluate(() => document.body.classList.contains("tvMode")),false);
+ const hostFrame=await page.locator('iframe[src*="sandbox-v2"]').boundingBox();
+ console.log("✓ Published TV mode: full-body default, optional crop, stop control, same original video.");
+ console.log("✓ TV geometry from real hosted page:",JSON.stringify({app:frameMetrics,hostFrame}));
+
  console.log("✓ Published M3 FLEX link actually renders JS, stage selection, safety gate and companion links on phone-width Chrome.");
  console.log("✓ Direct user app URL: "+url);
 }finally{await browser.close()}
