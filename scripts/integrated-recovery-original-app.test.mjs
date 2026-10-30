@@ -30,7 +30,7 @@ test("original M3 FLEX tabs preserved; native Recovery and Workout A/B are same-
   assert.match(native,/createFileRoute\("\/recovery"\)/);
   assert.match(native,/data-testid="m3-native-recovery"/);
   assert.match(native,/data-testid="m3-recovery-existing-player"/);
-  assert.match(native,/src=\{\`\/recovery-coach\/\?program=\$\{program\}\`\}/);
+  assert.match(native,/src=\{\`\/recovery-coach\/index\.html\?program=\$\{program\}\`\}/);
   assert.match(native,/allow="camera; fullscreen"/);
   assert.match(native,/window\.addEventListener\("message", onMessage\)/);
   assert.match(native,/event\.origin !== window\.location\.origin/);
