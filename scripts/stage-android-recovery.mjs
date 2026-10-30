@@ -15,7 +15,7 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),"..");
 const source=join(root,"unified-static-web");
 const dest=join(root,"android-recovery-web");
 const files=[
- "index.html","program/index.html","nutrition/index.html",
+ "index.html","v2/index.html","program/index.html","nutrition/index.html",
  "progress/index.html","settings/index.html","recovery/index.html",
  "recovery-coach/index.html","recovery-coach/form-check/index.html",
  "recovery-coach/logbook/index.html","recovery-coach/full-backup/index.html",
@@ -39,4 +39,4 @@ await writeFile(join(dest,"build-info.json"),JSON.stringify({
  warning:"Unstable debug signature. Export and verify protected local data before replacing any installed copy.",
  note:"Web client bundle is pre-rendered. SSR-only server features and external paid AI APIs are not bundled."
 },null,2)+"\n");
-console.log("Staged SINGLE M3 FLEX Android client: original React dashboard, nutrition, history, native Recovery, original videos and on-device form checker.");
+console.log("Staged SINGLE M3 FLEX Android client: existing V2, original React dashboard, nutrition, history, Recovery, original media and on-device form checker.");
