@@ -42,7 +42,7 @@ async function fetchHtml(path){
 }
 const routes=[
   "/","/program","/nutrition","/progress","/settings","/recovery",
-  "/glasses","/presentation","/display",
+  "/glasses","/presentation","/display","/v2",
   ...Array.from({length:22},(_,i)=>"/coach/"+(i+1)),
   ...Array.from({length:22},(_,i)=>"/workout/"+(i+1)),
 ];
@@ -65,7 +65,7 @@ try{
     await writeFile(path,html);
   }
   const mandatory=[
-    "index.html","program/index.html","progress/index.html",
+    "index.html","program/index.html","progress/index.html","v2/index.html",
     "recovery/index.html","recovery-coach/index.html",
     "recovery-coach/form-check/index.html",
     "recovery-coach/form-check/vendor/pose_landmarker_lite.task",
@@ -76,7 +76,7 @@ try{
   await writeFile(join(OUT,"UNIFIED-M3-FLEX-README.txt"),[
     "M3 FLEX — ONE ORIGINAL APP + APPROVED RECOVERY",
     "Original React navigation, workout history, settings, nutrition, progress,",
-    "22-day coached/workout routes and seated Recovery Coach are bundled here.",
+    "22-day coached/workout routes, original M3 Coach V2, and seated Recovery Coach are bundled here.",
     "A/B retains only explicitly approved movements; other clips need review.",
     "This is a static prerendered client shell, NOT a live Nitro backend.",
     "Online login, Supabase features and cloud/paid coach APIs require separate",
