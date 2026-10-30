@@ -59,8 +59,9 @@ try{
  assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
  assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
  await page.getByTestId("program-v2").click();
- await page.getByTestId("v2-exit-to-workouts").waitFor();
- await page.getByTestId("v2-exit-to-workouts").click();
+ await page.getByTestId("v2-approved-avatar-entrance").waitFor();
+ await page.getByTestId("v2-opening-exit").click();
+ await page.getByTestId("m3-unified-workout-picker").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
  assert.equal(log.length,0,"Static original React app had client errors: "+log.join("; ").slice(0,800));
