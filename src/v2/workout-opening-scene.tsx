@@ -44,6 +44,14 @@ export function WorkoutOpeningScene({
       <div className="relative mx-auto flex h-full max-w-5xl flex-col justify-between px-4 pb-[max(1.4rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] sm:px-8">
         <div className="relative z-10 flex items-start justify-between gap-3">
           <div>
+            <a
+              href="/"
+              data-testid="v2-opening-exit"
+              aria-label="Back to M3 FLEX workouts without starting a session"
+              className="mb-3 inline-flex min-h-12 items-center rounded-xl border border-cyan-300/40 bg-cyan-300/15 px-4 text-xs font-black text-cyan-100"
+            >
+              ← Back to workouts
+            </a>
             <p className="text-[11px] font-black uppercase tracking-[.32em] text-cyan-300">
               M3 Fitness · Mind / Body / Purpose
             </p>
