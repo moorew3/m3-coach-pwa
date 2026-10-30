@@ -17,6 +17,14 @@
  *   4. NONE       Reported loudly — never a silent failure.
  */
 
+import { paidAiHeaders } from "@/lib/paid-ai-client";
+
+/** Paid generation is an explicit browser build choice, never inferred from
+ * a user's mute setting or the presence of an existing recorded MP3. */
+export function paidCoachSpeechEnabled(): boolean {
+  return import.meta.env["VITE_FLEX_PAID_AI_ENABLED"] === "true";
+}
+
 export type VoiceStatus = "unsupported" | "locked" | "ready" | "blocked";
 
 /** Emotional delivery phase — drives the TTS style prompt. */
@@ -473,6 +481,7 @@ async function fetchMp3(text: string, tone: CoachTone): Promise<string | null> {
 const prefetchQueue: { text: string; tone: CoachTone }[] = [];
 let prefetching = false;
 export function prefetchSpeech(lines: { text: string; tone: CoachTone }[]) {
+  if (!paidCoachSpeechEnabled()) return;
   if (status !== "ready" || diag.path === "browser" || diag.path === "stream") return;
   for (const l of lines) {
     if (!l.text) continue;
@@ -530,9 +539,16 @@ function unlockElements() {
 }
 
 async function fetchSpeech(text: string, tone: CoachTone, format: "mp3" | "pcm") {
+  // Both front end and server must explicitly opt in before paid speech.
+  // Return a local disabled response rather than issuing an HTTP request.
+  if (!paidCoachSpeechEnabled()) {
+    return new Response(JSON.stringify({ message: "Generated speech disabled in this build." }), {
+      status: 503, headers: { "content-type": "application/json" },
+    });
+  }
   const res = await fetch("/api/public/coach-speech", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await paidAiHeaders(),
     body: JSON.stringify({ text, tone, format }),
   });
   note({ lastHttpStatus: res.status, lastFormat: format, lastLine: text.slice(0, 80) });
@@ -947,6 +963,10 @@ export function unlockVoice(
   confirmation = "Coach audio on. Let's begin.",
   tone: CoachTone = "calm",
 ): Promise<VoiceStatus> {
+  if (!paidCoachSpeechEnabled()) {
+    // Read-along mode: keep the app usable without a missing premium voice.
+    return Promise.resolve("blocked");
+  }
   if (!voiceAvailable()) {
     setStatus("unsupported");
     return Promise.resolve("unsupported");
@@ -1048,6 +1068,7 @@ export interface SpeakOptions {
 }
 
 export function speak(text: string, enabled: boolean, opts: SpeakOptions = {}) {
+  if (!paidCoachSpeechEnabled()) return;
   const tone = opts.tone ?? "assertive";
   const interrupt = opts.interrupt ?? true;
   if (!enabled || !text) return;
@@ -1145,6 +1166,12 @@ export async function testCoachAudio(): Promise<{
   path: VoicePath;
   detail: string;
 }> {
+  if (!paidCoachSpeechEnabled()) {
+    return {
+      tone: false, speech: false, path: "none",
+      detail: "Generated coach speech is disabled. Test the approved Marcus recording instead.",
+    };
+  }
   const c = ensureContext();
   if (c) void c.resume().catch(() => {});
   unlockElements();

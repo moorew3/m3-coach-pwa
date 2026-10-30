@@ -1,9 +1,9 @@
 /**
  * CLOUD SYNC — server functions
  * ------------------------------------------------------------------
- * Uses locked SECURITY DEFINER RPCs in Supabase so Railway only needs the
- * project's publishable key. The sync tables remain RLS-protected and are
- * never directly exposed to the browser.
+ * Uses locked SECURITY DEFINER RPCs in Supabase. The portable application
+ * server uses the project's publishable key; client access goes through
+ * server functions rather than direct table writes.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
@@ -62,7 +62,7 @@ function assertKey(key: unknown): string {
 }
 
 export const cloudPull = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string }) => ({ key: assertKey(d?.key) }))
+  .validator((d: { key: string }) => ({ key: assertKey(d?.key) }))
   .handler(async ({ data }) => {
     const { data: rows, error } = await db().rpc("agt_sync_pull", { p_key: data.key });
     if (error) throw error;
@@ -76,7 +76,7 @@ export const cloudPull = createServerFn({ method: "POST" })
   });
 
 export const cloudPush = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string; state: unknown; baseRev: number }) => ({
+  .validator((d: { key: string; state: unknown; baseRev: number }) => ({
     key: assertKey(d?.key),
     state: d?.state ?? {},
     baseRev: Number(d?.baseRev ?? 0),
@@ -93,7 +93,7 @@ export const cloudPush = createServerFn({ method: "POST" })
   });
 
 export const sessionPull = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string }) => ({ key: assertKey(d?.key) }))
+  .validator((d: { key: string }) => ({ key: assertKey(d?.key) }))
   .handler(async ({ data }) => {
     const { data: rows, error } = await db().rpc("agt_session_pull", { p_key: data.key });
     if (error) throw error;
@@ -106,7 +106,7 @@ export const sessionPull = createServerFn({ method: "POST" })
   });
 
 export const sessionPush = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string; state: unknown; rev: number }) => ({
+  .validator((d: { key: string; state: unknown; rev: number }) => ({
     key: assertKey(d?.key),
     state: d?.state ?? {},
     rev: Number(d?.rev ?? 0),
@@ -123,7 +123,7 @@ export const sessionPush = createServerFn({ method: "POST" })
   });
 
 export const createPairCode = createServerFn({ method: "POST" })
-  .inputValidator((d: { key: string }) => ({ key: assertKey(d?.key) }))
+  .validator((d: { key: string }) => ({ key: assertKey(d?.key) }))
   .handler(async ({ data }) => {
     const { data: rows, error } = await db().rpc("agt_create_pair_code", { p_key: data.key });
     if (error) throw error;
@@ -132,7 +132,7 @@ export const createPairCode = createServerFn({ method: "POST" })
   });
 
 export const redeemPairCode = createServerFn({ method: "POST" })
-  .inputValidator((d: { code: string }) => ({
+  .validator((d: { code: string }) => ({
     code: String(d?.code ?? "").trim().toUpperCase(),
   }))
   .handler(async ({ data }) => {

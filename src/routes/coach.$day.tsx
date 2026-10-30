@@ -42,7 +42,7 @@ import { coachStateFor } from "@/lib/coach-states";
 
 import { WorkoutModeButton } from "@/components/WorkoutModeMenu";
 import { buildCoachScript, coachingFor, currentCue } from "@/lib/coach-script";
-import { stopSpeech } from "@/lib/coach-voice";
+import { paidCoachSpeechEnabled, stopSpeech } from "@/lib/coach-voice";
 import { CoachAudioBadge, CoachAudioGate } from "@/components/CoachAudio";
 import { CoachAudioPanel } from "@/components/CoachAudioPanel";
 import { SessionAudio } from "@/components/SessionAudio";
@@ -55,7 +55,7 @@ import {
   weightIn,
 } from "@/lib/voice-commands";
 import { speak } from "@/lib/coach-voice";
-import { askLiveCoach } from "@/lib/coach-talk";
+import { askLiveCoach, premiumAiAvailableOnClient } from "@/lib/coach-talk";
 import { FLEX_NAME } from "@/lib/coach-persona";
 import { exerciseMemoryFor } from "@/lib/coach-memory";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
@@ -209,7 +209,7 @@ function CoachSession() {
   const sessionExercises = effectiveExercises(state, day);
   const log = getDay(state, day);
   const coaching = coachingFor(plan);
-  const voiceOn = state.settings.coachVoice !== false;
+  const voiceOn = state.settings.coachVoice !== false && paidCoachSpeechEnabled();
 
   /* real facts for the recap chapter — the coach names what was actually done */
   const doneSetsNow = Object.values(log.exercises).reduce(
@@ -329,6 +329,9 @@ function CoachSession() {
   const voiceRef = useRef(true);
   voiceRef.current = voiceOn;
   const coachTalkBusy = useRef(false);
+  const coachAskHandler = useRef<((question: string) => void) | null>(null);
+  const [coachQuestion, setCoachQuestion] = useState("");
+  const [coachReply, setCoachReply] = useState("");
   /** Short in-session transcript for natural follow-up questions. */
   const coachDialogue = useRef<string[]>([]);
   const [coachChoice, setCoachChoice] = useState<CoachCheckIn | null>(null);
@@ -620,6 +623,7 @@ function CoachSession() {
   const cadenceLive = repSet && running && lead === null && Boolean(step?.exerciseId);
   const camRef = useRef({ reps: null as number | null, conf: 0 });
   camRef.current = { reps: camReps, conf: camConfidence };
+  const [cadencePrompt, setCadencePrompt] = useState(false);
   const coachRep = useRepCadence({
     key: `${step?.id ?? "none"}`,
     active: cadenceLive,
@@ -634,25 +638,21 @@ function CoachSession() {
           interrupt: false,
         });
     },
-    onDone: (total: number) => {
-      /* the coach has finished the set with the user. A number the user
-         typed, tapped or spoke is final; otherwise a confident camera count
-         is used, and failing that the prescribed target. */
-      const cam = camRef.current;
-      const used = manualReps.current
-        ? repsRef.current || String(total)
-        : cam.reps !== null && cam.conf >= 0.7
-          ? String(cam.reps)
-          : String(total);
-      confirmReps.current = used;
-      setReps(used);
-      speak(`Good set. Logging ${used}.`, voiceRef.current, {
+    onDone: (_total: number) => {
+      /* This clock counts the COACH'S demonstration reps, not the athlete's.
+         Reaching the scripted target never proves the athlete performed
+         those reps. Only an explicit log/Done-set action can save them. */
+      setCadencePrompt(true);
+      speak("Demo reps complete. Confirm your actual reps, then tap Done set.", voiceRef.current, {
         tone: "reassuring",
         interrupt: false,
       });
-      engine.finishWork();
     },
   });
+
+  useEffect(() => {
+    setCadencePrompt(false);
+  }, [step?.id]);
 
   /* pre-fill the log fields from memory whenever the coach opens a set:
      last-used weight (or today's progression call) + planned reps, so a
@@ -796,7 +796,7 @@ function CoachSession() {
      answer from the server. The model never mutates workout state; it talks,
      and the existing session engine stays authoritative. */
   useEffect(() => {
-    setConversationHandler((phrase) => {
+    const answerQuestion = (phrase: string) => {
       if (coachTalkBusy.current) return;
       const ex = step?.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
       const m = metricsSnapshot();
@@ -858,6 +858,8 @@ function CoachSession() {
         rpe,
         feel,
         next: step?.next,
+        cues: step?.cues?.filter(Boolean).slice(0, 3),
+        restRemainingSeconds: step?.kind === "rest" && left !== null ? left : undefined,
         nutrition: nutrition.contextLine,
         camera: {
           active: Boolean(m),
@@ -872,27 +874,35 @@ function CoachSession() {
       })
         .then((reply) => {
           if (!reply) {
-            speak("I heard you, but I couldn't get a reliable answer. Keep the set where it is for now.", voiceRef.current, {
-              tone: "attentive",
-              interrupt: false,
-            });
+            setCoachReply("I couldn't get a reliable answer. The current workout remains unchanged.");
             return;
           }
+          setCoachReply(reply);
           coachDialogue.current = [
             ...coachDialogue.current,
             `Athlete: ${phrase}`,
             `${FLEX_NAME}: ${reply}`,
           ].slice(-8);
-          speak(reply, voiceRef.current, { tone: "attentive", interrupt: false });
+          // Recorded Marcus workouts work independently. Only the expressly
+          // enabled premium voice path should attempt a paid spoken reply.
+          if (premiumAiAvailableOnClient() && voiceRef.current) {
+            speak(reply, true, { tone: "attentive", interrupt: false });
+          }
         })
         .finally(() => {
           coachTalkBusy.current = false;
         });
-    });
-    return () => setConversationHandler(null);
+    };
+    coachAskHandler.current = answerQuestion;
+    setConversationHandler(answerQuestion);
+    return () => {
+      coachAskHandler.current = null;
+      setConversationHandler(null);
+    };
   }, [
     day,
     feel,
+    left,
     plan.focus,
     plan.title,
     reps,
@@ -1275,7 +1285,9 @@ function CoachSession() {
           ? "Ready"
           : String(lead)
       : step.speechPaced
-        ? (step.reps ?? "")
+        ? !paidCoachSpeechEnabled() && left !== null
+          ? mmss(left)
+          : (step.reps ?? "")
         : left !== null
           ? mmss(left)
           : (step.reps ?? "");
@@ -1716,6 +1728,7 @@ function CoachSession() {
       data-step-id={step.id}
       data-running={running ? "true" : "false"}
       data-lead={lead === null ? "null" : lead}
+      data-left={left === null ? "null" : left}
       data-countdown-events={engine.countdownEvents.join(",")}
       data-trainer-state={trainerMedia.state}
       data-media-mode={trainerMedia.mode}
@@ -1743,6 +1756,16 @@ function CoachSession() {
             <h2 className="mt-1 text-2xl font-black">Before we train</h2>
             <p className="mt-1 text-sm text-white/65">
               Give me the same information you would give a trainer standing in front of you.
+            </p>
+            <p
+              role="note"
+              data-testid="coach-seated-review-warning"
+              className="mt-3 rounded-xl border border-accent/40 bg-accent/10 p-3 text-xs leading-relaxed text-white/85"
+            >
+              This legacy workout has not yet been fully reviewed for seated-only foot-cast
+              training. Some scheduled exercises require standing or footwork. The readiness
+              check does not certify those movements as safe. Do not perform them while
+              restricted to seated exercise.
             </p>
             <ReadinessCheck
               onCancel={() => {
@@ -1849,6 +1872,7 @@ function CoachSession() {
               <FlipHorizontal2 className="size-4" />
             </button>
             <CoachAudioBadge
+              generatedEnabled={paidCoachSpeechEnabled()}
               status={engine.voiceStatus}
               voiceOn={voiceOn}
               onEnable={() => void engine.enableAudio()}
@@ -1910,6 +1934,34 @@ function CoachSession() {
           {step.kind === "work" && !pattern && chip("Log by hand or voice")}
           {step.kind === "work" && pattern && !camActive && chip("Camera off")}
         </div>
+
+        {step.speechPaced && !paidCoachSpeechEnabled() && (
+          <p
+            data-testid="coach-readable-script"
+            role="status"
+            className="mb-2 max-h-32 overflow-y-auto rounded-xl border border-white/15 bg-black/80 px-3 py-2 text-sm leading-snug text-white/90"
+          >
+            {step.say}
+          </p>
+        )}
+
+        {coachReply && (
+          <div
+            data-testid="coach-local-answer"
+            aria-live="polite"
+            className="mb-2 flex items-start gap-2 rounded-xl border border-accent/40 bg-black/85 px-3 py-2 text-xs text-white backdrop-blur-md"
+          >
+            <span className="max-h-24 flex-1 overflow-y-auto leading-relaxed">
+              <strong className="text-accent">Coach answer: </strong>{coachReply}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCoachReply("")}
+              aria-label="Dismiss coach answer"
+              className="shrink-0 rounded-lg px-1 text-lg text-white/70"
+            >×</button>
+          </div>
+        )}
 
         {coachChoice && step.kind === "rest" && (
           <section
@@ -2067,6 +2119,17 @@ function CoachSession() {
           </div>
         )}
 
+        {cadencePrompt && step.kind === "work" && !step.seconds && (
+          <p
+            data-testid="confirm-actual-reps"
+            role="status"
+            className="mt-2 rounded-xl border border-accent/50 bg-black/65 px-3 py-2 text-xs font-semibold text-white"
+          >
+            The coach finished demonstrating the target reps. Verify your own rep count above,
+            then tap Done set. A coach animation is not proof of completed reps.
+          </p>
+        )}
+
         {camConfirmReady && camReps !== null ? (
           <button
             type="button"
@@ -2222,6 +2285,46 @@ function CoachSession() {
           subtitle={`${plan.weekday} · ${plan.title}`}
           onClose={() => setMoreOpen(false)}
         >
+          <form
+            className="rounded-xl border border-border bg-elevated p-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const question = coachQuestion.trim();
+              if (!question || coachTalkBusy.current) return;
+              coachAskHandler.current?.(question);
+              setCoachQuestion("");
+              setMoreOpen(false);
+            }}
+          >
+            <label htmlFor="flex-coach-question" className="mb-2 block text-sm font-bold">
+              Ask your coach
+            </label>
+            <div className="flex gap-2">
+              <input
+                id="flex-coach-question"
+                data-testid="coach-question-input"
+                type="text"
+                value={coachQuestion}
+                onChange={(event) => setCoachQuestion(event.target.value)}
+                placeholder="How many sets are left?"
+                maxLength={400}
+                className="min-w-0 flex-1 rounded-lg border border-white/15 bg-black/30 px-3 text-sm"
+              />
+              <button type="submit" className="tap-target rounded-lg bg-primary px-3 text-xs font-black text-primary-foreground">
+                Ask
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">Workout facts are answered locally without paid AI. Open-ended AI and its voice require separate secure activation.</p>
+          </form>
+          {!paidCoachSpeechEnabled() && (
+            <p
+              data-testid="coach-read-along-mode"
+              className="mb-3 rounded-xl border border-accent/30 bg-accent/10 p-3 text-xs text-muted-foreground"
+            >
+              Read-along mode: scripted cues and timers stay visible. New spoken coaching
+              is disabled to avoid AI charges. Test the approved Marcus recording in Audio status.
+            </p>
+          )}
           {/* moved off the stage: camera, voice, gestures, swap */}
           <div className="mb-2 grid grid-cols-4 gap-2">
             {[

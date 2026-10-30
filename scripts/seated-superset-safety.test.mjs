@@ -1,0 +1,31 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+const player=readFileSync(new URL("../public/recovery-coach/index.html",import.meta.url),"utf8");
+const browser=readFileSync(new URL("./browser-mobile-smoke.mjs",import.meta.url),"utf8");
+test("optional paired supersets are limited to the five original approved seated movements",()=>{
+ assert.match(player,/id="pairMode"/);
+ assert.match(player,/<option value="straight" selected>Straight sets/);
+ assert.match(player,/<option value="paired">Paired supersets/);
+ assert.match(player,/idx===0\|\|idx===2/);
+ assert.match(player,/idx===1\|\|idx===3/);
+ assert.match(player,/restNext=\{phase:1,idx:leader\}/);
+ assert.match(player,/restNext=\{phase:1,idx:next\}/);
+ assert.match(player,/Superset: /);
+ assert.match(player,/Rest after BOTH exercises in paired superset/);
+ assert.match(player,/Ask your clinician before increasing intensity/);
+ assert.match(player,/if\(!safetyOkay\(\)\)/);
+});
+test("skipped pairs cannot be falsely marked complete and set-based demonstration progress persists without medical clearance",()=>{
+ assert.match(player,/const finishedSets=new Map\(\)/);
+ assert.match(player,/finishedSets\.set\(key,Math\.min\(targetRounds/);
+ assert.match(player,/finishedSets\.get\("1:"\+leader\)/);
+ assert.match(player,/finishedSets\.get\("1:"\+partner\)/);
+ assert.match(player,/finishedSets:Object\.fromEntries\(finishedSets\),pairMode:/);
+ assert.match(player,/saved\.pairMode\?\?"straight"/);
+ assert.match(player,/finishedSets\.clear\(\)/);
+ assert.match(player,/const restoredSets=saved\.finishedSets\?\?\{\}/);
+ assert.match(player,/if\(phase!==1\|\|\(finishedSets\.get\("1:"\+idx\)\|\|0\)>=targetRounds\)completed\.add/);
+ assert.match(player,/No video or audio was auto-played/);
+ assert.match(browser,/Recovery Superset C01→C02→rest→C01→C02→rest→C03/);
+});

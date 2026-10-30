@@ -17,6 +17,7 @@
  */
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import type { CoachStep } from "@/lib/coach-script";
+import { scheduledStepSeconds } from "@/lib/speech-pacing";
 import { beep, logIntervalFromCoach, markSetFromCoach, useApp, type SetEntry } from "@/lib/store";
 import {
   dropPending,
@@ -25,6 +26,7 @@ import {
   loadVoices,
   onCoachSpeech,
   prefetchSpeech,
+  paidCoachSpeechEnabled,
   speak,
   stopSpeech,
   unlockVoice,
@@ -225,7 +227,9 @@ export function useCoachEngine(
   const passive = !!opts.passive;
   const session = useCoachSession();
   const state = useApp();
-  const voiceOn = state.settings.coachVoice !== false;
+  // When paid speech is disabled, run captions + shortened read-along
+  // transitions instead of holding timers for a voice that cannot start.
+  const voiceOn = state.settings.coachVoice !== false && paidCoachSpeechEnabled();
   const [isLeader, setIsLeader] = useState(false);
   const voiceStatus = useVoiceStatus();
   const spoken = useRef("");
@@ -344,8 +348,7 @@ export function useCoachEngine(
     armed.current = step.id;
     // Speech-led steps fall back to a read-along clock when the coach is
     // muted; cap it so a silent session still flows instead of stalling.
-    const secs =
-      step.speechPaced && !voiceOn && step.seconds ? Math.min(step.seconds, 10) : step.seconds;
+    const secs = scheduledStepSeconds(step, voiceOn);
     // Rep-based sets count down too (lead runs, no clock); timed sets arm both.
     if (step.countdownIn) {
       resetCountdown(step.id);
