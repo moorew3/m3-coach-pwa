@@ -985,6 +985,17 @@ audio.addEventListener("stalled",()=>waitForBuffer("audio"));
 video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
 audio.addEventListener("playing",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
 audio.addEventListener("ended",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
+function handleUnexpectedMediaPause(kind){
+ // Android audio-focus loss can pause a player without triggering error/stalled.
+ // Only a genuinely running, timed, REQUIRED media stream can stop the set.
+ // Explicit Stop, navigation, rest and completed one-shot Marcus tracks do not qualify.
+ const player=kind==="video"?video:audio;
+ const required=kind==="video"?!!step().video:!!step().voice;
+ if(mode!=="running"||interval===null||!required||!player.paused||player.ended)return;
+ playbackError(kind==="video"?"Approved Flex video unexpectedly paused.":"Approved Marcus narration unexpectedly paused.",kind);
+}
+video.addEventListener("pause",()=>handleUnexpectedMediaPause("video"));
+audio.addEventListener("pause",()=>handleUnexpectedMediaPause("audio"));
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){if(mode==="running"||mode==="rest")void requestScreenAwake();return;}releaseScreenAwake();stopMarcusAudioTest();if(mode==="running"||mode==="rest")pause();else if(mode==="preview"){stopMedia(false);mode="ready";drawTimer();tell("Preview stopped when this screen was hidden. Tap Preview to replay; no exercise was logged.");}});
 $("next").addEventListener("click",()=>{
  if(mode==="complete")return;
