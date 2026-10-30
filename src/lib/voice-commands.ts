@@ -225,6 +225,14 @@ export function setConversationHandler(fn: ((phrase: string) => void) | null) {
   conversationHandler = fn;
 }
 
+/** Reuse existing V2 typed questions without overriding listening or sending background speech. */
+export function submitCoachConversation(phrase: string): boolean {
+  const clean = typeof phrase === "string" ? phrase.trim() : "";
+  if (!clean || clean.length > 600 || !conversationHandler) return false;
+  conversationHandler(clean);
+  return true;
+}
+
 function soundsDirectedAtCoach(phrase: string): boolean {
   const p = phrase.toLowerCase().trim();
   if (!p) return false;
