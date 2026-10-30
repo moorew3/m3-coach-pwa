@@ -20,6 +20,7 @@ export type VoiceCommand =
   | "previous"
   | "repeat"
   | "skip"
+  | "completeSet"
   | "addTime"
   | "lessTime"
   | "swap"
@@ -142,6 +143,7 @@ const RULES: [VoiceCommand, RegExp][] = [
   ],
   ["repeat", /\brepeat\b|\bsay (that )?again\b|\bagain\b/],
   ["skip", /\bskip\b/],
+  ["completeSet", /\b(set complete|complete (the )?set|finished (my|the|this) set|done with (my|the|this) set)\b/],
   ["end", /\bend (the )?workout\b|\bfinish (the )?workout\b|\bi'?m done\b|\bstop workout\b/],
   ["pause", /\bpause\b|\bhold on\b|\bwait\b/],
   ["resume", /\bresume\b|\bcontinue\b|\bkeep going\b|\bgo on\b/],
