@@ -757,6 +757,15 @@ function V2Coach() {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <a
+              href="/"
+              data-testid="v2-exit-to-workouts"
+              onClick={() => { if (session.running) dispatch({ type: "pause" }); }}
+              className="flex min-h-11 items-center rounded-xl border border-cyan-300/40 bg-cyan-300/15 px-3 text-xs font-black text-cyan-100"
+              aria-label="Back to M3 FLEX workouts"
+            >
+              ← Workouts
+            </a>
+            <a
               href="/rig-qa"
               title="Separate full-body Flex test; does not change your actual workouts"
               className="flex min-h-11 items-center rounded-xl border border-cyan-300/35 bg-cyan-300/10 px-3 text-xs font-black text-cyan-100"
