@@ -59,7 +59,36 @@ function Program() {
   const list = exercisesForDay(dayNumber);
 
   return (
-    <main className="px-4 pt-6">
+    <main className="px-4 pt-6" data-testid="m3-unified-program">
+      <header className="mb-5">
+        <h1 className="text-3xl font-bold">M3 FLEX · Your Workouts</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          One app for your original M3 Coach V2, approved seated Recovery, Workouts A/B and exercise review.
+        </p>
+      </header>
+      <section data-testid="m3-primary-workout-menu" className="surface-card rounded-2xl border border-primary/30 p-4">
+        <h2 className="text-lg font-bold">Choose your workout</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Use only movements and resistance your clinician has cleared. Review-only clips never count as approved exercises.
+        </p>
+        <div className="mt-3 grid gap-2">
+          <Link to="/v2" data-testid="program-v2" className="tap-target flex items-center justify-center rounded-xl bg-primary px-3 py-3 text-center text-sm font-bold text-primary-foreground">
+            M3 Coach V2 · Interactive visual coach
+          </Link>
+          <Link to="/recovery" search={{program:"recovery"}} data-testid="program-recovery" className="tap-target flex items-center justify-center rounded-xl border border-accent bg-accent/10 px-3 py-3 text-center text-sm font-bold text-accent">
+            Approved seated Recovery Coach
+          </Link>
+          <div className="grid grid-cols-2 gap-2">
+            <Link to="/recovery" search={{program:"A"}} data-testid="program-A" className="tap-target flex items-center justify-center rounded-xl border border-border bg-elevated px-3 py-3 text-center text-sm font-bold">Workout A</Link>
+            <Link to="/recovery" search={{program:"B"}} data-testid="program-B" className="tap-target flex items-center justify-center rounded-xl border border-border bg-elevated px-3 py-3 text-center text-sm font-bold">Workout B</Link>
+          </div>
+          <a href="/recovery-coach/programs/index.html" data-testid="program-scene-library" className="tap-target flex items-center justify-center rounded-xl border border-border bg-elevated px-3 py-3 text-center text-sm font-bold">
+            Review all Flex scenes and approval status
+          </a>
+        </div>
+      </section>
+      <details className="mt-5 rounded-2xl border border-border bg-card p-3" data-testid="m3-legacy-program-archive">
+        <summary className="cursor-pointer py-2 text-sm font-bold">Original six-day and 22-day workout archive · open only if medically cleared</summary>
       <div className="flex items-center gap-3">
         <img
           src={COACH_REFERENCE}
@@ -239,6 +268,7 @@ function Program() {
         )}
       </section>
       <ActivityChooser day={current} open={chooserOpen} onClose={() => setChooserOpen(false)} />
+      </details>
     </main>
   );
 }
