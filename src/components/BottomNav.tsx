@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Apple, CalendarDays, Dumbbell, LineChart, Settings as Cog } from "lucide-react";
+import { Apple, CalendarDays, Dumbbell, HeartPulse, LineChart, Settings as Cog } from "lucide-react";
 
 const items = [
   { to: "/", label: "Today", icon: Dumbbell },
+  { to: "/recovery", label: "Recovery", icon: HeartPulse },
   { to: "/program", label: "Program", icon: CalendarDays },
   { to: "/nutrition", label: "Nutrition", icon: Apple },
   { to: "/progress", label: "Progress", icon: LineChart },
@@ -23,9 +24,9 @@ export function BottomNav() {
               activeOptions={{ exact: to === "/" }}
               activeProps={{ className: "text-primary" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="tap-target flex flex-col items-center justify-center gap-1 py-2 text-[11px] font-semibold uppercase tracking-wide"
+              className="tap-target flex flex-col items-center justify-center gap-1 py-2 text-[10px] font-semibold uppercase tracking-wide"
             >
-              <Icon className="size-6" aria-hidden />
+              <Icon className="size-5" aria-hidden />
               {label}
             </Link>
           </li>

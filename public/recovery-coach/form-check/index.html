@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1521"><title>M3 FLEX · Private On-device Form View</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1521;--panel:#172b3b;--line:#395970;--fg:#edf7fc;--green:#c5f08c}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg)}
+main{max-width:680px;margin:0 auto;padding:12px}h2{font-size:19px;line-height:1.25;margin:0 0 8px}
+p{margin:8px 0;color:#d1e0eb}.small{font-size:12px;color:#b4cbd9}
+fieldset{border:1px solid var(--line);padding:10px;border-radius:12px}legend{padding:0 5px;font-size:12px;color:var(--green)}
+label{display:flex;gap:10px;align-items:center;min-height:42px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--green)}select{padding:9px;background:#263e50;color:var(--fg);border:1px solid var(--line);border-radius:8px;width:100%}
+button{padding:12px;border-radius:10px;border:1px solid var(--line);background:#263d51;color:var(--fg);font:700 14px system-ui;min-height:45px;cursor:pointer}
+button:disabled{opacity:.48}button.primary{background:var(--green);color:#12231a;border-color:var(--green)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.view{position:relative;margin:12px auto;background:#04080c;border-radius:12px;overflow:hidden;width:100%;max-width:420px;aspect-ratio:4/3}
+.view video,.view canvas{position:absolute;width:100%;height:100%;top:0;left:0;object-fit:contain;transform:scaleX(-1)}
+.view video{background:#020406}.view canvas{pointer-events:none}
+#status{border-left:3px solid var(--green);padding:10px;background:#162d36;min-height:62px;border-radius:5px}
+footer{font-size:11px;color:#b5d0dd;margin:13px 0}
+</style></head><body><main>
+<h2>Live camera · upper-body alignment</h2>
+<p class="small">One-camera, on-device MediaPipe landmark preview. Detects visible shoulder/elbow/wrist landmarks, not injury, cast clearance, resistance safety, actual repetitions or clinically correct technique. No footage is saved by M3 FLEX.</p>
+<fieldset><legend>Choose the approved exercise you are checking</legend>
+<select id="exercise" aria-label="Approved exercise to observe">
+<option value="C01-R3">C01 · Seated dumbbell shrugs</option>
+<option value="C02">C02 · Seated hammer curls</option>
+<option value="C03">C03 · Seated front raises</option>
+<option value="C04-R2">C04 · Alternating seated curls</option>
+<option value="C08-PRESS-R3">C08 · INNSTAR seated chest press</option>
+</select>
+<label><input id="consent" type="checkbox"> I allow local live camera pose analysis for this session.</label>
+<p class="small">The approved public model and WebAssembly runtime are served by this website (no pose-model CDN at workout time). Frames are processed locally; Google MediaPipe may collect runtime usage metrics. Android requires HTTPS and explicit camera permission. No microphone is used.</p></fieldset>
+<div class="actions">
+<button id="start" type="button" class="primary">Enable live form view</button>
+<button id="stop" type="button" disabled>Stop camera</button>
+</div>
+<div class="view">
+<video id="camera" muted playsinline autoplay aria-label="Private mirrored front-camera preview"></video>
+<canvas id="overlay" aria-label="Upper-body landmark overlay"></canvas>
+</div>
+<p id="status" role="status" aria-live="polite">Off. Video, camera and model have not started.</p>
+<footer>Positioning feedback is an aid only. Follow clinician restrictions, keep the injured leg supported, and stop activity for pain, swelling or pressure. Never anchor exercise bands to the cast. No medical clearance is determined by this view.</footer>
+<script type="module">
+"use strict";
+const $=id=>document.getElementById(id);
+const LIBRARY="./vendor/vision_bundle.mjs";
+const WASM="./vendor/wasm";
+const MODEL="./vendor/pose_landmarker_lite.task";
+let session=0,stream=null,tracker=null,frame=null,lastFrameAt=0,lastFeedbackAt=0;
+const approvedSceneIds=new Set(["C01-R3","C02","C03","C04-R2","C08-PRESS-R3"]);
+const embedded=window.parent!==window;
+let activeCoachScene=embedded?null:$("exercise").value;
+const display=message=>{$("status").textContent=message;};
+if(embedded){
+ $("exercise").disabled=true;
+ $("start").disabled=true;
+ display("Waiting for the coach to select an approved seated exercise. Camera is off.");
+}
+window.addEventListener("message",event=>{
+ if(event.source!==window.parent||event.origin!==location.origin)return;
+ if(event.data?.type!=="m3-flex-active-scene")return;
+ const id=event.data.id;
+ if(id===null){
+  activeCoachScene=null;
+  cleanup();
+  $("exercise").disabled=true;
+  $("start").disabled=true;
+  display("No approved lifting movement is active. Camera stopped for warm-up, rest or cooldown.");
+  return;
+ }
+ if(!approvedSceneIds.has(id))return;
+ const previous=activeCoachScene;
+ activeCoachScene=id;
+ $("exercise").value=id;
+ $("exercise").disabled=embedded;
+ if(embedded){
+  if(!stream)$("start").disabled=false;
+  if(!stream||previous!==id)display("Coach exercise synced: "+$("exercise").selectedOptions[0].text+". Local camera requires your consent and a tap to start.");
+ }
+});
+function closeTracks(value){if(value)for(const track of value.getTracks())track.stop();}
+function cleanup(){
+ session++;
+ if(frame!==null){cancelAnimationFrame(frame);frame=null;}
+ closeTracks(stream);stream=null;
+ $("camera").pause();$("camera").srcObject=null;
+ if(tracker){try{tracker.close()}catch{}tracker=null;}
+ const canvas=$("overlay"),ctx=canvas.getContext("2d");
+ if(ctx)ctx.clearRect(0,0,canvas.width,canvas.height);
+ $("start").disabled=embedded&&!activeCoachScene;$("stop").disabled=true;
+}
+function visible(point){return point&&Number.isFinite(point.x)&&Number.isFinite(point.y)&&(point.visibility??1)>=0.55}
+function feedback(points){
+ if(!points||points.length<17)return "Standby: keep the camera facing your seated upper body, with shoulders, elbows and wrists visible.";
+ const ids=[11,12,13,14,15,16];
+ if(ids.some(i=>!visible(points[i])))return "Move the camera so both shoulders, elbows and wrists are visible. No repetitions assessed.";
+ const left=points[11],right=points[12],span=Math.abs(left.x-right.x);
+ if(span<0.12)return "Sit farther from the camera so your upper body is fully framed. No repetitions assessed.";
+ if($("exercise").value==="C03"&&(points[15].y<left.y-.08||points[16].y<right.y-.08))
+  return "Front-raise wrist looks above the shoulder line in this view. Stay inside your clinician-approved range; no load or rep safety was verified.";
+ if($("exercise").value==="C02"||$("exercise").value==="C04-R2"){
+  if(Math.abs(points[13].x-left.x)>span*.75||Math.abs(points[14].x-right.x)>span*.75)
+   return "A curl elbow appears away from the torso. Consider a controlled elbow position within your cleared range; camera perspective can mislead.";
+ }
+ if($("exercise").value==="C08-PRESS-R3")
+  return "Upper-body landmarks visible. Camera CANNOT verify the band behind your chair, cast support or safe resistance.";
+ return "Shoulders, elbows and wrists visible. Local landmarks tracked; no automatic rep count or form clearance.";
+}
+function renderPose(points){
+ const canvas=$("overlay"),view=$("camera");
+ const width=view.videoWidth||640,height=view.videoHeight||480;
+ if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+ const ctx=canvas.getContext("2d");
+ if(!ctx)return;
+ ctx.clearRect(0,0,width,height);
+ if(!points||points.length<17)return;
+ const links=[[11,12],[11,13],[13,15],[12,14],[14,16]];
+ ctx.strokeStyle="#c5f08c";ctx.lineWidth=Math.max(2,width/160);
+ for(const [a,b] of links){
+  if(!visible(points[a])||!visible(points[b]))continue;
+  ctx.beginPath();ctx.moveTo(points[a].x*width,points[a].y*height);
+  ctx.lineTo(points[b].x*width,points[b].y*height);ctx.stroke();
+ }
+ ctx.fillStyle="#ffffff";
+ for(const id of [11,12,13,14,15,16]){
+  if(!visible(points[id]))continue;
+  ctx.beginPath();ctx.arc(points[id].x*width,points[id].y*height,Math.max(3,width/140),0,Math.PI*2);ctx.fill();
+ }
+}
+function observe(now,expected){
+ if(expected!==session||!tracker||!stream)return;
+ if(document.hidden){cleanup();display("Camera stopped because this tab was hidden.");return;}
+ if(now-lastFrameAt>=275&&$("camera").readyState>=2){
+  lastFrameAt=now;
+  try{
+   const result=tracker.detectForVideo($("camera"),now);
+   const points=result.landmarks?.[0]??null;
+   renderPose(points);
+   if(now-lastFeedbackAt>850){lastFeedbackAt=now;display(feedback(points));}
+  }catch(e){cleanup();display("Local landmark check stopped: "+(e?.name||"model error"));return;}
+ }
+ frame=requestAnimationFrame(t=>observe(t,expected));
+}
+$("start").addEventListener("click",async()=>{
+ if(embedded&&!activeCoachScene){display("No approved seated exercise is active. Camera remains off.");return;}
+ if(!$("consent").checked){display("Check consent first. No camera permission was requested.");return;}
+ if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){display("HTTPS and a camera-capable browser are required. No recording started.");return;}
+ cleanup();
+ const expected=session;
+ $("start").disabled=true;display("Requesting camera permission for this session…");
+ let fresh=null,createdTracker=null;
+ try{
+  fresh=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:"user",width:{ideal:640},height:{ideal:480}}});
+  if(expected!==session){closeTracks(fresh);return;}
+  stream=fresh;$("camera").srcObject=fresh;
+  await $("camera").play();
+  if(expected!==session){closeTracks(fresh);return;}
+  display("Camera is on. Loading local pose model; nothing is being uploaded.");
+  const {FilesetResolver,PoseLandmarker}=await import(LIBRARY);
+  const vision=await FilesetResolver.forVisionTasks(WASM);
+  createdTracker=await PoseLandmarker.createFromOptions(vision,{
+   baseOptions:{modelAssetPath:MODEL,delegate:"CPU"},
+   runningMode:"VIDEO",numPoses:1,minPoseDetectionConfidence:0.55,
+   minPosePresenceConfidence:0.55,minTrackingConfidence:0.55,
+   outputSegmentationMasks:false
+  });
+  if(expected!==session){createdTracker.close();return;}
+  tracker=createdTracker;createdTracker=null;$("stop").disabled=false;
+  display("Local pose view is active. Show both shoulders, elbows and wrists.");
+  frame=requestAnimationFrame(t=>observe(t,expected));
+ }catch(error){
+  if(createdTracker)try{createdTracker.close()}catch{}
+  if(expected===session){cleanup();display("Camera/pose model unavailable: "+(error?.name||error?.message||"unknown error")+". No images were uploaded.");}
+  else closeTracks(fresh);
+ }
+});
+$("stop").addEventListener("click",()=>{cleanup();display("Camera and local pose analysis stopped. No frames saved.");});
+$("consent").addEventListener("change",()=>{if(!$("consent").checked&&stream){cleanup();display("Consent withdrawn. Camera stopped.");}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden){cleanup();display("Camera stopped because this tab was hidden.");}});
+window.addEventListener("pagehide",cleanup);
+</script>
+</main></body></html>

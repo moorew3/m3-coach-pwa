@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1521"><title>M3 FLEX · Actual Workout Log</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1521;--panel:#182c3b;--line:#3c5d74;--text:#eef6fa;--muted:#b5cbd9;--accent:#c5f08c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,sans-serif}main{max-width:750px;margin:0 auto;padding:14px}
+h1{font-size:24px;margin:4px 0}h2{font-size:17px;margin:0 0 6px}p{margin:8px 0;color:var(--muted)}
+section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;margin:12px 0}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}.fields label{font-size:12px;color:var(--muted);font-weight:700}.fields label.wide{grid-column:1/-1}
+input,select{display:block;width:100%;margin-top:5px;background:#273f52;border:1px solid #648198;border-radius:9px;padding:10px;color:white;min-height:44px;font:15px system-ui}
+button{min-height:44px;cursor:pointer;background:#2b465b;color:white;border:1px solid #7290a0;border-radius:10px;padding:9px 13px;font:750 14px system-ui}
+button.primary{background:var(--accent);color:#12231a;border-color:var(--accent)}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#status{min-height:30px;padding:8px;color:var(--accent);border-left:3px solid var(--accent);font-size:13px}
+.record{border-top:1px solid var(--line);padding:10px 0;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.record small{font-size:11px;color:var(--muted);display:block}
+strong{color:var(--text)}.note{font-size:12px;color:#edcea9}
+</style></head><body><main>
+<h1>My actual reps &amp; measurements</h1>
+<p>Only values you enter yourself count. The Flex video timer is a demonstration—not proof that you completed any repetition. Stored in <strong>this browser or installed app only</strong>. No cloud sync, voice recordings, camera content, or medical clearance is stored.</p>
+<section>
+<h2>Record a real exercise set</h2>
+<form id="setForm">
+<div class="fields">
+<label class="wide">Approved seated exercise<select id="exercise" required aria-label="Exercise for actual reps">
+<option value="C01-R3">Seated dumbbell shrugs</option>
+<option value="C02">Seated hammer curls</option>
+<option value="C03">Seated front raises</option>
+<option value="C04-R2">Alternating seated curls</option>
+<option value="C08-PRESS-R3">INNSTAR seated chest press</option>
+</select></label>
+<label>Reps you actually performed<input id="reps" type="number" inputmode="numeric" min="0" max="100" step="1" required placeholder="e.g. 12"></label>
+<label>Weight used (lb; optional)<input id="weight" type="number" inputmode="decimal" min="0" max="300" step="0.5" placeholder="e.g. 15"></label>
+</div>
+<p class="note">Enter actual reps yourself; 0 is allowed for an attempted but unfinished set. Weight is optional and not a recommendation. Do not increase resistance beyond clinician-cleared limits, including the INNSTAR band.</p>
+<div class="buttons"><button class="primary" type="submit" id="saveSet">Save actual set</button></div>
+</form>
+<aside aria-label="Last actual performance and optional progression discussion" style="margin-top:15px;padding:12px;border:1px solid #54728a;border-radius:11px;background:#102536">
+<h2>My last actual performance</h2>
+<div class="fields">
+<label>Personal rep target for comparison <select id="targetReps" aria-label="Rep target for past performance comparison"><option value="8">8 reps</option><option value="10">10 reps</option><option value="12" selected>12 reps</option><option value="15">15 reps</option></select></label>
+<div style="display:flex;align-items:end"><button id="useLastWeight" type="button" disabled>Use last logged lb</button></div>
+</div>
+<p id="lastSet" role="status">No prior actual set recorded for this exercise.</p>
+<p id="progressionCue" class="note">No automatic load increases. Your clinician's limits take priority.</p>
+<p class="note">Only manually entered sets from separate calendar days can establish repeat performance. A progression cue is a discussion prompt, not a new prescribed weight. INNSTAR band resistance is not automatically converted to pounds. No increases during cast restrictions unless individually cleared.</p>
+</aside>
+</section>
+<section>
+<h2>Body measurements (optional)</h2>
+<form id="metricForm">
+<div class="fields">
+<label>Body weight (lb)<input id="bodyWeight" type="number" inputmode="decimal" min="40" max="600" step="0.1" placeholder="e.g. 198"></label>
+<label>Waist (in)<input id="waist" type="number" inputmode="decimal" min="10" max="90" step="0.1" placeholder="e.g. 38"></label>
+<label>Arm size (in)<input id="arm" type="number" inputmode="decimal" min="5" max="40" step="0.1" placeholder="e.g. 16"></label>
+</div>
+<div class="buttons"><button type="submit" class="primary">Save measurements</button></div>
+</form>
+</section>
+<section id="backup">
+<h2>My recorded history</h2>
+<p id="summary" class="note">No actual workout entries yet.</p>
+<p id="measurementTrend" class="note">Measurement changes will appear after two independently logged values.</p>
+<div id="history" aria-label="Real workouts and measurements"></div>
+<div class="buttons">
+<button id="export" type="button">Export private JSON backup</button>
+<button id="exportProtected" type="button">Export password-protected backup</button>
+<label for="importFile" style="align-self:center;font-size:12px">Restore from backup</label><input type="file" id="importFile" accept="application/json,.json" aria-label="Import workout log backup" style="max-width:230px">
+<button id="erase" type="button">Delete local records</button>
+</div>
+<div class="fields" style="margin-top:12px">
+<label class="wide">Password for protected export or restore (12–128 characters; never saved)
+<input id="backupPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="Type the same private password on both devices" aria-label="Password for encrypted workout backup"></label>
+</div>
+<p class="note">Select <strong>Export password-protected backup</strong>, keep the file and password separately, then choose that file under Restore on your second device. Encryption uses PBKDF2-SHA-256 (310,000 rounds) and AES-256-GCM in your browser. No password, reps, measurements or keys are uploaded by M3 FLEX. If the password is lost, the protected backup cannot be recovered. The original plain JSON export is NOT encrypted.</p>
+<p class="note">Exports are saved to your chosen device. Import merges only valid records and skips duplicates. Use backup files to move logs between devices; automatic cross-device synchronization is not available. Deleting clears this browser's records only.</p>
+</section>
+<p role="status" id="status" aria-live="polite">Ready. Your data stays in this browser.</p>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const KEY="m3-flex-real-reps-and-metrics-v1",MAX_RECORDS=1500;
+const EXERCISES={
+ "C01-R3":"Seated dumbbell shrugs","C02":"Seated hammer curls",
+ "C03":"Seated front raises","C04-R2":"Alternating seated curls",
+ "C08-PRESS-R3":"INNSTAR seated chest press"
+};
+let records=[];
+function message(s){$("status").textContent=s}
+function validNum(n,low,high,integer=false){return typeof n==="number"&&Number.isFinite(n)&&n>=low&&n<=high&&(!integer||Number.isInteger(n))}
+function validRecord(r){
+ if(!r||typeof r!=="object"||Array.isArray(r)||!/^[-a-z0-9]{12,80}$/i.test(r.id||"")||
+    typeof r.at!=="string"||!Number.isFinite(Date.parse(r.at))||
+    Date.parse(r.at)>Date.now()+86400000||Date.parse(r.at)<Date.UTC(2020,0,1))return false;
+ if(r.type==="set")return Object.hasOwn(EXERCISES,r.exercise)&&validNum(r.reps,0,100,true)&&
+   (r.lb===null||validNum(r.lb,0,300))&&Object.keys(r).every(k=>["id","at","type","exercise","reps","lb"].includes(k));
+ if(r.type==="metrics")return ["weight","waist","arm"].some(k=>r[k]!==null)&&
+   (r.weight===null||validNum(r.weight,40,600))&&
+   (r.waist===null||validNum(r.waist,10,90))&&
+   (r.arm===null||validNum(r.arm,5,40))&&
+   Object.keys(r).every(k=>["id","at","type","weight","waist","arm"].includes(k));
+ return false;
+}
+function load(){
+ try{
+  const value=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(value?.schema===1&&Array.isArray(value.records)&&value.records.length<=MAX_RECORDS)
+   records=value.records.filter(validRecord).slice(-MAX_RECORDS);
+ }catch(e){message("Storage unavailable. You can still export any records shown while this page stays open.")}
+}
+function persist(){
+ try{localStorage.setItem(KEY,JSON.stringify({schema:1,records}))}
+ catch(e){message("Browser storage unavailable or full. Export your data now; new changes might not survive closing the page.");return false}
+ return true;
+}
+function inputNum(id,min,max,integer=false){
+ const raw=$(id).value.trim();
+ if(!raw)return null;
+ const number=Number(raw);
+ return validNum(number,min,max,integer)?number:undefined;
+}
+function add(record){
+ if(!validRecord(record))return message("Check the values. This record was not saved.");
+ records.push(record);
+ if(records.length>MAX_RECORDS)records=records.slice(-MAX_RECORDS);
+ const saved=persist();render();
+ message(saved?"Saved your manually entered "+(record.type==="set"?"repetitions.":"measurements."):"Record is visible only in this open page. Export it before leaving.");
+}
+function formatRecord(r){
+ if(r.type==="set")return EXERCISES[r.exercise]+" · "+r.reps+" actual reps"+(r.lb===null?"":" · "+r.lb+" lb entered");
+ const vals=[r.weight!==null?"Body "+r.weight+" lb":null,r.waist!==null?"Waist "+r.waist+" in":null,r.arm!==null?"Arm "+r.arm+" in":null].filter(Boolean);
+ return "Measurements · "+vals.join(" · ");
+}
+function localTrainingDay(at){
+ const d=new Date(at);
+ return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+}
+function recentSetsByDay(exercise){
+ const sorted=records.filter(r=>r.type==="set"&&r.exercise===exercise)
+  .sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+ const found=new Set(),sessions=[];
+ for(const item of sorted){
+  const day=localTrainingDay(item.at);
+  if(!found.has(day)){found.add(day);sessions.push(item)}
+ }
+ return sessions;
+}
+function renderProgression(){
+ const exercise=$("exercise").value,days=recentSetsByDay(exercise),latest=days[0],target=Number($("targetReps").value);
+ const use=$("useLastWeight");
+ use.disabled=!latest||latest.lb===null||exercise==="C08-PRESS-R3";
+ if(!latest){
+  $("lastSet").textContent="No personally logged set yet. Finish a real set and enter your actual repetitions.";
+  $("progressionCue").textContent="No progression assessment from video timers. Clinician-cleared resistance only.";
+  return;
+ }
+ $("lastSet").textContent="Most recent actual session: "+new Date(latest.at).toLocaleDateString()+
+  " · "+latest.reps+" reps"+(latest.lb===null?" · weight not entered":" · "+latest.lb+" lb entered")+
+  ". Previous distinct logged days: "+Math.max(0,days.length-1)+".";
+ if(exercise==="C08-PRESS-R3"){
+  $("progressionCue").textContent="INNSTAR band load has no verified pound conversion. Check equipment setup and clinician-approved resistance; no automated load increase.";
+ }else if(latest.lb===null){
+  $("progressionCue").textContent="No weight entered for the last set. Record a real load if you want to compare resistance across sessions.";
+ }else if(days.length<2){
+  $("progressionCue").textContent="One logged training day. Keep the clinician-cleared resistance; a separate-day comparison is needed.";
+ }else if(days[1].lb===latest.lb&&latest.reps>target&&days[1].reps>target){
+  $("progressionCue").textContent="Across two separate days, you exceeded "+target+
+   " reps at the same logged "+latest.lb+
+   " lb. Only if separately cleared for progression, review the smallest available increase with your clinician. No automatic change was made.";
+ }else{
+  $("progressionCue").textContent="No consistent above-target result at the same weight across two training days. Continue logging actual sets without an automatic load change.";
+ }
+}
+function renderMeasurementTrend(){
+ const names=[["weight","Body weight","lb"],["waist","Waist","in"],["arm","Arm","in"]];
+ const result=[];
+ for(const [key,label,unit] of names){
+  const two=records.filter(r=>r.type==="metrics"&&r[key]!==null).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,2);
+  if(two.length===0)continue;
+  const delta=two.length===2?+(two[0][key]-two[1][key]).toFixed(2):null;
+  result.push(label+": "+two[0][key]+" "+unit+(delta===null?" (one entry)":", change "+(delta>0?"+":"")+delta+" "+unit+" versus previous entry"));
+ }
+ $("measurementTrend").textContent=result.length?result.join(" · ")+". These are self-reported measurements, not automatic assessments.":"Measurement changes will appear after two independently logged values.";
+}
+function render(){
+ renderProgression();renderMeasurementTrend();
+ const list=$("history");list.replaceChildren();
+ $("summary").textContent=records.length+" saved personal records ("+records.filter(r=>r.type==="set").length+" actual exercise sets, "+records.filter(r=>r.type==="metrics").length+" measurements).";
+ for(const r of [...records].reverse().slice(0,35)){
+  const entry=document.createElement("div");entry.className="record";
+  const text=document.createElement("div"),strong=document.createElement("strong"),date=document.createElement("small");
+  strong.textContent=formatRecord(r);date.textContent=new Date(r.at).toLocaleString();
+  text.append(strong,date);
+  const remove=document.createElement("button");remove.type="button";remove.textContent="Delete";remove.setAttribute("aria-label","Delete entry "+r.id);
+  remove.addEventListener("click",()=>{records=records.filter(item=>item.id!==r.id);persist();render();message("Removed one local entry.")});
+  entry.append(text,remove);list.append(entry);
+ }
+ if(records.length>35){const note=document.createElement("p");note.textContent="Showing the newest 35 entries. Export includes all saved records.";list.append(note)}
+}
+$("exercise").addEventListener("change",renderProgression);
+$("targetReps").addEventListener("change",renderProgression);
+$("useLastWeight").addEventListener("click",()=>{
+ const latest=recentSetsByDay($("exercise").value)[0];
+ if(!latest||latest.lb===null||$("exercise").value==="C08-PRESS-R3")return;
+ $("weight").value=String(latest.lb);
+ message("Copied your previous self-reported weight. This is a reference only, not approval to use that load today.");
+});
+$("setForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const reps=inputNum("reps",0,100,true),lb=inputNum("weight",0,300);
+ if(reps===null||reps===undefined||lb===undefined)return message("Enter real repetitions (0–100) and optional valid pounds (0–300).");
+ add({id:crypto.randomUUID(),at:new Date().toISOString(),type:"set",exercise:$("exercise").value,reps,lb});
+ $("reps").value="";
+});
+$("metricForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ const weight=inputNum("bodyWeight",40,600),waist=inputNum("waist",10,90),arm=inputNum("arm",5,40);
+ if([weight,waist,arm].some(v=>v===undefined)||[weight,waist,arm].every(v=>v===null))return message("Enter at least one measurement in its valid range.");
+ add({id:crypto.randomUUID(),at:new Date().toISOString(),type:"metrics",weight,waist,arm});
+});
+const BACKUP_PBKDF_ITERATIONS=310000, BACKUP_MAGIC="m3-flex-password-protected-v1";
+const backupEncoder=new TextEncoder(),backupDecoder=new TextDecoder();
+function bytesToBase64(bytes){
+ let result="";
+ for(let i=0;i<bytes.length;i+=32768)result+=String.fromCharCode(...bytes.subarray(i,i+32768));
+ return btoa(result);
+}
+function base64ToBytes(value,maxLength){
+ if(typeof value!=="string"||value.length>maxLength||!/^[A-Za-z0-9+/]*={0,2}$/.test(value)||value.length%4!==0)
+  throw Error("Protected backup has invalid encoded data.");
+ const data=atob(value),out=new Uint8Array(data.length);
+ for(let i=0;i<data.length;i++)out[i]=data.charCodeAt(i);
+ return out;
+}
+async function deriveBackupKey(password,salt,usage){
+ const base=await crypto.subtle.importKey("raw",backupEncoder.encode(password),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey(
+  {name:"PBKDF2",salt,iterations:BACKUP_PBKDF_ITERATIONS,hash:"SHA-256"},base,
+  {name:"AES-GCM",length:256},false,[usage]
+ );
+}
+function privateBackupPassword(){
+ const password=$("backupPassword").value;
+ if(password.length<12||password.length>128)throw Error("Enter a 12–128 character backup password. It will not be saved.");
+ return password;
+}
+function downloadProtectedBackup(body){
+ const blob=new Blob([JSON.stringify(body,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="m3-flex-password-protected-workout-log.json";
+ document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500);
+}
+async function decryptProtectedBackup(envelope,password){
+ if(envelope.schema!==2||envelope.format!==BACKUP_MAGIC||
+    envelope.iterations!==BACKUP_PBKDF_ITERATIONS||!crypto.subtle)throw Error("Unsupported encrypted backup format.");
+ const salt=base64ToBytes(envelope.salt,64),iv=base64ToBytes(envelope.iv,32);
+ const ciphertext=base64ToBytes(envelope.ciphertext,1900000);
+ if(salt.length!==16||iv.length!==12||ciphertext.length<17)throw Error("Protected backup is incomplete.");
+ try{
+  const key=await deriveBackupKey(password,salt,"decrypt");
+  const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ciphertext);
+  return JSON.parse(backupDecoder.decode(plain));
+ }catch{throw Error("Wrong password, damaged protected backup, or authentication failed.");}
+}
+$("exportProtected").addEventListener("click",async()=>{
+ try{
+  const password=privateBackupPassword();
+  if(!crypto.subtle||!crypto.getRandomValues)throw Error("Secure HTTPS browser encryption is required.");
+  $("exportProtected").disabled=true;
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveBackupKey(password,salt,"encrypt");
+  const payload=backupEncoder.encode(JSON.stringify({schema:1,exportedAt:new Date().toISOString(),records}));
+  const ciphertext=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,payload);
+  downloadProtectedBackup({
+   schema:2,format:BACKUP_MAGIC,iterations:BACKUP_PBKDF_ITERATIONS,
+   salt:bytesToBase64(salt),iv:bytesToBase64(iv),
+   ciphertext:bytesToBase64(new Uint8Array(ciphertext))
+  });
+  message("Encrypted private backup downloaded. Keep its password separately; no records or password uploaded.");
+ }catch(e){message("Protected export unavailable: "+(e?.message||"encryption failed"));}
+ finally{$("backupPassword").value="";$("exportProtected").disabled=false;}
+});
+$("export").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify({schema:1,exportedAt:new Date().toISOString(),records},null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="m3-flex-private-workout-log.json";
+ document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500);
+ message("Private JSON backup created for your device. No data sent to an external service.");
+});
+$("importFile").addEventListener("change",async()=>{
+ const file=$("importFile").files?.[0];
+ if(!file)return;
+ try{
+  if(file.size>1900000)throw Error("File exceeds the 1.9 MB import limit.");
+  let parsed=JSON.parse(await file.text());
+  if(parsed?.schema===2){
+   const password=privateBackupPassword();
+   parsed=await decryptProtectedBackup(parsed,password);
+  }else if(file.size>850000)throw Error("Unencrypted JSON backup exceeds the 850 KB limit.");
+  if(parsed.schema!==1||!Array.isArray(parsed.records)||parsed.records.length>MAX_RECORDS||
+      parsed.records.some(r=>!validRecord(r)))throw Error("Backup schema or record values are invalid.");
+  const ids=new Set(records.map(r=>r.id));let merged=0;
+  for(const r of parsed.records){
+   if(ids.has(r.id))continue;
+   records.push(r);ids.add(r.id);merged++;
+  }
+  records.sort((a,b)=>a.at.localeCompare(b.at));
+  if(records.length>MAX_RECORDS)records=records.slice(-MAX_RECORDS);
+  const saved=persist();render();message("Imported "+merged+" distinct valid records. "+(saved?"Stored locally.":"Export before closing this page."));
+ }catch(e){message("Import rejected: "+(e?.message||"invalid file"))}
+ $("importFile").value="";
+ $("backupPassword").value="";
+});
+$("erase").addEventListener("click",()=>{
+ if(!window.confirm("Delete all locally saved real reps and measurements from this browser? Keep a backup first."))return;
+ records=[];try{localStorage.removeItem(KEY)}catch(e){}render();message("Local workout log cleared.");
+});
+window.addEventListener("message",event=>{
+ if(event.origin!==window.location.origin||event.source!==window.parent)return;
+ if(event.data?.kind==="m3-flex-exercise-selection"&&Object.hasOwn(EXERCISES,event.data.id)){
+  $("exercise").value=event.data.id;
+  renderProgression();
+  message("Selected current approved Flex exercise: "+EXERCISES[event.data.id]+". Log actual reps only after doing the set.");
+ }
+});
+load();render();
+const param=new URL(location.href).searchParams.get("exercise");
+if(Object.hasOwn(EXERCISES,param))$("exercise").value=param;
+renderProgression();
+</script></body></html>

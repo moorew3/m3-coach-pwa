@@ -28,6 +28,8 @@ import {
 import { COACH_REFERENCE } from "@/data/coach-identity";
 import { ExerciseLibraryButton } from "@/components/ExerciseLibrary";
 import { ReadinessCheck } from "@/components/ReadinessCheck";
+import { LEGACY_MODE_KEY } from "@/components/LegacyRouteGate";
+import { readRecoveryProgress, safeLocalRecoveryStorage, recoveryTitle, type RecoveryProgress } from "@/lib/recovery-progress";
 import { SubstitutionSelect } from "@/components/SubstitutionSelect";
 
 export const Route = createFileRoute("/")({
@@ -63,6 +65,20 @@ function Today() {
   const [startChoice, setStartChoice] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [navError, setNavError] = useState("");
+  const [legacyGateOpen, setLegacyGateOpen] = useState(false);
+  const [legacyRiskConfirmed, setLegacyRiskConfirmed] = useState(false);
+  const [legacyModeAllowed, setLegacyModeAllowed] = useState(false);
+  const [recoverySession, setRecoverySession] = useState<RecoveryProgress | null>(null);
+  useEffect(() => {
+    const refresh = () => setRecoverySession(readRecoveryProgress(safeLocalRecoveryStorage()));
+    refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+    };
+  }, []);
 
   const doneSets = list.reduce(
     (n, e) => n + (log.exercises[e.id]?.sets.filter((s) => s.done).length ?? 0),
@@ -100,6 +116,21 @@ function Today() {
 
   const openWorkout = () => go(`/workout/${day}`, "/workout/$day");
   const openCoach = () => go(`/coach/${day}`, "/coach/$day");
+  const launchLegacyCoach = () => {
+    if (log.completed) return openCoach();
+    if (hasActiveSession(state, day)) return setStartChoice(true);
+    if (!ready) return setChecking(true);
+    startWorkoutOnce(day);
+    openCoach();
+  };
+  const requestLegacyCoach = () => {
+    if (!legacyModeAllowed && !log.completed) {
+      setLegacyRiskConfirmed(false);
+      setLegacyGateOpen(true);
+      return;
+    }
+    launchLegacyCoach();
+  };
 
   return (
     <main className="px-4 pt-6">
@@ -113,6 +144,55 @@ function Today() {
           {mounted ? ` · ${dayDateLabel(state, day)}` : ""}
         </p>
       </header>
+
+      <section data-testid="m3-unified-workout-picker" className="surface-card mb-5 rounded-2xl p-4">
+        <h2 className="text-xl font-bold">M3 FLEX · Choose your workout</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          One app for the approved seated Recovery Coach, Equipment A, Equipment B,
+          your original weekly workouts and the full scene library. The same
+          original Flex and Marcus media stay protected.
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <Link to="/recovery" search={{ program: "recovery" }}
+            className="tap-target flex items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground">
+            Recovery · 5 approved moves
+          </Link>
+          <Link to="/recovery" search={{ program: "A" }}
+            className="tap-target flex items-center justify-center rounded-xl border border-primary px-3 text-center text-sm font-bold">
+            Workout A · Dumbbells &amp; boxing scenes
+          </Link>
+          <Link to="/recovery" search={{ program: "B" }}
+            className="tap-target flex items-center justify-center rounded-xl border border-primary px-3 text-center text-sm font-bold">
+            Workout B · INNSTAR &amp; arms
+          </Link>
+          <button type="button" onClick={requestLegacyCoach}
+            className="tap-target rounded-xl border border-border bg-elevated px-3 text-center text-sm font-bold">
+            Original weekly strength &amp; cardio
+          </button>
+        </div>
+        <Link to="/recovery" search={{ program: "recovery" }}
+          className="mt-3 block text-center text-sm font-semibold text-primary">
+          Open your complete approved/review scene library
+        </Link>
+        {recoverySession && (
+          <div data-testid="m3-recovery-saved-progress" className="mt-3 rounded-xl border border-primary/50 bg-primary/10 p-3">
+            <p className="text-sm font-bold">Resume {recoveryTitle(recoverySession.program)} in this app</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {recoverySession.completedSteps} timed demonstration stages saved · Set {recoverySession.workRound} of {recoverySession.targetRounds}
+              {" · "}No actual reps or medical clearance inferred
+            </p>
+            <Link to="/recovery" search={{ program: recoverySession.program }}
+              className="tap-target mt-2 flex items-center justify-center rounded-lg bg-primary px-3 text-sm font-bold text-primary-foreground">
+              Continue your saved Recovery Coach session
+            </Link>
+          </div>
+        )}
+        <p className="mt-2 text-xs text-muted-foreground">
+          Training requires exercise-specific medical clearance. Historical
+          standing workouts remain behind their safety acknowledgement.
+          Rendered drafts are viewable but not silently treated as approved.
+        </p>
+      </section>
 
       <section className="surface-card relative mb-5 overflow-hidden rounded-2xl">
         <button
@@ -212,7 +292,7 @@ function Today() {
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={openCoach}
+                    onClick={requestLegacyCoach}
                     className="tap-target rounded-xl bg-primary text-xs font-bold uppercase text-primary-foreground"
                   >
                     Resume coached session
@@ -246,15 +326,53 @@ function Today() {
               </div>
             )}
 
+            <div
+              role="note"
+              data-testid="seated-program-warning"
+              className="mt-4 rounded-xl border border-accent/50 bg-accent/10 p-3 text-xs leading-relaxed text-foreground"
+            >
+              <p className="font-bold">Seated-only workout review still required</p>
+              <p className="mt-1">
+                This legacy weekly program includes standing, stepping and kicking movements.
+                It has not been fully converted or cleared for foot-cast seated-only training.
+                Do not use its standing exercises during seated-only recovery.
+              </p>
+              <a className="mt-2 inline-block font-bold underline underline-offset-4" href="/recovery-coach/">
+                Open reviewed seated recovery clips
+              </a>
+            </div>
+
+            <a
+              href="/recovery-coach/"
+              data-testid="seated-recovery-start"
+              className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-accent bg-accent/15 px-3 py-3 text-center text-sm font-black uppercase leading-snug text-accent"
+            >
+              <Play className="size-5 shrink-0" aria-hidden />
+              ▶ Marcus Guided Flex · 7 approved animated scenes
+            </a>
+            <p className="mt-1 text-center text-[11px] text-muted-foreground">
+              Marcus leads your approved seated sequence with the original voice,
+              moving Flex avatar, timed sets and rest. Clinician clearance is
+              required; Workout A/B animations are still being completed.
+            </p>
+
+            <a
+              href="/recovery-coach/bench-core/"
+              data-testid="bench-core-workouts"
+              className="tap-target mt-3 flex w-full items-center justify-center rounded-xl border border-accent/70 bg-elevated px-4 py-3 text-center text-sm font-bold text-accent"
+            >
+              Bench-Supported Core A &amp; Core B · Timed workouts
+            </a>
+            <p className="mt-1 text-center text-[11px] text-muted-foreground">
+              Separate core and abdominal-bracing circuits with real sets, rest and tracking.
+              Text-only until exercise footage and Marcus coaching are approved.
+              Clinician clearance for cast positioning and core movements is required.
+            </p>
+
             <button
               type="button"
-              onClick={() => {
-                if (log.completed) return openCoach();
-                if (hasActiveSession(state, day)) return setStartChoice(true);
-                if (!ready) return setChecking(true);
-                startWorkoutOnce(day);
-                openCoach();
-              }}
+              onClick={requestLegacyCoach}
+              data-testid="legacy-workout-start"
               className="tap-target mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3 text-center text-base font-bold uppercase leading-tight tracking-wide text-primary-foreground"
             >
               {started ? (
@@ -335,6 +453,72 @@ function Today() {
           </p>
         )}
       </section>
+
+      {legacyGateOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Legacy standing workout confirmation"
+          data-testid="legacy-safety-gate"
+          className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto bg-background/95 p-4 backdrop-blur"
+        >
+          <div className="surface-card w-full max-w-lg rounded-2xl p-5">
+            <h2 className="text-xl font-bold">This is not the seated Recovery Coach</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The historical weekly workout includes squats, steps, kicks, standing
+              exercises and foot loading. It is not cleared for training with a
+              foot cast or seated-only restrictions. General readiness answers
+              do not make these exercises safe.
+            </p>
+            <a
+              href="/recovery-coach/"
+              className="tap-target mt-4 flex w-full items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground"
+            >
+              Open approved seated Recovery Coach
+            </a>
+            <label className="mt-5 flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1 size-5 accent-primary"
+                checked={legacyRiskConfirmed}
+                onChange={(event) => setLegacyRiskConfirmed(event.target.checked)}
+              />
+              <span>
+                I understand I can bear weight, but this legacy program is
+                not individually reviewed for my cast or the specific
+                standing, loaded or impact movements it contains.
+              </span>
+            </label>
+            <button
+              type="button"
+              disabled={!legacyRiskConfirmed}
+              data-testid="legacy-acknowledge"
+              onClick={() => {
+                try {
+                  window.sessionStorage.setItem(LEGACY_MODE_KEY, "acknowledged");
+                } catch {
+                  setNavError("Cannot safely open the old workout in this browser. Use Seated Recovery Coach.");
+                  setLegacyGateOpen(false);
+                  return;
+                }
+                setLegacyModeAllowed(true);
+                setLegacyGateOpen(false);
+                launchLegacyCoach();
+              }}
+              className="tap-target mt-4 w-full rounded-xl border border-border bg-elevated px-3 text-sm font-bold disabled:opacity-40"
+            >
+              Continue to legacy workout options
+            </button>
+            <button
+              type="button"
+              onClick={() => setLegacyGateOpen(false)}
+              className="tap-target mt-2 w-full rounded-xl border border-border bg-card text-sm font-bold"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {checking && (
         <div

@@ -1,0 +1,14 @@
+{
+  "appId": "com.m3legacy.flexrecovery",
+  "appName": "M3 FLEX",
+  "webDir": "android-recovery-web",
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#0b1521"
+  },
+  "server": {
+    "androidScheme": "https",
+    "hostname": "localhost"
+  }
+}
