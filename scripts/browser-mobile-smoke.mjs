@@ -105,7 +105,7 @@ try {
   await page.getByTestId("m3-native-recovery").waitFor();
   await page.getByTestId("m3-recovery-existing-player").waitFor();
   assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),
-    "/recovery-coach/?program=recovery");
+    "/recovery-coach/index.html?program=recovery");
   const embedded = page.frameLocator('[data-testid="m3-recovery-existing-player"]');
   await embedded.locator("#workoutChoices").waitFor();
   await embedded.locator('[data-stage="1"]').click();
