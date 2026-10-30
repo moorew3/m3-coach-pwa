@@ -102,7 +102,7 @@ export function LiveFlexAvatar({
       session.on(sdk.SessionEvent.SESSION_STREAM_READY, () => {
         setStreamReady(true);
         setLiveFlexController({
-          speakText: (text) => {
+          speakText: async (text) => {
             if (sessionRef.current !== session) return false;
             session.repeat(text);
             return true;
