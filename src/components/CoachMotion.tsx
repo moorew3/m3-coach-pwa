@@ -22,6 +22,8 @@ export function CoachMotion({
   label,
   onLayerChange,
   fallbackAtTop = false,
+  stableFraming = true,
+  cycleKey,
 }: {
   url: string;
   vimeoId?: string;
@@ -37,6 +39,10 @@ export function CoachMotion({
   /** On an entrance screen, float a failed-video retry ABOVE the wake tap
    * overlay instead of hiding it under the bottom "Yes/No" controls. */
   fallbackAtTop?: boolean;
+  /** V2 requires stable full-body framing; the player already uses object-contain. */
+  stableFraming?: boolean;
+  /** Force a fresh video on a new exercise set while retaining the same approved URL. */
+  cycleKey?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
   onLayerChange?: (layer: 0 | 1, reason: "loop" | "transition") => void;
 }) {
@@ -63,7 +69,7 @@ export function CoachMotion({
     setLoaded(false);
     setIsPlaying(false);
     clearStalledTimer();
-  }, [url, attempt]);
+  }, [url, attempt, cycleKey]);
 
   useEffect(() => () => clearStalledTimer(), []);
 
@@ -100,6 +106,7 @@ export function CoachMotion({
     <div
       className={`relative overflow-hidden bg-black ${className}`}
       data-testid="coach-motion"
+      data-stable-framing={stableFraming ? "true" : "false"}
       data-failed={failure ? "true" : "false"}
       data-failure-reason={failure ?? ""}
       data-url={url}
@@ -118,7 +125,7 @@ export function CoachMotion({
           />
         ) : (
           <video
-            key={`${url}::${attempt}`}
+            key={`${url}::${cycleKey ?? "same-exercise"}::${attempt}`}
             ref={videoRef}
             src={url}
             poster={still}
