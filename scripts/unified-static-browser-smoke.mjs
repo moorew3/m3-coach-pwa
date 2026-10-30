@@ -51,6 +51,16 @@ try{
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Progress"}).click();
  await page.getByTestId("m3-original-progress-recovery").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Program"}).click();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
+ assert.equal(await page.getByTestId("m3-legacy-program-archive").getAttribute("open"),null,"Old standing workout must not open by default");
+ const scenesUrl=await page.getByTestId("program-scene-library").getAttribute("href");
+ assert.equal(scenesUrl,"/recovery-coach/programs/index.html");
+ const sceneResponse=await page.request.get(origin+scenesUrl);
+ assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
+ assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
+ await page.getByTestId("program-v2").click();
+ await page.getByTestId("v2-exit-to-workouts").waitFor();
+ await page.getByTestId("v2-exit-to-workouts").click();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
  assert.equal(log.length,0,"Static original React app had client errors: "+log.join("; ").slice(0,800));
