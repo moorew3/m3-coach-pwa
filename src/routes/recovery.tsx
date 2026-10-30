@@ -110,7 +110,7 @@ function UnifiedRecovery() {
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
         <span className="flex items-center gap-1 text-muted-foreground"><Info className="size-4" /> A/B use approved scenes; missing footage remains review-only.</span>
         <a
-          href={`/recovery-coach/?program=${program}`}
+          href={`/recovery-coach/index.html?program=${program}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 font-bold text-primary"
@@ -124,7 +124,7 @@ function UnifiedRecovery() {
         ref={iframe}
         title={`M3 FLEX · ${recoveryTitle(program)}`}
         data-testid="m3-recovery-existing-player"
-        src={`/recovery-coach/?program=${program}`}
+        src={`/recovery-coach/index.html?program=${program}`}
         onLoad={refresh}
         allow="camera; fullscreen"
         allowFullScreen
