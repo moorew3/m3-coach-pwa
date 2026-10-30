@@ -153,6 +153,9 @@ function Today() {
           original Flex and Marcus media stay protected.
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <Link to="/v2" data-testid="open-existing-v2" className="tap-target flex items-center justify-center rounded-xl border-2 border-accent bg-accent/15 px-3 text-center text-sm font-bold text-accent">
+            Open M3 Coach V2 · Visual workout
+          </Link>
           <Link to="/recovery" search={{ program: "recovery" }}
             className="tap-target flex items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground">
             Recovery · 5 approved moves
