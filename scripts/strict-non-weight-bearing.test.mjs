@@ -5,9 +5,9 @@ const html=readFileSync(new URL("../public/recovery-coach/index.html",import.met
 const chrome=readFileSync(new URL("./browser-mobile-smoke.mjs",import.meta.url),"utf8");
 
 test("owner-reported weight-bearing ability never overrides seated-only clinician restrictions",()=>{
- assert.match(html,/FOOT CAST · WEIGHT-BEARING ABILITY REPORTED/);
- assert.match(html,/Weight-bearing ability alone does not establish clearance for loaded squats/);
- assert.match(html,/Follow your clinician's restrictions/);
+ assert.match(html,/LEFT LEG SUPPORTED · SEATED SESSION/);
+ assert.match(html,/is not clearance for loaded squats/);
+ assert.match(html,/Follow the treating clinician's actual restrictions/);
  assert.match(html,/My treating clinician knows about my foot cast/);
  assert.match(html,/I will use the seated setup for this selected session/);
  assert.match(html,/Follow your actual clinician-specified weight-bearing limits/);
