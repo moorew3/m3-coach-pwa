@@ -83,6 +83,14 @@ try{
  assert.match(await page.locator("#existingVideoCount").textContent(),/7 original approved Recovery videos reused/);
  assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
    "Reused media must not auto-play on entering the gallery");
+ assert.equal(await page.locator("#existingLockedVideoLinks button[data-reuse-video]").count(),7,
+   "Each approved clip must be selectable inside the same player");
+ await page.locator("#existingLockedVideoLinks button[data-reuse-video]").first().click();
+ assert.match(await page.locator("#sceneTitle").textContent(),/Calm seated breathing/);
+ assert.equal(await page.locator("#play").isEnabled(),true);
+ assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
+   "Choosing an approved clip cannot auto-start a workout");
+ assert.match(await page.locator("#playback").textContent(),/Press Play verified media/);
  await page.goBack();
  await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByTestId("program-approve-scenes").click();
