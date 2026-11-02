@@ -77,7 +77,8 @@ test("locked motion and Marcus recording sources remain byte-for-byte referenced
 });
 
 test("owner-reported weight-bearing ability is reflected without unlocking loaded leg movements", () => {
-  assert.match(page,/WEIGHT-BEARING ABILITY REPORTED/);
+  assert.match(page,/LEFT LEG SUPPORTED · SEATED SESSION/);
+  assert.match(page,/comfortably supported on a padded rest and unloaded/);
   assert.match(page,/You have said you can put weight on the injured foot/);
   assert.match(page,/does not establish clearance for loaded squats, jumping/);
   assert.doesNotMatch(page,/NON-WEIGHT-BEARING RECOVERY|despite my inability to stand|Still NO weight on the injured leg|Do not stand or bear weight/);
