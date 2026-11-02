@@ -26,7 +26,7 @@ import {
 import { TrainerStageMedia } from "@/components/TrainerStageMedia";
 import { WorkoutModeButton, toggleFullScreen } from "@/components/WorkoutModeMenu";
 import { CoachAudioGate } from "@/components/CoachAudio";
-import { stopSpeech } from "@/lib/coach-voice";
+import { paidCoachSpeechEnabled, stopSpeech } from "@/lib/coach-voice";
 import { exerciseMotionFor } from "@/data/coach-identity";
 import { mirrorFor } from "@/data/mirror-me";
 import { effectiveExercise, effectiveExercises, effectivePlan } from "@/lib/activities";
@@ -138,7 +138,7 @@ function BigScreenMode() {
     { passive: true },
   );
   const { step, left, lead, running, mirrored, progress } = engine;
-  const voiceOn = state.settings.coachVoice !== false;
+  const voiceOn = state.settings.coachVoice !== false && paidCoachSpeechEnabled();
 
   useEffect(() => {
     const t = setTimeout(() => setChrome(false), 6000);
@@ -275,9 +275,9 @@ function BigScreenMode() {
           >
             <Check className="size-6" /> Done set
           </button>
-          <button type="button" className={btn} onClick={toggleMute}>
+          <button type="button" className={btn} disabled={!paidCoachSpeechEnabled()} onClick={toggleMute}>
             {voiceOn ? <Volume2 className="size-6" /> : <VolumeX className="size-6" />}
-            {voiceOn ? "Mute" : "Unmute"}
+            {!paidCoachSpeechEnabled() ? "Read-along" : voiceOn ? "Mute" : "Unmute"}
           </button>
           <button type="button" className={btn} onClick={engine.skipStep}>
             <ChevronRight className="size-6" /> Skip
@@ -393,7 +393,7 @@ function BigScreenMode() {
               <button
                 type="button"
                 onClick={toggleMute}
-                aria-label={voiceOn ? "Mute coach" : "Unmute coach"}
+                aria-label={!paidCoachSpeechEnabled() ? "Generated narration disabled; read-along mode" : voiceOn ? "Mute coach" : "Unmute coach"}
                 className="grid size-11 place-items-center rounded-xl border border-white/25 bg-white/10"
               >
                 {voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}

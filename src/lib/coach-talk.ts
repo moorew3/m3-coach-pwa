@@ -6,6 +6,9 @@
  * athlete. The OpenAI key remains server-side.
  */
 
+import { paidAiHeaders } from "@/lib/paid-ai-client";
+import { localCoachAnswer } from "@/lib/local-coach-answer";
+
 export interface LiveCoachContext {
   athlete?: string;
   workout?: string;
@@ -31,6 +34,14 @@ export interface LiveCoachContext {
   recent?: string[];
   /** Recent athlete/Flex turns so short follow-ups keep their meaning. */
   dialogue?: string[];
+  /** On-screen script cues only; never invented by the responder. */
+  cues?: string[];
+  restRemainingSeconds?: number;
+}
+
+/** Build-time opt-in. The server independently requires authorized access. */
+export function premiumAiAvailableOnClient(): boolean {
+  return import.meta.env["VITE_FLEX_PAID_AI_ENABLED"] === "true";
 }
 
 export async function askLiveCoach(
@@ -39,10 +50,15 @@ export async function askLiveCoach(
 ): Promise<string | null> {
   const text = message.trim();
   if (!text) return null;
+  const local = localCoachAnswer(text, context);
+  if (local) return local;
+  if (!premiumAiAvailableOnClient()) {
+    return "I can answer questions about this exercise, its sets, reps, next move, rest timer, and camera readings. More open-ended coaching requires live AI, which is currently off.";
+  }
   try {
     const res = await fetch("/api/public/coach-talk", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await paidAiHeaders(),
       body: JSON.stringify({ message: text, context }),
     });
     if (!res.ok) return null;

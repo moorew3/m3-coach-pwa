@@ -98,16 +98,33 @@ export function CoachAudioGate({
 export function CoachAudioBadge({
   status,
   voiceOn,
+  generatedEnabled = true,
   onEnable,
   onToggleMute,
   dark = false,
 }: {
   status: VoiceStatus;
   voiceOn: boolean;
+  generatedEnabled?: boolean;
   onEnable: () => void;
   onToggleMute: () => void;
   dark?: boolean;
 }) {
+  // Premium speech off is not a broken device or a user-requested mute.
+  // Show an honest passive label instead of a button that cannot enable it.
+  if (!generatedEnabled) {
+    return (
+      <span
+        data-testid="coach-read-along-badge"
+        aria-label="Read-along coaching; generated voice off"
+        className="flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 text-[11px] font-bold uppercase tracking-wide text-white/70"
+      >
+        <VolumeX className="size-4 shrink-0" />
+        <span>Read-along</span>
+      </span>
+    );
+  }
+
   const muted = !voiceOn;
   const needsTap = voiceOn && (status === "locked" || status === "blocked");
   const unsupported = status === "unsupported";

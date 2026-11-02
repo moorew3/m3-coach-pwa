@@ -1,0 +1,130 @@
+name: M3 FLEX owner-signed Android (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      owner_prepared:
+        description: Owner has secured existing workout data and private keystore
+        type: choice
+        required: true
+        options: [NOT_READY, READY_FOR_OWNER_SIGNING]
+permissions:
+  contents: read
+jobs:
+  owner-sign:
+    if: ${{ inputs.owner_prepared == 'READY_FOR_OWNER_SIGNING' }}
+    runs-on: ubuntu-latest
+    environment: m3-flex-android-owner-signing
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Reject missing owner key and certificate pin
+        env:
+          OWNER_KEYSTORE: ${{ secrets.M3_FLEX_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.M3_FLEX_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.M3_FLEX_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.M3_FLEX_KEY_PASSWORD }}
+          CERT_PIN: ${{ vars.M3_FLEX_EXPECTED_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          for name in OWNER_KEYSTORE KS_PASS KEY_ALIAS KEY_PASS CERT_PIN; do
+            if [ -z "$(printenv "$name")" ]; then
+              echo "::error::Missing owner-managed Android signing setting $name. No APK signed."
+              exit 1
+            fi
+          done
+          test "$(printf '%s' "$CERT_PIN" | wc -c)" -eq 64
+          if ! printf '%s' "$CERT_PIN" | grep -Eq '^[0-9a-fA-F]{64}$'; then exit 1; fi
+      - name: Prepare Android SDK
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -print -quit)"
+          test -x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+      - name: Build original unified app and all approved Recovery scenes
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node scripts/stage-pose-runtime.mjs
+          npm run build
+          npx tsc --noEmit
+          node --experimental-strip-types --test scripts/*.test.mjs
+          node scripts/stage-unified-static.mjs
+          node scripts/stage-android-recovery.mjs
+          test -s android-recovery-web/recovery-coach/full-backup/index.html
+          npm install --no-save --no-package-lock --no-audit --no-fund @capacitor/core@7.6.9 @capacitor/cli@7.6.9 @capacitor/android@7.6.9
+          npx cap add android
+          npx cap sync android
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("android/app/src/main/AndroidManifest.xml")
+          s=p.read_text(encoding="utf-8")
+          for tag in [
+           '<uses-permission android:name="android.permission.INTERNET" />',
+           '<uses-permission android:name="android.permission.CAMERA" />',
+           '<uses-permission android:name="android.permission.RECORD_AUDIO" />',
+           '<uses-feature android:name="android.hardware.camera" android:required="false" />',
+          ]:
+           if tag not in s: s=s.replace("<application",tag+"\n    <application",1)
+          p.write_text(s,encoding="utf-8")
+          PY
+          cd android
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+          test -s app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Sign with owner key and reject a changed certificate
+        env:
+          OWNER_KEYSTORE: ${{ secrets.M3_FLEX_KEYSTORE_BASE64 }}
+          M3_FLEX_KS_PASS: ${{ secrets.M3_FLEX_KEYSTORE_PASSWORD }}
+          M3_FLEX_KEY_ALIAS: ${{ secrets.M3_FLEX_KEY_ALIAS }}
+          M3_FLEX_KEY_PASS: ${{ secrets.M3_FLEX_KEY_PASSWORD }}
+          CERT_PIN: ${{ vars.M3_FLEX_EXPECTED_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          set +x
+          umask 077
+          STORE="$RUNNER_TEMP/m3-flex-owner-keystore.jks"
+          trap 'rm -f "$STORE"' EXIT
+          printf '%s' "$OWNER_KEYSTORE" | base64 --decode > "$STORE"
+          test -s "$STORE"
+          TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          mkdir -p artifacts
+          "$TOOLS/zipalign" -f -p 4 android/app/build/outputs/apk/release/app-release-unsigned.apk "$RUNNER_TEMP/aligned.apk"
+          "$TOOLS/apksigner" sign --ks "$STORE" --ks-key-alias "$M3_FLEX_KEY_ALIAS" \
+            --ks-pass env:M3_FLEX_KS_PASS --key-pass env:M3_FLEX_KEY_PASS \
+            --out artifacts/M3_FLEX_Unified_Owner_Signed.apk "$RUNNER_TEMP/aligned.apk"
+          "$TOOLS/apksigner" verify --print-certs artifacts/M3_FLEX_Unified_Owner_Signed.apk > "$RUNNER_TEMP/cert.txt"
+          ACTUAL="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/cert.txt" | head -1 | tr 'A-F' 'a-f')"
+          EXPECTED="$(printf '%s' "$CERT_PIN" | tr 'A-F' 'a-f')"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            rm -f artifacts/M3_FLEX_Unified_Owner_Signed.apk
+            echo "::error::Owner certificate identity changed. APK delivery blocked."
+            exit 1
+          fi
+          "$TOOLS/aapt" dump badging artifacts/M3_FLEX_Unified_Owner_Signed.apk | grep -q "package: name='com.m3legacy.flexrecovery'"
+          unzip -t artifacts/M3_FLEX_Unified_Owner_Signed.apk >/dev/null
+          sha256sum artifacts/M3_FLEX_Unified_Owner_Signed.apk
+      - name: Include safe upgrade instructions
+        run: |
+          printf '%s\n' \
+            'Owner-signed M3 FLEX uses the original app ID; preserve this private signing key for future upgrades.' \
+            'An earlier debug-signed APK cannot be upgraded in place with a different signing key.' \
+            'Before uninstalling, Settings > Back up entire M3 FLEX creates one password-protected original tracker and Recovery log.' \
+            'VERIFY the encrypted file; restore it only on a clean non-cloud-linked app installation.' \
+            'This is an owner test artifact. No automatic production deployment; real phone and missing approved media remain gates.' \
+            > artifacts/OWNER-SIGNING-INSTRUCTIONS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: m3-flex-original-unified-owner-stable-apk
+          path: |
+            artifacts/M3_FLEX_Unified_Owner_Signed.apk
+            artifacts/OWNER-SIGNING-INSTRUCTIONS.txt
+          retention-days: 7
+          if-no-files-found: error

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type Player from "@vimeo/player";
+import { COACH_REFERENCE } from "@/data/coach-identity";
 
 /** Owner-enabled Vimeo embeds stay on the owner's host. Audio is always muted. */
 export function EmbeddedMotion({
@@ -28,6 +29,7 @@ export function EmbeddedMotion({
   const callbacks = useRef({ onPlayingChange, onFailure });
   callbacks.current = { onPlayingChange, onFailure };
   const [failed, setFailed] = useState(false);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [active, setActive] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -79,7 +81,7 @@ export function EmbeddedMotion({
       player.current = null;
       if (instance) void instance.destroy().catch(() => undefined);
     };
-  }, [id]);
+  }, [id, retryNonce]);
 
   useEffect(() => {
     const instance = player.current;
@@ -105,7 +107,7 @@ export function EmbeddedMotion({
       {!failed && (
         <iframe
           ref={frame}
-          key={id}
+          key={`${id}::${retryNonce}`}
           src={`https://player.vimeo.com/video/${id}?autoplay=0&autopause=0&muted=1&loop=1&playsinline=1&controls=0&title=0&byline=0&portrait=0&dnt=1`}
           title={label ?? "Exercise demonstration"}
           allow="autoplay; fullscreen; picture-in-picture"
@@ -116,9 +118,35 @@ export function EmbeddedMotion({
       {failed && (
         <div
           role="status"
-          className="absolute inset-0 grid place-items-center p-5 text-center text-sm text-white/80"
+          aria-live="polite"
+          data-testid="embedded-video-fallback"
+          className="absolute inset-0 grid place-items-center bg-black text-center text-sm text-white"
         >
-          Exercise video unavailable. Follow the form cues below.
+          <img
+            src={poster || COACH_REFERENCE}
+            alt=""
+            className="absolute inset-0 h-full w-full object-contain opacity-60"
+            draggable={false}
+          />
+          <div className="relative mx-4 rounded-xl border border-amber-300/60 bg-black/85 p-4">
+            <p className="font-semibold">Exercise video unavailable</p>
+            <p className="mt-1 text-xs text-white/80">
+              This embed could not load. No alternate exercise is shown; use Pause if you need the demonstration.
+            </p>
+            <button
+              type="button"
+              data-testid="retry-embedded-video"
+              onClick={() => {
+                setFailed(false);
+                setActive(false);
+                setReady(false);
+                setRetryNonce((value) => value + 1);
+              }}
+              className="mt-3 rounded-lg border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold"
+            >
+              Retry same approved embed
+            </button>
+          </div>
         </div>
       )}
     </div>

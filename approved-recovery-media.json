@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "purpose": "Owner-approved recovery media inventory: prepare verifiable backup only; never switch source automatically",
+  "generated": "2026-10-23",
+  "items": [
+    {
+      "id": "C09-PRE-BREATH-R2",
+      "type": "video",
+      "file": "f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C01-R3",
+      "type": "video",
+      "file": "9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C02",
+      "type": "video",
+      "file": "01a14462-bc16-778b-a773-db16e57aade7.mp4",
+      "url": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-bc16-778b-a773-db16e57aade7.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C03",
+      "type": "video",
+      "file": "01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",
+      "url": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C04-R2",
+      "type": "video",
+      "file": "31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C08-PRESS-R3",
+      "type": "video",
+      "file": "b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C10-POST-BREATH-R1",
+      "type": "video",
+      "file": "d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4",
+      "approvedSource": true
+    },
+    {
+      "id": "C09-MARCUS",
+      "type": "audio",
+      "file": "9226f649-9808-4275-b269-bcc93d3b0342.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3",
+      "approvedSource": true
+    },
+    {
+      "id": "PRE-HANDS-MARCUS",
+      "type": "audio",
+      "file": "2dcdf842-9177-4bc6-a6a4-a274fc726876.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2dcdf842-9177-4bc6-a6a4-a274fc726876.mp3",
+      "approvedSource": true
+    },
+    {
+      "id": "PRE-SHOULDERS-MARCUS",
+      "type": "audio",
+      "file": "7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",
+      "approvedSource": true
+    },
+    {
+      "id": "C02-MARCUS",
+      "type": "audio",
+      "file": "id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav",
+      "url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav",
+      "approvedSource": true
+    },
+    {
+      "id": "C03-MARCUS",
+      "type": "audio",
+      "file": "id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav",
+      "url": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav",
+      "approvedSource": true
+    },
+    {
+      "id": "C10-MARCUS",
+      "type": "audio",
+      "file": "37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3",
+      "approvedSource": true
+    },
+    {
+      "id": "COOLDOWN-HANDS-MARCUS",
+      "type": "audio",
+      "file": "3ca174e3-16e6-42f5-91f2-332713cd6d69.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/3ca174e3-16e6-42f5-91f2-332713cd6d69.mp3",
+      "approvedSource": true
+    },
+    {
+      "id": "REST-MARCUS",
+      "type": "audio",
+      "file": "006720cc-2f40-44bd-a44f-4c4937336f8e.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3",
+      "approvedSource": true
+    },
+    {
+      "id": "END-MARCUS",
+      "type": "audio",
+      "file": "d442be47-6745-4eab-9115-5fda615f5464.mp3",
+      "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3",
+      "approvedSource": true
+    }
+  ]
+}
