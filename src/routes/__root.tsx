@@ -171,6 +171,12 @@ function RootComponent() {
     // Remove any leftover service worker from an older build so installed
     // Android PWAs always launch the newest published app shell.
     void cleanupLegacyServiceWorkers();
+    // Galaxy Fold edge-to-edge WebView can draw React headings underneath the status bar.
+    // Add top padding ONLY to the installed native Android shell, not a normal web/PWA page.
+    const native = (window as Window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+    const isAndroidNative = /Android/i.test(navigator.userAgent) && native?.isNativePlatform?.() === true;
+    document.documentElement.classList.toggle("m3-android-native", isAndroidNative);
+    return () => document.documentElement.classList.remove("m3-android-native");
   }, []);
 
   return (
