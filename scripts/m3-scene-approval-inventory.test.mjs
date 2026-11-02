@@ -22,7 +22,7 @@ test("exactly four C13–C23 drafts lack verified matching Marcus audio and cann
  assert.deepEqual(noAudio,["C13","C16","C20","C21"]);
  const page=read("public/recovery-coach/index.html");
  assert.match(page,/OPTIONAL_SCENE_IDS=new Set\(\["C14","C15","C17","C18","C19","C22","C23"\]\)/);
- assert.match(page,/item&&item.video&&item.audio&&getSceneApprovals\(\)\[id\]===item.video/);
+ assert.match(page,/entry.video===item.video&&entry.audio===item.audio/);
  assert.match(page,/scene\.audio\|\|!OPTIONAL_SCENE_IDS\.has\(scene\.id\)/);
 });
 test("one-app Program tab links to exact scenes and owner reviews without starting playback",()=>{
