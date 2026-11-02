@@ -438,6 +438,13 @@ try {
     viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
     acceptDownloads: true,
   });
+  // Exercise the download fallback here. Chromium exposes the desktop Save
+  // picker even under mobile emulation; that native dialog does not emit a
+  // Playwright download. Picker write/readback and cancel/error handling have
+  // dedicated backup-delivery tests; Android uses the verified BackupSave bridge.
+  await backupContext.addInitScript(() => {
+    Object.defineProperty(window, "showSaveFilePicker", { value: undefined, configurable: true });
+  });
   const backupPage = await backupContext.newPage();
   backupPage.setDefaultTimeout(20000);
   try {

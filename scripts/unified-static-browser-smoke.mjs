@@ -99,6 +99,13 @@ try{
  assert.equal(await page.locator("#sceneGrid .item").count(),11,"Exactly eleven rendered drafts need explicit review");
  assert.equal(await page.locator("#sceneGrid .item").filter({hasText:"MARCUS AUDIO NOT VERIFIED"}).count(),4);
  assert.equal(await page.locator("#sceneReviewVideo").isVisible(),false,"Review entry must not autoplay or activate a clip");
+ await page.locator("#inspectRowing").click();
+ assert.equal(await page.locator("#sceneFilter").inputValue(),"rowing");
+ assert.equal(await page.locator("#sceneGrid .item").count(),1);
+ assert.match(await page.locator("#sceneGrid").textContent(),/REJECTED FOR WORKOUT USE/);
+ await page.locator("#sceneGrid button").click();
+ assert.equal(await page.locator("#sceneApprovalControls").isVisible(),false);
+ assert.equal(await page.locator("#sceneReviewVideo").evaluate(v=>v.paused),true);
  await page.goBack();
  await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByTestId("program-v2").click();

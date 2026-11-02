@@ -731,4 +731,6 @@ window.M3_FLEX_SCENE_LIBRARY=[
   }
 ,
   {"id":"REF-LATERAL-2REPS","name":"Original seated lateral raises two-repetition motion driver","group":"Workout A motion references","source":"Original Motion Reference","status":"motion-reference-only","external":"https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view","note":"Original two-repetition driver recovered from M3 FLEX Google Drive motion-reference folder. This is not certified as the final approved Flex avatar with Marcus. Preserve the original Flow-approved lateral-raise clip; do not substitute the driver during timed coaching."}
+ ,
+ {"id":"ROW-R5","name":"Legless rowing · black boot candidate","group":"Recovery cardio · Rowing","source":"M3 FLEX rowing review","status":"qa-rejected","video":"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19c19-8cbb-7637-88ae-e19acde8a876.mp4","note":"BLOCKED FROM WORKOUT USE: the generated black boot appears separate from the left leg. This six-second silent render is retained only for inspection, never timed coaching. No approved Marcus rowing track exists. Requires correct identity, one anatomically connected left leg inside its boot, supported/unloaded leg, stationary knees/seat and complete arm-only strokes before approval."}
 ];

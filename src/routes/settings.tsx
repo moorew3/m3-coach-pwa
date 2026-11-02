@@ -7,16 +7,17 @@ import { SessionAudio } from "@/components/SessionAudio";
 import { CloudSync } from "@/components/CloudSync";
 import { HealthPanel } from "@/components/HealthPanel";
 import { RELEASE, surfaceLabel } from "@/lib/build-info";
+import { saveBackup } from "@/lib/backup-delivery";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — 22-Day Arm Growth Tracker" },
+      { title: "Settings — M3 FLEX" },
       {
         name: "description",
         content: "Theme, units, timer feedback, backup and restore, and program reset.",
       },
-      { property: "og:title", content: "Settings — 22-Day Arm Growth Tracker" },
+      { property: "og:title", content: "Settings — M3 FLEX" },
       { property: "og:description", content: "Configure your 22-day arm growth tracker." },
     ],
   }),
@@ -93,18 +94,21 @@ function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const avatarRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState("");
+  const [exporting, setExporting] = useState(false);
   const set = (patch: Partial<typeof s>) =>
     setState((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
 
-  const download = () => {
-    const blob = new Blob([exportData()], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `arm-tracker-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setMessage("Backup downloaded.");
+  const download = async () => {
+    if (exporting) return;
+    setExporting(true);
+    setMessage("Choose where to save your backup.");
+    try {
+      setMessage(await saveBackup(exportData(), `arm-tracker-backup-${new Date().toISOString().slice(0, 10)}.json`));
+    } catch (error) {
+      setMessage(`Backup not confirmed: ${error instanceof Error ? error.message : "Save failed"}. Your app records are unchanged.`);
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -388,6 +392,7 @@ function SettingsPage() {
         <button
           type="button"
           onClick={download}
+          disabled={exporting}
           className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold uppercase text-primary-foreground"
         >
           <Download className="size-5" /> Export original tracker only (not Recovery logs)
@@ -413,7 +418,7 @@ function SettingsPage() {
             e.target.value = "";
           }}
         />
-        {message && <p className="text-sm text-accent">{message}</p>}
+        {message && <p role="status" aria-live="polite" className="text-sm text-accent">{message}</p>}
       </section>
 
       <section className="surface-card mt-5 rounded-2xl p-4">

@@ -2,7 +2,7 @@ name: Android APK — M3 FLEX Unified
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fix/restore-v2-in-existing-android-20261030]
     paths:
       - ".github/workflows/android-apk.yml"
       - "capacitor.config.json"
@@ -12,7 +12,13 @@ on:
       - "public/recovery-coach/**"
       - "src/**"
       - "scripts/stage-unified-static.mjs"
+      - "scripts/install-android-backup-save.mjs"
+      - "scripts/stamp-android-version.mjs"
+      - "native/**"
+      - "public/backup-delivery.js"
+      - "scripts/backup-delivery.test.mjs"
       - "package.json"
+      - "package-lock.json"
       - "vite.config.ts"
 
 jobs:
@@ -48,10 +54,11 @@ jobs:
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Install existing M3 FLEX dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build original React M3 FLEX and same-origin approved Recovery assets
         run: |
+          node --test scripts/backup-delivery.test.mjs
           node scripts/stage-pose-runtime.mjs
           npm run build
           node scripts/stage-unified-static.mjs
@@ -74,6 +81,8 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+          node scripts/install-android-backup-save.mjs
+          node scripts/stamp-android-version.mjs
 
       - name: Add permission declarations for consent-only camera and microphone tests
         run: |
@@ -117,8 +126,8 @@ jobs:
           cp "$file" artifacts/M3_FLEX_Unified_Android_Debug.apk
           printf '%s\n' "ONE original M3 FLEX app plus approved Recovery Coach in a single Android debug APK; not a finished conversational coach." > artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "Original Flex/Marcus media streams need internet. SSR/cloud-only features and actual phone camera/headset still require verification. Workout A/B include verified scenes only." >> artifacts/ANDROID-INSTALL-README.txt
-          printf '%s\n' "Future debug builds may be signed with a different temporary developer key and require uninstall/reinstall." >> artifacts/ANDROID-INSTALL-README.txt
-          printf '%s\n' "IMPORTANT: Before replacing this app, open Settings > Back up entire M3 FLEX (or Recovery Coach > Check my records), export and VERIFY your password-protected FULL-APP backup. A Recovery logbook-only file does NOT include original tracker workouts or photos." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "TEST DEVICE ONLY: this debug build uses a temporary key. Do not uninstall the populated app or clear its storage. A safe in-place update requires the ORIGINAL signing key." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "IMPORTANT: In the EXISTING app, open Settings > Back up entire M3 FLEX (or Recovery Coach > Check my records), export and VERIFY your password-protected FULL-APP backup. Keep that app installed. A Recovery logbook-only file does NOT include original tracker workouts or photos." >> artifacts/ANDROID-INSTALL-README.txt
           printf '%s\n' "An APK reinstall can erase local workout logs and the interrupted session; only manual actual reps and measurements are in exported logbook backups." >> artifacts/ANDROID-INSTALL-README.txt
 
       - name: Deliver Android APK for authorized Galaxy Fold testing

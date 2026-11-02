@@ -1,16 +1,17 @@
-/**
- * BUILD MARKER
- * ------------------------------------------------------------------
- * Lets us confirm the installed phone app and the website are running
- * the same release. Bump RELEASE whenever a build is published.
- */
-export const RELEASE = "2026-09-14.1";
+/** Human-readable release marker for the unified M3 FLEX build. */
+export const RELEASE = "2026-11-02.1";
 
-/** Where this copy is running — helps tell the installed app from the tab. */
+/** Distinguish native Android from a browser/PWA without requesting permissions. */
 export function surfaceLabel(): string {
   if (typeof window === "undefined") return "server";
-  const standalone =
-    window.matchMedia?.("(display-mode: standalone)").matches ||
+  const cap = (window as unknown as {
+    Capacitor?: { isNativePlatform?: () => boolean; getPlatform?: () => string };
+  }).Capacitor;
+  try {
+    if (cap?.isNativePlatform?.())
+      return cap.getPlatform?.() === "android" ? "Android app" : "Installed app";
+  } catch { /* A broken optional native bridge must not break Settings. */ }
+  const standalone = window.matchMedia?.("(display-mode: standalone)").matches ||
     (window.navigator as { standalone?: boolean }).standalone === true;
-  return standalone ? "Installed app" : "Browser";
+  return standalone ? "Installed web app" : "Browser";
 }
