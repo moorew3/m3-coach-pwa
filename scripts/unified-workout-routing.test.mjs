@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const get=(p)=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 test("Recovery iframe and fullscreen use packaged index, preventing SPA 404",()=>{
  const recovery=get("src/routes/recovery.tsx"); const android=get("scripts/stage-android-recovery.mjs");
- assert.equal(recovery.includes("/recovery-coach/index.html?program=${program}"),true);
+ assert.equal(recovery.includes("/recovery-coach/index.html?program=${program}&embedded=1"),true);
  assert.equal(recovery.includes("src={`/recovery-coach/?program="),false);
  assert.equal(recovery.includes("href={`/recovery-coach/?program="),false);
  assert.equal(android.includes('"recovery-coach/index.html"'),true);
