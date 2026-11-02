@@ -46,8 +46,11 @@ try{
  await page.getByTestId("m3-unified-workout-picker").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Recovery"}).click();
  await page.getByTestId("m3-native-recovery").waitFor();
- await page.frameLocator('[data-testid="m3-recovery-existing-player"]')
-   .locator("#workoutChoices").waitFor();
+ const recoveryFrame=page.frameLocator('[data-testid="m3-recovery-existing-player"]');
+ await recoveryFrame.locator("#workoutChoices").waitFor({state:"attached"});
+ assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),"/recovery-coach/index.html?program=recovery&embedded=1");
+ assert.equal(await recoveryFrame.locator("#unifiedWorkoutChooser").isVisible(),false,"Embedded Recovery must not duplicate parent A/B selector");
+ assert.equal(await recoveryFrame.locator("#emergencyStop").isVisible(),true,"Emergency stop must remain accessible");
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Progress"}).click();
  await page.getByTestId("m3-original-progress-recovery").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Program"}).click();
