@@ -153,6 +153,27 @@ function showCurrentAppVideoLibrary(){
   link.rel="noopener noreferrer";
   link.textContent="▶ "+step.name;
   wrap.append(link);
+  // A single tap selects this exact approved clip inside the existing A/B player.
+  // Playback still requires the separate Play action, so it never autoplays when browsed.
+  const selectButton=document.createElement("button");
+  selectButton.type="button";
+  selectButton.className="btn";
+  selectButton.dataset.reuseVideo=step.video;
+  selectButton.textContent="Select in Workout A/B player";
+  selectButton.setAttribute("aria-label","Select approved "+step.name+" for Flex and Marcus preview");
+  selectButton.onclick=()=>{
+   const match=programs.map((p,programIndex)=>({programIndex,stepIndex:p.steps.findIndex(x=>
+    x.status==="approved"&&x.video===step.video)})).find(x=>x.stepIndex>=0);
+   if(!match)return;
+   stop();
+   active=match.programIndex;index=match.stepIndex;
+   document.querySelectorAll("[data-program]").forEach(button=>
+    button.setAttribute("aria-selected",String(Number(button.dataset.program)===active)));
+   display();
+   $("sceneVideo").scrollIntoView({behavior:"smooth",block:"center"});
+   $("playback").textContent="Exact approved Flex clip selected. Press Play verified media to hear the original Marcus track.";
+  };
+  wrap.append(selectButton);
   if(step.voice){
    const narration=document.createElement("a");
    narration.href=step.voice;narration.target="_blank";narration.rel="noopener noreferrer";
