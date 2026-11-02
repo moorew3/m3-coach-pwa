@@ -1079,6 +1079,12 @@ function showExistingScenes(){
    scene.status==="archived-approved-link"?"Archived user-approved visual":"Existing completed scene / review");
   const note=document.createElement("small");note.textContent=scene.note||"Verify face, movement and equipment before approving this scene for timed training.";
   detail.append(heading,status,note);
+  if(scene.ownerSetup){
+   const setup=document.createElement("small");
+   setup.textContent="OWNER EQUIPMENT DIRECTION · "+scene.ownerSetup;
+   setup.style.color="#d3e9bb";
+   detail.append(setup);
+  }
   const action=document.createElement(scene.video?"button":"a");
   action.className="btn";
   if(scene.video){
