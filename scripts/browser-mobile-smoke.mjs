@@ -105,9 +105,11 @@ try {
   await page.getByTestId("m3-native-recovery").waitFor();
   await page.getByTestId("m3-recovery-existing-player").waitFor();
   assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),
-    "/recovery-coach/index.html?program=recovery");
+    "/recovery-coach/index.html?program=recovery&embedded=1");
   const embedded = page.frameLocator('[data-testid="m3-recovery-existing-player"]');
-  await embedded.locator("#workoutChoices").waitFor();
+  await embedded.locator("#workoutChoices").waitFor({state:"attached"});
+  assert.equal(await embedded.locator("#unifiedWorkoutChooser").isVisible(),false,"Embedded player must not show duplicate workout menu");
+  assert.equal(await embedded.locator("#emergencyStop").isVisible(),true,"Safety stop must remain visible");
   await embedded.locator('[data-stage="1"]').click();
   for (const box of await embedded.locator("#clearance .check").all()) await box.check();
   await embedded.locator("#workDuration").selectOption("20");
