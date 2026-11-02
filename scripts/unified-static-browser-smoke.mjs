@@ -72,6 +72,19 @@ try{
  const sceneResponse=await page.request.get(origin+scenesUrl);
  assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
  assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
+ // Original approved media and older original-app bench clips must be viewable from one app.
+ await page.goto(origin+scenesUrl,{waitUntil:"domcontentloaded"});
+ await page.getByTestId("existing-app-videos").waitFor();
+ await page.locator("#existingAppVideoLibrary summary").click();
+ assert.equal(await page.locator("#existingLockedVideoLinks a").filter({hasText:"▶"}).count(),7,
+   "Seven existing approved videos must be linked without creating new clips");
+ assert.equal(await page.locator("#existingOriginalAppLinks a").count(),6,
+   "Previously built bench/stretch/rowing clips remain accessible as reference only");
+ assert.match(await page.locator("#existingVideoCount").textContent(),/7 original approved Recovery videos reused/);
+ assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
+   "Reused media must not auto-play on entering the gallery");
+ await page.goBack();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByTestId("program-approve-scenes").click();
  await page.locator("#allScenesCatalog").waitFor();
  assert.equal(await page.locator("#sceneFilter").inputValue(),"candidates","Owner review must show C13–C23 without manual search");
