@@ -61,6 +61,14 @@ try{
  const sceneResponse=await page.request.get(origin+scenesUrl);
  assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
  assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
+ await page.getByTestId("program-approve-scenes").click();
+ await page.locator("#allScenesCatalog").waitFor();
+ assert.equal(await page.locator("#sceneFilter").inputValue(),"candidates","Owner review must show C13–C23 without manual search");
+ assert.equal(await page.locator("#sceneGrid .item").count(),11,"Exactly eleven rendered drafts need explicit review");
+ assert.equal(await page.locator("#sceneGrid .item").filter({hasText:"MARCUS AUDIO NOT VERIFIED"}).count(),4);
+ assert.equal(await page.locator("#sceneReviewVideo").isVisible(),false,"Review entry must not autoplay or activate a clip");
+ await page.goBack();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByTestId("program-v2").click();
  await page.getByTestId("v2-approved-avatar-entrance").waitFor();
  await page.getByTestId("v2-opening-exit").click();
