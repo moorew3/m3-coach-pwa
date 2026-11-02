@@ -9,52 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as SafetyRouteImport } from './routes/safety'
-import { Route as ProgressRouteImport } from './routes/progress'
-import { Route as ProgramRouteImport } from './routes/program'
-import { Route as PresentationRouteImport } from './routes/presentation'
-import { Route as NutritionRouteImport } from './routes/nutrition'
-import { Route as GlassesRouteImport } from './routes/glasses'
-import { Route as DisplayRouteImport } from './routes/display'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WorkoutDayRouteImport } from './routes/workout.$day'
+import { Route as DisplayRouteImport } from './routes/display'
+import { Route as GlassesRouteImport } from './routes/glasses'
+import { Route as NutritionRouteImport } from './routes/nutrition'
+import { Route as PresentationRouteImport } from './routes/presentation'
+import { Route as ProgramRouteImport } from './routes/program'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as RecoveryRouteImport } from './routes/recovery'
+import { Route as SafetyRouteImport } from './routes/safety'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ShadowRouteImport } from './routes/shadow'
+import { Route as V2RouteImport } from './routes/v2'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as CoachDayRouteImport } from './routes/coach.$day'
+import { Route as WorkoutDayRouteImport } from './routes/workout.$day'
 import { Route as ApiPublicCoachSpeechRouteImport } from './routes/api/public/coach-speech'
+import { Route as ApiPublicCoachTalkRouteImport } from './routes/api/public/coach-talk'
 
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SafetyRoute = SafetyRouteImport.update({
-  id: '/safety',
-  path: '/safety',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgressRoute = ProgressRouteImport.update({
-  id: '/progress',
-  path: '/progress',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramRoute = ProgramRouteImport.update({
-  id: '/program',
-  path: '/program',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PresentationRoute = PresentationRouteImport.update({
-  id: '/presentation',
-  path: '/presentation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NutritionRoute = NutritionRouteImport.update({
-  id: '/nutrition',
-  path: '/nutrition',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GlassesRoute = GlassesRouteImport.update({
-  id: '/glasses',
-  path: '/glasses',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DisplayRoute = DisplayRouteImport.update({
@@ -62,14 +37,59 @@ const DisplayRoute = DisplayRouteImport.update({
   path: '/display',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const GlassesRoute = GlassesRouteImport.update({
+  id: '/glasses',
+  path: '/glasses',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkoutDayRoute = WorkoutDayRouteImport.update({
-  id: '/workout/$day',
-  path: '/workout/$day',
+const NutritionRoute = NutritionRouteImport.update({
+  id: '/nutrition',
+  path: '/nutrition',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PresentationRoute = PresentationRouteImport.update({
+  id: '/presentation',
+  path: '/presentation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramRoute = ProgramRouteImport.update({
+  id: '/program',
+  path: '/program',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecoveryRoute = RecoveryRouteImport.update({
+  id: '/recovery',
+  path: '/recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyRoute = SafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShadowRoute = ShadowRouteImport.update({
+  id: '/shadow',
+  path: '/shadow',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const V2Route = V2RouteImport.update({
+  id: '/v2',
+  path: '/v2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoachDayRoute = CoachDayRouteImport.update({
@@ -77,9 +97,19 @@ const CoachDayRoute = CoachDayRouteImport.update({
   path: '/coach/$day',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkoutDayRoute = WorkoutDayRouteImport.update({
+  id: '/workout/$day',
+  path: '/workout/$day',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCoachSpeechRoute = ApiPublicCoachSpeechRouteImport.update({
   id: '/api/public/coach-speech',
   path: '/api/public/coach-speech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCoachTalkRoute = ApiPublicCoachTalkRouteImport.update({
+  id: '/api/public/coach-talk',
+  path: '/api/public/coach-talk',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -91,11 +121,16 @@ export interface FileRoutesByFullPath {
   '/presentation': typeof PresentationRoute
   '/program': typeof ProgramRoute
   '/progress': typeof ProgressRoute
+  '/recovery': typeof RecoveryRoute
   '/safety': typeof SafetyRoute
   '/settings': typeof SettingsRoute
+  '/shadow': typeof ShadowRoute
+  '/v2': typeof V2Route
+  '/api/health': typeof ApiHealthRoute
   '/coach/$day': typeof CoachDayRoute
   '/workout/$day': typeof WorkoutDayRoute
   '/api/public/coach-speech': typeof ApiPublicCoachSpeechRoute
+  '/api/public/coach-talk': typeof ApiPublicCoachTalkRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -105,11 +140,16 @@ export interface FileRoutesByTo {
   '/presentation': typeof PresentationRoute
   '/program': typeof ProgramRoute
   '/progress': typeof ProgressRoute
+  '/recovery': typeof RecoveryRoute
   '/safety': typeof SafetyRoute
   '/settings': typeof SettingsRoute
+  '/shadow': typeof ShadowRoute
+  '/v2': typeof V2Route
+  '/api/health': typeof ApiHealthRoute
   '/coach/$day': typeof CoachDayRoute
   '/workout/$day': typeof WorkoutDayRoute
   '/api/public/coach-speech': typeof ApiPublicCoachSpeechRoute
+  '/api/public/coach-talk': typeof ApiPublicCoachTalkRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -120,11 +160,16 @@ export interface FileRoutesById {
   '/presentation': typeof PresentationRoute
   '/program': typeof ProgramRoute
   '/progress': typeof ProgressRoute
+  '/recovery': typeof RecoveryRoute
   '/safety': typeof SafetyRoute
   '/settings': typeof SettingsRoute
+  '/shadow': typeof ShadowRoute
+  '/v2': typeof V2Route
+  '/api/health': typeof ApiHealthRoute
   '/coach/$day': typeof CoachDayRoute
   '/workout/$day': typeof WorkoutDayRoute
   '/api/public/coach-speech': typeof ApiPublicCoachSpeechRoute
+  '/api/public/coach-talk': typeof ApiPublicCoachTalkRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -136,11 +181,16 @@ export interface FileRouteTypes {
     | '/presentation'
     | '/program'
     | '/progress'
+    | '/recovery'
     | '/safety'
     | '/settings'
+    | '/shadow'
+    | '/v2'
+    | '/api/health'
     | '/coach/$day'
     | '/workout/$day'
     | '/api/public/coach-speech'
+    | '/api/public/coach-talk'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -150,11 +200,16 @@ export interface FileRouteTypes {
     | '/presentation'
     | '/program'
     | '/progress'
+    | '/recovery'
     | '/safety'
     | '/settings'
+    | '/shadow'
+    | '/v2'
+    | '/api/health'
     | '/coach/$day'
     | '/workout/$day'
     | '/api/public/coach-speech'
+    | '/api/public/coach-talk'
   id:
     | '__root__'
     | '/'
@@ -164,11 +219,16 @@ export interface FileRouteTypes {
     | '/presentation'
     | '/program'
     | '/progress'
+    | '/recovery'
     | '/safety'
     | '/settings'
+    | '/shadow'
+    | '/v2'
+    | '/api/health'
     | '/coach/$day'
     | '/workout/$day'
     | '/api/public/coach-speech'
+    | '/api/public/coach-talk'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,62 +239,25 @@ export interface RootRouteChildren {
   PresentationRoute: typeof PresentationRoute
   ProgramRoute: typeof ProgramRoute
   ProgressRoute: typeof ProgressRoute
+  RecoveryRoute: typeof RecoveryRoute
   SafetyRoute: typeof SafetyRoute
   SettingsRoute: typeof SettingsRoute
+  ShadowRoute: typeof ShadowRoute
+  V2Route: typeof V2Route
+  ApiHealthRoute: typeof ApiHealthRoute
   CoachDayRoute: typeof CoachDayRoute
   WorkoutDayRoute: typeof WorkoutDayRoute
   ApiPublicCoachSpeechRoute: typeof ApiPublicCoachSpeechRoute
+  ApiPublicCoachTalkRoute: typeof ApiPublicCoachTalkRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/safety': {
-      id: '/safety'
-      path: '/safety'
-      fullPath: '/safety'
-      preLoaderRoute: typeof SafetyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/progress': {
-      id: '/progress'
-      path: '/progress'
-      fullPath: '/progress'
-      preLoaderRoute: typeof ProgressRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/program': {
-      id: '/program'
-      path: '/program'
-      fullPath: '/program'
-      preLoaderRoute: typeof ProgramRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/presentation': {
-      id: '/presentation'
-      path: '/presentation'
-      fullPath: '/presentation'
-      preLoaderRoute: typeof PresentationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nutrition': {
-      id: '/nutrition'
-      path: '/nutrition'
-      fullPath: '/nutrition'
-      preLoaderRoute: typeof NutritionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/glasses': {
-      id: '/glasses'
-      path: '/glasses'
-      fullPath: '/glasses'
-      preLoaderRoute: typeof GlassesRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/display': {
@@ -244,18 +267,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisplayRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/glasses': {
+      id: '/glasses'
+      path: '/glasses'
+      fullPath: '/glasses'
+      preLoaderRoute: typeof GlassesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workout/$day': {
-      id: '/workout/$day'
-      path: '/workout/$day'
-      fullPath: '/workout/$day'
-      preLoaderRoute: typeof WorkoutDayRouteImport
+    '/nutrition': {
+      id: '/nutrition'
+      path: '/nutrition'
+      fullPath: '/nutrition'
+      preLoaderRoute: typeof NutritionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/presentation': {
+      id: '/presentation'
+      path: '/presentation'
+      fullPath: '/presentation'
+      preLoaderRoute: typeof PresentationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/program': {
+      id: '/program'
+      path: '/program'
+      fullPath: '/program'
+      preLoaderRoute: typeof ProgramRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recovery': {
+      id: '/recovery'
+      path: '/recovery'
+      fullPath: '/recovery'
+      preLoaderRoute: typeof RecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety': {
+      id: '/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof SafetyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shadow': {
+      id: '/shadow'
+      path: '/shadow'
+      fullPath: '/shadow'
+      preLoaderRoute: typeof ShadowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/v2': {
+      id: '/v2'
+      path: '/v2'
+      fullPath: '/v2'
+      preLoaderRoute: typeof V2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coach/$day': {
@@ -265,11 +351,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachDayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workout/$day': {
+      id: '/workout/$day'
+      path: '/workout/$day'
+      fullPath: '/workout/$day'
+      preLoaderRoute: typeof WorkoutDayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/coach-speech': {
       id: '/api/public/coach-speech'
       path: '/api/public/coach-speech'
       fullPath: '/api/public/coach-speech'
       preLoaderRoute: typeof ApiPublicCoachSpeechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/coach-talk': {
+      id: '/api/public/coach-talk'
+      path: '/api/public/coach-talk'
+      fullPath: '/api/public/coach-talk'
+      preLoaderRoute: typeof ApiPublicCoachTalkRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -283,11 +383,16 @@ const rootRouteChildren: RootRouteChildren = {
   PresentationRoute: PresentationRoute,
   ProgramRoute: ProgramRoute,
   ProgressRoute: ProgressRoute,
+  RecoveryRoute: RecoveryRoute,
   SafetyRoute: SafetyRoute,
   SettingsRoute: SettingsRoute,
+  ShadowRoute: ShadowRoute,
+  V2Route: V2Route,
+  ApiHealthRoute: ApiHealthRoute,
   CoachDayRoute: CoachDayRoute,
   WorkoutDayRoute: WorkoutDayRoute,
   ApiPublicCoachSpeechRoute: ApiPublicCoachSpeechRoute,
+  ApiPublicCoachTalkRoute: ApiPublicCoachTalkRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

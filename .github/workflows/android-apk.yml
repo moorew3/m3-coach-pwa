@@ -13,6 +13,7 @@ on:
       - "src/**"
       - "scripts/stage-unified-static.mjs"
       - "scripts/install-android-backup-save.mjs"
+      - "scripts/stamp-android-version.mjs"
       - "native/**"
       - "public/backup-delivery.js"
       - "scripts/backup-delivery.test.mjs"
@@ -52,7 +53,7 @@ jobs:
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Install existing M3 FLEX dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build original React M3 FLEX and same-origin approved Recovery assets
         run: |
@@ -80,6 +81,7 @@ jobs:
           npx cap add android
           npx cap sync android
           node scripts/install-android-backup-save.mjs
+          node scripts/stamp-android-version.mjs
 
       - name: Add permission declarations for consent-only camera and microphone tests
         run: |

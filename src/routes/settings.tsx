@@ -12,12 +12,12 @@ import { saveBackup } from "@/lib/backup-delivery";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — 22-Day Arm Growth Tracker" },
+      { title: "Settings — M3 FLEX" },
       {
         name: "description",
         content: "Theme, units, timer feedback, backup and restore, and program reset.",
       },
-      { property: "og:title", content: "Settings — 22-Day Arm Growth Tracker" },
+      { property: "og:title", content: "Settings — M3 FLEX" },
       { property: "og:description", content: "Configure your 22-day arm growth tracker." },
     ],
   }),

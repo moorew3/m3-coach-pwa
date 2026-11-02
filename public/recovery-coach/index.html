@@ -279,9 +279,16 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
 <p class="small muted">These are text-and-timer workouts, not approved moving Flex demonstrations or new Marcus speech. A clinician must specifically clear each core movement, effort and cast setup; keep the injured leg supported without using the cast for leverage. No planks, sit-ups, leg raises or forceful twisting in the core plan.</p>
 <a href="./bench-core/index.html" id="benchCoreLink" style="display:block;background:#c5f08c;color:#132b1e;padding:13px 15px;border-radius:11px;text-align:center;text-decoration:none;font-weight:900">▶ Open Core A / Core B · Bench training</a>
 </section>
+<section class="panel" id="rowingCardio" aria-label="Recovery cardio rowing status">
+<h3>Recovery cardio · Legless rowing</h3>
+<p><strong>Not ready for exercise.</strong> The latest avatar render has a boot/leg connection error and is blocked from guided workouts.</p>
+<p class="small muted">The requested movement keeps both legs and the seat still while the arms row. Flex must match your supplied identity sheet, with the black boot on the LEFT leg, supported and unloaded. The approved recovery videos above remain unchanged.</p>
+<button type="button" class="btn" id="inspectRowing">Inspect latest rowing candidate · review only</button>
+<p class="small muted">No rowing timer, automatic playback, completion credit or new generation is started by this review.</p>
+</section>
 <section class="panel" id="allScenesCatalog"><h3>All existing M3 FLEX workout scenes · one library</h3>
 <p class="small muted">Here are the original Equipment A/B approvals, completed scenes from both HeyGen accounts, and previously rendered workout clips. Every scene can be inspected here; unapproved versions cannot silently replace locked videos or count as a completed exercise.</p>
-<label>Filter scenes <select id="sceneFilter" aria-label="Filter all original workout scenes"><option value="all">All completed scenes</option><option value="A">Equipment A</option><option value="B">Equipment B</option><option value="archive">Archived approved Flow/Drive</option><option value="primary">Original BIG FLEX scenes</option><option value="backup">HeyGen backup scenes</option><option value="candidates">C13–C23 · remaining scene approvals</option></select></label>
+<label>Filter scenes <select id="sceneFilter" aria-label="Filter all original workout scenes"><option value="all">All completed scenes</option><option value="A">Equipment A</option><option value="B">Equipment B</option><option value="archive">Archived approved Flow/Drive</option><option value="primary">Original BIG FLEX scenes</option><option value="backup">HeyGen backup scenes</option><option value="candidates">C13–C23 · remaining scene approvals</option><option value="rowing">Rowing · blocked candidate</option></select></label>
 <p class="small muted">C13–C23 are rendered drafts, not approved workouts. The original seven approved videos remain unchanged. Four drafts have no verified Marcus narration and cannot be enabled.</p>
 <p id="sceneCount" role="status" class="small muted">Loading original scene library…</p>
 <div id="sceneGrid" class="steps" style="max-height:660px;overflow:auto"></div>
@@ -1057,6 +1064,7 @@ let currentReviewScene=null;
 function showExistingScenes(){
  const f=$("sceneFilter").value;
  const items=ALL_EXISTING_FLEX_SCENES.filter(scene=>{
+  if(f==="rowing")return scene.group==="Recovery cardio · Rowing";
   if(f==="A")return /Workout A|Archived Equipment A|Shared preparation/.test(scene.group);
   if(f==="B")return /Workout B|Archived Equipment A and B|Shared preparation/.test(scene.group);
   if(f==="archive")return scene.source==="Google Drive"||scene.source==="Google Flow";
@@ -1074,11 +1082,18 @@ function showExistingScenes(){
   const status=document.createElement("small");
   status.textContent=scene.source+" · "+scene.group+" · "+
    (/^C(?:1[3-9]|2[0-3])$/.test(scene.id) && !scene.audio ? "MARCUS AUDIO NOT VERIFIED · Preview only · " : "")+
-   (approvalMatchesScene(scene)?"✓ Owner-reviewed VIDEO + MARCUS audio":
+   (scene.status==="qa-rejected"?"REJECTED FOR WORKOUT USE · Inspection only":
+   approvalMatchesScene(scene)?"✓ Owner-reviewed VIDEO + MARCUS audio":
    approvalNeedsReview(scene)?"Previous approval saved · Re-review exact video + Marcus audio":
    scene.status==="archived-approved-link"?"Archived user-approved visual":"Existing completed scene / review");
   const note=document.createElement("small");note.textContent=scene.note||"Verify face, movement and equipment before approving this scene for timed training.";
   detail.append(heading,status,note);
+  if(scene.ownerSetup){
+   const setup=document.createElement("small");
+   setup.textContent="OWNER EQUIPMENT DIRECTION · "+scene.ownerSetup;
+   setup.style.color="#d3e9bb";
+   detail.append(setup);
+  }
   const action=document.createElement(scene.video?"button":"a");
   action.className="btn";
   if(scene.video){
@@ -1089,7 +1104,7 @@ function showExistingScenes(){
     stopMarcusAudioTest();
     currentReviewScene=scene;
     const listen=$("sceneReviewAudio");listen.pause();listen.removeAttribute("src");listen.load();
-    const canEnable=OPTIONAL_SCENE_IDS.has(scene.id)&&!!scene.audio;
+    const canEnable=scene.status!=="qa-rejected"&&OPTIONAL_SCENE_IDS.has(scene.id)&&!!scene.audio;
     $("sceneApprovalControls").classList.toggle("hidden",!canEnable);
     $("sceneOwnerCheck").checked=false;
     $("sceneApprovalTitle").textContent="Review "+scene.id+" · "+scene.name;
@@ -1110,6 +1125,11 @@ function showExistingScenes(){
  }
 }
 $("sceneFilter").addEventListener("change",showExistingScenes);
+$("inspectRowing").addEventListener("click",()=>{
+ if(mode==="running"||mode==="rest")pause();
+ $("sceneFilter").value="rowing";showExistingScenes();
+ $("allScenesCatalog").scrollIntoView({behavior:"smooth",block:"start"});
+});
 $("listenScene").addEventListener("click",async()=>{
  if(!currentReviewScene?.audio||!OPTIONAL_SCENE_IDS.has(currentReviewScene.id))return;
  const audio=$("sceneReviewAudio");audio.pause();audio.src=currentReviewScene.audio;audio.currentTime=0;

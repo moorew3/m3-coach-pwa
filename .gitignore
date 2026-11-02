@@ -49,3 +49,7 @@ android/
 *.aab
 *.jks
 *.keystore
+
+# Generated client bundles and interrupted copy fragments.
+unified-static-web/
+public/**/.*.??????

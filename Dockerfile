@@ -2,8 +2,8 @@
 # Never copy .env, credentials or user workout storage into an image.
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
-COPY package.json ./
-RUN npm install --no-audit --no-fund
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY . .
 # The default build never enables chargeable generative coach services.
 ENV VITE_FLEX_PAID_AI_ENABLED=false

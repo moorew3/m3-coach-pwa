@@ -75,7 +75,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-67d1-764c-b842-cefc9ea64110.mp4",
     "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=f8ba0136-82cc-4c88-91b0-47805ebbf4c9.wav",
-    "note": "Only wrists flex; NO elbow biceps curls"
+    "note": "Only wrists flex; NO elbow biceps curls",
+    "ownerSetup": "Next bench demonstration target: sit on locked Weider Pro bench, brace forearms on thighs or approved firm support, bend only wrists, left injured leg on independent padded support without pressure. Current video is still review-only."
   },
   {
     "id": "C18",
@@ -85,7 +86,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-7b6a-7e7e-853a-45f6798791fa.mp4",
     "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=1b863f98-8496-4a1b-9e30-0cd6c5197430.wav",
-    "note": "Both dumbbells move sideways, not forward"
+    "note": "Both dumbbells move sideways, not forward",
+    "ownerSetup": "Next bench demonstration target: lateral raises with very light dumbbells while seated on stable bench; keep left leg independently supported and completely unloaded. Verify bench stability before loading; current video remains unverified."
   },
   {
     "id": "C19",
@@ -95,7 +97,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-8edf-7a30-8982-508aa4c6651c.mp4",
     "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=176c89d1-0379-4761-aa5a-b72bdf5207c5.wav",
-    "note": "Seated right/left straight jabs; no foot movement"
+    "note": "Seated right/left straight jabs; no foot movement",
+    "ownerSetup": "Either a stable chair or fixed bench can support arm-only boxing; no pushing through either foot or rotating through injured leg. Current clip is not automatically approved."
   },
   {
     "id": "C20",
@@ -105,7 +108,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8d-a2b3-70e0-ad12-3bc88377ae13.mp4",
     "audio": null,
-    "note": "Band behind torso BETWEEN back and chair, not at neck; horizontal fly not press"
+    "note": "Band behind torso BETWEEN back and chair, not at neck; horizontal fly not press",
+    "ownerSetup": "Do not recast this INNSTAR chest-fly scene as dumbbell bench press. Verify actual band anchor/path and safe bench/chair placement before any new moving demonstration. Keep this footage owner-review only."
   },
   {
     "id": "C21",
@@ -115,7 +119,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8e-e725-7da7-a8c9-9fc593a984f4.mp4",
     "audio": null,
-    "note": "Across chest gentle arm stretch; no lower limb pressure"
+    "note": "Across chest gentle arm stretch; no lower limb pressure",
+    "ownerSetup": "Owner accepts this exercise as a gentle stretch; this is NOT approval of the rendered footage or of absent Marcus narration. Seated, pain-free arm stretch, left leg on padded support and unloaded."
   },
   {
     "id": "C22",
@@ -125,7 +130,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8e-faec-742c-af30-cd7ba68f5213.mp4",
     "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=8bc95adf-770a-4651-8220-4d98e6c65125.wav",
-    "note": "Open chest in small comfortable range, no extreme shoulder extension"
+    "note": "Open chest in small comfortable range, no extreme shoulder extension",
+    "ownerSetup": "Owner accepts this exercise as a gentle stretch; video identity, movement and paired Marcus still require checking. Seated, no forced shoulder extension or foot loading."
   },
   {
     "id": "C23",
@@ -135,7 +141,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a16f8f-1e09-77d8-867d-f02e2b4d3db0.mp4",
     "audio": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=9a08cc22-3a60-47d2-bb2b-2fea1e197d4f.wav",
-    "note": "Correct AMYCO spring/foam forearm pad, isolated wrist flexion—not a generic curl"
+    "note": "Correct AMYCO spring/foam forearm pad, isolated wrist flexion—not a generic curl",
+    "ownerSetup": "Next demonstration target: the owner's photographed AMYCO device while seated at a stable weight bench with forearms supported, isolated wrist motion, and injured left leg unloaded. Verify the device orientation and resistance before approval."
   },
   {
     "id": "HG-4ab71f91e",
@@ -724,4 +731,6 @@ window.M3_FLEX_SCENE_LIBRARY=[
   }
 ,
   {"id":"REF-LATERAL-2REPS","name":"Original seated lateral raises two-repetition motion driver","group":"Workout A motion references","source":"Original Motion Reference","status":"motion-reference-only","external":"https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view","note":"Original two-repetition driver recovered from M3 FLEX Google Drive motion-reference folder. This is not certified as the final approved Flex avatar with Marcus. Preserve the original Flow-approved lateral-raise clip; do not substitute the driver during timed coaching."}
+ ,
+ {"id":"ROW-R5","name":"Legless rowing · black boot candidate","group":"Recovery cardio · Rowing","source":"M3 FLEX rowing review","status":"qa-rejected","video":"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19c19-8cbb-7637-88ae-e19acde8a876.mp4","note":"BLOCKED FROM WORKOUT USE: the generated black boot appears separate from the left leg. This six-second silent render is retained only for inspection, never timed coaching. No approved Marcus rowing track exists. Requires correct identity, one anatomically connected left leg inside its boot, supported/unloaded leg, stationary knees/seat and complete arm-only strokes before approval."}
 ];

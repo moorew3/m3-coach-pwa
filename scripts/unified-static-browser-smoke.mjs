@@ -72,12 +72,40 @@ try{
  const sceneResponse=await page.request.get(origin+scenesUrl);
  assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
  assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
+ // Original approved media and older original-app bench clips must be viewable from one app.
+ await page.goto(origin+scenesUrl,{waitUntil:"domcontentloaded"});
+ await page.getByTestId("existing-app-videos").waitFor();
+ await page.locator("#existingAppVideoLibrary summary").click();
+ assert.equal(await page.locator("#existingLockedVideoLinks a").filter({hasText:"▶"}).count(),7,
+   "Seven existing approved videos must be linked without creating new clips");
+ assert.equal(await page.locator("#existingOriginalAppLinks a").count(),6,
+   "Previously built bench/stretch/rowing clips remain accessible as reference only");
+ assert.match(await page.locator("#existingVideoCount").textContent(),/7 original approved Recovery videos reused/);
+ assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
+   "Reused media must not auto-play on entering the gallery");
+ assert.equal(await page.locator("#existingLockedVideoLinks button[data-reuse-video]").count(),7,
+   "Each approved clip must be selectable inside the same player");
+ await page.locator("#existingLockedVideoLinks button[data-reuse-video]").first().click();
+ assert.match(await page.locator("#sceneTitle").textContent(),/Calm seated breathing/);
+ assert.equal(await page.locator("#play").isEnabled(),true);
+ assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
+   "Choosing an approved clip cannot auto-start a workout");
+ assert.match(await page.locator("#playback").textContent(),/Press Play verified media/);
+ await page.goBack();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByTestId("program-approve-scenes").click();
  await page.locator("#allScenesCatalog").waitFor();
  assert.equal(await page.locator("#sceneFilter").inputValue(),"candidates","Owner review must show C13–C23 without manual search");
  assert.equal(await page.locator("#sceneGrid .item").count(),11,"Exactly eleven rendered drafts need explicit review");
  assert.equal(await page.locator("#sceneGrid .item").filter({hasText:"MARCUS AUDIO NOT VERIFIED"}).count(),4);
  assert.equal(await page.locator("#sceneReviewVideo").isVisible(),false,"Review entry must not autoplay or activate a clip");
+ await page.locator("#inspectRowing").click();
+ assert.equal(await page.locator("#sceneFilter").inputValue(),"rowing");
+ assert.equal(await page.locator("#sceneGrid .item").count(),1);
+ assert.match(await page.locator("#sceneGrid").textContent(),/REJECTED FOR WORKOUT USE/);
+ await page.locator("#sceneGrid button").click();
+ assert.equal(await page.locator("#sceneApprovalControls").isVisible(),false);
+ assert.equal(await page.locator("#sceneReviewVideo").evaluate(v=>v.paused),true);
  await page.goBack();
  await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByTestId("program-v2").click();
