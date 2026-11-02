@@ -970,8 +970,8 @@ try {
   noWeightPage.setDefaultTimeout(12000);
   try {
     await noWeightPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
-    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /FOOT CAST · WEIGHT-BEARING ABILITY REPORTED/);
-    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /does not establish clearance for loaded squats/);
+    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /LEFT LEG SUPPORTED · SEATED SESSION/);
+    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /is not clearance for loaded squats/);
     await noWeightPage.locator('[data-stage="1"]').click();
     await noWeightPage.locator("#startPause").click();
     assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /confirm all three clinician-clearance checks/);
