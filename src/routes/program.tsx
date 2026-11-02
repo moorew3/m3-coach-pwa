@@ -82,6 +82,9 @@ function Program() {
             <Link to="/recovery" search={{program:"A"}} data-testid="program-A" className="tap-target flex items-center justify-center rounded-xl border border-border bg-elevated px-3 py-3 text-center text-sm font-bold">Workout A</Link>
             <Link to="/recovery" search={{program:"B"}} data-testid="program-B" className="tap-target flex items-center justify-center rounded-xl border border-border bg-elevated px-3 py-3 text-center text-sm font-bold">Workout B</Link>
           </div>
+          <a href="/recovery-coach/index.html?program=recovery&review=1" data-testid="program-approve-scenes" className="tap-target flex items-center justify-center rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-3 py-3 text-center text-sm font-bold">
+            Review remaining C13–C23 scenes · owner approval
+          </a>
           <a href="/recovery-coach/programs/index.html" data-testid="program-scene-library" className="tap-target flex items-center justify-center rounded-xl border border-border bg-elevated px-3 py-3 text-center text-sm font-bold">
             Review all Flex scenes and approval status
           </a>
