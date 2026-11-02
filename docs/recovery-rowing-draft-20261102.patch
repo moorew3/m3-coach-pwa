@@ -1,0 +1,44 @@
+diff --git a/public/recovery-coach/cardio/index.html b/public/recovery-coach/cardio/index.html
+new file mode 100644
+index 0000000..74671da
+--- /dev/null
++++ b/public/recovery-coach/cardio/index.html
+@@ -0,0 +1,9 @@
++<!doctype html>
++<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recovery Cardio · M3 FLEX</title>
++<style>:root{color-scheme:dark;font:17px/1.6 system-ui,sans-serif;background:#0b1521;color:#ecf2f7}body{max-width:800px;margin:auto;padding:24px 18px}a{color:#c5f08c}h1{font-size:clamp(28px,5vw,40px);line-height:1.2}h2{font-size:21px}.card{border:1px solid #405164;border-radius:18px;padding:20px;margin:20px 0;background:#132131}.tag{color:#ffdc93;font-weight:700}button{padding:16px;border-radius:12px;font:inherit;width:100%;background:#293747;color:#d0d8df;border:1px solid #627187}small{color:#b6c5d4}li{margin:10px 0}a:focus-visible,button:focus-visible{outline:3px solid #c5f08c;outline-offset:4px}</style></head>
++<body><nav aria-label="App navigation"><a href="../index.html">← Recovery Coach</a> · <a href="/">M3 FLEX home</a></nav>
++<header><p>M3 FLEX · RECOVERY CARDIO</p><h1>No-leg rowing</h1><p>Requested rowing session using your existing approved Flex avatar and Marcus voice.</p><p class="tag" role="status">Draft saved · Guided workout not available yet</p></header>
++<section class="card" aria-labelledby="reference"><h2 id="reference">Your reference</h2><p><a href="https://www.youtube.com/watch?v=Cb69eFwfPS0" target="_blank" rel="noopener noreferrer">WODdoc · How To Improve Your Rowing; No Leg Rowing · Episode 659 ↗</a></p><p><small>The source title and 3:25 runtime were verified. The complete movement has not yet been reviewed. This is a technique reference, not an approved recovery routine or a Flex demonstration. Its runtime is not your workout duration.</small></p></section>
++<section class="card" aria-labelledby="setup"><h2 id="setup">Before this becomes a workout</h2><ul><li>Confirm your rowing machine make/model and whether a clinician-approved setup can keep your injured LEFT leg supported and unloaded, including getting on and off.</li><li>Your treating clinician must clear this specific rowing movement, leg position, resistance, duration and effort. “No leg rowing” does not establish that a drill puts no pressure through your injured foot.</li><li>Review the complete reference technique before adapting it. Do not improvise straps, a seat lock or a footrest modification.</li></ul><p><a href="https://www.concept2.com/training/articles/concept2-ergs-rehab" target="_blank" rel="noopener noreferrer">Concept2 guidance on using ergs during rehabilitation ↗</a></p></section>
++<section class="card" aria-labelledby="avatar"><h2 id="avatar">Your approved Flex and Marcus</h2><p>Preserve the approved face, braids, beard, tattoos and prescribed cast or boot. Show the full body, machine and left-leg support so the setup can be checked.</p><p>A new rowing demonstration and matching Marcus — Warm &amp; Friendly English narration are needed. Existing approved curls, chest press and breathing clips stay unchanged. They cannot stand in for rowing footage.</p><p>After technique and media approval, use the existing coach's warm-up, interval/rest, pause/skip and progress features. Duration and effort will follow your clinician's limits; no calorie, rep or recovery claims are inferred.</p><button type="button" disabled aria-describedby="blockers">Guided rowing · Pending required setup and media</button><p id="blockers"><small>No timer, exercise playback or session logging is activated from this draft. No paid generation or subscription has been started.</small></p></section>
++</body></html>
+\ No newline at end of file
+diff --git a/public/recovery-coach/index.html b/public/recovery-coach/index.html
+index 3a2d491..bec635e 100644
+--- a/public/recovery-coach/index.html
++++ b/public/recovery-coach/index.html
+@@ -164,6 +164,7 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
+   <button type="button" class="btn primary" data-workout="recovery" aria-pressed="true">Recovery · 5 moves</button>
+   <button type="button" class="btn" data-workout="A" aria-pressed="false">Workout A · Dumbbells / boxing</button>
+   <button type="button" class="btn" data-workout="B" aria-pressed="false">Workout B · INNSTAR / arms</button>
++  <a class="btn" href="./cardio/index.html" style="text-decoration:none;text-align:center;display:grid;place-items:center">Recovery cardio · Rowing plan</a>
+   <a class="btn" href="/" style="text-decoration:none;text-align:center;display:grid;place-items:center">Original weekly workouts · same app</a>
+  </nav>
+  <p id="workoutDescription" class="small muted" role="status">Recovery: five approved movements with timed sets, rest, warm-up and cooldown.</p>
+diff --git a/src/routes/recovery.tsx b/src/routes/recovery.tsx
+index 05ce61d..45c02b4 100644
+--- a/src/routes/recovery.tsx
++++ b/src/routes/recovery.tsx
+@@ -80,6 +80,11 @@ function UnifiedRecovery() {
+         ))}
+       </nav>
+ 
++      <a href="/recovery-coach/cardio/index.html" data-testid="recovery-rowing-plan" className="mt-3 block rounded-xl border border-border bg-card p-3">
++        <span className="text-sm font-bold">Recovery cardio · No-leg rowing</span>
++        <span className="mt-1 block text-xs text-muted-foreground">Your video reference and approved Flex / Marcus production plan. Pending equipment, clinician clearance and rowing footage.</span>
++      </a>
++
+       <section data-testid="m3-recovery-sync" aria-live="polite" className="mt-3 rounded-xl border border-border bg-card p-3">
+         <div className="flex items-start gap-2">
+           <Activity className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
