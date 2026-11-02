@@ -18,7 +18,7 @@ test("all eleven existing render candidates are catalogued as review only, with 
  }
 });
 test("exactly four C13–C23 drafts lack verified matching Marcus audio and cannot be promoted",()=>{
- const noAudio=candidates.filter(s=>!s.audio).map(s=>s.id).sort();
+ const noAudio=Array.from(candidates.filter(s=>!s.audio),s=>s.id).sort();
  assert.deepEqual(noAudio,["C13","C16","C20","C21"]);
  const page=read("public/recovery-coach/index.html");
  assert.match(page,/OPTIONAL_SCENE_IDS=new Set\(\["C14","C15","C17","C18","C19","C22","C23"\]\)/);
