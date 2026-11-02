@@ -970,8 +970,10 @@ try {
   noWeightPage.setDefaultTimeout(12000);
   try {
     await noWeightPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
-    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /LEFT LEG SUPPORTED · SEATED SESSION/);
-    assert.match((await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "", /is not clearance for loaded squats/);
+    const supportedLegWarning = (await noWeightPage.locator("#nonWeightWarning").textContent()) ?? "";
+    assert.match(supportedLegWarning, /LEFT LEG SUPPORTED · SEATED SESSION/);
+    assert.match(supportedLegWarning, /supported on a padded rest and unloaded/);
+    assert.match(supportedLegWarning, /not clearance for loaded squats, jumping, standing exercise/);
     await noWeightPage.locator('[data-stage="1"]').click();
     await noWeightPage.locator("#startPause").click();
     assert.match((await noWeightPage.locator("#note").textContent()) ?? "", /confirm all three clinician-clearance checks/);
