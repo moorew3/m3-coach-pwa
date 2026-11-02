@@ -330,6 +330,7 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
 <footer>M3 Flex Recovery Coach · Five original approved videos locked · Marcus English only</footer>
 </main>
 <script src="./scene-library.js"></script>
+<script src="./sarah-bridge.js"></script>
 <script>
 "use strict";
 document.documentElement.classList.toggle("embedded",new URLSearchParams(location.search).get("embedded")==="1");
@@ -1197,4 +1198,16 @@ if(!restored)secondsLeft=duration();
 render();
 if(restored)tell("Workout position restored in PAUSED mode. Confirm today's clinician-clearance checks again, then tap Resume. No video or audio was auto-played.");
 window.addEventListener("pagehide",()=>{releaseScreenAwake();stopMarcusAudioTest();persistProgress()});
+// The bridge uses the same protected controls as touch and Voice Access.
+if(window.installSarahFlexBridge)window.installSarahFlexBridge({
+ status:()=>({program:activeWorkout,mode,exercise:step().name,secondsRemaining:Math.ceil(secondsLeft/1000),coach:"Marcus",actualRepsMeasured:false}),
+ command:async command=>{
+  if(command==="stop"){$("emergencyStop").click();return {ok:true};}
+  const target={start:"handsfreeStart",pause:"handsfreePause",resume:"handsfreeResume",next:"handsfreeNext"}[command];
+  if(!target||$(target).disabled)return {ok:false,error:"That control is unavailable in the current workout state."};
+  if((command==="start"||command==="resume")&&!safetyOkay())return {ok:false,error:"Complete today's clearance checks in M3 FLEX first."};
+  $(target).click();
+  return {ok:true,note:"Command delivered to the existing player. Audio may require a tap in M3 FLEX."};
+ }
+});
 </script></body></html>
