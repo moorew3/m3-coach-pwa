@@ -124,7 +124,7 @@ function UnifiedRecovery() {
         ref={iframe}
         title={`M3 FLEX · ${recoveryTitle(program)}`}
         data-testid="m3-recovery-existing-player"
-        src={`/recovery-coach/index.html?program=${program}`}
+        src={`/recovery-coach/index.html?program=${program}&embedded=1`}
         onLoad={refresh}
         allow="camera; fullscreen"
         allowFullScreen
