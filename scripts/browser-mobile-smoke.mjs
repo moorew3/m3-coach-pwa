@@ -567,7 +567,7 @@ try {
     assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "about:blank");
     await recoveryPage.locator("#formObservation summary").click();
     await recoveryPage.frameLocator("#formFrame").locator("#start").waitFor();
-    assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "./form-check/");
+    assert.equal(await recoveryPage.locator("#formFrame").getAttribute("src"), "./form-check/index.html");
     await recoveryPage.waitForFunction(
       () => document.querySelector("#formFrame")?.contentDocument?.querySelector("#status")?.textContent?.includes("No approved lifting movement is active"),
       null, { timeout: 6000 },
