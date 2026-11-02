@@ -370,9 +370,22 @@ function getSceneApprovals(){
  }catch{}
  return {};
 }
+/** Full approval binds the reviewed moving footage AND exact Marcus narration.
+ * Preserve older video-only records but require re-review rather than silently trusting new audio.
+ */
+function approvalMatchesScene(item){
+ if(!item?.video||!item?.audio)return false;
+ const entry=getSceneApprovals()[item.id];
+ return !!entry&&typeof entry==="object"&&!Array.isArray(entry)&&
+  entry.video===item.video&&entry.audio===item.audio;
+}
+function approvalNeedsReview(item){
+ const entry=getSceneApprovals()[item?.id];
+ return !!entry&&!approvalMatchesScene(item);
+}
 function reviewedScene(id){
  const item=window.M3_FLEX_SCENE_LIBRARY?.find(x=>x.id===id);
- return item&&item.video&&item.audio&&getSceneApprovals()[id]===item.video?{
+ return item&&approvalMatchesScene(item)?{
   id:item.id,name:item.name,video:item.video,voice:item.audio,approved:true,
   sec:30,note:"Owner reviewed existing moving Flex and voice: "+item.note+
   " Audio/video sync remains subject to real-device checks. Athlete repetitions are NOT measured. Use only clinician-cleared technique and load."
@@ -1061,7 +1074,8 @@ function showExistingScenes(){
   const status=document.createElement("small");
   status.textContent=scene.source+" · "+scene.group+" · "+
    (/^C(?:1[3-9]|2[0-3])$/.test(scene.id) && !scene.audio ? "MARCUS AUDIO NOT VERIFIED · Preview only · " : "")+
-   (getSceneApprovals()[scene.id]===scene.video?"✓ Owner reviewed for routine":
+   (approvalMatchesScene(scene)?"✓ Owner-reviewed VIDEO + MARCUS audio":
+   approvalNeedsReview(scene)?"Previous approval saved · Re-review exact video + Marcus audio":
    scene.status==="archived-approved-link"?"Archived user-approved visual":"Existing completed scene / review");
   const note=document.createElement("small");note.textContent=scene.note||"Verify face, movement and equipment before approving this scene for timed training.";
   detail.append(heading,status,note);
@@ -1081,7 +1095,7 @@ function showExistingScenes(){
     $("sceneApprovalTitle").textContent="Review "+scene.id+" · "+scene.name;
     $("listenScene").disabled=!canEnable;
     $("approveScene").disabled=!canEnable;
-    $("approveScene").textContent=getSceneApprovals()[scene.id]===scene.video?
+    $("approveScene").textContent=approvalMatchesScene(scene)?
       "Remove my previous scene approval":"Include reviewed scene in Workout A/B";
     const view=$("sceneReviewVideo");view.pause();view.src=scene.video;
     view.muted=true;view.style.display="block";view.load();
@@ -1106,12 +1120,13 @@ $("approveScene").addEventListener("click",()=>{
  const scene=currentReviewScene;
  if(!scene?.video||!scene.audio||!OPTIONAL_SCENE_IDS.has(scene.id))return;
  const approvals=getSceneApprovals();
- const removing=approvals[scene.id]===scene.video;
+ const removing=approvalMatchesScene(scene);
  if(!removing&&!$("sceneOwnerCheck").checked){
   $("sceneReviewStatus").textContent="Review the video and voice yourself, then confirm the checkbox before enabling this scene.";
   return;
  }
- if(removing)delete approvals[scene.id];else approvals[scene.id]=scene.video;
+ if(removing)delete approvals[scene.id];
+ else approvals[scene.id]={video:scene.video,audio:scene.audio,reviewedAt:new Date().toISOString()};
  try{localStorage.setItem(SCENE_OWNER_KEY,JSON.stringify(approvals))}
  catch{ $("sceneReviewStatus").textContent="Approval could not be stored. Scene was not activated.";return}
  // A new approved scene changes the workout sequence: stop, clear the timer
