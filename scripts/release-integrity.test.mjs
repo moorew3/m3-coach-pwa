@@ -34,7 +34,7 @@ test("legacy standing workout is gated at the home CTA while the seated player s
   assert.match(home,/if \(!legacyModeAllowed && !log\.completed\)/);
   assert.match(home,/setLegacyGateOpen\(true\)/);
   assert.match(home,/onClick={requestLegacyCoach}/);
-  assert.match(home,/href="\/recovery-coach\/"/);
+  assert.match(home,/href="\/recovery-coach\/index\.html"/);
   assert.match(browser,/legacy-acknowledge/);
   assert.match(browser,/legacy-safety-gate/);
 });

@@ -10,7 +10,7 @@ test("Device check always uses exact owner-approved Marcus track and never an al
  assert.match(html,/9226f649-9808-4275-b269-bcc93d3b0342\.mp3/);
  assert.match(html,/Original Marcus audio source unavailable/);
  assert.doesNotMatch(html,/speechSynthesis\.speak|SpeechSynthesisUtterance|openai\.com|heygen\.com\/api/);
- assert.match(player,/href="\.\/device-check\/"/);
+ assert.match(player,/href="\.\/device-check\/index\.html"/);
 });
 
 test("Microphone and camera only open after explicit user-initiated Test buttons",()=>{

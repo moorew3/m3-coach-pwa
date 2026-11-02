@@ -12,11 +12,11 @@ const workflow=load("../.github/workflows/build-check.yml");
 
 test("Bench Core A/B are available in the real M3 FLEX home and protected recovery pages",()=>{
  assert.match(home,/data-testid="bench-core-workouts"/);
- assert.match(home,/href="\/recovery-coach\/bench-core\/"/);
+ assert.match(home,/href="\/recovery-coach\/bench-core\/index\.html"/);
  assert.match(recovery,/id="benchCoreLink"/);
- assert.match(recovery,/href="\.\/bench-core\/"/);
+ assert.match(recovery,/href="\.\/bench-core\/index\.html"/);
  assert.match(review,/id="programBenchCoreLink"/);
- assert.match(review,/href="\.\.\/bench-core\/"/);
+ assert.match(review,/href="\.\.\/bench-core\/index\.html"/);
  assert.match(staticPackage,/"recovery-coach\/bench-core\/index\.html"/);
  assert.match(workflow,/test -s \.output\/public\/recovery-coach\/bench-core\/index\.html/);
 });

@@ -19,7 +19,7 @@ test("legacy weekly plan is explicitly marked unapproved for seated-only workout
 test("workout launch warns about seated-only programming conflict and links reviewed clips", () => {
   assert.match(home, /data-testid="seated-program-warning"/);
   assert.match(home, /not been fully converted or cleared for foot-cast seated-only training/);
-  assert.match(home, /href="\/recovery-coach\/"/);
+  assert.match(home, /href="\/recovery-coach\/index\.html"/);
   assert.match(coach, /data-testid="coach-seated-review-warning"/);
   assert.match(coach, /readiness\s+check does not certify/i);
 });

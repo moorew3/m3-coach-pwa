@@ -41,7 +41,7 @@ test("same-screen form iframe loads only on explicit open and unloads on close",
  assert.match(coach,/id="formObservation"/);
  assert.match(coach,/id="formFrame"/);
  assert.match(coach,/allow="camera"/);
- assert.match(coach,/iframe\.src=\$\("formObservation"\)\.open\?"\.\/form-check\/":"about:blank"/);
+ assert.match(coach,/iframe\.src=\$\("formObservation"\)\.open\?"\.\/form-check\/index\.html":"about:blank"/);
  assert.match(browser,/frameLocator\("#formFrame"\)\.locator\("#start"\)/);
  assert.match(browser,/__formRequests\.length/);
  assert.match(browser,/requests\[0\]\.audio, false/);

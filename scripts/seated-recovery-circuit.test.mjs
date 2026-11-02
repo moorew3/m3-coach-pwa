@@ -47,7 +47,7 @@ test("home offers same-origin approved player before the legacy coach and marks 
   const approvedStart = home.indexOf('data-testid="seated-recovery-start"');
   const legacyStart = home.indexOf('data-testid="legacy-workout-start"');
   assert.ok(approvedStart > 0 && legacyStart > approvedStart);
-  assert.match(home, /href="\/recovery-coach\/"/);
+  assert.match(home, /href="\/recovery-coach\/index\.html"/);
   assert.match(home, /Workout A\/B animations are still being completed/);
 });
 

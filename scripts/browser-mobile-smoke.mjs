@@ -441,7 +441,7 @@ try {
   const backupPage = await backupContext.newPage();
   backupPage.setDefaultTimeout(20000);
   try {
-    const response = await backupPage.goto(base + "/recovery-coach/full-backup/", {
+    const response = await backupPage.goto(base + "/recovery-coach/full-backup/index.html", {
       waitUntil: "domcontentloaded",
     });
     assert.equal(response?.status(), 200);
@@ -829,7 +829,7 @@ try {
   corePage.setDefaultTimeout(12000);
   try {
     await corePage.clock.install();
-    const coreRes=await corePage.goto(base+"/recovery-coach/bench-core/",{waitUntil:"domcontentloaded"});
+    const coreRes=await corePage.goto(base+"/recovery-coach/bench-core/index.html",{waitUntil:"domcontentloaded"});
     assert.equal(coreRes?.status(),200);
     assert.equal(await corePage.locator("#plan option").count(),2);
     assert.equal(await corePage.locator("video").count(),0,"Unapproved core demo videos must not be invented");
@@ -905,7 +905,7 @@ try {
   const formPage = await formContext.newPage();
   formPage.setDefaultTimeout(12000);
   try {
-    const res = await formPage.goto(base + "/recovery-coach/form-check/", { waitUntil: "networkidle" });
+    const res = await formPage.goto(base + "/recovery-coach/form-check/index.html", { waitUntil: "networkidle" });
     assert.equal(res?.status(), 200);
     assert.equal(await formPage.evaluate(() => window.__formRequests.length), 0,
       "No camera requested during form-check page load");
@@ -935,7 +935,7 @@ try {
   const modelPage = await modelContext.newPage();
   modelPage.setDefaultTimeout(55000);
   try {
-    await modelPage.goto(base + "/recovery-coach/form-check/", { waitUntil: "domcontentloaded" });
+    await modelPage.goto(base + "/recovery-coach/form-check/index.html", { waitUntil: "domcontentloaded" });
     assert.equal((await modelPage.locator("#start").isDisabled()), false);
     await modelPage.locator("#consent").check();
     await modelPage.locator("#start").click();
@@ -1068,7 +1068,7 @@ try {
   const logPage = await logContext.newPage();
   logPage.setDefaultTimeout(12000);
   try {
-    await logPage.goto(base + "/recovery-coach/logbook/", { waitUntil: "domcontentloaded" });
+    await logPage.goto(base + "/recovery-coach/logbook/index.html", { waitUntil: "domcontentloaded" });
     assert.match((await logPage.locator("#summary").textContent()) ?? "", /0 saved personal records/);
     await logPage.locator("#exercise").selectOption("C02");
     await logPage.locator("#reps").fill("12");
@@ -1152,7 +1152,7 @@ try {
     });
     try {
       const otherPage = await otherDevice.newPage();
-      await otherPage.goto(base + "/recovery-coach/logbook/", { waitUntil: "domcontentloaded" });
+      await otherPage.goto(base + "/recovery-coach/logbook/index.html", { waitUntil: "domcontentloaded" });
       assert.match((await otherPage.locator("#summary").textContent()) ?? "", /^0 saved personal records/,
         "Separate device cannot magically see another device's private data");
       await otherPage.locator("#backupPassword").fill("wrong-but-long-enough-pass");
@@ -1207,13 +1207,13 @@ try {
       const recordsBefore = await logPage.evaluate(
         () => JSON.parse(localStorage.getItem("m3-flex-real-reps-and-metrics-v1")).records.length,
       );
-      await updatePage.goto(base + "/recovery-coach/update-safety/", {waitUntil:"domcontentloaded"});
+      await updatePage.goto(base + "/recovery-coach/update-safety/index.html", {waitUntil:"domcontentloaded"});
       assert.match((await updatePage.locator("#summary").textContent()) ?? "",
         new RegExp("^"+recordsBefore+" locally reported workout/measurement records"));
       assert.equal(await updatePage.locator("#checkReady").isDisabled(), true);
       assert.equal(await updatePage.locator("#hasFile").isChecked(), false);
       assert.match((await updatePage.locator("#confirmStatus").textContent()) ?? "", /Nothing has been backed up by this page/);
-      assert.match(await updatePage.locator("a[href='../full-backup/']").getAttribute("href"), /full-backup\//);
+      assert.match(await updatePage.locator("a[href='../full-backup/index.html']").getAttribute("href"), /full-backup\//);
       assert.match((await updatePage.locator("#version").textContent()) ?? "", /Installed build ID not provided/);
       await updatePage.locator("#hasFile").check();
       await updatePage.locator("#hasPassword").check();
@@ -1251,7 +1251,7 @@ try {
   });
   const devicePage = await deviceContext.newPage();
   try {
-    const deviceResponse = await devicePage.goto(base + "/recovery-coach/device-check/", {
+    const deviceResponse = await devicePage.goto(base + "/recovery-coach/device-check/index.html", {
       waitUntil: "domcontentloaded",
     });
     assert.equal(deviceResponse?.status(), 200);

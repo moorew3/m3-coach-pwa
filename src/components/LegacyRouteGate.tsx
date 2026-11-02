@@ -55,7 +55,7 @@ export function LegacyRouteGate({
         Do not perform those movements while restricted to seated exercise.
       </p>
       <a
-        href="/recovery-coach/"
+        href="/recovery-coach/index.html"
         className="tap-target flex items-center justify-center rounded-xl bg-primary px-4 text-center text-sm font-bold text-primary-foreground"
       >
         Open approved seated Recovery Coach

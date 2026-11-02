@@ -380,7 +380,7 @@ function SettingsPage() {
         </p>
         <a
           data-testid="m3-full-device-backup"
-          href="/recovery-coach/full-backup/"
+          href="/recovery-coach/full-backup/index.html"
           className="tap-target flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 text-center text-sm font-bold uppercase text-primary-foreground"
         >
           <Download className="size-5" /> Back up entire M3 FLEX · Encrypted

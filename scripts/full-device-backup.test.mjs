@@ -42,10 +42,10 @@ test("file decryption/validation is a nonmutating first step and restore cannot 
 });
 
 test("Settings and Android warnings no longer misrepresent single-component backups as complete",()=>{
- assert.match(settings,/href="\/recovery-coach\/full-backup\/"/);
+ assert.match(settings,/href="\/recovery-coach\/full-backup\/index\.html"/);
  assert.match(settings,/Back up entire M3 FLEX/);
  assert.match(settings,/original tracker only \(not Recovery logs\)/);
- assert.match(safety,/href="\.\.\/full-backup\/"/);
+ assert.match(safety,/href="\.\.\/full-backup\/index\.html"/);
  assert.match(safety,/Back up the entire app, not just Recovery reps/);
  assert.match(android,/recovery-coach\/full-backup\/index\.html/);
  assert.match(browser,/Encrypted whole-app backup: wrong-password rejection/);

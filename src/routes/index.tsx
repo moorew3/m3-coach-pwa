@@ -340,13 +340,13 @@ function Today() {
                 It has not been fully converted or cleared for foot-cast seated-only training.
                 Do not use its standing exercises during seated-only recovery.
               </p>
-              <a className="mt-2 inline-block font-bold underline underline-offset-4" href="/recovery-coach/">
+              <a className="mt-2 inline-block font-bold underline underline-offset-4" href="/recovery-coach/index.html">
                 Open reviewed seated recovery clips
               </a>
             </div>
 
             <a
-              href="/recovery-coach/"
+              href="/recovery-coach/index.html"
               data-testid="seated-recovery-start"
               className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-accent bg-accent/15 px-3 py-3 text-center text-sm font-black uppercase leading-snug text-accent"
             >
@@ -360,7 +360,7 @@ function Today() {
             </p>
 
             <a
-              href="/recovery-coach/bench-core/"
+              href="/recovery-coach/bench-core/index.html"
               data-testid="bench-core-workouts"
               className="tap-target mt-3 flex w-full items-center justify-center rounded-xl border border-accent/70 bg-elevated px-4 py-3 text-center text-sm font-bold text-accent"
             >
@@ -474,7 +474,7 @@ function Today() {
               do not make these exercises safe.
             </p>
             <a
-              href="/recovery-coach/"
+              href="/recovery-coach/index.html"
               className="tap-target mt-4 flex w-full items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground"
             >
               Open approved seated Recovery Coach

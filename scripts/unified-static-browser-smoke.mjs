@@ -8,7 +8,8 @@ import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { resolve, extname, join, sep } from "node:path";
 import { chromium } from "playwright-core";
-const root=resolve("unified-static-web");
+const root=resolve(process.env.M3_STATIC_ROOT || "unified-static-web");
+const capacitorRouting=process.env.M3_CAPACITOR_ROUTING==="1";
 const types={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",
  ".css":"text/css; charset=utf-8",".wasm":"application/wasm",".task":"application/octet-stream",
  ".json":"application/json",".png":"image/png",".svg":"image/svg+xml",".woff2":"font/woff2"};
@@ -17,7 +18,10 @@ const server=createServer(async(req,res)=>{
   const pathname=new URL(req.url??"/","http://localhost").pathname;
   const clean=decodeURIComponent(pathname).replace(/^\/+/,"");
   if(clean.includes("..")||clean.includes("\0"))throw Error("Invalid path");
-  let local=resolve(root,clean);
+  // Capacitor 7 sends extensionless paths to the React entry point. It does
+  // not implement a web server's directory -> index.html resolution.
+  const nativeFallback=capacitorRouting && (pathname==="/" || !clean.split("/").filter(Boolean).at(-1)?.includes("."));
+  let local=resolve(root,nativeFallback?"index.html":clean);
   if(local!==root&&!local.startsWith(root+sep))throw Error("Outside app");
   let info=await stat(local);
   if(info.isDirectory()){local=join(local,"index.html");info=await stat(local)}
@@ -44,6 +48,13 @@ try{
   await page.getByTestId("app-entry-gate").waitFor({state:"detached"});
  }
  await page.getByTestId("m3-unified-workout-picker").waitFor();
+ await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Settings"}).click();
+ await page.getByTestId("m3-full-device-backup").click();
+ await page.locator("#counts").waitFor();
+ assert.match(await page.title(),/Encrypted Full App Backup/);
+ assert.equal(await page.locator("#export").count(),1,"Backup must open the actual local export tool, not the React 404");
+ await page.goBack();
+ await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Recovery"}).click();
  await page.getByTestId("m3-native-recovery").waitFor();
  const recoveryFrame=page.frameLocator('[data-testid="m3-recovery-existing-player"]');

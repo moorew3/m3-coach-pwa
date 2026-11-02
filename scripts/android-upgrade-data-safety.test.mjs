@@ -25,8 +25,8 @@ test("Android update safeguard reads current device record/snapshot without uplo
 });
 
 test("unified full-app encrypted backup is accessible without removing the separate actual logbook",()=>{
- assert.match(coach,/href="\.\/update-safety\/"/);
- assert.match(page,/href="\.\.\/full-backup\/"/);
+ assert.match(coach,/href="\.\/update-safety\/index\.html"/);
+ assert.match(page,/href="\.\.\/full-backup\/index\.html"/);
  assert.match(log,/<section id="backup">/);
  assert.match(log,/Export password-protected backup/);
  assert.match(log,/310,000 rounds/);

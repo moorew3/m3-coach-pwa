@@ -100,7 +100,9 @@ jobs:
       - name: Verify unified original React and Recovery route on independent static host
         env:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: node scripts/unified-static-browser-smoke.mjs
+        run: |
+          node scripts/unified-static-browser-smoke.mjs
+          M3_CAPACITOR_ROUTING=1 node scripts/unified-static-browser-smoke.mjs
 
       - name: Package ONE original M3 FLEX app plus approved Recovery for existing static hosting
         uses: actions/upload-artifact@v4
