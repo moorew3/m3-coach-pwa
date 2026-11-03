@@ -704,6 +704,7 @@ try {
     await recoveryPage.locator("#coachVideo").dispatchEvent("ended");
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused", "Completed preview must return to paused rest");
     assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Preview must not consume the rest countdown");
+    assert.equal(await recoveryPage.locator("#handsfreeResume").isDisabled(), false, "Resume must be available after preview returns to paused rest");
     assert.deepEqual(await recoveryPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-recovery-progress-v1"))?.restNext), restDestination,
       "Preview must not erase the superset/rest destination");
     await recoveryPage.locator("#startPause").click();
@@ -732,6 +733,7 @@ try {
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), pausedExercise);
     assert.equal(await recoveryPage.locator("#position").innerText(), pausedSet);
     assert.equal(await recoveryPage.locator("#clock").innerText(), pausedExerciseClock);
+    assert.equal(await recoveryPage.locator("#handsfreeResume").isDisabled(), false, "Resume must be available after preview returns to paused set");
     await recoveryPage.close();
     const reOpened = await recoveryContext.newPage();
     await reOpened.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
