@@ -536,6 +536,13 @@ let workRound=1,targetRounds=1,sessionStarted=false; // only owner-selectable ro
 const finishedSets=new Map(); // timed demos only; never inferred athlete reps
 // Each navigation/pause/retry supersedes unresolved video/audio play promises.
 let playbackGeneration=0;
+// Native pause events can be queued. Do not classify an intentional old-media
+// stop as an unexpected playback failure in a newly resumed set.
+const intentionalMediaPauses=new WeakSet();
+function pauseApprovedMedia(element){
+ if(!element.paused)intentionalMediaPauses.add(element);
+ element.pause();
+}
 const PROGRESS_KEY="m3-flex-recovery-progress-v1";
 const LAST_SESSION_KEY="m3-flex-recovery-last-session-v1";
 function notifyOriginalApp(){
@@ -618,13 +625,13 @@ function label(){return stages[phase].label}
 function time(ms){const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function duration(){return (phase===1?Number($("workDuration").value):step().sec)*1000}
 function clearTick(){if(interval!==null){clearInterval(interval);interval=null}}
-function stopMedia(rewind){playbackGeneration++;clearMediaBufferChecks();video.pause();audio.pause();if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
+function stopMedia(rewind){playbackGeneration++;clearMediaBufferChecks();pauseApprovedMedia(video);pauseApprovedMedia(audio);if(rewind){try{video.currentTime=0;audio.currentTime=0}catch(e){}}}
 function playRestVoice(){
- audio.pause();audio.src=REST_MARCUS;audio.loop=false;audio.currentTime=0;
+ pauseApprovedMedia(audio);audio.src=REST_MARCUS;audio.loop=false;audio.currentTime=0;
  audio.play().catch(()=>tell("Rest timer running. Tap Resume if your phone blocks automatic Marcus audio."));
 }
 function playCompleteVoice(){
- audio.pause();audio.src=END_MARCUS;audio.loop=false;audio.currentTime=0;
+ pauseApprovedMedia(audio);audio.src=END_MARCUS;audio.loop=false;audio.currentTime=0;
  audio.play().catch(()=>tell("Session finished. Tap Hear Marcus finish for the final coaching."));
 }
 function safetyOkay(){return !safetyLock&&[...document.querySelectorAll(".check")].every(c=>c.checked)}
@@ -1028,14 +1035,15 @@ video.addEventListener("waiting",()=>waitForBuffer("video"));
 video.addEventListener("stalled",()=>waitForBuffer("video"));
 audio.addEventListener("waiting",()=>waitForBuffer("audio"));
 audio.addEventListener("stalled",()=>waitForBuffer("audio"));
-video.addEventListener("playing",()=>{if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
-audio.addEventListener("playing",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
+video.addEventListener("playing",()=>{intentionalMediaPauses.delete(video);if(mediaBufferCheck!==null){clearTimeout(mediaBufferCheck);mediaBufferCheck=null;}});
+audio.addEventListener("playing",()=>{intentionalMediaPauses.delete(audio);if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
 audio.addEventListener("ended",()=>{if(audioBufferCheck!==null){clearTimeout(audioBufferCheck);audioBufferCheck=null;}});
 function handleUnexpectedMediaPause(kind){
  // Android audio-focus loss can pause a player without triggering error/stalled.
  // Only a genuinely running, timed, REQUIRED media stream can stop the set.
  // Explicit Stop, navigation, rest and completed one-shot Marcus tracks do not qualify.
  const player=kind==="video"?video:audio;
+ if(intentionalMediaPauses.delete(player))return;
  const required=kind==="video"?!!step().video:!!step().voice;
  if(mode!=="running"||interval===null||!required||!player.paused||player.ended)return;
  playbackError(kind==="video"?"Approved Flex video unexpectedly paused.":"Approved Marcus narration unexpectedly paused.",kind);
