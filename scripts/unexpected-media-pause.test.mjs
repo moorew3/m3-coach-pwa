@@ -10,13 +10,16 @@ const snippet=html.slice(start,end);
 const exercise=new Function("state",[
   "let mode=state.mode,interval=state.interval,video=state.video,audio=state.audio;",
   "const step=()=>state.step;",
+  "const intentionalMediaPauses=new WeakSet();",
+  "if(state.intentional)intentionalMediaPauses.add(state.kind===\"video\"?video:audio);",
   "const playbackError=(msg,source)=>{state.errors.push({msg,source})};",
   snippet,
-  "handleUnexpectedMediaPause(state.kind);"
+  "handleUnexpectedMediaPause(state.kind);",
+  "if(state.intentional&&state.repeat)handleUnexpectedMediaPause(state.kind);"
 ].join("\n"));
-function check({kind="video",mode="running",clock=true,withVideo=true,withVoice=true,paused=true,ended=false}={}){
+function check({kind="video",mode="running",clock=true,withVideo=true,withVoice=true,paused=true,ended=false,intentional=false,repeat=false}={}){
   const state={
-    kind,mode,interval:clock?17:null,
+    kind,mode,interval:clock?17:null,intentional,repeat,
     step:{video:withVideo?"immutable-approved-video.mp4":null,voice:withVoice?"approved-marcus.mp3":null},
     video:{paused:kind==="video"?paused:false,ended:kind==="video"?ended:false},
     audio:{paused:kind==="audio"?paused:false,ended:kind==="audio"?ended:false},
@@ -44,6 +47,13 @@ test("do not mistake application stop, navigation, preview, or safe rest for med
   assert.equal(check({mode:"preview"}).length,0);
   assert.equal(check({mode:"rest"}).length,0);
   assert.equal(check({paused:false}).length,0);
+});
+test("one queued intentional media pause is suppressed but a genuine second pause is not",()=>{
+  assert.equal(check({kind:"video",intentional:true}).length,0);
+  assert.equal(check({kind:"audio",intentional:true}).length,0);
+  const later=check({kind:"video",intentional:true,repeat:true});
+  assert.equal(later.length,1);
+  assert.equal(later[0].source,"video");
 });
 test("legitimate end of a one-shot Marcus instruction never fails a workout",()=>{
   assert.equal(check({kind:"audio",ended:true}).length,0);
