@@ -1394,6 +1394,104 @@ try {
     await mediaContext.close();
   }
 
+  // Browser-level Sarah ↔ M3 FLEX integration. Only a synthetic sender
+  // document is used: never fetch or publish the private Sarah source.
+  // The receiver is the actual compiled approved recovery player.
+  const bridgeContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  const mockSarahUrl = "https://m3-sarah-voice.cvill4life.chatgpt.site/__m3_flex_bridge_ci__";
+  const mockSender = [
+    '<!doctype html><html><head><meta charset="utf-8"></head><body>',
+    '<button id="openWorkout" type="button">Open original M3 FLEX</button>',
+    '<script>',
+    'window.receivedFromFlex = [];',
+    'window.workoutForQA = null;',
+    'const flexOrigin = '+JSON.stringify(base)+';',
+    'document.querySelector("#openWorkout").onclick = () => {',
+    ' window.workoutForQA = window.open(flexOrigin + "/recovery-coach/index.html?program=recovery", "_blank");',
+    '};',
+    'window.sendFlexQA = (id, command, version = 1) => {',
+    ' if (!window.workoutForQA) return false;',
+    ' window.workoutForQA.postMessage({type:"sarah-flex-command",version,id,command},flexOrigin);',
+    ' return true;',
+    '};',
+    'window.addEventListener("message",event => {',
+    ' if (event.origin !== flexOrigin || event.source !== window.workoutForQA) return;',
+    ' window.receivedFromFlex.push(event.data);',
+    '});',
+    '</script></body></html>',
+  ].join("\n");
+  await bridgeContext.route(mockSarahUrl, route => route.fulfill({
+    status: 200, contentType: "text/html; charset=utf-8", body: mockSender,
+  }));
+  const bridgeSender = await bridgeContext.newPage();
+  bridgeSender.setDefaultTimeout(12000);
+  try {
+    const res = await bridgeSender.goto(mockSarahUrl, { waitUntil: "domcontentloaded" });
+    assert.equal(res?.status(), 200, "Synthetic Sarah document must use the exact allowed origin");
+    const opened = bridgeSender.waitForEvent("popup");
+    await bridgeSender.locator("#openWorkout").click();
+    const flexPopup = await opened;
+    await flexPopup.locator("#runState").waitFor();
+    assert.equal(await flexPopup.evaluate(() => !!window.opener), true,
+      "Original workout popup must retain the Sarah opener for the existing bridge");
+    assert.equal((await flexPopup.locator("#runState").textContent())?.trim(), "Ready");
+    const send = async (id,command,version=1) =>
+      bridgeSender.evaluate(([id,command,version]) => window.sendFlexQA(id,command,version),
+        [id,command,version]);
+    const received = async id => {
+      await bridgeSender.waitForFunction(
+        id => window.receivedFromFlex.some(entry => entry?.id === id), id);
+      return bridgeSender.evaluate(
+        id => window.receivedFromFlex.find(entry => entry?.id === id), id);
+    };
+    assert.equal(await send("ci-sarah-status-1","status"), true);
+    const status = await received("ci-sarah-status-1");
+    assert.equal(status.type,"m3-flex-response");
+    assert.equal(status.version,1);
+    assert.equal(status.ok,true);
+    assert.equal(status.status?.program,"recovery");
+    assert.equal(status.status?.mode,"ready");
+    assert.equal(status.status?.coach,"Marcus");
+    assert.equal(status.status?.actualRepsMeasured,false);
+    assert.equal(Object.hasOwn(status.status,"health"),false);
+    assert.equal(Object.hasOwn(status.status,"camera"),false);
+    // An unauthorized message from the workout origin itself is NOT Sarah.
+    const beforeSpoof = await bridgeSender.evaluate(() => window.receivedFromFlex.length);
+    await flexPopup.evaluate(() => window.postMessage({
+      type:"sarah-flex-command",version:1,id:"ci-forged-start",command:"start"
+    },"*"));
+    await flexPopup.waitForTimeout(80);
+    assert.equal(await bridgeSender.evaluate(() => window.receivedFromFlex.length),
+      beforeSpoof,"Untrusted self-posted command must not receive bridge response");
+    assert.equal((await flexPopup.locator("#runState").textContent())?.trim(),"Ready",
+      "Forged sender must not start the workout");
+    // Even a recognized Sarah opener cannot bypass clinician clearance.
+    await send("ci-sarah-start-no-clearance","start");
+    const blocked = await received("ci-sarah-start-no-clearance");
+    assert.equal(blocked.ok,false);
+    assert.match(blocked.error??"",/clearance checks/i);
+    assert.equal((await flexPopup.locator("#runState").textContent())?.trim(),"Ready");
+    const afterBlocked = await bridgeSender.evaluate(() => window.receivedFromFlex.length);
+    await send("ci-sarah-start-no-clearance","start");
+    await flexPopup.waitForTimeout(80);
+    assert.equal(await bridgeSender.evaluate(() => window.receivedFromFlex.length),
+      afterBlocked,"Duplicate IDs must be ignored without replay");
+    await send("ci-sarah-wrong-version","stop",2);
+    await flexPopup.waitForTimeout(80);
+    assert.equal(await bridgeSender.evaluate(() => window.receivedFromFlex.length),
+      afterBlocked,"Invalid protocol version must not execute a command");
+    await send("ci-sarah-stop","stop");
+    const stopped = await received("ci-sarah-stop");
+    assert.equal(stopped.ok,true);
+    assert.equal(stopped.status?.mode,"safety");
+    assert.equal(await flexPopup.locator("#clearance .check:checked").count(),0);
+    step("Chrome two-window Sarah-origin ↔ M3 FLEX: status, anti-spoofing, clinician clearance, replay protection and Stop");
+  } finally {
+    await bridgeContext.close();
+  }
+
   // These checks are intentionally NOT certification of Android hardware,
   // microphone/camera output, physical speaker sound, or remote media CDN.
   console.log("Chromium mobile-width interaction smoke check passed. No deployment performed.");
