@@ -747,6 +747,49 @@ try {
     await recoveryContext.close();
   }
 
+  // Android/Chrome can deliver a queued pause event *after* the athlete
+  // deliberately paused and resumed. That must not disable the real Pause
+  // control or turn the active set into an audio/video failure.
+  const latePauseContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await latePauseContext.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const latePausePage = await latePauseContext.newPage();
+  latePausePage.setDefaultTimeout(12000);
+  try {
+    await latePausePage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    await latePausePage.locator('[data-stage="1"]').click();
+    await latePausePage.evaluate(() => {
+      window.__qaVideoPaused = false;
+      Object.defineProperty(document.querySelector("#coachVideo"), "paused", {
+        configurable: true, get() { return window.__qaVideoPaused; },
+      });
+    });
+    for (const check of await latePausePage.locator("#clearance .check").all()) await check.check();
+    await latePausePage.locator("#startPause").click();
+    await latePausePage.waitForFunction(() => document.querySelector("#runState")?.textContent === "Workout in progress");
+    await latePausePage.locator("#startPause").click();
+    assert.equal((await latePausePage.locator("#runState").textContent())?.trim(), "Paused");
+    await latePausePage.locator("#startPause").click();
+    await latePausePage.waitForFunction(() => document.querySelector("#runState")?.textContent === "Workout in progress");
+    await latePausePage.evaluate(() => { window.__qaVideoPaused = true; });
+    await latePausePage.locator("#coachVideo").dispatchEvent("pause");
+    assert.equal((await latePausePage.locator("#runState").textContent())?.trim(), "Workout in progress",
+      "Queued intentional pause must not corrupt an active restarted set");
+    assert.equal(await latePausePage.locator("#startPause").isDisabled(), false);
+    await latePausePage.locator("#coachVideo").dispatchEvent("pause");
+    assert.equal((await latePausePage.locator("#runState").textContent())?.trim(), "Tap to enable sound",
+      "An actual unexpected video pause still has to interrupt timed training");
+    assert.match((await latePausePage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
+    step("Queued intentional pause ignored after Resume; genuine playback interruption still stops the timer");
+  } finally {
+    await latePauseContext.close();
+  }
+
   // Real Android media play() may remain pending during buffering. A stale
   // promise from a skipped clip must not restart, zero or complete a new step.
   const delayedContext = await browser.newContext({
