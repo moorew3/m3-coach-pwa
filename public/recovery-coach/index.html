@@ -965,7 +965,7 @@ $("preview").addEventListener("click",async()=>{
  // The player is shared with the real workout. Never forfeit the paused
  // countdown, superset destination, completed sets, or manual rep records.
  previewReturnMode=mode;
- clearTick();stopMedia(true);mode="preview";drawTimer();
+ clearTick();setMedia();mode="preview";drawTimer(); // preview the selected approved exercise, not paused rest audio
  const ok=await playMedia(false);
  if(ok===null)return;
  if(!ok){endPreview("Approved preview could not play. The previous workout position was preserved.");return;}
