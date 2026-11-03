@@ -557,6 +557,14 @@ try {
       waitUntil: "domcontentloaded",
     });
     assert.equal(recoveryResponse?.status(), 200);
+    // Preparation preview uses real approved Marcus audio. When that track
+    // ends, the player must show a readable status and remain NOT started.
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Video preview");
+    await recoveryPage.locator("#coachVoice").dispatchEvent("ended");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Ready");
+    assert.match((await recoveryPage.locator("#note").textContent()) ?? "", /Preview complete/);
+    assert.equal(await recoveryPage.locator("#handsfreePause").isDisabled(), true);
     await recoveryPage.locator("#localCoachPanel summary").click();
     await recoveryPage.locator("#coachQuestion").fill("How many reps have I done?");
     await recoveryPage.locator("#askLocalCoach").click();
