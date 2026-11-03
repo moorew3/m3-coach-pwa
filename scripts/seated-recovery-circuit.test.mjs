@@ -123,14 +123,17 @@ test("rest after device restart uses approved rest Marcus recording, not stale e
 test("Android page lock pauses the timer and saving a completed session clears its cache", () => {
   assert.match(page, /document\.addEventListener\("visibilitychange"/);
   assert.match(page, /if\(!document\.hidden\)\{if\(mode==="running"\|\|mode==="rest"\)void requestScreenAwake\(\);return;\}releaseScreenAwake\(\);stopMarcusAudioTest\(\);if\(mode==="running"\|\|mode==="rest"\)pause\(\)/);
-  assert.match(page, /else if\(mode==="preview"\)\{stopMedia\(false\);mode="ready"/);
+  assert.match(page, /else if\(mode==="preview"\)\{endPreview\("Preview stopped when this screen was hidden/);
+  assert.match(page, /mode=prior==="paused"\|\|prior==="waiting"\?prior:"ready"/);
+  assert.match(page, /clearTick\(\);setMedia\(\);mode="preview"/);
   assert.match(page, /window\.addEventListener\("pagehide",\(\)=>\{releaseScreenAwake\(\);stopMarcusAudioTest\(\);persistProgress\(\)\}\)/);
   assert.match(page, /if\(!sessionStarted\|\|mode==="complete"\)/);
   assert.match(page, /localStorage\.removeItem\(PROGRESS_KEY\)/);
 });
 
 test("required audio-only Marcus errors pause the timer before any fake completion", () => {
-  assert.match(page, /audio\.addEventListener\("error",\(\)=>\{if\(mode==="rest"\)\{tell\("Marcus rest recording unavailable/);
+  assert.match(page, /audio\.addEventListener\("error",\(\)=>\{if\(mode==="preview"\)\{endPreview\("Approved Marcus preview unavailable/);
+  assert.match(page, /if\(mode==="rest"\)\{tell\("Marcus rest recording unavailable/);
   assert.match(page, /playbackError\("Approved Marcus voice track failed.","audio"\)/);
   assert.match(page, /function playbackError\(msg,source\)/);
   assert.match(page, /if\(source==="audio"&&!step\(\)\.voice\)return/);
