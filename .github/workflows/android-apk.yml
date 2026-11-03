@@ -2,7 +2,7 @@ name: Android APK — M3 FLEX Unified
 
 on:
   pull_request:
-    branches: [main, fix/restore-v2-in-existing-android-20261030]
+    branches: [main, fix/restore-v2-in-existing-android-20261030, feature/finish-unified-m3-flex-20261102]
     paths:
       - ".github/workflows/android-apk.yml"
       - "capacitor.config.json"
