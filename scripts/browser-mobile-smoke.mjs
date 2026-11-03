@@ -557,6 +557,14 @@ try {
       waitUntil: "domcontentloaded",
     });
     assert.equal(recoveryResponse?.status(), 200);
+    // Preparation preview uses real approved Marcus audio. When that track
+    // ends, the player must show a readable status and remain NOT started.
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Video preview");
+    await recoveryPage.locator("#coachVoice").dispatchEvent("ended");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Ready");
+    assert.match((await recoveryPage.locator("#note").textContent()) ?? "", /Preview complete/);
+    assert.equal(await recoveryPage.locator("#handsfreePause").isDisabled(), true);
     await recoveryPage.locator("#localCoachPanel summary").click();
     await recoveryPage.locator("#coachQuestion").fill("How many reps have I done?");
     await recoveryPage.locator("#askLocalCoach").click();
@@ -683,8 +691,22 @@ try {
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
     const paused = await recoveryPage.locator("#clock").innerText();
+    const restDestination = await recoveryPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-recovery-progress-v1"))?.restNext);
+    assert.ok(restDestination, "A paused rest must retain its next prescribed exercise");
     await recoveryPage.clock.fastForward(5_000);
     assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Rest must freeze on Pause");
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Video preview");
+    assert.equal(await recoveryPage.locator("#startPause").isDisabled(), true, "Preview cannot accidentally start timed exercise");
+    assert.equal(await recoveryPage.locator("#handsfreePause").isDisabled(), true, "Pause is for running/rest; the preview has a separate Return control");
+    assert.match(await recoveryPage.locator("#preview").innerText(), /Return to paused workout/);
+    await recoveryPage.clock.fastForward(2_000);
+    await recoveryPage.locator("#coachVideo").dispatchEvent("ended");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused", "Completed preview must return to paused rest");
+    assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Preview must not consume the rest countdown");
+    assert.equal(await recoveryPage.locator("#handsfreeResume").isDisabled(), false, "Resume must be available after preview returns to paused rest");
+    assert.deepEqual(await recoveryPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-recovery-progress-v1"))?.restNext), restDestination,
+      "Preview must not erase the superset/rest destination");
     await recoveryPage.locator("#startPause").click();
     await recoveryPage.clock.fastForward(16_000);
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
@@ -701,6 +723,17 @@ try {
     // profile should work: unlike sessionStorage, localStorage survives.
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
+    const pausedExercise = await recoveryPage.locator("#moveTitle").innerText();
+    const pausedSet = await recoveryPage.locator("#position").innerText();
+    const pausedExerciseClock = await recoveryPage.locator("#clock").innerText();
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Video preview");
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused", "Return control must keep a paused exercise paused");
+    assert.equal(await recoveryPage.locator("#moveTitle").innerText(), pausedExercise);
+    assert.equal(await recoveryPage.locator("#position").innerText(), pausedSet);
+    assert.equal(await recoveryPage.locator("#clock").innerText(), pausedExerciseClock);
+    assert.equal(await recoveryPage.locator("#handsfreeResume").isDisabled(), false, "Resume must be available after preview returns to paused set");
     await recoveryPage.close();
     const reOpened = await recoveryContext.newPage();
     await reOpened.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
@@ -712,6 +745,49 @@ try {
     step("Closing/reopening recovery tab preserves approved exercise/set without restoring clearance");
   } finally {
     await recoveryContext.close();
+  }
+
+  // Android/Chrome can deliver a queued pause event *after* the athlete
+  // deliberately paused and resumed. That must not disable the real Pause
+  // control or turn the active set into an audio/video failure.
+  const latePauseContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  await latePauseContext.addInitScript(() => {
+    HTMLMediaElement.prototype.load = function () {};
+    HTMLMediaElement.prototype.pause = function () {};
+    HTMLMediaElement.prototype.play = function () { return Promise.resolve(); };
+  });
+  const latePausePage = await latePauseContext.newPage();
+  latePausePage.setDefaultTimeout(12000);
+  try {
+    await latePausePage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    await latePausePage.locator('[data-stage="1"]').click();
+    await latePausePage.evaluate(() => {
+      window.__qaVideoPaused = false;
+      Object.defineProperty(document.querySelector("#coachVideo"), "paused", {
+        configurable: true, get() { return window.__qaVideoPaused; },
+      });
+    });
+    for (const check of await latePausePage.locator("#clearance .check").all()) await check.check();
+    await latePausePage.locator("#startPause").click();
+    await latePausePage.waitForFunction(() => document.querySelector("#runState")?.textContent === "Workout in progress");
+    await latePausePage.locator("#startPause").click();
+    assert.equal((await latePausePage.locator("#runState").textContent())?.trim(), "Paused");
+    await latePausePage.locator("#startPause").click();
+    await latePausePage.waitForFunction(() => document.querySelector("#runState")?.textContent === "Workout in progress");
+    await latePausePage.evaluate(() => { window.__qaVideoPaused = true; });
+    await latePausePage.locator("#coachVideo").dispatchEvent("pause");
+    assert.equal((await latePausePage.locator("#runState").textContent())?.trim(), "Workout in progress",
+      "Queued intentional pause must not corrupt an active restarted set");
+    assert.equal(await latePausePage.locator("#startPause").isDisabled(), false);
+    await latePausePage.locator("#coachVideo").dispatchEvent("pause");
+    assert.equal((await latePausePage.locator("#runState").textContent())?.trim(), "Tap to enable sound",
+      "An actual unexpected video pause still has to interrupt timed training");
+    assert.match((await latePausePage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
+    step("Queued intentional pause ignored after Resume; genuine playback interruption still stops the timer");
+  } finally {
+    await latePauseContext.close();
   }
 
   // Real Android media play() may remain pending during buffering. A stale
@@ -1316,6 +1392,104 @@ try {
     throw mediaError;
   } finally {
     await mediaContext.close();
+  }
+
+  // Browser-level Sarah ↔ M3 FLEX integration. Only a synthetic sender
+  // document is used: never fetch or publish the private Sarah source.
+  // The receiver is the actual compiled approved recovery player.
+  const bridgeContext = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
+  });
+  const mockSarahUrl = "https://m3-sarah-voice.cvill4life.chatgpt.site/__m3_flex_bridge_ci__";
+  const mockSender = [
+    '<!doctype html><html><head><meta charset="utf-8"></head><body>',
+    '<button id="openWorkout" type="button">Open original M3 FLEX</button>',
+    '<script>',
+    'window.receivedFromFlex = [];',
+    'window.workoutForQA = null;',
+    'const flexOrigin = '+JSON.stringify(base)+';',
+    'document.querySelector("#openWorkout").onclick = () => {',
+    ' window.workoutForQA = window.open(flexOrigin + "/recovery-coach/index.html?program=recovery", "_blank");',
+    '};',
+    'window.sendFlexQA = (id, command, version = 1) => {',
+    ' if (!window.workoutForQA) return false;',
+    ' window.workoutForQA.postMessage({type:"sarah-flex-command",version,id,command},flexOrigin);',
+    ' return true;',
+    '};',
+    'window.addEventListener("message",event => {',
+    ' if (event.origin !== flexOrigin || event.source !== window.workoutForQA) return;',
+    ' window.receivedFromFlex.push(event.data);',
+    '});',
+    '</script></body></html>',
+  ].join("\n");
+  await bridgeContext.route(mockSarahUrl, route => route.fulfill({
+    status: 200, contentType: "text/html; charset=utf-8", body: mockSender,
+  }));
+  const bridgeSender = await bridgeContext.newPage();
+  bridgeSender.setDefaultTimeout(12000);
+  try {
+    const res = await bridgeSender.goto(mockSarahUrl, { waitUntil: "domcontentloaded" });
+    assert.equal(res?.status(), 200, "Synthetic Sarah document must use the exact allowed origin");
+    const opened = bridgeSender.waitForEvent("popup");
+    await bridgeSender.locator("#openWorkout").click();
+    const flexPopup = await opened;
+    await flexPopup.locator("#runState").waitFor();
+    assert.equal(await flexPopup.evaluate(() => !!window.opener), true,
+      "Original workout popup must retain the Sarah opener for the existing bridge");
+    assert.equal((await flexPopup.locator("#runState").textContent())?.trim(), "Ready");
+    const send = async (id,command,version=1) =>
+      bridgeSender.evaluate(([id,command,version]) => window.sendFlexQA(id,command,version),
+        [id,command,version]);
+    const received = async id => {
+      await bridgeSender.waitForFunction(
+        id => window.receivedFromFlex.some(entry => entry?.id === id), id);
+      return bridgeSender.evaluate(
+        id => window.receivedFromFlex.find(entry => entry?.id === id), id);
+    };
+    assert.equal(await send("ci-sarah-status-1","status"), true);
+    const status = await received("ci-sarah-status-1");
+    assert.equal(status.type,"m3-flex-response");
+    assert.equal(status.version,1);
+    assert.equal(status.ok,true);
+    assert.equal(status.status?.program,"recovery");
+    assert.equal(status.status?.mode,"ready");
+    assert.equal(status.status?.coach,"Marcus");
+    assert.equal(status.status?.actualRepsMeasured,false);
+    assert.equal(Object.hasOwn(status.status,"health"),false);
+    assert.equal(Object.hasOwn(status.status,"camera"),false);
+    // An unauthorized message from the workout origin itself is NOT Sarah.
+    const beforeSpoof = await bridgeSender.evaluate(() => window.receivedFromFlex.length);
+    await flexPopup.evaluate(() => window.postMessage({
+      type:"sarah-flex-command",version:1,id:"ci-forged-start",command:"start"
+    },"*"));
+    await flexPopup.waitForTimeout(80);
+    assert.equal(await bridgeSender.evaluate(() => window.receivedFromFlex.length),
+      beforeSpoof,"Untrusted self-posted command must not receive bridge response");
+    assert.equal((await flexPopup.locator("#runState").textContent())?.trim(),"Ready",
+      "Forged sender must not start the workout");
+    // Even a recognized Sarah opener cannot bypass clinician clearance.
+    await send("ci-sarah-start-no-clearance","start");
+    const blocked = await received("ci-sarah-start-no-clearance");
+    assert.equal(blocked.ok,false);
+    assert.match(blocked.error??"",/clearance checks/i);
+    assert.equal((await flexPopup.locator("#runState").textContent())?.trim(),"Ready");
+    const afterBlocked = await bridgeSender.evaluate(() => window.receivedFromFlex.length);
+    await send("ci-sarah-start-no-clearance","start");
+    await flexPopup.waitForTimeout(80);
+    assert.equal(await bridgeSender.evaluate(() => window.receivedFromFlex.length),
+      afterBlocked,"Duplicate IDs must be ignored without replay");
+    await send("ci-sarah-wrong-version","stop",2);
+    await flexPopup.waitForTimeout(80);
+    assert.equal(await bridgeSender.evaluate(() => window.receivedFromFlex.length),
+      afterBlocked,"Invalid protocol version must not execute a command");
+    await send("ci-sarah-stop","stop");
+    const stopped = await received("ci-sarah-stop");
+    assert.equal(stopped.ok,true);
+    assert.equal(stopped.status?.mode,"safety");
+    assert.equal(await flexPopup.locator("#clearance .check:checked").count(),0);
+    step("Chrome two-window Sarah-origin ↔ M3 FLEX: status, anti-spoofing, clinician clearance, replay protection and Stop");
+  } finally {
+    await bridgeContext.close();
   }
 
   // These checks are intentionally NOT certification of Android hardware,
