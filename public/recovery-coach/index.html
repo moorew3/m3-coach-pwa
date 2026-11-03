@@ -988,7 +988,7 @@ function endPreview(message){
  tell(message||(mode==="paused"?"Returned to your paused workout. Tap Resume when ready.":mode==="waiting"?"Preview closed. Retry the original approved media before continuing.":"Preview complete. Ready to begin after clinician clearance."));
 }
 video.addEventListener("ended",()=>{if(mode==="preview"&&!step().voice)endPreview()});
-audio.addEventListener("ended",endPreview);
+audio.addEventListener("ended",()=>endPreview());
 // A failed or stalled REQUIRED Marcus track must never silently count an
 // audio-guided preparation/cooldown step as completed. Rest-track failure is
 // reported by playRestVoice while the safe rest clock is allowed to continue.
