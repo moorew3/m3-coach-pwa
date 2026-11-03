@@ -683,8 +683,21 @@ try {
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
     const paused = await recoveryPage.locator("#clock").innerText();
+    const restDestination = await recoveryPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-recovery-progress-v1"))?.restNext);
+    assert.ok(restDestination, "A paused rest must retain its next prescribed exercise");
     await recoveryPage.clock.fastForward(5_000);
     assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Rest must freeze on Pause");
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Video preview");
+    assert.equal(await recoveryPage.locator("#startPause").isDisabled(), true, "Preview cannot accidentally start timed exercise");
+    assert.equal(await recoveryPage.locator("#handsfreePause").isDisabled(), true, "Pause is for running/rest; the preview has a separate Return control");
+    assert.match(await recoveryPage.locator("#preview").innerText(), /Return to paused workout/);
+    await recoveryPage.clock.fastForward(2_000);
+    await recoveryPage.locator("#coachVideo").dispatchEvent("ended");
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused", "Completed preview must return to paused rest");
+    assert.equal(await recoveryPage.locator("#clock").innerText(), paused, "Preview must not consume the rest countdown");
+    assert.deepEqual(await recoveryPage.evaluate(() => JSON.parse(localStorage.getItem("m3-flex-recovery-progress-v1"))?.restNext), restDestination,
+      "Preview must not erase the superset/rest destination");
     await recoveryPage.locator("#startPause").click();
     await recoveryPage.clock.fastForward(16_000);
     assert.equal(await recoveryPage.locator("#moveTitle").innerText(), "Seated dumbbell shrugs");
@@ -701,6 +714,16 @@ try {
     // profile should work: unlike sessionStorage, localStorage survives.
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused");
+    const pausedExercise = await recoveryPage.locator("#moveTitle").innerText();
+    const pausedSet = await recoveryPage.locator("#position").innerText();
+    const pausedExerciseClock = await recoveryPage.locator("#clock").innerText();
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Video preview");
+    await recoveryPage.locator("#preview").click();
+    assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Paused", "Return control must keep a paused exercise paused");
+    assert.equal(await recoveryPage.locator("#moveTitle").innerText(), pausedExercise);
+    assert.equal(await recoveryPage.locator("#position").innerText(), pausedSet);
+    assert.equal(await recoveryPage.locator("#clock").innerText(), pausedExerciseClock);
     await recoveryPage.close();
     const reOpened = await recoveryContext.newPage();
     await reOpened.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
