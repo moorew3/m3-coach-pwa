@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, CircleAlert, Dumbbell, Film, Play, ShieldCheck } from "lucide-react";
 import ownerMedia from "../../approved-recovery-media.json";
+import { FLEX_FOCUS_OPTIONS, flexCoachCue, isFlexExcludedExercise, type FlexFocus } from "@/lib/flex-coach";
 
 /** One compact view of original M3 FLEX media.
  * Original approved URLs are read from the locked manifest; all other renders
@@ -80,6 +81,7 @@ const labels: Record<Item["status"], string> = {
 
 export function UnifiedWorkoutDashboard() {
   const [workout, setWorkout] = useState<Workout>("recovery");
+  const [coachFocus, setCoachFocus] = useState<FlexFocus>("strength");
   const [filter, setFilter] = useState<Filter>("approved");
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [loadError, setLoadError] = useState(false);
@@ -166,7 +168,7 @@ export function UnifiedWorkoutDashboard() {
         <div>
           <p className="text-[11px] font-black uppercase tracking-widest text-primary">M3 FLEX</p>
           <h2 className="mt-1 text-2xl font-black">Train with Flex</h2>
-          <p className="text-xs text-muted-foreground">One workout screen. All the videos in one place.</p>
+          <p className="text-xs text-muted-foreground">Your trainer, movement guide, recovery coach, nutrition mentor.</p>
         </div>
         <div className="rounded-xl bg-primary/15 p-3 text-primary"><Dumbbell className="size-6" aria-hidden /></div>
       </header>
@@ -192,9 +194,16 @@ export function UnifiedWorkoutDashboard() {
         <div className="border-t border-border pt-3">
           <p className="flex items-center gap-2 text-sm font-black"><Film className="size-4" /> Video library</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            <CheckCircle2 className="mr-1 inline size-3 text-primary" />{approved.length} locked approved videos
-            {" · "}{scenes.filter(s => !!s.video).length} other recorded renders
+            <CheckCircle2 className="mr-1 inline size-3 text-primary" />{approved.length} original approved videos
+            {" · "}{scenes.filter(s => !!s.video).length} more saved renders
+            {" · "}{scenes.filter(s => s.status === "archived-approved-link").length} earlier approved archive links
           </p>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <button type="button" data-testid="m3-show-approved" onClick={() => pickFilter("approved")}
+              className="min-h-11 rounded-lg border border-primary/50 bg-primary/10 px-2 text-xs font-bold">Approved videos ({count("approved")})</button>
+            <button type="button" data-testid="m3-show-unapproved" onClick={() => pickFilter("rendered")}
+              className="min-h-11 rounded-lg border border-border bg-elevated px-2 text-xs font-bold">Review saved videos ({count("rendered")})</button>
+          </div>
           <label className="mt-3 block text-sm font-bold" htmlFor="m3-video-category">2. Choose video group
             <select id="m3-video-category" className={selectCss} value={filter}
               data-testid="m3-video-category" onChange={e => pickFilter(e.target.value as Filter)}>
@@ -248,17 +257,37 @@ export function UnifiedWorkoutDashboard() {
           )}
           {savedReviewMessage && <p role="status" className="text-primary">{savedReviewMessage}</p>}
           {current?.setup && <p className="rounded-lg border border-border bg-elevated p-2">{current.setup}</p>}
+          {current && isFlexExcludedExercise(current.name) && (
+            <p className="rounded-lg border border-amber-300/50 bg-amber-300/10 p-2 text-amber-200">
+              This exercise is excluded from your workout: no squats or leg press. Archived media is for reference only.
+            </p>
+          )}
           {current?.video && <a href={current.video} target="_blank" rel="noopener noreferrer"
             className="inline-block font-bold text-primary">Open this original video file</a>}
           {!current?.video && current?.external && <a href={current.external} target="_blank" rel="noopener noreferrer"
             className="inline-block font-bold text-primary">Open archived original link</a>}
           {current?.audio && validMedia(current.audio) && (
             <p><a href={current.audio} target="_blank" rel="noopener noreferrer"
-              className="font-semibold text-primary">Listen to the original approved voice file</a></p>
+              className="font-semibold text-primary">Listen to Flex’s existing voice recording</a></p>
           )}
         </div>
       </div>
 
+      <details className="mt-3 rounded-xl border border-border bg-elevated p-3" data-testid="flex-coach-focus">
+        <summary className="cursor-pointer text-sm font-bold">Ask Flex about form, anatomy, recovery, nutrition or motivation</summary>
+        <label className="mt-3 block text-xs font-bold" htmlFor="flex-coach-focus-select">Flex's coaching focus
+          <select id="flex-coach-focus-select" data-testid="flex-coach-focus-select"
+            className={selectCss} value={coachFocus} onChange={e => setCoachFocus(e.target.value as FlexFocus)}>
+            {FLEX_FOCUS_OPTIONS.map(option => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+        <p data-testid="flex-coach-guidance" className="mt-2 rounded-lg border border-primary/30 bg-background p-3 text-sm leading-relaxed">
+          {flexCoachCue(coachFocus, current?.name ?? "upper-body workout")}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">Flex combines training and recovery-informed education; this screen does not diagnose injuries or replace licensed physical therapy or individualized medical advice.</p>
+      </details>
       <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-elevated p-3 text-xs text-muted-foreground">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary"/>
         <p>Flex's previously approved clips stay unchanged. Saved renders are visible for reconciling earlier approvals, but not inserted into timed workouts until their correct movement and audio are confirmed. Keep the injured left leg supported and unloaded during seated Recovery.</p>
