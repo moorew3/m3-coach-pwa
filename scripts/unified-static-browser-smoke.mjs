@@ -78,8 +78,10 @@ try{
  await page.locator("#existingAppVideoLibrary summary").click();
  assert.equal(await page.locator("#existingLockedVideoLinks a").filter({hasText:"▶"}).count(),7,
    "Seven existing approved videos must be linked without creating new clips");
- assert.equal(await page.locator("#existingOriginalAppLinks a").count(),6,
-   "Previously built bench/stretch/rowing clips remain accessible as reference only");
+ assert.equal(await page.locator("#existingOriginalAppLinks a").count(),5,
+   "Only remaining historical original-app links are visible as unverified references");
+ assert.equal(await page.getByTestId("bench-press-video-needed").count(),1,
+   "Broken bench-press link must be a visible missing-video status, not a clickable video");
  assert.match(await page.locator("#existingVideoCount").textContent(),/7 original approved Recovery videos reused/);
  assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
    "Reused media must not auto-play on entering the gallery");
