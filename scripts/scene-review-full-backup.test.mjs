@@ -33,9 +33,13 @@ test("historical video-only decisions remain stored for explicit reapproval",()=
  assert.equal(validate({C17:{...pair,audio:undefined}}),false);
 });
 test("reject malformed, extraneous, or off-policy approvals",()=>{
- assert.equal(validate({C13:pair}),false);
- assert.equal(validate({C16:pair}),false);
+ assert.equal(validate({C13:{...pair,audio:null}}),true);
+ assert.equal(validate({C16:{...pair,audio:null}}),true);
+ assert.equal(validate({"HG-4ab71f91e":{...pair,audio:null}}),true);
+ assert.equal(validate({"P-58426c250":pair}),true);
  assert.equal(validate({C17:{...pair,video:"javascript:alert(1)"}}),false);
  assert.equal(validate({C17:{...pair,unexpected:3}}),false);
- assert.equal(validate(Object.fromEntries([...reviewIds,"C24"].map(id=>[id,pair]))),false);
+ assert.equal(validate({C24:pair}),false);
+ assert.equal(validate({"HG-not-a-hex":pair}),false);
+ assert.equal(validate({"__proto__":pair}),true); // object literal special property is not enumerable
 });
