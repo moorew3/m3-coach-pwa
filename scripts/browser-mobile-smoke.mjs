@@ -144,6 +144,11 @@ try {
     await choicePage.locator('[data-stage="1"]').click();
     assert.equal(await choicePage.locator("#steps .item").count(),5,"Original Recovery five scenes preserved");
     assert.match((await choicePage.locator("#progressText").textContent())??"",/0 of 10 steps completed/);
+    assert.equal(await choicePage.locator("#advancedLibrary").getAttribute("open"),null,
+      "Unfinished development/scene inventory must not crowd the default workout");
+    await choicePage.locator("#advancedLibrary > summary").click();
+    assert.equal(await choicePage.locator("#advancedLibrary").getAttribute("open"),"",
+      "Owner can expand the archived source library");
     assert.ok(Number((await choicePage.locator("#sceneCount").textContent())?.split(" total ")[0]?.match(/\d+/)?.[0])>=75);
     await choicePage.locator("#sceneFilter").selectOption("archive");
     assert.equal(await choicePage.locator("#sceneGrid .item").count(),3);
@@ -170,6 +175,11 @@ try {
     assert.match((await choicePage.locator("#progressText").textContent())??"",/0 of 8 steps completed/);
     // No medical clearance carries across reviewed footage activation.
     assert.equal(await choicePage.locator("#clearance .check:checked").count(),0);
+    await choicePage.goto(base + "/recovery-coach/#allScenesCatalog",{waitUntil:"domcontentloaded"});
+    await choicePage.waitForFunction(()=>document.querySelector("#advancedLibrary")?.open===true);
+    assert.equal(await choicePage.locator("#allScenesCatalog").isVisible(),true,
+      "Original scene editor deep link must reveal its collapsed review panel");
+    step("Visual-first page keeps owner scene archive collapsed by default but deep links open it without losing source materials");
     step("ONE M3 FLEX player selects Recovery/A/B, inventories previous 79 scenes and adds owner-verified C17 without extra app");
   } finally {
     await choiceContext.close();
@@ -331,6 +341,28 @@ try {
   marcusPage.setDefaultTimeout(12000);
   try {
     await marcusPage.goto(base + "/recovery-coach/", { waitUntil: "domcontentloaded" });
+    assert.equal(await marcusPage.locator("#videoBox").isVisible(),true,
+      "First screen must show approved moving Flex stage rather than a text-only placeholder");
+    assert.equal(await marcusPage.locator("#textBox").isVisible(),false);
+    assert.equal(await marcusPage.locator("#videoPreviewCTA").isVisible(),true);
+    assert.match(await marcusPage.locator("#coachVideo").getAttribute("src")??"",/f92c84ea-a2bc-4623-966b-deb8ceff8a87\.mp4/);
+    const firstScreen=await marcusPage.evaluate(()=>({
+      videoTop:document.querySelector("#videoBox").getBoundingClientRect().top,
+      pageWidth:document.documentElement.scrollWidth,
+      viewportWidth:window.innerWidth,
+      tvAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector("#tvLaunch"))&Node.DOCUMENT_POSITION_FOLLOWING)
+    }));
+    assert.equal(firstScreen.tvAfterVideo,true,"TV setup cannot come before the coaching stage");
+    assert.ok(firstScreen.videoTop<800,"Approved coach video must be visible within the first phone screen/scroll");
+    assert.ok(firstScreen.pageWidth<=firstScreen.viewportWidth+2,
+      "Coach-first layout must not overflow a Fold-width mobile viewport");
+    await marcusPage.locator("#videoPreviewCTA").click();
+    assert.equal((await marcusPage.locator("#runState").textContent())?.trim(),"Video preview",
+      "Prominent Flex preview must reuse original approved player");
+    await marcusPage.locator("#preview").click();
+    assert.equal((await marcusPage.locator("#runState").textContent())?.trim(),"Ready",
+      "Returning from preview must not start session or count a set");
+    step("Approved Flex video now leads the phone screen, preview uses same player, and archive/docs stay out of the way");
     assert.equal(await marcusPage.locator("#marcusBegin").isVisible(), true);
     assert.match(await marcusPage.locator("#marcusTestAudio").getAttribute("src") ?? "",
       /9226f649-9808-4275-b269-bcc93d3b0342\.mp3/);
