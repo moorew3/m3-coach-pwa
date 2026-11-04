@@ -225,16 +225,6 @@ main>.lead{max-width:850px;line-height:1.4}
 <header class="top"><div class="brand">M3 <b>FLEX</b></div><a href="/" style="color:#c5f08c;font-size:12px;font-weight:800">← App home</a><div class="version">Recovery Coach · 7 approved scenes</div></header>
 <h1>Train with Flex and Marcus</h1>
 <p class="lead">Original approved moving Flex demonstrations and Marcus voice, inside one guided seated session. Preview a movement before starting clinician-cleared exercise.</p>
-<section class="panel" id="unifiedWorkoutChooser" aria-label="Choose M3 FLEX workout">
- <h3>My workout choices</h3>
- <nav class="future" id="workoutChoices" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" aria-label="Workout choices">
-  <button type="button" class="btn primary" data-workout="recovery" aria-pressed="true">Recovery · 5 moves</button>
-  <button type="button" class="btn" data-workout="A" aria-pressed="false">Workout A · Approved subset</button>
-  <button type="button" class="btn" data-workout="B" aria-pressed="false">Workout B · Approved subset</button>
-  <a class="btn" href="/" style="text-decoration:none;text-align:center;display:grid;place-items:center">Original weekly workouts · same app</a>
- </nav>
- <p id="workoutDescription" class="small muted" role="status">Recovery: five approved movements with timed sets, rest, warm-up and cooldown.</p><a href="#allScenesCatalog" id="reviewLibraryShortcut">Review archived and unfinished workout videos</a>
-</section>
 <div class="trust"><span>✓ 7 approved moving scenes</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
 <div class="nonWeightBanner" role="note" id="nonWeightWarning"><strong>LEFT LEG SUPPORTED · SEATED SESSION.</strong> Keep your injured left leg on a padded support and unloaded throughout. <details><summary>Read full safety and clinician instructions</summary><p>Keep the injured left leg in its prescribed cast or orthopedic boot, comfortably supported on a padded rest and unloaded throughout these seated demonstrations. Reported ability to bear weight outside these workouts is not clearance for loaded squats, jumping, standing exercise, or putting pressure through the injured leg during this session. Follow the treating clinician's actual restrictions.</p></details></div>
 <button id="emergencyStop" type="button" aria-label="Stop workout immediately">■ STOP · PAIN OR LEG CONCERN</button>
@@ -320,6 +310,16 @@ main>.lead{max-width:850px;line-height:1.4}
 </details>
 <p class="small muted" style="margin-top:9px">Optional paired mode: shrugs → hammer curls → rest; front raises → alternating curls → rest; INNSTAR press separately. No foot loading. Ask your clinician before increasing intensity or grouping exercises.</p>
 <p id="note" class="notice" role="status">Preview the approved video anytime. Start timed exercises only after clinician clearance. Sets count timed demonstrations, not verified athlete repetitions.</p>
+</section>
+<section class="panel" id="unifiedWorkoutChooser" aria-label="Choose M3 FLEX workout">
+ <h3>My workout choices</h3>
+ <nav class="future" id="workoutChoices" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" aria-label="Workout choices">
+  <button type="button" class="btn primary" data-workout="recovery" aria-pressed="true">Recovery · 5 moves</button>
+  <button type="button" class="btn" data-workout="A" aria-pressed="false">Workout A · Approved subset</button>
+  <button type="button" class="btn" data-workout="B" aria-pressed="false">Workout B · Approved subset</button>
+  <a class="btn" href="/" style="text-decoration:none;text-align:center;display:grid;place-items:center">Original weekly workouts · same app</a>
+ </nav>
+ <p id="workoutDescription" class="small muted" role="status">Recovery: five approved movements with timed sets, rest, warm-up and cooldown.</p><a href="#allScenesCatalog" id="reviewLibraryShortcut">Review archived and unfinished workout videos</a>
 </section>
 <section class="panel"><div class="stepHeader"><strong id="listHeading">Before workout</strong><span id="listCounter">3 gentle steps</span></div><div class="steps" id="steps"></div></section>
 <section class="approve" id="clearance" aria-label="Medical clearance confirmation">
