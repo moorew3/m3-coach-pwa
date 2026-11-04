@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Undo2 } from "lucide-react";
 import { ShareWorkout } from "@/components/ShareWorkout";
+import { TransformationJourney } from "@/components/TransformationJourney";
 import {
   MEASUREMENT_FIELDS,
   PHOTO_INSTRUCTIONS,
@@ -167,6 +168,8 @@ function Progress() {
       <p className="mt-1 text-sm text-muted-foreground">
         {completedCount(state)} of {TOTAL_DAYS} days complete
       </p>
+
+      <TransformationJourney measurements={state.measurements} completedWorkouts={completedCount(state)} />
 
       <section
         data-testid="coach-memory-overview"
