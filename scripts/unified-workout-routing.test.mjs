@@ -11,7 +11,10 @@ test("Recovery iframe and fullscreen use packaged index, preventing SPA 404",()=
 });
 test("Program tab leads to unified V2, Recovery, Workouts A/B and scene review",()=>{
  const p=get("src/routes/program.tsx");
- for (const k of ["m3-primary-workout-menu","program-v2","program-recovery","program-A","program-B","program-scene-library","m3-legacy-program-archive"]) assert.ok(p.includes(k),k);
+ const dash=get("src/components/UnifiedWorkoutDashboard.tsx");
+ assert.ok(p.includes("<UnifiedWorkoutDashboard />"));
+ for (const k of ["m3-primary-workout-menu","m3-workout-select","m3-video-category","m3-video-select","m3-flex-player","m3-start-selected","m3-show-unapproved"]) assert.ok(dash.includes(k),k);
+ assert.ok(p.includes("m3-legacy-program-archive"));
  assert.ok(p.includes("<details className="));
 });
 test("Existing approved recovery footage and app ID remain locked",()=>{
