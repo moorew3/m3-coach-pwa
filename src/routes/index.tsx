@@ -26,6 +26,7 @@ import {
 } from "@/lib/store";
 
 import { COACH_REFERENCE } from "@/data/coach-identity";
+import { UnifiedWorkoutDashboard } from "@/components/UnifiedWorkoutDashboard";
 import { ExerciseLibraryButton } from "@/components/ExerciseLibrary";
 import { ReadinessCheck } from "@/components/ReadinessCheck";
 import { LEGACY_MODE_KEY } from "@/components/LegacyRouteGate";
@@ -145,6 +146,10 @@ function Today() {
         </p>
       </header>
 
+      <UnifiedWorkoutDashboard />
+      <details className="mt-3 mb-5 rounded-xl border border-border bg-card p-3" data-testid="m3-advanced-workouts">
+        <summary className="cursor-pointer text-sm font-bold">More workout options and saved-session controls</summary>
+        <div className="mt-3">
       <section data-testid="m3-unified-workout-picker" className="surface-card mb-5 rounded-2xl p-4">
         <h2 className="text-xl font-bold">M3 FLEX · Choose your workout</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -197,6 +202,8 @@ function Today() {
         </p>
       </section>
 
+        </div>
+      </details>
       <section className="surface-card relative mb-5 overflow-hidden rounded-2xl">
         <button
           type="button"
