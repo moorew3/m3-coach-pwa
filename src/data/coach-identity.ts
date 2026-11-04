@@ -67,8 +67,9 @@ export const COACH_MOTION: Record<string, string> = {
   shadowboxPunches: "/media/boxingCombo2.mp4",
   bandPullApart:
     "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/e082ae2c-fe10-4b22-8966-b13e997665c5/bandPullApart.mp4",
-  benchPress:
-    "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4",
+  // Bench press: video reported unavailable by owner on 2026-11-04.
+  // Preserve this historical source for recovery only; never advertise as verified media:
+  // https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4
   chestMobility:
     "https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/9afee772-bd52-48ce-a0c8-123544092990/chestMobilityV2.mp4",
   controlledShoulderWork:
@@ -381,7 +382,6 @@ export const COACH_ALIASES: Record<string, string> = {
  */
 const CANONICAL_IDENTITY_MOTION = new Set([
   "bandPullApart",
-  "benchPress",
   "boxingStance",
   "chestMobility",
   "controlledShoulderWork",
