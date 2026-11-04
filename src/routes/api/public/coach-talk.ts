@@ -12,6 +12,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { FLEX_NAME, FLEX_ROLE } from "@/lib/coach-persona";
+import { authorizePaidAi, readBoundedAiJson, aiError } from "@/lib/paid-ai-access";
 
 const Context = z.object({
   athlete: z.string().trim().max(80).optional(),
@@ -45,26 +46,6 @@ const Body = z.object({
   message: z.string().trim().min(1).max(600),
   context: Context.default({}),
 });
-
-const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 20;
-const calls = new Map<string, { start: number; count: number }>();
-
-function allowed(request: Request): boolean {
-  const now = Date.now();
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip")?.trim() ||
-    "unknown";
-  const row = calls.get(ip);
-  if (!row || now - row.start >= WINDOW_MS) {
-    calls.set(ip, { start: now, count: 1 });
-    return true;
-  }
-  if (row.count >= MAX_PER_WINDOW) return false;
-  row.count += 1;
-  return true;
-}
 
 const SYSTEM = `You are ${FLEX_NAME}, the persistent AI coach inside M3 Coach. Your role is ${FLEX_ROLE}.
 Marcus is your selected speaking voice; Marcus is not your name. Never introduce yourself as Marcus.
@@ -103,16 +84,14 @@ export const Route = createFileRoute("/api/public/coach-talk")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (!allowed(request)) {
-          return new Response(JSON.stringify({ message: "Too many coach requests. Try again shortly." }), {
-            status: 429,
-            headers: { "content-type": "application/json", "retry-after": "60" },
-          });
-        }
+        const access = await authorizePaidAi(request, "talk");
+        if (access instanceof Response) return access;
+        const body = await readBoundedAiJson(request);
+        if (body instanceof Response) return body;
 
         let parsed: z.infer<typeof Body>;
         try {
-          parsed = Body.parse(await request.json());
+          parsed = Body.parse(body.value);
         } catch {
           return new Response(JSON.stringify({ message: "Invalid coach conversation request." }), {
             status: 400,
@@ -121,38 +100,13 @@ export const Route = createFileRoute("/api/public/coach-talk")({
         }
 
         const key = process.env["OPENAI_API_KEY"];
-        if (!key) {
-          const backend = process.env["FLEX_COACH_BACKEND_URL"]?.trim();
-          if (!backend) {
-            return new Response(JSON.stringify({ message: "Live coach conversation is unavailable." }), {
-              status: 503,
-              headers: { "content-type": "application/json" },
-            });
-          }
-          try {
-            const proxy = await fetch(`${backend.replace(/\/$/, "")}/api/public/coach-talk`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(parsed),
-            });
-            const body = await proxy.text();
-            return new Response(body, {
-              status: proxy.status,
-              headers: {
-                "content-type": proxy.headers.get("content-type") || "application/json",
-                "cache-control": "no-store",
-              },
-            });
-          } catch {
-            return new Response(JSON.stringify({ message: "Flex conversation backend is unavailable." }), {
-              status: 503,
-              headers: { "content-type": "application/json" },
-            });
-          }
-        }
+        if (!key) return aiError(503, "Live AI coaching provider is not configured.");
 
-        const upstream = await fetch("https://api.openai.com/v1/responses", {
+        let upstream: Response;
+        try {
+          upstream = await fetch("https://api.openai.com/v1/responses", {
           method: "POST",
+          signal: AbortSignal.timeout(20000),
           headers: {
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
@@ -161,22 +115,19 @@ export const Route = createFileRoute("/api/public/coach-talk")({
             model:
               process.env["OPENAI_COACH_MODEL"]?.trim() ||
               process.env["OPENAI_MODEL"]?.trim() ||
-              "gpt-5.6-luna",
+              "gpt-4.1-mini",
             store: false,
-            reasoning: { effort: "none" },
             instructions: SYSTEM,
             input: `CONTEXT\n${JSON.stringify(parsed.context)}\n\nATHLETE\n${parsed.message}`,
             max_output_tokens: 160,
-            text: { verbosity: "low" },
           }),
-        });
+          });
+        } catch {
+          return aiError(504, "Optional AI provider timed out or could not be reached.");
+        }
 
         if (!upstream.ok) {
-          const detail = await upstream.text().catch(() => "");
-          return new Response(
-            JSON.stringify({ message: detail || `Live coach unavailable (${upstream.status}).` }),
-            { status: upstream.status, headers: { "content-type": "application/json" } },
-          );
+          return aiError(upstream.status === 429 ? 429 : 502, "Optional coach conversation provider is unavailable.");
         }
 
         const payload = await upstream.json();

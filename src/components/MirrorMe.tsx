@@ -13,6 +13,7 @@
  * full-width detail view. No stick figures anywhere.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Activity,
   ChevronLeft,
@@ -712,6 +713,30 @@ export function MirrorMeButton({
 }) {
   const [open, setOpen] = useState(false);
   const move = mirrorFor(mirrorKey);
+
+  // A modal must not be trapped beneath a transformed workout container.
+  // Android system Back returns to the workout, rather than leaving a full-screen exercise card.
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    window.history.pushState({ ...(window.history.state ?? {}), m3MirrorDemo: true }, "");
+    const onBack = () => setOpen(false);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      if (window.history.state?.m3MirrorDemo) window.history.back();
+      setOpen(false);
+    };
+    window.addEventListener("popstate", onBack);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("popstate", onBack);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  const exitDemo = () => {
+    if (typeof window !== "undefined" && window.history.state?.m3MirrorDemo) window.history.back();
+    setOpen(false);
+  };
   if (!move) return null;
 
   return (
@@ -729,22 +754,32 @@ export function MirrorMeButton({
         {label}
       </button>
 
-      {open && (
+      {open && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 overflow-y-auto bg-background/98 backdrop-blur"
+          className="fixed inset-0 z-[90] overflow-y-auto bg-background/98 backdrop-blur"
           role="dialog"
           aria-modal="true"
           aria-label={`${move.name} demonstration`}
+          data-testid="mirror-me-dialog"
         >
-          <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-border bg-background/95 px-3 py-2">
-            <p className="truncate text-sm font-bold uppercase tracking-widest text-primary">
-              Mirror Me
-            </p>
+          <div
+            className="sticky top-0 z-[100] flex items-center justify-between gap-2 border-b border-border bg-background px-3 py-2 shadow-lg"
+            style={{ paddingTop: "max(12px, env(safe-area-inset-top, 0px))" }}
+          >
             <button
               type="button"
-              aria-label="Close"
-              onClick={() => setOpen(false)}
-              className="grid size-10 place-items-center rounded-lg bg-elevated"
+              data-testid="exit-mirror-demo"
+              aria-label="Exit demonstration and return to workout"
+              onClick={exitDemo}
+              className="min-h-12 rounded-lg border border-accent bg-accent/15 px-4 text-sm font-bold text-accent"
+            >
+              ← Back to workout
+            </button>
+            <button
+              type="button"
+              aria-label="Close demonstration"
+              onClick={exitDemo}
+              className="grid size-12 place-items-center rounded-lg bg-elevated"
             >
               <X className="size-5" />
             </button>
@@ -752,7 +787,8 @@ export function MirrorMeButton({
           <div className="p-3 pb-16">
             <MirrorMeCard move={move} work={work} />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

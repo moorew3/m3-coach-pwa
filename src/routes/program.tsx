@@ -14,6 +14,7 @@ import { currentDayNumber, dayDateLabel, getDay, useApp } from "@/lib/store";
 import { MirrorMeButton } from "@/components/MirrorMe";
 import { ActivityChooser } from "@/components/ActivityChooser";
 import { COACH_REFERENCE } from "@/data/coach-identity";
+import { UnifiedWorkoutDashboard } from "@/components/UnifiedWorkoutDashboard";
 
 export const Route = createFileRoute("/program")({
   head: () => ({
@@ -59,7 +60,10 @@ function Program() {
   const list = exercisesForDay(dayNumber);
 
   return (
-    <main className="px-4 pt-6">
+    <main className="px-4 pt-6" data-testid="m3-unified-program">
+      <UnifiedWorkoutDashboard />
+      <details className="mt-5 rounded-2xl border border-border bg-card p-3" data-testid="m3-legacy-program-archive">
+        <summary className="cursor-pointer py-2 text-sm font-bold">Original six-day and 22-day workout archive · open only if medically cleared</summary>
       <div className="flex items-center gap-3">
         <img
           src={COACH_REFERENCE}
@@ -239,6 +243,7 @@ function Program() {
         )}
       </section>
       <ActivityChooser day={current} open={chooserOpen} onClose={() => setChooserOpen(false)} />
+      </details>
     </main>
   );
 }

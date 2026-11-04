@@ -20,6 +20,7 @@ export type VoiceCommand =
   | "previous"
   | "repeat"
   | "skip"
+  | "completeSet"
   | "addTime"
   | "lessTime"
   | "swap"
@@ -142,6 +143,7 @@ const RULES: [VoiceCommand, RegExp][] = [
   ],
   ["repeat", /\brepeat\b|\bsay (that )?again\b|\bagain\b/],
   ["skip", /\bskip\b/],
+  ["completeSet", /\b(set complete|complete (the )?set|finished (my|the|this) set|done with (my|the|this) set)\b/],
   ["end", /\bend (the )?workout\b|\bfinish (the )?workout\b|\bi'?m done\b|\bstop workout\b/],
   ["pause", /\bpause\b|\bhold on\b|\bwait\b/],
   ["resume", /\bresume\b|\bcontinue\b|\bkeep going\b|\bgo on\b/],
@@ -223,6 +225,14 @@ export function setCommandHandler(fn: ((cmd: VoiceCommand, phrase: string) => vo
  */
 export function setConversationHandler(fn: ((phrase: string) => void) | null) {
   conversationHandler = fn;
+}
+
+/** Reuse existing V2 typed questions without overriding listening or sending background speech. */
+export function submitCoachConversation(phrase: string): boolean {
+  const clean = typeof phrase === "string" ? phrase.trim() : "";
+  if (!clean || clean.length > 600 || !conversationHandler) return false;
+  conversationHandler(clean);
+  return true;
 }
 
 function soundsDirectedAtCoach(phrase: string): boolean {

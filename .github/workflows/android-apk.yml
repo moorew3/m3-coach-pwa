@@ -1,0 +1,132 @@
+name: Android APK — M3 FLEX Unified
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/android-apk.yml"
+      - "capacitor.config.json"
+      - "scripts/stage-android-recovery.mjs"
+      - "scripts/stage-pose-runtime.mjs"
+      - "approved-recovery-media.json"
+      - "public/recovery-coach/**"
+      - "src/**"
+      - "scripts/stage-unified-static.mjs"
+      - "package.json"
+      - "vite.config.ts"
+
+jobs:
+  android-debug-apk:
+    name: Build actual installable Android debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout protected recovery app
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install required packages using GitHub runner Android SDK
+        run: |
+          set -euo pipefail
+          echo "ANDROID_HOME=${ANDROID_HOME}"
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -print -quit)"
+          test -x "$SDKMANAGER"
+          echo "Using $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install existing M3 FLEX dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build original React M3 FLEX and same-origin approved Recovery assets
+        run: |
+          node scripts/stage-pose-runtime.mjs
+          npm run build
+          node scripts/stage-unified-static.mjs
+          node scripts/stage-android-recovery.mjs
+          test -s android-recovery-web/index.html
+          test -s android-recovery-web/program/index.html
+          test -s android-recovery-web/progress/index.html
+          test -s android-recovery-web/recovery/index.html
+          test -s android-recovery-web/recovery-coach/index.html
+          test -s android-recovery-web/recovery-coach/update-safety/index.html
+          test -s android-recovery-web/recovery-coach/full-backup/index.html
+          grep -q '"scope": "original-app-plus-integrated-recovery"' android-recovery-web/build-info.json
+          grep -q '"stableUpgradeSignature": false' android-recovery-web/build-info.json
+          test -s android-recovery-web/recovery-coach/form-check/vendor/pose_landmarker_lite.task
+
+      - name: Install pinned Capacitor Android build toolchain
+        run: npm install --no-save --no-package-lock --no-audit --no-fund @capacitor/core@7.6.9 @capacitor/cli@7.6.9 @capacitor/android@7.6.9
+
+      - name: Generate Android application and synchronize bundled web assets
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Add permission declarations for consent-only camera and microphone tests
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path=Path("android/app/src/main/AndroidManifest.xml")
+          text=path.read_text(encoding="utf-8")
+          assert "<application" in text
+          permissions=[
+            '<uses-permission android:name="android.permission.INTERNET" />',
+            '<uses-permission android:name="android.permission.CAMERA" />',
+            '<uses-permission android:name="android.permission.RECORD_AUDIO" />',
+            '<uses-feature android:name="android.hardware.camera" android:required="false" />',
+          ]
+          for permission in permissions:
+            if permission not in text:
+              text=text.replace("<application",permission+"\n    <application",1)
+          path.write_text(text,encoding="utf-8")
+          assert "android.permission.CAMERA" in text
+          assert "android.permission.RECORD_AUDIO" in text
+          assert "android.permission.READ_CONTACTS" not in text
+          assert "android.permission.ACCESS_FINE_LOCATION" not in text
+          print("Camera/microphone permissions declared; no contacts or location permissions.")
+          PY
+
+      - name: Build signed-for-debug-testing APK using Android Gradle
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace assembleDebug
+
+      - name: Verify actual Android APK and package identity
+        run: |
+          set -euo pipefail
+          file=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$file"
+          unzip -t "$file" | tail -2
+          unzip -l "$file" | grep -E 'classes[0-9]*.dex|AndroidManifest.xml'
+          sha256sum "$file"
+          mkdir -p artifacts
+          cp "$file" artifacts/M3_FLEX_Unified_Android_Debug.apk
+          printf '%s\n' "ONE original M3 FLEX app plus approved Recovery Coach in a single Android debug APK; not a finished conversational coach." > artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "Original Flex/Marcus media streams need internet. SSR/cloud-only features and actual phone camera/headset still require verification. Workout A/B include verified scenes only." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "Future debug builds may be signed with a different temporary developer key and require uninstall/reinstall." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "IMPORTANT: Before replacing this app, open Settings > Back up entire M3 FLEX (or Recovery Coach > Check my records), export and VERIFY your password-protected FULL-APP backup. A Recovery logbook-only file does NOT include original tracker workouts or photos." >> artifacts/ANDROID-INSTALL-README.txt
+          printf '%s\n' "An APK reinstall can erase local workout logs and the interrupted session; only manual actual reps and measurements are in exported logbook backups." >> artifacts/ANDROID-INSTALL-README.txt
+
+      - name: Deliver Android APK for authorized Galaxy Fold testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: m3-flex-unified-android-debug-apk
+          path: |
+            artifacts/M3_FLEX_Unified_Android_Debug.apk
+            artifacts/ANDROID-INSTALL-README.txt
+          retention-days: 7
+          if-no-files-found: error

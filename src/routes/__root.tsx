@@ -15,6 +15,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomNav } from "../components/BottomNav";
 import { AppEntryGate } from "../components/AppEntryIntro";
+import { LegacyRouteGate } from "../components/LegacyRouteGate";
 import { useApp } from "../lib/store";
 import { clearStaleChunkFlag, isStaleChunkError, recoverFromStaleChunk } from "../lib/stale-chunk";
 import { cleanupLegacyServiceWorkers } from "../lib/sw-cleanup";
@@ -93,12 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#1c1d20" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Arm Tracker" },
-      { title: "22-Day Arm Growth Tracker" },
+      { name: "apple-mobile-web-app-title", content: "M3 FLEX" },
+      { title: "M3 FLEX | Recovery Coach & Workout Tracker" },
       {
         name: "description",
         content:
-          "A 22-day guided arm growth program with offline exercise diagrams, set tracking and rest timers.",
+          "M3 FLEX: approved seated Recovery Coach previews, tracked sets, rest timers and workout planning. Approved videos and Marcus voice require a network connection.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -170,12 +171,19 @@ function RootComponent() {
     // Remove any leftover service worker from an older build so installed
     // Android PWAs always launch the newest published app shell.
     void cleanupLegacyServiceWorkers();
+    // Galaxy Fold edge-to-edge WebView can draw React headings underneath the status bar.
+    // Add top padding ONLY to the installed native Android shell, not a normal web/PWA page.
+    const native = (window as Window & { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+    const isAndroidNative = /Android/i.test(navigator.userAgent) && native?.isNativePlatform?.() === true;
+    document.documentElement.classList.toggle("m3-android-native", isAndroidNative);
+    return () => document.documentElement.classList.remove("m3-android-native");
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync />
-      <AppEntryGate>
+      <LegacyRouteGate pathname={pathname}>
+        <AppEntryGate>
         <div
           className={
             displayMode
@@ -189,7 +197,8 @@ function RootComponent() {
           <Outlet />
         </div>
         {!displayMode && <BottomNav />}
-      </AppEntryGate>
+        </AppEntryGate>
+      </LegacyRouteGate>
     </QueryClientProvider>
   );
 }

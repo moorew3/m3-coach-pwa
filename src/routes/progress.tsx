@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Undo2 } from "lucide-react";
 import { ShareWorkout } from "@/components/ShareWorkout";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/data/program";
 import { exerciseSummaries } from "@/lib/performance";
 import { coachMemoryOverview } from "@/lib/coach-memory";
+import { readReportedRecoverySets, readLastRecoverySession, safeLocalRecoveryStorage, recoveryTitle, type ReportedRecoverySet, type RecoverySessionReceipt } from "@/lib/recovery-progress";
 import {
   completedCount,
   dayDateLabel,
@@ -136,6 +137,19 @@ function Progress() {
   const history = workoutHistory(state);
   const navigate = useNavigate();
   const [notice, setNotice] = useState("");
+  const [recoverySets, setRecoverySets] = useState<ReportedRecoverySet[]>([]);
+  const [lastRecovery, setLastRecovery] = useState<RecoverySessionReceipt | null>(null);
+  useEffect(() => {
+    const refresh = () => {
+      const storage = safeLocalRecoveryStorage();
+      setRecoverySets(readReportedRecoverySets(storage));
+      setLastRecovery(readLastRecoverySession(storage));
+    };
+    refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("storage", refresh);
+    return () => { window.removeEventListener("focus", refresh); window.removeEventListener("storage", refresh); };
+  }, []);
 
   /** Next later day sharing the same weekday that isn't already finished. */
   const nextSlot = (from: number): number | null => {
@@ -167,6 +181,38 @@ function Progress() {
       <p className="mt-1 text-sm text-muted-foreground">
         {completedCount(state)} of {TOTAL_DAYS} days complete
       </p>
+      <section data-testid="m3-original-progress-recovery" className="surface-card mt-4 rounded-2xl p-4">
+        <h2 className="text-lg font-bold">Recovery Coach · Your actual sets</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          This section reads your manually entered Recovery logbook from this same app.
+          Guided video timers are never treated as actual reps; existing strength workout history stays untouched.
+        </p>
+        {lastRecovery && (
+          <p className="mt-2 text-xs text-primary">
+            Last guided session: {recoveryTitle(lastRecovery.program)} · {lastRecovery.demonstratedSteps} timed demonstration stages · not verified reps
+          </p>
+        )}
+        {recoverySets.length ? (
+          <ul className="mt-3 space-y-2">
+            {recoverySets.slice(0,6).map((set) => (
+              <li key={set.id} className="flex items-center justify-between gap-2 rounded-xl bg-elevated p-3">
+                <div>
+                  <p className="text-sm font-bold">{set.name}</p>
+                  <p className="text-xs text-muted-foreground">{new Date(set.at).toLocaleDateString()} · You entered {set.reps} repetitions</p>
+                </div>
+                <span className="text-sm font-bold">{set.lb === null ? "Load not logged" : `${set.lb} lb reported`}</span>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="mt-3 text-xs text-muted-foreground">No actual seated-recovery reps logged yet.</p>}
+        <Link to="/recovery" search={{ program: "recovery" }}
+          className="tap-target mt-3 flex items-center justify-center rounded-xl border border-primary px-3 text-sm font-bold text-primary">
+          Open Recovery Coach and log actual reps
+        </Link>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Stored locally on this device; use the Recovery Logbook's password-protected export before changing phones or reinstalling the app.
+        </p>
+      </section>
 
       <section
         data-testid="coach-memory-overview"
