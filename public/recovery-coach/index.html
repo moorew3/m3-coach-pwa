@@ -403,6 +403,16 @@ main>.lead{max-width:850px;line-height:1.4}
 <script>
 "use strict";
 document.documentElement.classList.toggle("embedded",new URLSearchParams(location.search).get("embedded")==="1");
+function revealLinkedReview(){
+ const target=decodeURIComponent(location.hash||"");
+ if(["#allScenesCatalog","#rowingCardio","#sceneGrid","#sceneApprovalControls","#advancedLibrary"].includes(target)){
+  const panel=document.getElementById("advancedLibrary");
+  if(panel)panel.open=true;
+ }
+}
+window.addEventListener("hashchange",revealLinkedReview);
+revealLinkedReview();
+
 const base="https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/";
 const voices="https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/";
 const stages=[
@@ -716,7 +726,8 @@ $("startPause").textContent=mode==="running"||mode==="rest"?"Ⅱ Pause":mode==="
 $("startPause").disabled=mode==="complete"||mode==="preview"||safetyLock;
 $("preview").disabled=safetyLock||(mode!=="preview"&&!step().voice&&!step().video&&mode!=="complete")||mode==="running"||mode==="rest";
 $("preview").textContent=mode==="preview"?(previewReturnMode==="paused"?"↩ Return to paused workout":previewReturnMode==="waiting"?"↩ Return to media retry":"↩ Return to workout"):mode==="complete"?"▶ Hear Marcus finish":step().video?"▶ Preview Flex + Marcus":"▶ Hear Marcus";
-$("handsfreeStart").disabled=safetyLock||mode!=="ready";
+const heroPreview=$("videoPreviewCTA");if(heroPreview)heroPreview.classList.toggle("hidden",!step().video||safetyLock||["running","rest","preview","waiting","complete"].includes(mode));
+ $("handsfreeStart").disabled=safetyLock||mode!=="ready";
 $("handsfreePause").disabled=mode!=="running"&&mode!=="rest";
 $("handsfreeResume").disabled=safetyLock||(mode!=="paused"&&mode!=="waiting");
 $("handsfreeNext").disabled=safetyLock||mode==="complete"||(phase===2&&idx===stages[2].items.length-1);
@@ -1034,6 +1045,7 @@ document.addEventListener("keydown",event=>{
   event.preventDefault();$("handsfreePause").click();
  }
 });
+$("videoPreviewCTA").addEventListener("click",()=>{if(!$("preview").disabled)$("preview").click()});
 $("preview").addEventListener("click",async()=>{
  if(mode==="preview"){endPreview();return;}
  if(mode==="complete"){audio.src=END_MARCUS;audio.currentTime=0;audio.play().catch(()=>tell("Please enable audio in Chrome."));return;}
