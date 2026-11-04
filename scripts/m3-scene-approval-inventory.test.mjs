@@ -28,8 +28,11 @@ test("exactly four C13–C23 drafts lack verified matching Marcus audio and cann
 test("one-app Program tab links to exact scenes and owner reviews without starting playback",()=>{
  const program=read("src/routes/program.tsx");
  const page=read("public/recovery-coach/index.html");
- assert.match(program,/data-testid="program-approve-scenes"/);
- assert.match(program,/\/recovery-coach\/index\.html\?program=recovery&review=1/);
+ assert.match(program,/UnifiedWorkoutDashboard/);
+ const dash=read("src/components/UnifiedWorkoutDashboard.tsx");
+ assert.match(dash,/data-testid="m3-show-unapproved"/);
+ assert.match(dash,/data-testid="m3-approve-video"/);
+ assert.match(dash,/REVIEW_KEY = "m3-flex-review-approval-v1"/);
  assert.match(page,/value="candidates"/);
  assert.match(page,/get\("review"\)==="1"/);
  assert.match(page,/showExistingScenes\(\)/);
