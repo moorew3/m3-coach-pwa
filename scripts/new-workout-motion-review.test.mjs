@@ -37,7 +37,7 @@ test("all 11 real completed HeyGen moving scene renders are isolated for owner r
  assert.match(gallery,/none activated/);
  assert.match(gallery,/NOT owner-approved/);
 });
-test("exact Marcus Warm & Friendly English is the only voice in seven review clips",()=>{
+test("exact Flex Warm & Friendly English is the only voice in seven review clips",()=>{
  assert.equal(candidates.filter(c=>!!c.audio).length,7);
  assert.equal(candidates.filter(c=>!c.audio).length,4);
  for(const c of candidates.filter(c=>c.audio)){
@@ -46,7 +46,7 @@ test("exact Marcus Warm & Friendly English is the only voice in seven review cli
  assert.match(gallery,/media\.muted=true/);
  assert.match(gallery,/media\.loop=true/);
  assert.match(gallery,/narration\.addEventListener\("ended"/);
- assert.match(gallery,/Marcus speech cue unavailable for this draft/);
+ assert.match(gallery,/Flex speech cue unavailable for this draft/);
  assert.doesNotMatch(gallery,/audio\.autoplay=true|voiceSettings/);
 });
 test("camera/video clips are review only until biomechanics, equipment, avatar face and cast get explicit approval",()=>{
