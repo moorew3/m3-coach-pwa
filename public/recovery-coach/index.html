@@ -142,6 +142,73 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
  body.tvMode .player > #cue{font-size:clamp(12px,1.25vw,17px)}
  body.tvMode #clock{font-size:clamp(36px,7.5vh,55px)}
 }
+
+/* Coach-first layout: approved originals only; no replacement graphics/media. */
+body:not(.tvMode){background:radial-gradient(ellipse 105% 45% at 50% -10%,#19485a 0%,#0b1927 53%,#08111c 100%);background-attachment:fixed}
+main{max-width:1080px;padding:14px clamp(12px,2vw,25px) 65px}
+main>.top{border-bottom:1px solid #34556a;padding:5px 0 12px;flex-wrap:wrap}
+main>.top .brand{font-size:22px;text-shadow:0 0 24px #81cbcb55}
+main>h1{font-size:clamp(26px,4.8vw,42px);margin:14px 0 5px}
+main>.lead{max-width:850px;line-height:1.4}
+#unifiedWorkoutChooser{padding:10px 12px;border-radius:14px;background:#122335;margin-top:9px}
+#unifiedWorkoutChooser h3{font-size:15px;margin-bottom:6px}
+#unifiedWorkoutChooser .future{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-top:4px}
+#unifiedWorkoutChooser .btn{font-size:12px;line-height:1.2;min-height:44px;padding:7px 6px}
+#unifiedWorkoutChooser #workoutDescription{margin:7px 0 0}
+#reviewLibraryShortcut{display:inline-block;color:#bce6fb;font-size:12px;margin:6px 0 0}
+.trust{margin:9px 0}.trust span{font-size:10px;padding:4px 8px}
+.nonWeightBanner{font-size:12px;line-height:1.45;margin:9px 0 7px;padding:9px 12px;background:#212326;border:1px solid #b89479}
+.nonWeightBanner details{margin:4px 0 0}.nonWeightBanner summary{font-size:12px;color:#ffeadb}.nonWeightBanner p{font-size:12px;color:#ffeadb;margin:6px 0}
+#emergencyStop{position:sticky;top:0;z-index:22;min-height:46px;margin:7px 0;background:#7b2427;border:1px solid #d99393;font-size:13px;box-shadow:0 8px 20px #060c16a0}
+.phases{margin:10px 0}.phase{min-height:43px;padding:8px 3px;background:#142c40}
+.player{background:linear-gradient(130deg,#102638,#0c1928 74%);border:1px solid #577a7f;border-radius:20px;box-shadow:0 14px 44px #0006,inset 0 1px 0 #96cfd322;padding:clamp(12px,2vw,22px)}
+.player>.eyebrow{font-size:11px}.player>h2{font-size:clamp(23px,3.2vw,35px)}
+.player>#moveDetail{font-size:12px;color:#b8dae5}
+.videoWrap{position:relative;isolation:isolate;width:100%;max-width:520px;margin:12px auto 0;min-height:220px;border-radius:17px;background:#07111c;border:1px solid #3c667b;box-shadow:0 22px 50px #0008}
+.videoWrap video{width:100%;max-height:min(58dvh,650px);object-fit:contain}
+#videoPreviewCTA{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);z-index:2;display:flex;align-items:center;justify-content:center;min-height:52px;width:min(88%,350px);padding:9px 13px;border:1px solid #d2f6a9;background:linear-gradient(140deg,#c5f08c,#8ad7c1);color:#102519;font-size:14px;font-weight:900;letter-spacing:.01em;border-radius:14px;box-shadow:0 8px 26px #000a;cursor:pointer}
+#videoPreviewCTA.hidden{display:none!important}
+#videoPreviewCTA:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.marcusStage{background:linear-gradient(145deg,#183c36,#15283b);box-shadow:inset 0 1px 0 #c4e7ba44}
+.marcusActions button:first-child{font-size:15px}
+#lastActualReference{font-size:11px;margin:6px 0}
+.player>.timer{box-shadow:inset 0 0 22px #061b2c}
+#clearance{border:1px solid #608069;background:#14292d;border-radius:15px;padding:15px;margin:13px 0}
+#clearance label{font-size:13px;line-height:1.45}
+#advancedLibrary{background:#101f2c;border:1px solid #466477;border-radius:16px;padding:13px 14px;margin-top:16px}
+#advancedLibrary>summary{color:#cce8fa;font-size:15px;min-height:44px;line-height:2.6}
+#advancedLibrary>.panel{margin-top:10px}
+#benchCoreProgram{margin-top:15px}
+#benchCoreProgram>summary{font-size:15px;color:#c5f08c;min-height:42px;line-height:2.7}
+.tvLaunch{margin:11px 0 13px;background:#102431;border-color:#466c78}
+.tvLaunch p{font-size:12px}
+#androidUpdateSafety{margin-top:10px}
+#androidUpdateSafety summary{font-size:13px}
+@media(min-width:850px){
+ body:not(.tvMode) .player{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);column-gap:24px;row-gap:5px;align-items:start}
+ body:not(.tvMode) .player>.eyebrow,body:not(.tvMode) .player>h2,body:not(.tvMode) .player>#moveDetail,body:not(.tvMode) .player>#cue,body:not(.tvMode) .player>#lastActualReference,body:not(.tvMode) .player>#marcusStage,body:not(.tvMode) .player>.timer{grid-column:2;min-width:0}
+ body:not(.tvMode) .player>#videoBox,body:not(.tvMode) .player>#textBox{grid-column:1;grid-row:1/span 7;align-self:start}
+ body:not(.tvMode) .player>#videoBox{max-width:none;margin:0}
+ body:not(.tvMode) .player>#videoBox video{max-height:min(70dvh,660px)}
+ body:not(.tvMode) .player>#textBox{margin:0;min-height:360px}
+ body:not(.tvMode) .player>.opts,body:not(.tvMode) .player>.controls,body:not(.tvMode) .player>#formObservation,body:not(.tvMode) .player>#repsPanel,body:not(.tvMode) .player>#androidUpdateSafety,body:not(.tvMode) .player>#voiceAccessPanel,body:not(.tvMode) .player>#localCoachPanel,body:not(.tvMode) .player>p.small,body:not(.tvMode) .player>#note{grid-column:1/-1}
+ body:not(.tvMode) .player>#marcusStage{margin:7px 0}
+ body:not(.tvMode) .player>.timer{margin:3px 0}
+}
+@media(max-width:550px){
+ main{padding:11px 10px 65px}main>h1{font-size:27px}
+ main>.top .version{font-size:10px}
+ #unifiedWorkoutChooser .future{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ #unifiedWorkoutChooser .btn{font-size:11px}
+ .player{padding:12px}
+ .videoWrap{border-radius:12px}
+ .videoWrap video{max-height:53dvh}
+ #videoPreviewCTA{bottom:8px;min-height:48px;font-size:13px}
+ .marcusStage{padding:11px}
+ .marcusActions button:first-child{font-size:14px}
+ #emergencyStop{margin:5px 0}
+}
+@media(prefers-reduced-motion:reduce){.videoWrap,.player,#videoPreviewCTA{transition:none!important;animation:none!important}}
 </style></head><body><main>
 
 <div class="tvToolbar" id="tvToolbar" role="toolbar" aria-label="Full-screen TV workout controls">
