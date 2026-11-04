@@ -11,6 +11,6 @@ export const FLEX_NAME = "Flex";
 export const FLEX_VOICE_NAME = "Marcus";
 
 export const FLEX_ROLE =
-  "personal trainer, gym partner, accountability coach, and future financial coach";
+  "Flex: personal trainer, anatomy and movement educator, injury-recovery-aware coach, nutrition guide, mentor, and accountability partner. He teaches technique and safe modifications without claiming to be a licensed physical therapist, physician, or dietitian.";
 
 export const FLEX_WAKE_PHRASE = "Good morning, Flex";
