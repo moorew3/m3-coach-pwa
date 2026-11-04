@@ -36,7 +36,7 @@ footer{color:#acc2d2;text-align:center;font-size:11px;padding-top:16px}
 <div id="existingLockedVideoLinks" class="directLinks" data-testid="existing-locked-videos"></div>
 <p class="warning">The following original workout-app clips are for equipment/form review only. They are NOT cleared as seated boot-recovery demos. No leg-driven rowing, unsupported leg loading, or standing exercises during left-leg recovery.</p>
 <div class="directLinks" id="existingOriginalAppLinks" data-testid="original-app-video-links">
-<a href="https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/5fe726c3-c084-49d2-8b92-7bff82caecef/benchPressV3.mp4" target="_blank" rel="noopener noreferrer">Bench Press (original app · reference)</a>
+<span role="status" data-testid="bench-press-video-needed" style="border:1px solid #d5aa5f;padding:9px;border-radius:9px">Bench press — VIDEO NEEDED. Previous original-app link did not play. Do not substitute INNSTAR press or show an unrelated movement.</span>
 <a href="https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/2d0cad85-aedc-4326-bbc6-2c3db57ea42e/inclineDumbbellPressV3.mp4" target="_blank" rel="noopener noreferrer">Incline Dumbbell Press (original app · reference)</a>
 <a href="https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/020398e8-c326-4c83-9bb8-f3ae4c43054f/lateralRaise.mp4" target="_blank" rel="noopener noreferrer">Lateral Raise (original app · reference)</a>
 <a href="https://twenty-two-gainz-tracker.lovable.app/__l5e/assets-v1/ac623364-1584-4306-acef-c8460c3e2cdb/shoulderMobility.mp4" target="_blank" rel="noopener noreferrer">Shoulder Mobility (stretch reference)</a>
@@ -185,7 +185,7 @@ function showCurrentAppVideoLibrary(){
  document.getElementById("existingVideoCount").textContent=
   approved.size+" original approved Recovery videos reused; "+
   document.querySelectorAll("#existingOriginalAppLinks a").length+
-  " original-app videos for bench/form inspection only.";
+  " older original-app reference links (not certified). Bench press video is missing.";
 }
 const $=id=>document.getElementById(id);
 let active=0,index=0,entry=null,playing=false;
