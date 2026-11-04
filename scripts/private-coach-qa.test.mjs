@@ -11,7 +11,7 @@ test("private coaching Q&A exists on the same screen and never calls paid voice,
  assert.match(coach,/maxlength="220"/);
  assert.match(coach,/event\.preventDefault\(\)/);
  assert.match(coach,/textContent=localCoachReply\(prompt\)/);
- assert.match(coach,/Only the original approved Marcus recordings play during the workout/);
+ assert.match(coach,/Only the original approved Flex recordings play during the workout/);
  const qa=coach.slice(coach.indexOf("function localCoachReply(raw)"),coach.indexOf('document.addEventListener("keydown",event=>'));
  assert.doesNotMatch(qa,/\bfetch\s*\(|XMLHttpRequest|WebSocket|new\s+SpeechSynthesisUtterance|getUserMedia\s*\(/);
  assert.match(qa,/contact your treating clinician|Contact your treating clinician/);
