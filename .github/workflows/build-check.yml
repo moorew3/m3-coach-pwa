@@ -28,3 +28,6 @@ jobs:
 
       - name: Type check
         run: npx tsc --noEmit
+
+      - name: Transformation privacy and reporting checks
+        run: node --experimental-strip-types scripts/transformation-journey.test.mjs
