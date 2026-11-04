@@ -156,31 +156,22 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
   </div>
 </div>
 <header class="top"><div class="brand">M3 <b>FLEX</b></div><a href="/" style="color:#c5f08c;font-size:12px;font-weight:800">← App home</a><div class="version">Recovery Coach · 7 approved scenes</div></header>
-<h1>Choose your M3 FLEX workout</h1>
-<p class="lead">One M3 FLEX app, multiple workout choices, all finished scene references in one exercise library. The original approved videos and Marcus voice stay unchanged.</p>
+<h1>Train with Flex and Marcus</h1>
+<p class="lead">Original approved moving Flex demonstrations and Marcus voice, inside one guided seated session. Preview a movement before starting clinician-cleared exercise.</p>
 <section class="panel" id="unifiedWorkoutChooser" aria-label="Choose M3 FLEX workout">
  <h3>My workout choices</h3>
  <nav class="future" id="workoutChoices" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))" aria-label="Workout choices">
   <button type="button" class="btn primary" data-workout="recovery" aria-pressed="true">Recovery · 5 moves</button>
-  <button type="button" class="btn" data-workout="A" aria-pressed="false">Workout A · Dumbbells / boxing</button>
-  <button type="button" class="btn" data-workout="B" aria-pressed="false">Workout B · INNSTAR / arms</button>
+  <button type="button" class="btn" data-workout="A" aria-pressed="false">Workout A · Approved subset</button>
+  <button type="button" class="btn" data-workout="B" aria-pressed="false">Workout B · Approved subset</button>
   <a class="btn" href="/" style="text-decoration:none;text-align:center;display:grid;place-items:center">Original weekly workouts · same app</a>
  </nav>
- <p id="workoutDescription" class="small muted" role="status">Recovery: five approved movements with timed sets, rest, warm-up and cooldown.</p>
+ <p id="workoutDescription" class="small muted" role="status">Recovery: five approved movements with timed sets, rest, warm-up and cooldown.</p><a href="#allScenesCatalog" id="reviewLibraryShortcut">Review archived and unfinished workout videos</a>
 </section>
 <div class="trust"><span>✓ 7 approved moving scenes</span><span>✓ Original Flex</span><span>✓ Marcus English</span></div>
-<div class="nonWeightBanner" role="note" id="nonWeightWarning"><strong>LEFT LEG SUPPORTED · SEATED SESSION.</strong> Keep the injured left leg in its prescribed cast or orthopedic boot, comfortably supported on a padded rest and unloaded throughout these seated demonstrations. Reported ability to bear weight outside these workouts is not clearance for loaded squats, jumping, standing exercise, or putting pressure through the injured leg during this session. Follow the treating clinician's actual restrictions.</div>
-<button id="emergencyStop" type="button" aria-label="Stop workout immediately">■ STOP WORKOUT — PAIN OR LEG CONCERN</button>
+<div class="nonWeightBanner" role="note" id="nonWeightWarning"><strong>LEFT LEG SUPPORTED · SEATED SESSION.</strong> Keep your injured left leg on a padded support and unloaded throughout. <details><summary>Read full safety and clinician instructions</summary><p>Keep the injured left leg in its prescribed cast or orthopedic boot, comfortably supported on a padded rest and unloaded throughout these seated demonstrations. Reported ability to bear weight outside these workouts is not clearance for loaded squats, jumping, standing exercise, or putting pressure through the injured leg during this session. Follow the treating clinician's actual restrictions.</p></details></div>
+<button id="emergencyStop" type="button" aria-label="Stop workout immediately">■ STOP · PAIN OR LEG CONCERN</button>
 
-<section class="tvLaunch" aria-label="Cast workout to a television">
-  <button id="tvEnable" class="btn primary" type="button" aria-label="Open full screen television workout mode">📺 TV / CAST · Full-screen workout</button>
-  <details id="tvGuide">
-    <summary>How to fill my TV screen without cutting off Flex</summary>
-    <p><strong>Samsung Galaxy Fold:</strong> open Smart View in Quick Settings, select your TV, rotate the Fold to landscape and choose the Samsung setting for <strong>full screen on the connected device</strong> when available. Then tap TV / CAST here. On desktop Chrome, use the browser’s Cast tab/screen option. The app cannot automatically connect to a TV or change Samsung's Smart View settings.</p>
-    <p>Default <strong>Fit full body</strong> preserves the original approved portrait video without cropping the face, cast or equipment; the extra TV width displays Marcus cues and timers. Optional Fill enlarges and crops the video, so limbs can be cut off. If your TV still shows black borders, adjust its picture-fit/overscan or Smart View aspect-ratio settings; a website cannot override the mirror receiver’s aspect ratio.</p>
-  </details>
-  <p id="tvLaunchStatus" class="small muted" role="status">Ready for TV mirroring. No camera, microphone, or new casting account is needed.</p>
-</section>
 <nav class="phases" aria-label="Workout stages">
 <button class="phase" type="button" data-stage="0" aria-selected="true">1 · Before</button>
 <button class="phase" type="button" data-stage="1" aria-selected="false">2 · Workout</button>
@@ -188,9 +179,9 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
 </nav>
 <section class="player" aria-label="Current guided activity">
 <div class="eyebrow"><span id="phaseLabel">Before workout</span><span id="position">Step 1 / 3</span></div>
-<h2 id="moveTitle">Calm seated breathing</h2><div id="moveDetail" class="small muted">Gentle preparation · text guidance</div>
-<div class="videoWrap hidden" id="videoBox"><video id="coachVideo" playsinline preload="metadata" aria-label="Approved Flex demonstration"></video><audio id="coachVoice" preload="metadata"></audio></div>
-<div class="guidePlaceholder" id="textBox"><strong>Before your workout</strong><p>Prepare gently while keeping your injured left leg supported. No exercise video has been approved for this new warm-up yet.</p></div>
+<h2 id="moveTitle">Calm seated breathing</h2><div id="moveDetail" class="small muted">Approved moving Flex C09 and original Marcus voice</div>
+<div class="videoWrap" id="videoBox"><video id="coachVideo" playsinline preload="metadata" aria-label="Approved Flex demonstration"></video><audio id="coachVoice" preload="metadata"></audio><button type="button" id="videoPreviewCTA" aria-label="Preview the current approved original Flex video with Marcus">▶ PREVIEW ORIGINAL FLEX</button></div>
+<div class="guidePlaceholder hidden" id="textBox"><strong>Before your workout</strong><p>Preparation without a verified moving demonstration uses the approved Marcus recording.</p></div>
 <p class="cue" id="cue">Sit comfortably with the cast supported. Breathe slowly without forcing movement.</p>
 <p id="lastActualReference" class="notice" role="status" aria-live="polite">No personal set logged for this movement yet. Video time is not a repetition count.</p>
 <section class="marcusStage" id="marcusStage" aria-label="Marcus guided trainer">
@@ -212,7 +203,7 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
 <iframe id="formFrame" title="Optional local upper-body movement observation" loading="lazy" allow="camera" style="display:block;width:100%;height:545px;max-height:75vh;border:1px solid #395970;border-radius:10px;background:#0b1521" src="about:blank"></iframe>
 <p class="small">Closing this panel unloads its camera view and stops its live stream. Pause the workout if monitoring affects performance on your Galaxy Fold.</p>
 </details>
-<section class="voiceAccessPanel" aria-label="Before installing another Android build"><strong>Updating your Galaxy Fold APK?</strong><p>Temporary debug signing can require an uninstall that erases locally stored reps and workout history. Back up your logbook before updating; the app does not automatically sync those records.</p><a href="./update-safety/index.html" style="color:#c5f08c;font-weight:800">Check my records and encrypted backup before installing an update →</a></section>
+<details class="voiceAccessPanel" id="androidUpdateSafety" aria-label="Before installing another Android build"><summary>Android update · protect my workout records</summary><p>Temporary debug signing can require an uninstall that erases locally stored reps and workout history. Back up your logbook before updating; the app does not automatically sync those records.</p><a href="./update-safety/index.html" style="color:#c5f08c;font-weight:800">Check my records and encrypted backup before installing an update →</a></details>
 <details id="repsPanel" class="voiceAccessPanel">
 <summary>Log my actual reps, weights &amp; measurements (private)</summary>
 <p>Enter repetitions YOU performed and weight YOU used; video timers do not count actual reps. Records stay on this phone/browser unless you export and restore a private JSON backup on another device. Password protection is available in the logbook. No invented reps, no medical clearance stored and no cloud sync.</p>
@@ -271,14 +262,24 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
 <label><input type="checkbox" class="check">I will use the seated setup for this selected session, position the cast comfortably, and follow my actual weight-bearing restrictions.</label>
 <label><input type="checkbox" class="check">My clinician cleared the intended exercise duration and effort; I will stop for new pain, swelling or cast pressure.</label>
 </section>
+<section class="tvLaunch" aria-label="Cast workout to a television">
+  <button id="tvEnable" class="btn primary" type="button" aria-label="Open full screen television workout mode">📺 TV / CAST · Full-screen workout</button>
+  <details id="tvGuide">
+    <summary>How to fill my TV screen without cutting off Flex</summary>
+    <p><strong>Samsung Galaxy Fold:</strong> open Smart View in Quick Settings, select your TV, rotate the Fold to landscape and choose the Samsung setting for <strong>full screen on the connected device</strong> when available. Then tap TV / CAST here. On desktop Chrome, use the browser’s Cast tab/screen option. The app cannot automatically connect to a TV or change Samsung's Smart View settings.</p>
+    <p>Default <strong>Fit full body</strong> preserves the original approved portrait video without cropping the face, cast or equipment; the extra TV width displays Marcus cues and timers. Optional Fill enlarges and crops the video, so limbs can be cut off. If your TV still shows black borders, adjust its picture-fit/overscan or Smart View aspect-ratio settings; a website cannot override the mirror receiver’s aspect ratio.</p>
+  </details>
+  <p id="tvLaunchStatus" class="small muted" role="status">Ready for TV mirroring. No camera, microphone, or new casting account is needed.</p>
+</section>
 <p class="safety">Keep the casted left leg comfortably positioned and never use it as a band anchor. Follow your actual clinician-specified weight-bearing limits. Stop if pain, swelling, dizziness, or cast pressure develops. The approved breathing scenes have moving Flex videos; the other warm-up/cooldown steps remain text or existing audio guidance only.</p>
-<section class="panel" id="benchCoreProgram" aria-label="Bench-supported core workouts">
+<details class="panel" id="benchCoreProgram" aria-label="Bench-supported core workouts"><summary>Optional Core A/B · bench-supported training</summary>
 <div class="badge" style="color:#c5f08c;font-weight:900">Core &amp; bench · Training option</div>
 <h3 style="margin-top:7px">Bench-supported core workouts</h3>
 <p>Two guided <strong>seated bench core circuits</strong> are available: Core A for gentle abdominal bracing and trunk control; Core B for optional very light anti-rotation band and dumbbell holds. Both have real timed sets, rounds, rests, skip-safe progress and session recovery.</p>
 <p class="small muted">These are text-and-timer workouts, not approved moving Flex demonstrations or new Marcus speech. A clinician must specifically clear each core movement, effort and cast setup; keep the injured leg supported without using the cast for leverage. No planks, sit-ups, leg raises or forceful twisting in the core plan.</p>
 <a href="./bench-core/index.html" id="benchCoreLink" style="display:block;background:#c5f08c;color:#132b1e;padding:13px 15px;border-radius:11px;text-align:center;text-decoration:none;font-weight:900">▶ Open Core A / Core B · Bench training</a>
-</section>
+</details>
+<details id="advancedLibrary" class="panel"><summary>Video archive, scene reviews and development notes</summary><p class="small muted">Approved source videos remain protected. Unfinished or rejected candidates are kept here for owner review, not automatically used as workouts.</p>
 <section class="panel" id="rowingCardio" aria-label="Recovery cardio rowing status">
 <h3>Recovery cardio · Legless rowing</h3>
 <p><strong>Not ready for exercise.</strong> The latest avatar render has a boot/leg connection error and is blocked from guided workouts.</p>
@@ -327,6 +328,7 @@ body.tvMode.tvFill .player > #videoBox video{object-fit:cover}
 <p>The warm-up, mobility, stretching, rest, and cooldown sections have Marcus audio but are still MISSING approved moving Flex videos. This app does not substitute unrelated exercises or a static talking head.</p>
 <p>Workout A archived media exports require verification; Workout B equipment techniques and missing animations need production. Neither draft is active.</p>
 <p><a href="https://github.com/moorew3/m3-coach-pwa/blob/main/docs/M3-FLEX-MASTER-QA-2026-10-17.md" target="_blank" rel="noopener noreferrer">Open detailed QA matrix, production specs and Workbook A/B build sheets</a></p></details>
+</details>
 <footer>M3 Flex Recovery Coach · Five original approved videos locked · Marcus English only</footer>
 </main>
 <script src="./scene-library.js"></script>
@@ -364,8 +366,8 @@ const APPROVED_WORKOUT_CHOICES={
 };
 const WORKOUT_NOTES={
  recovery:"Recovery: all five original approved seated exercises with warm-up/cooldown, timers and Marcus.",
- A:"Equipment A: approved shrugs and hammer curls run as guided sets. Previously approved Flow boxing/lateral raises and all rendered drafts are available in the scene library for video inspection.",
- B:"Equipment B: approved INNSTAR chest press, front raises and alternating curls run as guided sets. The chest fly, AMYCO, and completed drafts remain available in the scene library for video/equipment review."
+ A:"Workout A is a partial preview of two original approved exercises (shrugs and hammer curls). The full A workout is NOT completed; other videos are review-only.",
+ B:"Workout B is a partial preview of three approved exercises (INNSTAR press, front raises and alternating curls). Full B is NOT completed; other videos are review-only."
 };
 const OPTIONAL_REVIEW_PROGRAMS={
  A:{before:["C14","C15"],main:["C17","C18","C19"],after:[]},
