@@ -32,11 +32,11 @@ test("unexpected pause during a timed approved Flex video prevents silent comple
   assert.equal(errors[0].source,"video");
   assert.match(errors[0].msg,/unexpectedly paused/i);
 });
-test("unexpected pause during required Marcus narration prevents silent completion",()=>{
+test("unexpected pause during required Flex narration prevents silent completion",()=>{
   const errors=check({kind:"audio"});
   assert.equal(errors.length,1);
   assert.equal(errors[0].source,"audio");
-  assert.match(errors[0].msg,/Marcus/i);
+  assert.match(errors[0].msg,/Flex/i);
 });
 test("do not mistake application stop, navigation, preview, or safe rest for media failure",()=>{
   assert.equal(check({clock:false}).length,0);
@@ -45,7 +45,7 @@ test("do not mistake application stop, navigation, preview, or safe rest for med
   assert.equal(check({mode:"rest"}).length,0);
   assert.equal(check({paused:false}).length,0);
 });
-test("legitimate end of a one-shot Marcus instruction never fails a workout",()=>{
+test("legitimate end of a one-shot Flex instruction never fails a workout",()=>{
   assert.equal(check({kind:"audio",ended:true}).length,0);
   assert.equal(check({kind:"video",ended:true}).length,0);
   assert.equal(check({kind:"audio",withVoice:false}).length,0);
