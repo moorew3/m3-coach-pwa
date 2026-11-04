@@ -358,7 +358,7 @@ try {
     console.log("Visual-first Fold viewport measurement:",JSON.stringify(firstScreen));
     assert.equal(firstScreen.tvAfterVideo,true,"TV setup cannot come before the coaching stage");
     assert.equal(firstScreen.chooserAfterVideo,true,"Full/unverified workout selector must not bury the visual coach");
-    assert.ok(firstScreen.videoTop<650,"Approved coach stage must begin within the first mobile viewport");
+    assert.ok(firstScreen.videoTop<600,"Approved coach stage must begin above the lower Fold screen controls");
     assert.ok(firstScreen.pageWidth<=firstScreen.viewportWidth+2,
       "Coach-first layout must not overflow a Fold-width mobile viewport");
     await marcusPage.locator("#videoPreviewCTA").click();
