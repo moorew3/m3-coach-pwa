@@ -114,8 +114,6 @@ export function UnifiedWorkoutDashboard() {
   };
   const pickScene = (next: string) => { setSelectedKey(next); setVideoError(false); };
   const selectCss = "mt-1 block h-12 w-full rounded-xl border border-border bg-elevated px-3 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
-  const workoutTarget = workout === "v2" ? "/v2" :
-    workout === "recovery" ? "/recovery?program=recovery" : "/recovery?program=" + workout;
 
   return (
     <section data-testid="m3-primary-workout-menu" className="rounded-3xl border border-primary/30 bg-card p-3 shadow-xl sm:p-4">
@@ -135,10 +133,17 @@ export function UnifiedWorkoutDashboard() {
             {WORKOUTS.map(w => <option value={w.value} key={w.value}>{w.label}</option>)}
           </select>
         </label>
-        <a href={workoutTarget} data-testid="m3-start-selected"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 text-base font-black text-primary-foreground">
-          <Play className="size-5" aria-hidden /> Start selected workout
-        </a>
+        {workout === "v2" ? (
+          <Link to="/v2" data-testid="m3-start-selected"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 text-base font-black text-primary-foreground">
+            <Play className="size-5" aria-hidden /> Start with Flex V2
+          </Link>
+        ) : (
+          <Link to="/recovery" search={{program:workout}} data-testid="m3-start-selected"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 text-base font-black text-primary-foreground">
+            <Play className="size-5" aria-hidden /> Start selected workout
+          </Link>
+        )}
         <div className="border-t border-border pt-3">
           <p className="flex items-center gap-2 text-sm font-black"><Film className="size-4" /> Video library</p>
           <p className="mt-1 text-xs text-muted-foreground">
