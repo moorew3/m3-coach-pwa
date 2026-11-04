@@ -315,7 +315,7 @@ try {
     await pairingContext.close();
   }
 
-  // The first visible workout must feel like one guided Marcus experience,
+  // The first visible workout must feel like one guided Flex experience,
   // without fabricating audio content or bypassing clinician clearance.
   const marcusContext = await browser.newContext({
     viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
@@ -346,7 +346,7 @@ try {
     assert.match((await marcusPage.locator("#note").textContent()) ?? "", /clinician-clearance/i);
     assert.equal((await marcusPage.locator("#runState").textContent())?.trim(), "Ready");
     await marcusPage.locator("#marcusAudioCheck").click();
-    assert.match((await marcusPage.locator("#note").textContent()) ?? "", /original approved Marcus recording/i);
+    assert.match((await marcusPage.locator("#note").textContent()) ?? "", /original approved Flex recording/i);
     await marcusPage.locator("#marcusFocus").click();
     assert.equal(await marcusPage.locator("body").evaluate(el => el.classList.contains("coachFocus")), true);
     await marcusPage.locator("#marcusFocus").click();
@@ -355,14 +355,14 @@ try {
     await marcusPage.locator("#marcusBegin").click();
     assert.equal((await marcusPage.locator("#runState").textContent())?.trim(), "Workout in progress");
     assert.match((await marcusPage.locator("#marcusNext").textContent()) ?? "", /Easy hand openings/);
-    assert.match((await marcusPage.locator("#marcusVoiceStatus").textContent()) ?? "", /original Marcus track/);
+    assert.match((await marcusPage.locator("#marcusVoiceStatus").textContent()) ?? "", /original Flex track/);
     assert.equal(await marcusPage.locator("#marcusAudioCheck").isDisabled(), true,
       "Audio test must not interrupt the guided workout");
     await marcusPage.waitForFunction(() => window.__marcusWakeRequests >= 1);
     await marcusPage.locator("#marcusBegin").click();
     assert.equal((await marcusPage.locator("#runState").textContent())?.trim(), "Paused");
     assert.match((await marcusPage.locator("#marcusOnScreen").textContent()) ?? "", /PAUSED/);
-    step("Marcus one-tap full guided session: original voice, preview audio, focus screen, wake request and safety gate");
+    step("Flex one-tap full guided session: original voice, preview audio, focus screen, wake request and safety gate");
   } finally {
     await marcusContext.close();
   }
@@ -534,7 +534,7 @@ try {
   }
 
   // The standalone seated recovery sequence is the ONLY currently active
-  // owner-approved Flex+Marcus circuit. Exercise time measures demonstration
+  // owner-approved Flex+Flex circuit. Exercise time measures demonstration
   // duration, not completed reps. Media play is mocked in this timing check;
   // original remote media URLs are separately checked for integrity.
   const recoveryContext = await browser.newContext({
@@ -655,7 +655,7 @@ try {
     // shortened workout; the rest countdown continues and warns clearly.
     await recoveryPage.locator("#coachVoice").dispatchEvent("error");
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
-    assert.match((await recoveryPage.locator("#note").textContent()) ?? "", /Marcus rest recording unavailable/);
+    assert.match((await recoveryPage.locator("#note").textContent()) ?? "", /Flex rest recording unavailable/);
     const restBeforeErrorTick = (await recoveryPage.locator("#clock").textContent())?.trim();
     await recoveryPage.clock.fastForward(1100);
     assert.notEqual((await recoveryPage.locator("#clock").textContent())?.trim(), restBeforeErrorTick);
@@ -675,7 +675,7 @@ try {
     }
     await recoveryPage.locator("#startPause").click();
     assert.equal((await recoveryPage.locator("#runState").textContent())?.trim(), "Rest interval");
-    assert.match(await recoveryPage.locator("#coachVoice").getAttribute("src") ?? "", /006720cc-2f40-44bd-a44f-4c4937336f8e\.mp3/, "Rest restore must play existing Marcus rest MP3, not exercise audio");
+    assert.match(await recoveryPage.locator("#coachVoice").getAttribute("src") ?? "", /006720cc-2f40-44bd-a44f-4c4937336f8e\.mp3/, "Rest restore must play existing Flex rest MP3, not exercise audio");
     assert.equal((await recoveryPage.locator("#clock").textContent())?.trim(), beforeReload);
     step("Recovery phone reload restores pending rest/round paused, but requires fresh clinician clearance");
     await recoveryPage.locator("#startPause").click();
@@ -824,7 +824,7 @@ try {
     await pairsContext.close();
   }
 
-  // Seated BENCH CORE A/B are real timed circuits, not approved Marcus clips.
+  // Seated BENCH CORE A/B are real timed circuits, not approved Flex clips.
   // Verify fresh clinician clearance, pause/reload, rest, skipped activity,
   // both workout choices and no invented repetitions.
   const coreContext=await browser.newContext({
@@ -838,7 +838,7 @@ try {
     assert.equal(coreRes?.status(),200);
     assert.equal(await corePage.locator("#plan option").count(),2);
     assert.equal(await corePage.locator("video").count(),0,"Unapproved core demo videos must not be invented");
-    assert.equal(await corePage.locator("audio").count(),0,"No invented Marcus narration");
+    assert.equal(await corePage.locator("audio").count(),0,"No invented Flex narration");
     await corePage.locator("#rounds").selectOption("1");
     await corePage.locator("#duration").selectOption("15");
     await corePage.locator("#rest").selectOption("15");
@@ -1003,7 +1003,7 @@ try {
   }
 
   // Audio-only preparation is not permitted to finish silently if its
-  // approved Marcus recording errors or stalls. Simulate media events in
+  // approved Flex recording errors or stalls. Simulate media events in
   // Chrome without fetching/altering or replacing owner-approved assets.
   const voiceContext = await browser.newContext({
     viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true,
@@ -1031,10 +1031,10 @@ try {
     await voicePage.clock.fastForward(4100);
     await voicePage.locator("#coachVoice").dispatchEvent("error");
     assert.equal((await voicePage.locator("#runState").textContent())?.trim(), "Tap to enable sound");
-    assert.match((await voicePage.locator("#note").textContent()) ?? "", /Marcus voice track failed/);
+    assert.match((await voicePage.locator("#note").textContent()) ?? "", /Flex voice track failed/);
     const frozenAt = await voicePage.locator("#clock").textContent();
     await voicePage.clock.fastForward(45_000);
-    assert.equal(await voicePage.locator("#clock").textContent(), frozenAt, "Broken Marcus audio must freeze workout timer");
+    assert.equal(await voicePage.locator("#clock").textContent(), frozenAt, "Broken Flex audio must freeze workout timer");
     assert.match((await voicePage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
     assert.equal(await voicePage.locator("#moveTitle").innerText(), "Easy hand openings");
     await voicePage.locator("#startPause").click();
@@ -1042,7 +1042,7 @@ try {
     assert.equal(await voicePage.locator("#coachVoice").getAttribute("src"), originalMarcus);
     await voicePage.clock.fastForward(1100);
     assert.notEqual(await voicePage.locator("#clock").textContent(), frozenAt, "Timer resumes only after explicit Retry");
-    step("Failed Marcus audio freezes preparation timer, preserves progress, and retries same recording");
+    step("Failed Flex audio freezes preparation timer, preserves progress, and retries same recording");
 
     // A stream can stall without emitting an error. The audio watchdog
     // must suspend only the active step, not invent elapsed reps/steps.
@@ -1057,9 +1057,9 @@ try {
     const stalledAt = await voicePage.locator("#clock").textContent();
     await voicePage.clock.fastForward(32_000);
     assert.equal(await voicePage.locator("#clock").textContent(), stalledAt);
-    assert.match((await voicePage.locator("#note").textContent()) ?? "", /Marcus audio buffering stopped/);
+    assert.match((await voicePage.locator("#note").textContent()) ?? "", /Flex audio buffering stopped/);
     assert.match((await voicePage.locator("#progressText").textContent()) ?? "", /^0 of 10 steps completed/);
-    step("Stalled Marcus audio pauses timed guidance instead of silently completing the step");
+    step("Stalled Flex audio pauses timed guidance instead of silently completing the step");
   } finally {
     await voiceContext.close();
   }
