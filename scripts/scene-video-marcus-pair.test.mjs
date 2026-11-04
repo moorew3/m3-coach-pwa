@@ -9,7 +9,7 @@ assert.ok(from>=0&&to>from,"Bound media approval helpers must exist");
 const factory=new Function("getSceneApprovals",html.slice(from,to)+"\nreturn {approvalMatchesScene,approvalNeedsReview};");
 const candidate={id:"C17",video:"https://example.org/approved-c17.mp4",audio:"https://example.org/approved-marcus-c17.mp3"};
 
-test("exact moving scene and matching Marcus narration are both required",()=>{
+test("exact moving scene and matching Flex narration are both required",()=>{
  const gate=factory(()=>({C17:{video:candidate.video,audio:candidate.audio,reviewedAt:"2026-10-25T00:00:00Z"}}));
  assert.equal(gate.approvalMatchesScene(candidate),true);
  assert.equal(gate.approvalNeedsReview(candidate),false);
@@ -21,7 +21,7 @@ test("historical video-only approvals are preserved but require explicit audio r
  const gate=factory(()=>({C17:candidate.video}));
  assert.equal(gate.approvalMatchesScene(candidate),false);
  assert.equal(gate.approvalNeedsReview(candidate),true);
- assert.match(html,/Previous approval saved · Re-review exact video \+ Marcus audio/);
+ assert.match(html,/Previous approval saved · Re-review exact video \+ Flex audio/);
 });
 test("audio-less or unapproved scenes never become timed workouts",()=>{
  const gate=factory(()=>({C17:{video:candidate.video,audio:candidate.audio}}));
