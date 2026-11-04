@@ -16,7 +16,7 @@ test("only owner-approved seven motion scene IDs are used in active seated progr
   assert.ok(!page.includes('id:"C11-PRE-HANDS-R1"'), "Unapproved C11 must not activate");
   assert.equal(approved.length, 7);
   assert.match(page, /Original Flex/);
-  assert.match(page, /Marcus English/);
+  assert.match(page, /Flex English/);
 });
 
 test("seated session requires clinician signoff before the timer and set loop can begin", () => {
@@ -38,7 +38,7 @@ test("one/two optional demonstrated sets do not multiply, log, or invent athlete
   assert.match(page, /sessionStarted=false;safetyLock=false;for\(const input of document.querySelectorAll\("#clearance \.check"\)\)input.checked=false;targetRounds=Number/);
   assert.match(page, /btn\.addEventListener\("click",\(\)=>stopForNavigation\(phase,i\)\)/);
   assert.match(page, /name:"Controlled arm reaches"/);
-  assert.match(page, /existing Marcus recording is general shoulder-mobility audio/);
+  assert.match(page, /existing Flex recording is general shoulder-mobility audio/);
   assert.match(page, /Sets count timed demonstrations, not verified athlete repetitions/);
   assert.doesNotMatch(page, /actualReps\s*=\s*workRound|completedReps\s*\+\+/);
 });
@@ -59,7 +59,7 @@ test("browser scheduler verifies actual second set and rest instead of source-on
   assert.match(chrome, /Seated hammer curls/);
 });
 
-test("locked motion and Marcus recording sources remain byte-for-byte referenced", () => {
+test("locked motion and Flex recording sources remain byte-for-byte referenced", () => {
   const sourceIds = [
     "9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4", // C01-R3
     "01a14462-bc16-778b-a773-db16e57aade7.mp4", // C02
@@ -68,8 +68,8 @@ test("locked motion and Marcus recording sources remain byte-for-byte referenced
     "b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4", // C08-PRESS-R3
     "f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4", // C09-PRE-BREATH-R2
     "d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4", // C10-POST-BREATH-R1
-    "9226f649-9808-4275-b269-bcc93d3b0342.mp3", // approved C09 Marcus
-    "37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3", // approved C10 Marcus
+    "9226f649-9808-4275-b269-bcc93d3b0342.mp3", // approved C09 Flex
+    "37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3", // approved C10 Flex
   ];
   for (const sourceId of sourceIds) {
     assert.ok(page.includes(sourceId), "Original approved asset changed or missing: " + sourceId);
@@ -114,10 +114,10 @@ test("browser reload test proves rest/round retention and safety check re-confir
   assert.match(chrome, /Closing\/reopening recovery tab preserves approved exercise/);
 });
 
-test("rest after device restart uses approved rest Marcus recording, not stale exercise audio", () => {
+test("rest after device restart uses approved rest Flex recording, not stale exercise audio", () => {
   assert.match(page, /if\(restNext\)\{mode="rest";beginTicker\(\);if\(audio\.src!==REST_MARCUS\)playRestVoice\(\)/);
   assert.match(page, /const REST_MARCUS="https:\/\/d2ol7oe51mr4n9\.cloudfront\.net\/.*\/006720cc-2f40-44bd-a44f-4c4937336f8e\.mp3"/);
-  assert.match(chrome, /Rest restore must play existing Marcus rest MP3/);
+  assert.match(chrome, /Rest restore must play existing Flex rest MP3/);
 });
 
 test("Android page lock pauses the timer and saving a completed session clears its cache", () => {
@@ -129,9 +129,9 @@ test("Android page lock pauses the timer and saving a completed session clears i
   assert.match(page, /localStorage\.removeItem\(PROGRESS_KEY\)/);
 });
 
-test("required audio-only Marcus errors pause the timer before any fake completion", () => {
-  assert.match(page, /audio\.addEventListener\("error",\(\)=>\{if\(mode==="rest"\)\{tell\("Marcus rest recording unavailable/);
-  assert.match(page, /playbackError\("Approved Marcus voice track failed.","audio"\)/);
+test("required audio-only Flex errors pause the timer before any fake completion", () => {
+  assert.match(page, /audio\.addEventListener\("error",\(\)=>\{if\(mode==="rest"\)\{tell\("Flex rest recording unavailable/);
+  assert.match(page, /playbackError\("Approved Flex voice track failed.","audio"\)/);
   assert.match(page, /function playbackError\(msg,source\)/);
   assert.match(page, /if\(source==="audio"&&!step\(\)\.voice\)return/);
   assert.match(page, /if\(interval!==null\)secondsLeft=Math\.max\(0,deadline-Date\.now\(\)\)/);
@@ -140,21 +140,21 @@ test("required audio-only Marcus errors pause the timer before any fake completi
   assert.match(page, /mode==="waiting"\?"▶ Retry approved media"/);
 });
 
-test("Marcus audio buffering is watched independently of video without replacing sources", () => {
+test("Flex audio buffering is watched independently of video without replacing sources", () => {
   assert.match(page, /audio\.addEventListener\("waiting",\(\)=>waitForBuffer\("audio"\)\)/);
   assert.match(page, /audio\.addEventListener\("stalled",\(\)=>waitForBuffer\("audio"\)\)/);
   assert.match(page, /audio\.addEventListener\("playing",/);
   assert.match(page, /clearMediaBufferChecks\(\)/);
   assert.match(page, /kind==="video"\?2300:3000/);
-  assert.match(page, /Approved Marcus audio buffering stopped/);
+  assert.match(page, /Approved Flex audio buffering stopped/);
   assert.match(page, /function stopMedia\(rewind\)\{playbackGeneration\+\+;clearMediaBufferChecks\(\)/);
 });
 
 test("Chrome verifies no phantom step completion on real audio errors and watchdog stalls", () => {
   assert.match(chrome, /dispatchEvent\("error"\)/);
   assert.match(chrome, /dispatchEvent\("waiting"\)/);
-  assert.match(chrome, /Broken Marcus audio must freeze workout timer/);
+  assert.match(chrome, /Broken Flex audio must freeze workout timer/);
   assert.match(chrome, /Timer resumes only after explicit Retry/);
-  assert.match(chrome, /Stalled Marcus audio pauses timed guidance/);
+  assert.match(chrome, /Stalled Flex audio pauses timed guidance/);
   assert.match(chrome, /originalMarcus/);
 });
