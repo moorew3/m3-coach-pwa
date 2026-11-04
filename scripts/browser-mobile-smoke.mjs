@@ -348,12 +348,14 @@ try {
     assert.match(await marcusPage.locator("#coachVideo").getAttribute("src")??"",/f92c84ea-a2bc-4623-966b-deb8ceff8a87\.mp4/);
     const firstScreen=await marcusPage.evaluate(()=>({
       videoTop:document.querySelector("#videoBox").getBoundingClientRect().top,
+      chooserAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector("#unifiedWorkoutChooser"))&Node.DOCUMENT_POSITION_FOLLOWING),
       pageWidth:document.documentElement.scrollWidth,
       viewportWidth:window.innerWidth,
       tvAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector("#tvLaunch"))&Node.DOCUMENT_POSITION_FOLLOWING)
     }));
     assert.equal(firstScreen.tvAfterVideo,true,"TV setup cannot come before the coaching stage");
-    assert.ok(firstScreen.videoTop<800,"Approved coach video must be visible within the first phone screen/scroll");
+    assert.equal(firstScreen.chooserAfterVideo,true,"Full/unverified workout selector must not bury the visual coach");
+    assert.ok(firstScreen.videoTop<650,"Approved coach stage must begin within the first mobile viewport");
     assert.ok(firstScreen.pageWidth<=firstScreen.viewportWidth+2,
       "Coach-first layout must not overflow a Fold-width mobile viewport");
     await marcusPage.locator("#videoPreviewCTA").click();
