@@ -35,7 +35,7 @@ export const V2_VIEWPOINTS: V2Viewpoint[] = [
   },
 ];
 
-export const V2_WORKOUTS: V2Workout[] = [
+const V2_ARCHIVED_WORKOUTS: V2Workout[] = [
   {
     id: "push-arms",
     title: "Push + Arm Finisher",
@@ -479,6 +479,17 @@ export const V2_WORKOUTS: V2Workout[] = [
     ],
   },
 ];
+
+/** Flex's active coaching menu excludes the two exercises the owner cannot perform.
+ * Other exercise entries remain available, subject to individual recovery modifications.
+ * Raw historical exercises remain in the archive but are never scheduled as active.
+ */
+export const V2_WORKOUTS: V2Workout[] = V2_ARCHIVED_WORKOUTS.map(workout => ({
+  ...workout,
+  focus: workout.id === "legs" ? "Lower body · adapt load to current restrictions" : workout.focus,
+  exercises: workout.exercises.filter(exercise =>
+    exercise.id !== "back-squat" && exercise.id !== "leg-press"),
+}));
 
 export function viewpointFor(id: string) {
   return V2_VIEWPOINTS.find((v) => v.id === id) ?? V2_VIEWPOINTS[0];
