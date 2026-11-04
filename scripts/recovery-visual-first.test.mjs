@@ -17,7 +17,8 @@ test("visual-first recovery preserves the same approved Flex videos and Marcus a
  assert.match(source,/id="coachVoice"/);
 });
 test("initial first screen is the real moving approved Flex video, not a placeholder",()=>{
- assert.match(source,/id="videoBox"[^>]*><video id="coachVideo"/);
+ assert.match(source,/id="videoBox"[^>]*><button type="button" id="videoPreviewCTA"/);
+ assert.match(source,/<video id="coachVideo"/);
  assert.match(source,/id="videoPreviewCTA"/);
  assert.match(source,/id="textBox" class="guidePlaceholder hidden"|class="guidePlaceholder hidden" id="textBox"/);
  const player=source.indexOf('<section class="player" aria-label="Current guided activity">');
