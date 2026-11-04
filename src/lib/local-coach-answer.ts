@@ -34,6 +34,19 @@ export function localCoachAnswer(question: string, ctx: LiveCoachContext): strin
     return "The camera is tracking, but it hasn't produced a specific reliable form cue. I can't confirm that the movement is correct.";
   }
 
+  // Flex combines training with anatomy, recovery, nutrition and mentoring.
+  // Immediate medical safety and camera confidence checks above always win.
+  if (isFlexExcludedExercise(q))
+    return flexCoachCue("recovery", "leg press");
+  if (/\b(anatomy|which muscles|what muscles|which muscle|what muscle|joint mechanics|what does this work)\b/.test(q))
+    return flexCoachCue("anatomy", ctx.exercise || "this exercise");
+  if (/\b(physical therapy|rehabilitation|rehab|injury recovery|injury modification|safe for my injury)\b/.test(q))
+    return flexCoachCue("recovery", ctx.exercise || "this exercise");
+  if (/\b(nutrition|what should i eat|eat before|eat after|protein|carbohydrates|carbs|hydration|food for recovery)\b/.test(q))
+    return flexCoachCue("nutrition", ctx.exercise || "this exercise");
+  if (/\b(motivate me|motivation|mentor|accountability|feeling discouraged|keep me going)\b/.test(q))
+    return flexCoachCue("mentor", ctx.exercise || "this exercise");
+
   if (/\b(what(?:'s| is) next|next exercise|next move|what comes next|after this)\b/.test(q)) {
     return ctx.next?.trim() ? `The workout script has ${ctx.next.trim()} next.` : "The next step is not recorded in the current coach state.";
   }
