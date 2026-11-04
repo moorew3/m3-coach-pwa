@@ -4,6 +4,7 @@
  * The active script and explicit user logs remain authoritative.
  */
 import type { LiveCoachContext } from "./coach-talk";
+import { flexCoachCue, isFlexExcludedExercise } from "./flex-coach";
 
 export function localCoachAnswer(question: string, ctx: LiveCoachContext): string | null {
   const q = question.toLowerCase().replace(/[’']/g, "'").trim();
