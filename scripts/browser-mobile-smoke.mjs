@@ -353,6 +353,8 @@ try {
       viewportWidth:window.innerWidth,
       tvAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector(".tvLaunch"))&Node.DOCUMENT_POSITION_FOLLOWING)
     }));
+    await mkdir("artifacts",{recursive:true});
+    await marcusPage.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:4000});
     console.log("Visual-first Fold viewport measurement:",JSON.stringify(firstScreen));
     assert.equal(firstScreen.tvAfterVideo,true,"TV setup cannot come before the coaching stage");
     assert.equal(firstScreen.chooserAfterVideo,true,"Full/unverified workout selector must not bury the visual coach");
