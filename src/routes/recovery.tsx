@@ -14,7 +14,7 @@ export const Route = createFileRoute("/recovery")({
   head: () => ({
     meta: [
       { title: "Recovery Coach · M3 FLEX" },
-      { name: "description", content: "Original M3 FLEX app with the same approved Flex and Marcus recovery exercise player, workout history and safety checks." },
+      { name: "description", content: "Original M3 FLEX app with the same approved Flex and Flex recovery exercise player, workout history and safety checks." },
     ],
   }),
   component: UnifiedRecovery,
@@ -57,7 +57,7 @@ function UnifiedRecovery() {
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-primary">M3 FLEX · Your existing app</p>
           <h1 className="mt-1 text-2xl font-black">Recovery Coach</h1>
-          <p className="text-sm text-muted-foreground">Approved Flex motion and Marcus audio, inside your original workout app.</p>
+          <p className="text-sm text-muted-foreground">Approved Flex motion and Flex audio, inside your original workout app.</p>
         </div>
         <Link to="/" className="tap-target rounded-xl border border-border px-3 text-xs font-bold">Home</Link>
       </header>
