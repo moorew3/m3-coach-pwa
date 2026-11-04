@@ -33,6 +33,7 @@ test("advanced candidate scenes are collapsed on entry but deep links re-open th
  assert.match(source,/<details id="advancedLibrary"/);
  assert.doesNotMatch(source,/<details id="advancedLibrary"[^>]*\bopen\b/);
  assert.match(source,/window\.addEventListener\("hashchange",revealLinkedReview\)/);
+ assert.match(source,/new URLSearchParams\(location\.search\)\.get\("review"\)==="1"/);
  assert.match(source,/if\(panel\)panel\.open=true/);
  for(const selector of ["allScenesCatalog","sceneGrid","sceneApprovalControls","rowingCardio","benchCoreProgram"])
   assert.match(source,new RegExp('id="'+selector+'"'));
