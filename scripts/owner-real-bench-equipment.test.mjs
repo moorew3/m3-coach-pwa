@@ -25,7 +25,7 @@ test("stretch category accepted but specific C21 and C22 footage/audio cannot be
   assert.match(get(id).ownerSetup,/NOT approval|still require checking/i);
  }
  assert.equal(get("C21").audio,null);
- assert.match(read("public/recovery-coach/programs/index.html"),/this does not approve an unseen animation or unverified Marcus audio/);
+ assert.match(read("public/recovery-coach/programs/index.html"),/this does not approve an unseen animation or unverified Flex audio/);
 });
 
 test("bench and mobility guidance is visible within existing single app, keeping leg unloaded and approved clips locked",()=>{
