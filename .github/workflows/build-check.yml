@@ -97,6 +97,14 @@ jobs:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: node scripts/browser-mobile-smoke.mjs
 
+      - name: Retain real Fold-width Recovery Coach QA screenshot for owner review
+        uses: actions/upload-artifact@v4
+        with:
+          name: m3-flex-recovery-phone-visual-review
+          path: artifacts/m3-flex-recovery-visual-check.png
+          retention-days: 3
+          if-no-files-found: error
+
       - name: Verify unified original React and Recovery route on independent static host
         env:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
