@@ -930,11 +930,45 @@ export const MEASUREMENT_FIELDS = [
 
 /* --------------------------- SUPERSET HELPERS -------------------------- */
 
+/**
+ * Bring declared superset partners together within their existing training
+ * section. A standalone exercise may appear between A1 and A2 in the source
+ * plan; without this pass the coach incorrectly treats both as solo sets and
+ * inserts a rest in the middle of the intended superset.
+ *
+ * The relative order of the partners and all non-partner exercises is stable.
+ * Warm-up, main work and finisher are handled independently so a shared group
+ * label can never pull a movement across a section boundary.
+ */
+export function groupSupersetPartners(items: Exercise[]): Exercise[] {
+  const scheduled = new Set<Exercise>();
+  const result: Exercise[] = [];
+  for (const exercise of items) {
+    if (scheduled.has(exercise)) continue;
+    const group = exercise.superset
+      ? items.filter((item) => item.superset === exercise.superset)
+      : [exercise];
+    for (const member of group) {
+      if (scheduled.has(member)) continue;
+      scheduled.add(member);
+      result.push(member);
+    }
+  }
+  return result;
+}
+
 /** Ordered exercise list honouring the "use supersets" preference. */
 export function orderedExercises(day: number, useSupersets: boolean): Exercise[] {
-  const list = exercisesForDay(day);
-  if (useSupersets) return list;
-  return list.map((e) => ({ ...e, superset: undefined, supersetSlot: undefined }));
+  const plan = planForDay(day);
+  const list = [...plan.warmup, ...plan.main, ...plan.finisher];
+  if (!useSupersets) {
+    return list.map((e) => ({ ...e, superset: undefined, supersetSlot: undefined }));
+  }
+  return [
+    ...groupSupersetPartners(plan.warmup),
+    ...groupSupersetPartners(plan.main),
+    ...groupSupersetPartners(plan.finisher),
+  ];
 }
 
 export const RECOVERY_CHECKLIST = [

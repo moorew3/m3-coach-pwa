@@ -1,9 +1,9 @@
 /**
  * CLOUD SYNC — server functions
  * ------------------------------------------------------------------
- * Uses locked SECURITY DEFINER RPCs in Supabase so Railway only needs the
- * project's publishable key. The sync tables remain RLS-protected and are
- * never directly exposed to the browser.
+ * Uses locked SECURITY DEFINER RPCs in Supabase. The portable application
+ * server uses the project's publishable key; client access goes through
+ * server functions rather than direct table writes.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";

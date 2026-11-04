@@ -21,6 +21,9 @@ export function CoachMotion({
   className = "",
   label,
   onLayerChange,
+  fallbackAtTop = false,
+  stableFraming = true,
+  cycleKey,
 }: {
   url: string;
   vimeoId?: string;
@@ -33,32 +36,58 @@ export function CoachMotion({
   preloadUrl?: string;
   className?: string;
   label?: string;
+  /** On an entrance screen, float a failed-video retry ABOVE the wake tap
+   * overlay instead of hiding it under the bottom "Yes/No" controls. */
+  fallbackAtTop?: boolean;
+  /** V2 requires stable full-body framing; the player already uses object-contain. */
+  stableFraming?: boolean;
+  /** Force a fresh video on a new exercise set while retaining the same approved URL. */
+  cycleKey?: string;
   /** Compatibility/test hook. Direct playback always uses layer 0. */
   onLayerChange?: (layer: 0 | 1, reason: "loop" | "transition") => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<"source" | "stalled" | "blocked" | null>(null);
+  const [attempt, setAttempt] = useState(0);
+  const stalledTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearStalledTimer = () => {
+    if (stalledTimer.current !== null) clearTimeout(stalledTimer.current);
+    stalledTimer.current = null;
+  };
+  const watchStall = () => {
+    clearStalledTimer();
+    if (!playing) return;
+    stalledTimer.current = setTimeout(() => setFailure("stalled"), 12_000);
+  };
   const [loaded, setLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const callbackRef = useRef(onLayerChange);
   callbackRef.current = onLayerChange;
 
   useEffect(() => {
-    setFailed(false);
+    setFailure(null);
     setLoaded(false);
     setIsPlaying(false);
-  }, [url]);
+    clearStalledTimer();
+  }, [url, attempt, cycleKey]);
+
+  useEffect(() => () => clearStalledTimer(), []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || failed) return;
+    if (!video || failure) return;
     video.playbackRate = Math.max(0.5, Math.min(2, rate || 1));
     if (playing) {
-      void video.play().catch(() => undefined);
+      void video.play().catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "NotAllowedError") {
+          setFailure("blocked");
+        }
+      });
     } else {
       video.pause();
     }
-  }, [playing, rate, url, failed, loaded]);
+    if (!playing) clearStalledTimer();
+  }, [playing, rate, url, failure, loaded, attempt]);
 
   const still = poster || COACH_REFERENCE;
   if (vimeoId)
@@ -77,15 +106,17 @@ export function CoachMotion({
     <div
       className={`relative overflow-hidden bg-black ${className}`}
       data-testid="coach-motion"
-      data-failed={failed ? "true" : "false"}
+      data-stable-framing={stableFraming ? "true" : "false"}
+      data-failed={failure ? "true" : "false"}
+      data-failure-reason={failure ?? ""}
       data-url={url}
       data-playing={isPlaying ? "true" : "false"}
-      data-shown-url={loaded && !failed ? url : ""}
+      data-shown-url={loaded && !failure ? url : ""}
       aria-label={label ?? "Coach demonstration"}
       role="img"
     >
       <div className="absolute inset-0" style={mirrored ? { transform: "scaleX(-1)" } : undefined}>
-        {failed ? (
+        {failure ? (
           <img
             src={still}
             alt=""
@@ -94,7 +125,7 @@ export function CoachMotion({
           />
         ) : (
           <video
-            key={url}
+            key={`${url}::${cycleKey ?? "same-exercise"}::${attempt}`}
             ref={videoRef}
             src={url}
             poster={still}
@@ -107,18 +138,31 @@ export function CoachMotion({
             data-active="true"
             onCanPlay={(event) => {
               setLoaded(true);
-              if (playing) void event.currentTarget.play().catch(() => undefined);
+              if (playing) void event.currentTarget.play().catch((error: unknown) => {
+                if (error instanceof DOMException && error.name === "NotAllowedError") setFailure("blocked");
+              });
             }}
             onLoadedData={(event) => {
               setLoaded(true);
               callbackRef.current?.(0, "transition");
-              if (playing) void event.currentTarget.play().catch(() => undefined);
+              if (playing) void event.currentTarget.play().catch((error: unknown) => {
+                if (error instanceof DOMException && error.name === "NotAllowedError") setFailure("blocked");
+              });
             }}
-            onPlaying={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
+            onPlaying={() => {
+              clearStalledTimer();
+              setIsPlaying(true);
+            }}
+            onWaiting={watchStall}
+            onStalled={watchStall}
+            onPause={() => {
+              clearStalledTimer();
+              setIsPlaying(false);
+            }}
             onEnded={() => setIsPlaying(false)}
             onError={() => {
-              setFailed(true);
+              clearStalledTimer();
+              setFailure("source");
               setLoaded(false);
               setIsPlaying(false);
             }}
@@ -127,6 +171,33 @@ export function CoachMotion({
           />
         )}
       </div>
+
+      {failure && (
+        <div
+          role="status"
+          aria-live="polite"
+          data-testid="coach-video-fallback"
+          className={`absolute inset-x-3 ${fallbackAtTop ? "top-4 z-[70] pointer-events-auto" : "bottom-5"} rounded-xl border border-amber-300/60 bg-black/85 p-3 text-center text-sm text-white shadow-lg`}
+        >
+          <p className="font-semibold">Approved exercise video unavailable</p>
+          <p className="mt-1 text-xs text-white/80">
+            {failure === "blocked"
+              ? "Your browser blocked playback. Tap retry to play the same approved video."
+              : failure === "stalled"
+                ? "Video paused while loading. Try the same approved video again."
+                : "The video source could not load. No other exercise will be substituted."}
+            {" "}The workout timer is unchanged; use Pause if you need this demonstration.
+          </p>
+          <button
+            type="button"
+            data-testid="retry-coach-video"
+            onClick={() => setAttempt((value) => value + 1)}
+            className="mt-2 rounded-lg border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold"
+          >
+            Retry approved video
+          </button>
+        </div>
+      )}
 
       {preloadUrl && !preloadUrl.startsWith("https://player.vimeo.com/") && preloadUrl !== url && (
         <video

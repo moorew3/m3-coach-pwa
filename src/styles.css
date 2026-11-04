@@ -2,6 +2,12 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Android WebView edge-to-edge: keep every app header below system clock/camera/status.
+   Normal web and PWA layouts are unchanged. Native activity retains existing bottom nav. */
+html.m3-android-native body {
+  padding-top: max(28px, env(safe-area-inset-top, 0px));
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /*
