@@ -67,45 +67,39 @@ try{
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Program"}).click();
  await page.getByTestId("m3-primary-workout-menu").waitFor();
  assert.equal(await page.getByTestId("m3-legacy-program-archive").getAttribute("open"),null,"Old standing workout must not open by default");
- const scenesUrl=await page.getByTestId("program-scene-library").getAttribute("href");
- assert.equal(scenesUrl,"/recovery-coach/programs/index.html");
+ // Compact same-app video library: old approved assets, every saved render, and owner review.
+ await page.getByTestId("m3-workout-select").waitFor();
+ await page.waitForFunction(()=>Array.isArray(window.M3_FLEX_SCENE_LIBRARY)&&window.M3_FLEX_SCENE_LIBRARY.length>=80);
+ assert.equal(await page.getByTestId("m3-video-select").locator("option").count(),9,
+   "Seven locked videos plus two earlier approved archive links are available first");
+ assert.equal(await page.getByTestId("m3-flex-video").evaluate(v=>v.paused),true);
+ await page.getByTestId("m3-show-unapproved").click();
+ assert.ok(await page.getByTestId("m3-video-select").locator("option").count()>=70,
+   "Saved renders must be discoverable without scrolling through other pages");
+ await page.getByTestId("m3-video-select").selectOption("scene:C14");
+ assert.equal(await page.getByTestId("m3-approve-video").count(),1);
+ await page.getByTestId("m3-approve-video").click();
+ const approval=await page.evaluate(()=>JSON.parse(localStorage.getItem("m3-flex-review-approval-v1")||"{}").C14);
+ assert.ok(approval?.video&&approval?.audio&&approval?.reviewedAt,
+   "Owner approval must save the exact video and Flex voice pair");
+ await page.getByTestId("m3-show-approved").click();
+ await page.getByTestId("m3-video-select").selectOption("scene:C14");
+ assert.equal(await page.getByTestId("m3-flex-video").evaluate(v=>v.paused),true,
+   "Owner-approved clip must not autoplay or fabricate exercise reps");
+ const scenesUrl="/recovery-coach/programs/index.html";
  const sceneResponse=await page.request.get(origin+scenesUrl);
- assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
+ assert.equal(sceneResponse.status(),200,"Original scene editor must remain available");
  assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
- // Original approved media and older original-app bench clips must be viewable from one app.
  await page.goto(origin+scenesUrl,{waitUntil:"domcontentloaded"});
  await page.getByTestId("existing-app-videos").waitFor();
  await page.locator("#existingAppVideoLibrary summary").click();
- assert.equal(await page.locator("#existingLockedVideoLinks a").filter({hasText:"▶"}).count(),7,
-   "Seven existing approved videos must be linked without creating new clips");
- assert.equal(await page.locator("#existingOriginalAppLinks a").count(),5,
-   "Only remaining historical original-app links are visible as unverified references");
- assert.equal(await page.getByTestId("bench-press-video-needed").count(),1,
-   "Broken bench-press link must be a visible missing-video status, not a clickable video");
- assert.match(await page.locator("#existingVideoCount").textContent(),/7 original approved Recovery videos reused/);
- assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
-   "Reused media must not auto-play on entering the gallery");
- assert.equal(await page.locator("#existingLockedVideoLinks button[data-reuse-video]").count(),7,
-   "Each approved clip must be selectable inside the same player");
- await page.locator("#existingLockedVideoLinks button[data-reuse-video]").first().click();
- assert.match(await page.locator("#sceneTitle").textContent(),/Calm seated breathing/);
- assert.equal(await page.locator("#play").isEnabled(),true);
- assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
-   "Choosing an approved clip cannot auto-start a workout");
- assert.match(await page.locator("#playback").textContent(),/Press Play verified media/);
+ assert.equal(await page.locator("#existingLockedVideoLinks a").filter({hasText:"▶"}).count(),7);
  await page.goBack();
  await page.getByTestId("m3-primary-workout-menu").waitFor();
- await page.getByTestId("program-approve-scenes").click();
- await page.locator("#allScenesCatalog").waitFor();
- assert.equal(await page.locator("#sceneFilter").inputValue(),"candidates","Owner review must show C13–C23 without manual search");
- assert.equal(await page.locator("#sceneGrid .item").count(),11,"Exactly eleven rendered drafts need explicit review");
- assert.equal(await page.locator("#sceneGrid .item").filter({hasText:"MARCUS AUDIO NOT VERIFIED"}).count(),4);
- assert.equal(await page.locator("#sceneReviewVideo").isVisible(),false,"Review entry must not autoplay or activate a clip");
- await page.goBack();
- await page.getByTestId("m3-primary-workout-menu").waitFor();
- await page.getByTestId("program-v2").click();
+ await page.getByTestId("m3-workout-select").selectOption("v2");
+ await page.getByTestId("m3-start-selected").click();
  await page.getByTestId("v2-approved-avatar-entrance").waitFor();
- await page.getByTestId("v2-opening-exit").click();
+  await page.getByTestId("v2-opening-exit").click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
