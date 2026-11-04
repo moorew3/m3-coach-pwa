@@ -27,11 +27,15 @@ test("seven approved Recovery MP4s are already reused, not duplicated as new vid
 });
 test("original app bench, incline, lateral and stretch links are owner-form references only",()=>{
  const origin=read("src/data/coach-identity.ts");
- for(const filename of ["benchPressV3.mp4","inclineDumbbellPressV3.mp4","lateralRaise.mp4","shoulderMobility.mp4","chestMobilityV2.mp4","seatedRowV3.mp4"]){
+ for(const filename of ["inclineDumbbellPressV3.mp4","lateralRaise.mp4","shoulderMobility.mp4","chestMobilityV2.mp4","seatedRowV3.mp4"]){
    assert.ok(page.includes(filename),"Original app archive link missing "+filename);
    assert.ok(origin.includes(filename),"Archive link not from current approved coach-identity source: "+filename);
  }
  assert.match(page,/id="existingAppVideoLibrary"/);
+ assert.match(page,/data-testid="bench-press-video-needed"/);
+ assert.doesNotMatch(page,/<a[^>]+benchPressV3\.mp4/);
+ assert.equal((page.match(/<a href="https:\/\/twenty-two-gainz-tracker\.lovable\.app/g)||[]).length,5);
+ assert.doesNotMatch(origin,/^\s*benchPress\s*:/m);
  assert.match(page,/NOT cleared as seated boot-recovery demos/);
  assert.match(page,/No leg-driven rowing/);
  assert.match(page,/rel="noopener noreferrer"/);
