@@ -81,6 +81,9 @@ try {
   await page.getByTestId("app-entry-tap").click();
   await page.getByTestId("app-entry-yes").click({ timeout: 12000 });
   await page.getByTestId("app-entry-gate").waitFor({ state: "detached", timeout: 10000 });
+  await page.getByTestId("m3-workout-select").waitFor();
+  assert.equal(await page.getByTestId("m3-show-unapproved").count(),1);
+  await page.getByTestId("m3-advanced-workouts").locator("summary").click();
   await page.getByTestId("seated-program-warning").waitFor();
   await page.getByTestId("legacy-workout-start").click();
   await page.getByTestId("legacy-safety-gate").waitFor();
@@ -117,6 +120,8 @@ try {
   // without a fake rep log or separate M3 FLEX account.
   await embedded.locator("#setRounds").selectOption("2");
   await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Today"}).click();
+  await page.getByTestId("m3-workout-select").waitFor();
+  await page.getByTestId("m3-advanced-workouts").locator("summary").click();
   await page.getByTestId("m3-unified-workout-picker").waitFor();
   step("Existing M3 FLEX now includes a native Recovery tab, same-origin approved player and unchanged original Home");
 
