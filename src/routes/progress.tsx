@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Undo2 } from "lucide-react";
 import { ShareWorkout } from "@/components/ShareWorkout";
+import { TransformationJourney } from "@/components/TransformationJourney";
 import {
   MEASUREMENT_FIELDS,
   PHOTO_INSTRUCTIONS,
@@ -213,6 +214,8 @@ function Progress() {
           Stored locally on this device; use the Recovery Logbook's password-protected export before changing phones or reinstalling the app.
         </p>
       </section>
+
+      <TransformationJourney measurements={state.measurements} completedWorkouts={completedCount(state)} />
 
       <section
         data-testid="coach-memory-overview"
