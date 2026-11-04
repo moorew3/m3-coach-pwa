@@ -353,6 +353,7 @@ try {
       viewportWidth:window.innerWidth,
       tvAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector(".tvLaunch"))&Node.DOCUMENT_POSITION_FOLLOWING)
     }));
+    console.log("Visual-first Fold viewport measurement:",JSON.stringify(firstScreen));
     assert.equal(firstScreen.tvAfterVideo,true,"TV setup cannot come before the coaching stage");
     assert.equal(firstScreen.chooserAfterVideo,true,"Full/unverified workout selector must not bury the visual coach");
     assert.ok(firstScreen.videoTop<650,"Approved coach stage must begin within the first mobile viewport");
