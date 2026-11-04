@@ -155,7 +155,7 @@ function Today() {
         <p className="mt-1 text-sm text-muted-foreground">
           One app for the approved seated Recovery Coach, Equipment A, Equipment B,
           your original weekly workouts and the full scene library. The same
-          original Flex and Marcus media stay protected.
+          original Flex and Flex media stay protected.
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           <Link to="/v2" data-testid="open-existing-v2" className="tap-target flex items-center justify-center rounded-xl border-2 border-accent bg-accent/15 px-3 text-center text-sm font-bold text-accent">
@@ -358,10 +358,10 @@ function Today() {
               className="tap-target mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-accent bg-accent/15 px-3 py-3 text-center text-sm font-black uppercase leading-snug text-accent"
             >
               <Play className="size-5 shrink-0" aria-hidden />
-              ▶ Marcus Guided Flex · 7 approved animated scenes
+              ▶ Flex Guided Flex · 7 approved animated scenes
             </a>
             <p className="mt-1 text-center text-[11px] text-muted-foreground">
-              Marcus leads your approved seated sequence with the original voice,
+              Flex leads your approved seated sequence with the original voice,
               moving Flex avatar, timed sets and rest. Clinician clearance is
               required; Workout A/B animations are still being completed.
             </p>
@@ -375,7 +375,7 @@ function Today() {
             </a>
             <p className="mt-1 text-center text-[11px] text-muted-foreground">
               Separate core and abdominal-bracing circuits with real sets, rest and tracking.
-              Text-only until exercise footage and Marcus coaching are approved.
+              Text-only until exercise footage and Flex coaching are approved.
               Clinician clearance for cast positioning and core movements is required.
             </p>
 
