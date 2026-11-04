@@ -19,6 +19,8 @@ type Item = {
   source: string; setup?: string;
 };
 type Filter = "approved" | "rendered" | "archive" | "held" | "all";
+type Approval = { video: string; audio: string | null; reviewedAt: string };
+const REVIEW_KEY = "m3-flex-review-approval-v1";
 type Workout = "recovery" | "A" | "B" | "v2";
 declare global { interface Window { M3_FLEX_SCENE_LIBRARY?: Scene[] } }
 
@@ -45,8 +47,8 @@ const approved: Item[] = ownerMedia.items
   }));
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "approved", label: "Approved videos" },
-  { value: "rendered", label: "Saved videos — including past approvals to reconcile" },
-  { value: "archive", label: "Archived scene links" },
+  { value: "rendered", label: "Watch & approve saved videos" },
+  { value: "archive", label: "Earlier approved / archived links" },
   { value: "held", label: "Held / incorrect versions" },
   { value: "all", label: "Show entire library" },
 ];
@@ -83,6 +85,14 @@ export function UnifiedWorkoutDashboard() {
   const [loadError, setLoadError] = useState(false);
   const [selectedKey, setSelectedKey] = useState("approved:C02");
   const [videoError, setVideoError] = useState(false);
+  const [reviewRecords, setReviewRecords] = useState<Record<string, Approval | string>>({});
+  const [savedReviewMessage, setSavedReviewMessage] = useState("");
+  useEffect(() => {
+    try {
+      const data: unknown = JSON.parse(localStorage.getItem(REVIEW_KEY) || "{}");
+      if (data && typeof data === "object" && !Array.isArray(data)) setReviewRecords(data as Record<string, Approval | string>);
+    } catch { setSavedReviewMessage("Existing approvals could not be read; your original files remain untouched."); }
+  }, []);
 
   useEffect(() => {
     const existing = getInventory();
@@ -104,15 +114,50 @@ export function UnifiedWorkoutDashboard() {
   }, []);
 
   const all = useMemo(() => [...approved, ...scenes.map(mappedScene)], [scenes]);
-  const filtered = useMemo(() => all.filter(x => filter === "all" || x.status === filter), [all, filter]);
+  const matchesApproval = (item: Item) => {
+    if (item.status === "approved") return true;
+    const record = reviewRecords[item.id];
+    return !!item.video && !!record && typeof record === "object" &&
+      record.video === item.video && record.audio === item.audio;
+  };
+  // The old archive explicitly records user approvals even when the Flow export is not an MP4.
+  const previouslyApprovedArchive = (item: Item) =>
+    item.status === "archive" && scenes.some(scene =>
+      scene.id === item.id && scene.status === "archived-approved-link");
+  const inGroup = (item: Item, group: Filter) =>
+    group === "all" ||
+    (group === "approved" && (matchesApproval(item) || previouslyApprovedArchive(item))) ||
+    (group === "rendered" && item.status === "rendered" && !matchesApproval(item)) ||
+    (group === "archive" && item.status === "archive" && !previouslyApprovedArchive(item)) ||
+    (group === "held" && item.status === "held");
+  const filtered = useMemo(() => all.filter(item => inGroup(item, filter)),
+    [all, filter, reviewRecords]);
   const current = filtered.find(x => x.key === selectedKey) ?? filtered[0] ?? null;
-  const count = (f: Filter) => f === "all" ? all.length : all.filter(x => x.status === f).length;
+  const count = (f: Filter) => all.filter(item => inGroup(item, f)).length;
   const pickFilter = (next: Filter) => {
     setFilter(next);
-    setSelectedKey(all.find(x => next === "all" || x.status === next)?.key ?? "");
+    setSelectedKey(all.find(x => inGroup(x, next))?.key ?? "");
     setVideoError(false);
   };
-  const pickScene = (next: string) => { setSelectedKey(next); setVideoError(false); };
+  const pickScene = (next: string) => { setSelectedKey(next); setVideoError(false); setSavedReviewMessage(""); };
+  const updateReview = (item: Item, approve: boolean) => {
+    if (!item.video || !validMedia(item.video) || item.status === "held" || item.status === "approved") return;
+    const changed = { ...reviewRecords };
+    if (approve) changed[item.id] = {
+      video: item.video, audio: item.audio, reviewedAt: new Date().toISOString(),
+    };
+    else delete changed[item.id];
+    try {
+      localStorage.setItem(REVIEW_KEY, JSON.stringify(changed));
+      setReviewRecords(changed);
+      setSavedReviewMessage(approve
+        ? item.audio ? "Approved video and saved voice pair. Guided-session eligibility is checked separately."
+          : "Video approval saved. Flex narration is missing; this clip stays out of timed guided workouts."
+        : "Video approval withdrawn. Original file remains saved.");
+    } catch {
+      setSavedReviewMessage("Unable to save on this device. Do not uninstall or clear app data.");
+    }
+  };
   const selectCss = "mt-1 block h-12 w-full rounded-xl border border-border bg-elevated px-3 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary";
 
   return (
@@ -171,9 +216,9 @@ export function UnifiedWorkoutDashboard() {
         <div className="flex flex-wrap items-start justify-between gap-2 p-3">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-black">{current?.name ?? "Choose a video"}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{current ? labels[current.status] : "No video selected"}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{current ? matchesApproval(current) ? current.status === "approved" ? labels.approved : "Your video approval is saved" : previouslyApprovedArchive(current) ? "Earlier approved — original export required" : labels[current.status] : "No video selected"}</p>
           </div>
-          {current?.status === "approved" ? <CheckCircle2 className="size-5 text-primary"/> :
+          {current && (matchesApproval(current) || previouslyApprovedArchive(current)) ? <CheckCircle2 className="size-5 text-primary"/> :
             <CircleAlert className="size-5 text-amber-300"/>}
         </div>
         {current?.video && validMedia(current.video) && !videoError ? (
@@ -191,6 +236,17 @@ export function UnifiedWorkoutDashboard() {
         )}
         <div className="space-y-2 px-3 pb-3 text-xs">
           {current?.source && <p className="text-muted-foreground">{current.source}</p>}
+          {current?.status !== "approved" && current?.video && current.status !== "held" && (
+            <div className="rounded-lg border border-primary/30 bg-elevated p-2" data-testid="m3-video-owner-approval">
+              <p className="mb-2">Check Flex’s face, movement, equipment, and your leg position before approving this video. Missing audio does not stop visual review.</p>
+              <button type="button" data-testid="m3-approve-video" onClick={() => updateReview(current, !matchesApproval(current))}
+                className="min-h-11 w-full rounded-lg bg-primary px-3 font-bold text-primary-foreground">
+                {matchesApproval(current) ? "Undo my approval" : "Approve this video"}
+              </button>
+              {!current.audio && <p className="mt-2 text-amber-300">Matching Flex voice not verified. Visual approval only; not a guided session.</p>}
+            </div>
+          )}
+          {savedReviewMessage && <p role="status" className="text-primary">{savedReviewMessage}</p>}
           {current?.setup && <p className="rounded-lg border border-border bg-elevated p-2">{current.setup}</p>}
           {current?.video && <a href={current.video} target="_blank" rel="noopener noreferrer"
             className="inline-block font-bold text-primary">Open this original video file</a>}
