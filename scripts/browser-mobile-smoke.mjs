@@ -351,7 +351,7 @@ try {
       chooserAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector("#unifiedWorkoutChooser"))&Node.DOCUMENT_POSITION_FOLLOWING),
       pageWidth:document.documentElement.scrollWidth,
       viewportWidth:window.innerWidth,
-      tvAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector("#tvLaunch"))&Node.DOCUMENT_POSITION_FOLLOWING)
+      tvAfterVideo:!!(document.querySelector("#videoBox").compareDocumentPosition(document.querySelector(".tvLaunch"))&Node.DOCUMENT_POSITION_FOLLOWING)
     }));
     assert.equal(firstScreen.tvAfterVideo,true,"TV setup cannot come before the coaching stage");
     assert.equal(firstScreen.chooserAfterVideo,true,"Full/unverified workout selector must not bury the visual coach");
