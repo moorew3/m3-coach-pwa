@@ -414,7 +414,7 @@ main>.lead{max-width:850px;line-height:1.4}
 document.documentElement.classList.toggle("embedded",new URLSearchParams(location.search).get("embedded")==="1");
 function revealLinkedReview(){
  const target=decodeURIComponent(location.hash||"");
- if(["#allScenesCatalog","#rowingCardio","#sceneGrid","#sceneApprovalControls","#advancedLibrary"].includes(target)){
+ if(new URLSearchParams(location.search).get("review")==="1"||["#allScenesCatalog","#rowingCardio","#sceneGrid","#sceneApprovalControls","#advancedLibrary"].includes(target)){
   const panel=document.getElementById("advancedLibrary");
   if(panel)panel.open=true;
  }
