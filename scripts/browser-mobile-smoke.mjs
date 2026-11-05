@@ -94,16 +94,14 @@ try {
     (await page.getByTestId("seated-program-warning").innerText()).includes("not been fully converted"),
     "Legacy weekly plan must not appear cleared for seated-only training",
   );
-  await page.getByTestId("m3-unified-workout-picker").waitFor();
-  for (const name of [
-    "Recovery · 5 approved moves",
-    "Workout A · Dumbbells & boxing scenes",
-    "Workout B · INNSTAR & arms",
-  ]) {
-    const link = page.getByTestId("m3-unified-workout-picker").getByRole("link", {name});
-    assert.equal(await link.count(), 1, "One M3 FLEX native workout choice: " + name);
-    assert.match(await link.getAttribute("href") ?? "", /^\/recovery\?program=/);
+  await page.getByTestId("m3-primary-workout-menu").waitFor();
+  const workoutMenu = page.getByTestId("m3-workout-select");
+  for(const value of ["recovery","A","B","v2"]){
+    await workoutMenu.selectOption(value);
+    assert.equal(await workoutMenu.inputValue(), value, "One native Flex workout choice: "+value);
+    assert.equal(await page.getByTestId("m3-start-selected").count(),1);
   }
+  await workoutMenu.selectOption("recovery");
   await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Recovery"}).click();
   await page.getByTestId("m3-native-recovery").waitFor();
   await page.getByTestId("m3-recovery-existing-player").waitFor();
