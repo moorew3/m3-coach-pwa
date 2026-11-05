@@ -773,5 +773,140 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b30-9dce-73a4-96aa-25a30ed7fb9c.mp4",
     "note": "Recovered from connected HeyGen. Not approved for a guided workout. Before approval, inspect exact Flex face, correct arm-only rowing and injured left leg supported, elevated, and unmoving. Historical rowing candidates previously failed leg-motion review."
+  },
+  {
+    "id": "LOCAL-battleRopeFinisher",
+    "name": "Battle rope finisher",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/battleRopeFinisher.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-bulgarianSplitSquat",
+    "name": "Bulgarian split squat",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/bulgarianSplitSquat.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-cablePunch",
+    "name": "Cable punches",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/cablePunch.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-chestPress",
+    "name": "Chest press (legacy video; not INNSTAR or bench press)",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/chestPress.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-chestSupportedRow",
+    "name": "Chest-supported row",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/chestSupportedRow.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-dumbbellCurl",
+    "name": "Dumbbell curl",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/dumbbellCurl.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-easyWalkV3",
+    "name": "Easy walk (legacy)",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/easyWalkV3.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-farmerMarch",
+    "name": "Farmer march",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/farmerMarch.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-legPress",
+    "name": "Leg press",
+    "group": "Excluded movements — archive only",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "hold",
+    "video": "/media/recovered/legPress.mp4",
+    "note": "Video archived for historical review only. No squats or leg press in active sessions."
+  },
+  {
+    "id": "LOCAL-medBallChestPass",
+    "name": "Medicine ball chest pass",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/medBallChestPass.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-rearDeltFly",
+    "name": "Rear delt fly",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/rearDeltFly.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-reverseStepRow",
+    "name": "Reverse step row",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/reverseStepRow.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-squatToCurl",
+    "name": "Squat to curl",
+    "group": "Excluded movements — archive only",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "hold",
+    "video": "/media/recovered/squatToCurl.mp4",
+    "note": "Video archived for historical review only. No squats or leg press in active sessions."
+  },
+  {
+    "id": "LOCAL-stepAltCurl",
+    "name": "Step alternating curl",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/stepAltCurl.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+  },
+  {
+    "id": "LOCAL-stepShoulderPress",
+    "name": "Step shoulder press",
+    "group": "Recovered original app clips",
+    "source": "Original M3 FLEX packaged MP4 (owner controlled)",
+    "status": "owner-review",
+    "video": "/media/recovered/stepShoulderPress.mp4",
+    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
   }
 ];
