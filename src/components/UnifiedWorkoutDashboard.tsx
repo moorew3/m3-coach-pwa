@@ -59,7 +59,7 @@ const WORKOUTS: { value: Workout; label: string }[] = [
   { value: "B", label: "Workout B" },
   { value: "v2", label: "Flex V2 visual coach" },
 ];
-const validMedia = (url: string | null) => !!url && /^https:\/\//i.test(url);
+const validMedia = (url: string | null) => !!url && (/^https:\/\//i.test(url) || /^\/media\/recovered\/[a-zA-Z\d_-]+\.mp4$/.test(url));
 const canonicalMedia = (url: string | null | undefined) => (url ?? "").split("?")[0];
 // Signed CDN parameters rotate. Keep a user's review attached to the actual
 // video file, not the expiring signature/query string.
@@ -271,6 +271,11 @@ export function UnifiedWorkoutDashboard() {
         )}
         <div className="space-y-2 px-3 pb-3 text-xs">
           {current?.source && <p className="text-muted-foreground">{current.source}</p>}
+          {current?.video?.startsWith("/media/recovered/") && (
+            <p className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-xs text-primary">
+              Original app footage stored inside M3 FLEX; playable without a temporary HeyGen URL.
+            </p>
+          )}
           {current?.status !== "approved" && current?.video && current.status !== "held" && (
             <div className="rounded-lg border border-primary/30 bg-elevated p-2" data-testid="m3-video-owner-approval">
               <p className="mb-2">Check Flex’s face, movement, equipment, and your leg position before approving this video. Missing audio does not stop visual review.</p>
