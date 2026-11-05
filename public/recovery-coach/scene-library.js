@@ -519,7 +519,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/4546535a68231cde67e7a1bb7d5e4291.mp4?Expires=1793477951&Signature=RL~UNUEhVRDUpAYhRcSvCOBZ-P9eYLh57hYAq63XmFElPW~0Vp7q6sep4i1UX6GPCuhtGl~9gmT~cSe~2jkCnOI39DsJKKC1GHT9WFVsR6nkzsDCjcvFhAbLx0lTYpn6JtDlYU-6uOF9-4jd9DNALH1wMo764ay~98sBoJxVj3Scbdn39Ip62M7glRuBtmJJvWy9TOyJwzbaXUnsSb5lNV8LYECz3IZ~HJutkK00eOFphy4jv7reBHcFasNOZRRxhPSz91BuRj9cHUZDpBXdobj9SBw~lXvOQ3M7Nmuk0S2vI6P0iF-PHKp7EjK9vcypBhVc~QBNRjwT2d3cPpIs4A__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/4546535a68231cde67e7a1bb7d5e4291.mp4?Expires=1794488026&Signature=qxSuoRP9nF6Q0AcBXxE65uvytWM3f0JUN32IDmoWP918vN-XLC~PHngWzPriF~9WON1rj1CozZAAH0arH-7jzpU9LEOtXCfDgT5ENz1JtQJDlLgHKNy-zqCs-yvn497bcKvtp2leN56TGQoOSgCva0uFP2Mo7uoFdubl1jQMHkk5iOCpuIFf7risaiXRv9myUmEuG2ljalq46FwfSWBreYaXalFE0TNUEsxg0sTprOjQhxj27IXOLv7yMLaYK-~LxDdw7qx-IXzDLvMBV-ALciocET2R44h56iqqxWlwAMkF~P8rnwuvQy-wLCP70E0gGJfcsTe4uU0AFjVR4yiFdA__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -528,7 +528,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/3dbad600606d6d4827b5348e0f0d1706.mp4?Expires=1793477951&Signature=WBpDmyaJbwdg9bKR53uOf7zAfRUkUtQA55MlcIQgTUu8d0Yh4boWFjWpJJx4bke~uT0OqwIZ-z~7Ydic9TgWZcQdr5orwrfjHrNvvldBV5kzXe4ECvooXKuidNEVkFeIrLMZQWOyTW6j7roGE-nQrdi0oQRBo8oB50asgyasmkSCj4m6OUySq2wYqVCAVyM4GBaqfIxdTDm7BMm~9VqitBDTvMp4zNNxodMIvmllvS5Y5dkL1DyKky2Z3aIGCD3Ovgtw5G43l0xttD5S0lNzOq2Mvp6Y9BIsrsfd6kVWyLyF6YbdDxZ6r3jDMeArU0SqocIXy6SMmnlBEQzcA15LQQ__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/3dbad600606d6d4827b5348e0f0d1706.mp4?Expires=1794488026&Signature=np1HbEWFxAkBb32C2AyQu7Lg220-n5NSWx7O6rP0ZsON2JDsQzrSbXVEtvu9n2m4WKJypFZ10OKlCWtnlIG9Xo2YzqNDWmnweCqighTd-Y9prUPu3IDQbu0~-t4RkTM8F2V-bvX1ZxfHZ1lEf4UqtotQ4Jpn3fjOWgUr6vUl5osTwbGA71IdZHD5ad1vqzCJnrZXPxIZS4IGXJhKSbplYjnVkPyMBx-9JuT5vytWsHVx7KWc6hfl5sbnRrMYb6eHAePiNfGsF7EAcaxDxpfO2Nbs~8cGu0iKRXvxL60rl9e9y66IyhV~W6cTahCN9ntIhuPFWqBXSatz7akR44f~GA__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -537,7 +537,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/3ec419dbcb05b9f66819313952f4e782.mp4?Expires=1793477951&Signature=l-Y5o92fJi1AyHkMBJLU4akYBTAEtzdZ55LnPs3x-MPevtmdCDqaNGxoUE6S67Hj4mhs8yH2pocJGS4BK8EZZ0PCaC2Pm8JUXtng5SKUVXLunjIiS2EjTEvYpY-dqkTVobK781HKq05a7AVleYr9-AwbfH7A~fdSGl-gYaXcStB5VZnl4z5I0GJmYo13s~ltXndDb0w5NhX-OMqJtbkSw9a1kCFdm7txDFsJGlUkw1k9C7ldLz4cvVYHfls6vR6m86R5b7sCs6ix-kRG~u8~Vy9Gtr4T8FMOptgwbtfK4abPFNE1SF6IU7CATiUTHfdu2xbrnaEB5w1XqA4dm8JZDA__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/3ec419dbcb05b9f66819313952f4e782.mp4?Expires=1794488026&Signature=M7jfXhOcXpqeVkF~lN9WrgJpIwWEqwwJE4CSD2PV2QzMyrzabdQAQ070gPzJmUlIaS~PN8KeoKBsnYm36MaCTK~b4qTU-7DfOKkN2Waz4UTxezwuN6nfmq-ZJYwosEZhqjnRIxSeiOwVvUISue9naFLtRMON5nRvm47o9nK8DzK2hPLpyYzF7oek5nj~DJQde6n-w13xKjob7ZkdOsa41iabxb-H-neXuw2ndsWY4tWOasDQ4Z19fyACWB42p8IOTy6CMTkKF12vsEIt2R2zCkDzk-9C5S~7hwUoBYl-WJzwaTiN1wTWLBBpeYrQgPSw1gvn0FOKoUfmcZ4f6uAklg__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -546,7 +546,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/8d2ca8fce35935efe0453c1524b2494a.mp4?Expires=1793477951&Signature=SnYtbgRT3jkttJ~lHn8z~qFHkNPtbAJWZQQrv8PCScAS0VmN7BhoAluhl~LXf8d9CvinJAZqt6Ss0fCO08k86AOeU6~g1TejetdLh2ovKwtemux7JJ-K6x6Pha5y-ppoXZZspLA48VRYmQvjlSr~gVMRfJvRpe2dDunKygMPMlJlFmKLSnzjcuNA-Ibii2G5kpzkJyADtEIGjggarX4dHbHwXkZYKh6DmQxBzHyh~CDrHL1IipKw8lIzNcz3ExTyeabj~xsiF59TF4ZUFCwR2-Nf-9fv6atcgzSASXYnuEA3t6pefrxOdBmvcj7dKucJZzGjQg6~Frpni5jbJIJNsQ__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/8d2ca8fce35935efe0453c1524b2494a.mp4?Expires=1794488027&Signature=XNdswOZzIx9z-papf~KckurVlYnIIlJWwPWJt~zAesfr60MO89VPRnEidcmNlY4jM6WDdlSj4oMHjbg4BiLOBmay13tZ1hUc~K-0nrj92iS70I7kJjUSDpFQKI6W8Wk86jizYLhBnWIK17evXJw~OSdNIS~-1FNn0C-g4fqYD3fjD5JjNKdV7hukpRPDY5rq6vQhimKFdC3--e1k4mxaq-YEqnSdhbaeF8MCWikprvqmZA4Jq2HDLz6So1lZsSSbzBkJ~tkqE5kvGePw0lWLE8qhrpeQam71KEva~bdJLF2wMmfvAlt86SGJZtPaF78Fu6ocuJd2Aznh2A8SArOyZQ__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -555,7 +555,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/c1c5c6c97ff87c9fe830dafb1922fd0d.mp4?Expires=1793477951&Signature=mi6xKP5cix3Jz8apR-6cHSO2Bj-jtiKAd6Cy5~i5cyUf2KrP4S567XpQXm3wpptmBTVrUDGAFk3~GD35ZeGKlXg6VUlMfuLyCzt291lO8YifgNlsxdD4oCp2mCnJQDZYOmdvDdHc2T6JUYZ6BoOInCF6YqaY~EgN~D9o1IlwvwfNzw4vvCGL3LfHlI92LzJrxE1wuuAKjuEGXNUnFBtkz1k4HyJuwWEsVJW0~Dgd4949-Wh7dHqGBk-7Z1SSDD0ICQ2Q0~MQZxnToZnwFMKxXrA3nuaXeLLGeqXNtxqmwuWVhNpApjPo7lBWpfkrxh55e72v5BrCVX04wXKET72zbg__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/c1c5c6c97ff87c9fe830dafb1922fd0d.mp4?Expires=1794488026&Signature=jkP16ZulTb2L7CeeXpGbt90lG10dJj6SqFuC4TFcQDUFh--oqPXxg7kluji11wFPdSIAFmNeFD4t5mLrooaEhXNz0laOeAj62oJLoXoBMKiteNUA61z48GwBm1Bp56RUFuh2tn-xszGYCi2y-5VFgHugQ260LFIG4JdivdslGQtYFWxb1LECXO8ReIoZ2R2xfPUQ6caEBvTHbIfy5FebQlEV7YKWwK80Ne731jng9-VfGnftWvEmg6pWZiHF040282Rz9O3rygmUNveiqREbFXiyEOGVg6dOvwWyvOmJ42TDT7jqwiGIW1dA13WHnbfW7rhRNJSfWiyG2Q8JbOFZrg__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -564,7 +564,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/db52e9b7102c4532abdf49bfde834306.mp4?Expires=1793477951&Signature=n2SBqR~rNUD9oO44uT9i6AlVyfjXBq1TK~y53x51Qy9YTBFStM8s1q9VA482RfFxx1MvdTnq0XJWvy-FZMomYP7mQEH~b2wqvNwmMswqfEuXZJLK1tJJluGmAntVlpQkNPwgm8Hzhrh5F2WXhoOWt8uaCfflwMiZPJk0GEzQRPbPNkeDcPhvPKkK8H4Yr-Y8Dypqc6lwlQXvpZzpqi1BHvTCQRgr5877E-Sc81T3~oIpnucbOtlfxuxTscSvVr2B6t-MGiThnl8NCWeNhX84hT7g3kDvRQkSdhavL0wK9Q~GxCPqOjBv407GkRv~iFBGFv8FTE9J0BAkE7RUned6uw__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/db52e9b7102c4532abdf49bfde834306.mp4?Expires=1794488026&Signature=iKK7W1ZjFiuxaO8i5t8qM95EaHQbzgvoXBqAlSyvv0RKlr7B54r1g08x0fVl2IkEzaILKomzAO-DMkybvR4f1eb2Jhmt24rNghXM9ZPzze4ISBZ7RoK1v2C2Za2GbVtbt1RReWleANjXCtg57XQH8RZK502ckMrzQtT8qfZN2F6aDnb2bEUS52My0fqcBM3nMUqQ2E4Z7D3tereKWpyj4-Aq~UnqkbBa421XyHCGQk4UkRDlQQRcsJdSanHLhTSMzqt3MDGnbk5WPSbgfuvqPF7cdKYaQcJY9PIWEzCCT3ax9OT0W2OZeeebWtrK5Rvuew2lc652o1m0fqnTJV9Vgw__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -573,7 +573,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/vQTDKtVxM0XEV4cfNYFANn8ciltOHFecq/3b919c4f54a847578b3ccbd88603629c.mp4?Expires=1793477951&Signature=jofUIT9dfiQb2SW7-Lnp44b9uioYk3Ycvq1Dyh6-Djq23-BUcF-pQp9vPaCculSkraJBEcGK~VnTuX29llH75CSh5K7B5BDCpWfDjxAbKAE37gVKhvDn-G5Mp6txSoNuU0DFUZiXqiuCCF9gvVPOI08WEKtVipgTHA0OXXQLqWu1eWcPjjJAsT-7HMZOb2wCY5nmA5jw3cBMWo1CmUtcFpI64yYy1fVuvrdtjQzKPrt47ebou3kQY7kGQTMh~pCq-lz4VCdAqHyE~EBLpn3eTDWpyaSRdhyBA7YtlRW4juF7tcmP30cmUlhI6Z3ZgAH3BJ7HQk3mn9r~HvGabuAouA__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/vQTDKtVxM0XEV4cfNYFANn8ciltOHFecq/3b919c4f54a847578b3ccbd88603629c.mp4?Expires=1794488027&Signature=Ksv12Q0E-d0PtDOf52Jl1SCDSXeurz8gzEwYaS0bgAGZ5SOtl8EgdBGvmZ7FTNEb6185SuwgEH1h57Wr-YQBMrsoK-YEASjLTJtnbfVMYrEljbxMfPiKWDgYRBBFIOIZVKecQwA~WeIeYt063KKzU3a7rcnjM4W9T7wi5iJ5Bnk9TAS~ZfmRaoTe-KUeXbK92hlxHfKEWE0Ovj-RUsf9uD-Oz~9MMFT351HGGzMI8AJ7T-ftXF5UYflc3nQvVeVjgtB0Arw1Ufg5GcmeMwuTE0vJzByevuCIEIyrY7EPFkgUu3Xl185RoDEtrDu5s3zWP-2giHK7gxVhSch80QY~4g__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -582,7 +582,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Other completed M3 FLEX renders",
     "source": "HeyGen backup",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/v474adf0e721d4bf1af3b120d08c49f26/4f75d49a016942edad83eaa24eb606f7.mp4?Expires=1793477951&Signature=CDVp97h9A0~3ufVING~r3~AJHz~WvjtyLHKCuR3qJpwBMuUF4NUHFbNv6hOPxn-k4Zehbg3wtceZCtJNpB58W6f1Ah6qQ~Vi2yirlpRu-Ic2xnRJ24OeP9vPEptaHCibM41ej6oqVCPtJOr8xxDqDlqscSsDcT-YB-ZzdxaXz7L4QWQ~-pFp2r3AsGKoWw6O-A8rKktDmoGzSS~tPpgiZw1ACHu9jwVoZtkCFACV029BJPalTydHvn9HFEZMKCWniWlkQa94-APcc5VXKTZ-sP2BN2vVwEr-J0XxGZ4z~-JvrZOinGUvBvLwrD-2qQT5DGwxCk~wH5vJSGPKKm3WrA__&Key-Pair-Id=K38HBHX5LX3X2H",
+    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/2f2323079d3c414087f76bbfd67fb0f5/v474adf0e721d4bf1af3b120d08c49f26/4f75d49a016942edad83eaa24eb606f7.mp4?Expires=1794488027&Signature=KZElBfNwMvVzuAGaFndpXNrrSEOXoEPP4BDZ~LolnuhoUzCDPbimBfgpND7~-oJAZh87ivvUb0Zf1HX80GOn6ugV-MLxc6JOEByDFZZdNimNXjxoKiBQj1G5MgKBD06jmZ5b-VcbkHEhxDaYdXObcqPJ-o~J2IGply6-5WBwJUqBGGVseNXTjIpbbM0QvUL~2ndljZq7vBAlmayq0EYHJugeyf4djVEpq7D2sRRQA6Degg5A2sDdbOxQZ6nW07BiISbkUVZRn3o-MIpJHxqWpVImpjazi7GcFfxH6Nj47TMy1vlvZ4JJWy9gnnDTG8IuDLuqxo~gju92janeH6IsVw__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Legacy completed render; verify Flex appearance, movement, equipment, and approved Flex voice before exercise use."
   },
   {
@@ -728,7 +728,14 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "owner-review",
     "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/f9cf147f9f16428d960df47c12971b9f/v8296739f877d473fbc599b916a34d731/ae85ad75ae3d4fada5c24751fd4dd198.mp4?Expires=1793882248&Signature=KHBKIi2rbTJUFi5Gf7A1HTlcqWsRg~gTzs7SsdH6On~pLIVdVpJDxNNylLMwXPmRFNBmpOqnx98IqIQ1mY5B7hPphlkLpWT14k3BfdYEvB1P1SkzQGVEAvtntTz2x8rBKPc23MGEK6Hrc~dat98vzLtpskQuGRNEQLyTxTL7ZDSbc07mmyTEmLZTY017~eb-z9bHMhPhPQUturE5TyWGwMQ6zaHji7~erw1qcANLXMmMfGtA4xRsMKhbZyBnPJiJKL7fkIv134DfhPzSj3ogBz2WHKqQaMonOpSGS6OA2y~PVZ4CKLlbrOSh-U0jwvF10ejMbqV~uhcy3hAfOlrhKg__&Key-Pair-Id=K38HBHX5LX3X2H",
     "note": "Original app render. Exercise, posture, cast/boot and Flex voice must match before timed training."
+  },
+  {
+    "id": "REF-LATERAL-2REPS",
+    "name": "Original seated lateral raises two-repetition motion driver",
+    "group": "Workout A motion references",
+    "source": "Original Motion Reference",
+    "status": "motion-reference-only",
+    "external": "https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view",
+    "note": "Original two-repetition driver recovered from M3 FLEX Google Drive motion-reference folder. This is not certified as the final approved Flex avatar with Flex. Preserve the original Flow-approved lateral-raise clip; do not substitute the driver during timed coaching."
   }
-,
-  {"id":"REF-LATERAL-2REPS","name":"Original seated lateral raises two-repetition motion driver","group":"Workout A motion references","source":"Original Motion Reference","status":"motion-reference-only","external":"https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view","note":"Original two-repetition driver recovered from M3 FLEX Google Drive motion-reference folder. This is not certified as the final approved Flex avatar with Flex. Preserve the original Flow-approved lateral-raise clip; do not substitute the driver during timed coaching."}
 ];
