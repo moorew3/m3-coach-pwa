@@ -13,13 +13,20 @@ const original=JSON.parse(read("approved-recovery-media.json")).items.filter(x=>
 
 test("one clean dashboard exposes all original and recorded videos, including previous archived approvals",()=>{
  assert.equal(original.length,7);
- assert.equal(scenes.length,84);
- assert.ok(scenes.filter(x=>x.video).length>=76);
+ assert.equal(scenes.length,99);
+ assert.equal(scenes.filter(x=>x.video).length,95);
  assert.equal(scenes.filter(x=>x.status==="archived-approved-link").length,2);
  for(const id of ["m3-workout-select","m3-video-category","m3-video-select","m3-flex-video","m3-show-approved","m3-show-unapproved"])
    assert.ok(source.includes('data-testid="'+id+'"'),id);
  assert.match(source,/scene-library\.js/);
  assert.match(source,/archived-approved-link/);
+ assert.match(source,/\/media\/recovered\//);
+ for(const file of ["chestPress","chestSupportedRow","dumbbellCurl","legPress","squatToCurl"]){
+   assert.ok(scenes.some(x=>x.video==="/media/recovered/"+file+".mp4"),"Missing original packaged asset "+file);
+ }
+ for(const file of ["legPress","bulgarianSplitSquat","squatToCurl"]){
+   assert.equal(scenes.find(x=>x.id==="LOCAL-"+file)?.status,"hold","No unsafe squat/leg-press approval");
+ }
  assert.match(source,/expiredSignedMedia/);
  assert.match(source,/m3-heygen-fallback/);
  assert.match(source,/sameMedia\(record.video, item.video\)/);
