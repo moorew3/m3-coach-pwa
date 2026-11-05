@@ -786,11 +786,11 @@ window.M3_FLEX_SCENE_LIBRARY=[
   {
     "id": "LOCAL-bulgarianSplitSquat",
     "name": "Bulgarian split squat",
-    "group": "Recovered original app clips",
+    "group": "Excluded movements — archive only",
     "source": "Original M3 FLEX packaged MP4 (owner controlled)",
-    "status": "owner-review",
+    "status": "hold",
     "video": "/media/recovered/bulgarianSplitSquat.mp4",
-    "note": "Already bundled with original Android app, previously hidden from Flex video dropdown. Visual approval required for correct Flex identity, exercise and left-leg safety. No automatic guided-session activation."
+    "note": "Preserved historical video for owner reference only. Squats and leg presses are excluded from active workouts. Do not promote to a guided session."
   },
   {
     "id": "LOCAL-cablePunch",
@@ -853,7 +853,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "source": "Original M3 FLEX packaged MP4 (owner controlled)",
     "status": "hold",
     "video": "/media/recovered/legPress.mp4",
-    "note": "Video archived for historical review only. No squats or leg press in active sessions."
+    "note": "Preserved historical video for owner reference only. Squats and leg presses are excluded from active workouts. Do not promote to a guided session."
   },
   {
     "id": "LOCAL-medBallChestPass",
@@ -889,7 +889,7 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "source": "Original M3 FLEX packaged MP4 (owner controlled)",
     "status": "hold",
     "video": "/media/recovered/squatToCurl.mp4",
-    "note": "Video archived for historical review only. No squats or leg press in active sessions."
+    "note": "Preserved historical video for owner reference only. Squats and leg presses are excluded from active workouts. Do not promote to a guided session."
   },
   {
     "id": "LOCAL-stepAltCurl",
