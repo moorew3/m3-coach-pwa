@@ -737,5 +737,41 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "status": "motion-reference-only",
     "external": "https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view",
     "note": "Original two-repetition driver recovered from M3 FLEX Google Drive motion-reference folder. This is not certified as the final approved Flex avatar with Flex. Preserve the original Flow-approved lateral-raise clip; do not substitute the driver during timed coaching."
+  },
+  {
+    "id": "HG-cb218d89a",
+    "name": "M3 FLEX RECOVERY — LEGLESS ROWING, corrected identity and black ",
+    "group": "Recovered rowing demonstration candidates",
+    "source": "HeyGen backup",
+    "status": "owner-review",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19c19-8cbb-7637-88ae-e19acde8a876.mp4",
+    "note": "Recovered from connected HeyGen. Not approved for a guided workout. Before approval, inspect exact Flex face, correct arm-only rowing and injured left leg supported, elevated, and unmoving. Historical rowing candidates previously failed leg-motion review."
+  },
+  {
+    "id": "HG-8e3fe564a",
+    "name": "M3 FLEX: correct legless rowing demonstration. One continuous si",
+    "group": "Recovered rowing demonstration candidates",
+    "source": "HeyGen backup",
+    "status": "owner-review",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b63-4212-788c-b398-e583243e77f5.mp4",
+    "note": "Recovered from connected HeyGen. Not approved for a guided workout. Before approval, inspect exact Flex face, correct arm-only rowing and injured left leg supported, elevated, and unmoving. Historical rowing candidates previously failed leg-motion review."
+  },
+  {
+    "id": "HG-6859825ea",
+    "name": "CORRECTED M3 FLEX — ARMS-ONLY ROW. Animate this exact first fram",
+    "group": "Recovered rowing demonstration candidates",
+    "source": "HeyGen backup",
+    "status": "owner-review",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b33-7ff4-7ac7-a081-61745cfbb0a4.mp4",
+    "note": "Recovered from connected HeyGen. Not approved for a guided workout. Before approval, inspect exact Flex face, correct arm-only rowing and injured left leg supported, elevated, and unmoving. Historical rowing candidates previously failed leg-motion review."
+  },
+  {
+    "id": "HG-e3546b294",
+    "name": "M3 FLEX ROWING MOVEMENT PROOF — one continuous realistic full-bo",
+    "group": "Recovered rowing demonstration candidates",
+    "source": "HeyGen backup",
+    "status": "owner-review",
+    "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b30-9dce-73a4-96aa-25a30ed7fb9c.mp4",
+    "note": "Recovered from connected HeyGen. Not approved for a guided workout. Before approval, inspect exact Flex face, correct arm-only rowing and injured left leg supported, elevated, and unmoving. Historical rowing candidates previously failed leg-motion review."
   }
 ];
