@@ -47,6 +47,6 @@ test("active V2 excludes squats and leg press but retains other movements and hi
  assert.equal(isFlexExcludedExercise("Seated Row"),false);
  const catalog=read("src/v2/catalog.ts");
  assert.match(catalog,/V2_ARCHIVED_WORKOUTS/);
- assert.match(catalog,/exercise.id !== "back-squat" && exercise.id !== "leg-press"/);
+ assert.match(catalog,/exercise.id !== "back-squat" && exercise.id !== "leg-press"/s);
  assert.match(catalog,/name: "Leg Extension"/);
 });
