@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071523">
+<title>M3 FLEX · Playable Coach Demo</title>
+<style>
+:root{color-scheme:dark;--bg:#071523;--card:#102637;--edge:#315064;--cyan:#76dcf0;--lime:#c9f492;--ink:#f2f9ff;--muted:#abc5d0;--warn:#ffbfa8}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 78% 10%,#1e4253 0%,transparent 42%),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.45;cursor:not-allowed}
+header,.container{max-width:1150px;margin:0 auto}header{padding:18px 16px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:950;letter-spacing:.06em}.brand span{color:var(--cyan)}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--lime)}
+a{color:var(--cyan)}.back{border:1px solid var(--edge);border-radius:20px;padding:8px 13px;text-decoration:none;font-size:13px;font-weight:750}
+.container{padding:0 14px 50px}h1{font-size:clamp(25px,4vw,43px);margin:8px 0 6px;letter-spacing:-.045em}p{line-height:1.45}.sub{margin:0 0 16px;color:var(--muted)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}.pill{font-size:11px;border:1px solid #507079;border-radius:20px;padding:6px 10px;color:#d3f2ed}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.9fr);gap:14px;align-items:start}
+.card{background:linear-gradient(160deg,#122b3d,#0c1d2c);border:1px solid var(--edge);border-radius:19px;overflow:hidden;box-shadow:0 16px 45px #020b1266}
+.stageHead{padding:15px 17px 5px;display:flex;justify-content:space-between;align-items:center;gap:7px}
+.badge{font-weight:850;color:var(--lime);font-size:12px;letter-spacing:.07em}
+#counter{font-weight:850;font-size:13px;color:var(--muted)}
+.videoBox{position:relative;display:flex;justify-content:center;align-items:center;min-height:340px;max-height:60vh;background:radial-gradient(circle at center,#274658,#040e19 75%);margin:10px;border-radius:13px;border:1px solid #2d4657;overflow:hidden}
+.videoBox video{height:100%;width:100%;max-height:59vh;min-height:320px;object-fit:contain;background:#070e15}
+.watermark{position:absolute;left:13px;top:11px;font-size:11px;letter-spacing:.14em;font-weight:900;color:#f7fffa;background:#071523bb;border-radius:8px;padding:7px;pointer-events:none}
+#mediaWarning{position:absolute;bottom:12px;left:12px;right:12px;text-align:center;font-size:12px;background:#081724e8;border:1px solid var(--edge);border-radius:12px;padding:10px;line-height:1.5}
+.stageBody{padding:8px 17px 17px}.stageBody h2{font-size:clamp(21px,3vw,31px);line-height:1.1;margin:5px 0 8px}.cue{color:#d4e7f0;min-height:43px;margin:7px 0 12px}
+.topstats{display:flex;justify-content:space-between;align-items:center;gap:12px}.timer{font-variant-numeric:tabular-nums;letter-spacing:.025em;font-size:clamp(41px,7vw,67px);font-weight:950;line-height:1;color:var(--lime)}
+#phase{font-weight:850;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.track{height:12px;background:#2d4553;border-radius:20px;overflow:hidden;margin:15px 0 7px}.bar{height:100%;width:0%;background:linear-gradient(90deg,#6fc9ed,#c9f492);border-radius:20px;transition:width .25s}
+.mini{color:var(--muted);font-size:12px}.buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:13px}
+button{min-height:51px;border-radius:11px;border:1px solid #57758b;background:#234256;color:#fff;font-weight:850;font-size:14px}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #e4ffb3;outline-offset:2px}
+button.primary{background:var(--lime);color:#132413;border-color:var(--lime)}button.danger{background:#833335;border-color:#d18d8f}button.soft{background:#123145;color:#e1f4f9}
+#stop{width:100%;margin-top:9px}.right{display:grid;gap:12px}.inset{padding:17px}.inset h3{font-size:17px;margin:0 0 7px}
+#score{font-size:42px;line-height:1.15;font-weight:950;color:var(--cyan)}.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.label{display:block;color:#bad0d8;font-size:12px;font-weight:800;margin:10px 0 4px}input[type=number]{width:100%;background:#061723;border:1px solid #567486;border-radius:10px;min-height:43px;padding:8px 10px;color:#fff;font-size:17px}
+#list{display:grid;gap:5px;margin-top:10px}.item{display:flex;align-items:center;gap:9px;background:#172e40;border:1px solid #274759;border-radius:10px;text-align:left;min-height:43px;padding:8px;font-size:12px;font-weight:800}
+.item.active{border-color:var(--lime);background:#2c473b}.item.done{opacity:.75}.dot{width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;background:#325369;font-size:12px}
+.safety{margin-top:13px;border:1px solid #a9725e;background:#2b241f;border-radius:13px;padding:11px;color:#ffddcc;font-size:12px;line-height:1.55}
+fieldset{border:1px solid #48687a;border-radius:12px;margin:12px 0 0;padding:12px}legend{font-weight:900;font-size:12px;color:var(--lime)}label.check{display:flex;align-items:start;gap:9px;font-size:12px;line-height:1.55;margin:7px 0}input[type=checkbox]{width:19px;height:19px;accent-color:#c9f492;flex:none}
+#notice{margin:9px 0 0;min-height:23px;color:#e4f6c7;font-size:12px;line-height:1.45}
+.links{display:flex;flex-wrap:wrap;gap:14px;margin:19px 0;font-size:13px}
+footer{text-align:center;color:#91adbd;font-size:11px;margin-top:20px}
+@media(max-width:780px){.layout{grid-template-columns:1fr}.videoBox{min-height:290px;max-height:54vh}.videoBox video{min-height:290px;max-height:53vh}.inset{padding:14px}.right{grid-template-columns:1fr}}
+@media(max-width:410px){.buttons{grid-template-columns:repeat(2,minmax(0,1fr))}#start{grid-column:1/-1}.timer{font-size:49px}}
+</style>
+</head>
+<body>
+<header><div class="brand">M3 <span>FLEX</span> <small style="font-size:12px;font-weight:650">COACH</small></div><a class="back" href="/">← Original app</a></header>
+<main class="container">
+<div class="eyebrow">Playable proof · inside your existing M3 Coach</div>
+<h1>Press Start. Train with Flex.</h1>
+<p class="sub">A focused, game-style walkthrough using your approved original Flex scenes. All workout controls operate without a new account or paid AI service.</p>
+<div class="pills"><span class="pill">✓ Approved Flex footage only</span><span class="pill">✓ Original video audio</span><span class="pill">✓ Pause · sets · rest · skip</span><span class="pill">✓ Local progress</span></div>
+<div class="layout">
+<section class="card" aria-label="Interactive workout">
+<div class="stageHead"><span class="badge" id="kind">DEMO MODE · PREVIEW</span><span id="counter">Scene 1 of 7</span></div>
+<div class="videoBox"><video id="film" playsinline controls preload="metadata"></video><div class="watermark">APPROVED FLEX MEDIA</div><div id="mediaWarning" hidden>Approved video could not load. This stage remains interactive, but we will not show an unapproved replacement.</div></div>
+<div class="stageBody">
+<div class="topstats"><span id="phase" aria-live="polite">READY</span><span id="sets">Stage 1 / 1</span></div>
+<h2 id="name">Seated breathing</h2><p class="cue" id="cue"></p>
+<div class="topstats"><div class="timer" id="clock" aria-label="Remaining time">00:30</div><div class="mini" id="target">Guided preparation</div></div>
+<div class="track"><div class="bar" id="bar"></div></div><div class="mini" id="progress">0 of 12 stages completed</div>
+<div class="buttons">
+<button class="primary" id="start">▶ Start</button><button id="pause">Ⅱ Pause</button><button id="complete">✓ Complete stage</button>
+<button class="soft" id="demo">▶ Watch demo</button><button class="soft" id="next">→ Skip stage</button><button class="soft" id="restart">↻ Reset demo</button>
+</div><button class="danger" id="stop">■ Stop session immediately</button>
+<p id="notice" role="status" aria-live="polite"></p></div>
+</section>
+<aside class="right">
+<section class="card inset"><div class="eyebrow">Your live dashboard</div><div class="split" style="margin-top:8px"><div><div class="mini">Demo points</div><div id="score">0</div></div><div><div class="mini">Session</div><div style="font-size:20px;font-weight:900" id="session">Not started</div></div></div>
+<div class="split"><div><label class="label" for="reps">Actual reps YOU completed</label><input id="reps" type="number" min="0" max="200" value="0" inputmode="numeric"></div><div><label class="label" for="weight">Weight (lb) YOU used</label><input id="weight" type="number" min="0" max="2000" value="0" inputmode="decimal"></div></div>
+<p class="mini">In demo mode, points are simulated and no exercise is counted as physically performed. In active mode, you enter your own actual reps and weight. The video never counts reps automatically.</p>
+<button class="soft" style="width:100%" id="export">↓ Export my local log JSON</button></section>
+<section class="card inset"><h3>Mission sequence</h3><div class="mini">Select a stage to preview it. Rest starts after completed sets.</div><div id="list" aria-label="Exercise stages"></div></section>
+<section class="card inset"><h3>Safety and session mode</h3><div class="mini">Demo mode is a control test, not a medical or performance clearance.</div>
+<fieldset><legend>Choose how to test</legend><label class="check"><input type="radio" name="playMode" value="demo" checked> Interactive demo — simulate sets without recording real exercise</label>
+<label class="check"><input type="radio" name="playMode" value="active"> Active log — record only reps you actually performed</label></fieldset>
+<label class="check"><input id="clearance" type="checkbox"> My treating clinician has cleared the specific seated movements and effort for this session, and my injured LEFT leg will stay supported and unloaded.</label>
+<div class="safety"><strong>STOP for pain, cast or boot pressure, dizziness, or swelling.</strong> No jumping, standing work, or injured-leg loading. A click is not proof that a repetition occurred.</div>
+</section></aside>
+</div>
+<div class="links"><a href="/recovery?program=recovery">Full existing Recovery Coach</a><a href="/recovery?program=A">Existing Workout A</a><a href="/recovery?program=B">Existing Workout B</a><a href="/v2">Full V2 app</a></div>
+<footer>Playable demo in the existing M3 FLEX repository. Approved media is linked without modification. Browser storage stays on this device.</footer>
+</main>
+<script>
+(function(){
+"use strict";
+var V="m3-flex-playable-v1", scene=[
+{id:"C09-PRE-BREATH-R2",name:"Seated breathing",reps:0,seconds:30,sets:1,cue:"Begin seated with your LEFT leg supported. Breathe slowly. Preview only unless specifically cleared.",src:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/f92c84ea-a2bc-4623-966b-deb8ceff8a87.mp4"},
+{id:"C01-R3",name:"Seated shrugs",reps:8,seconds:45,sets:2,cue:"Keep the injured left leg unloaded and shoulders controlled. Do not use the boot as support.",src:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9a48369a-ec51-4abc-9f50-f8966f19dc1e.mp4"},
+{id:"C02",name:"Hammer curls",reps:8,seconds:45,sets:2,cue:"Seated, elbows near your sides, slow movements. Follow only clinician-cleared resistance.",src:"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-bc16-778b-a773-db16e57aade7.mp4"},
+{id:"C03",name:"Front raises",reps:8,seconds:45,sets:2,cue:"Arms raise under control; your left leg stays supported and still.",src:"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a14462-cf4a-7daa-be5c-437eab0c9ba2.mp4"},
+{id:"C04-R2",name:"Alternating curls",reps:8,seconds:45,sets:2,cue:"Alternate arms without shifting weight into the injured leg.",src:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/31bc3ad4-fc95-409b-81f1-3490f1f8eb35.mp4"},
+{id:"C08-PRESS-R3",name:"INNSTAR chest press",reps:8,seconds:45,sets:2,cue:"Use the approved press setup only. Never anchor a band at the neck or injured leg.",src:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/b1171f4e-6526-45a7-a413-fd0ad4ffb1de.mp4"},
+{id:"C10-POST-BREATH-R1",name:"Cooldown breathing",reps:0,seconds:30,sets:1,cue:"Slow breathing with the left leg supported; finish with zero leg loading.",src:"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d65e6c81-dae1-484f-9bb9-48f7e18d8dbc.mp4"}
+];
+function $(id){return document.getElementById(id)}
+function fresh(){return {index:0,set:1,mode:"demo",phase:"ready",remaining:scene[0].seconds,completed:0,points:0,log:[],startedAt:null}}
+var s;try{s=JSON.parse(localStorage.getItem(V)||"null")}catch(e){s=null}
+if(!s||!Number.isInteger(s.index)||s.index<0||s.index>=scene.length||!["ready","running","paused","rest","complete","stopped"].includes(s.phase))s=fresh();
+if(s.phase==="running"){s.phase="paused"}
+var due=0,tick=null,mediaId="";
+function save(){try{localStorage.setItem(V,JSON.stringify(s))}catch(e){}}
+function setNotice(x){$("notice").textContent=x}
+function stage(){return scene[s.index]}
+function total(){return scene.reduce(function(a,b){return a+b.sets},0)}
+function safeToTrain(){if(s.mode==="demo")return true;if(!$("clearance").checked){setNotice("Active logging requires today's specific clinician clearance checkbox. You may use demo mode without it.");return false}return true}
+function freeze(){if(s.phase==="running"||s.phase==="rest"){s.remaining=Math.max(0,Math.ceil((due-Date.now())/1000));clearInterval(tick);tick=null;s.phase="paused";$("film").pause();save()}}
+function progress(){return Math.min(100,Math.round(100*s.completed/total()))}
+function render(){
+var x=stage();$("name").textContent=x.name;$("cue").textContent=x.cue;$("counter").textContent="Scene "+(s.index+1)+" of "+scene.length;
+$("sets").textContent="Set "+s.set+" / "+x.sets;$("target").textContent=x.reps?x.reps+" target reps · user-confirmed only":"Timed breathing · no rep count";
+$("clock").textContent=String(Math.floor(s.remaining/60)).padStart(2,"0")+":"+String(s.remaining%60).padStart(2,"0");
+$("phase").textContent=s.phase==="rest"?"REST · NEXT SET":s.phase.toUpperCase();
+$("kind").textContent=s.mode==="demo"?"DEMO MODE · NO REAL REPS LOGGED":"ACTIVE MODE · MANUAL LOG ONLY";
+$("score").textContent=String(s.points);$("progress").textContent=s.completed+" of "+total()+" stages completed";$("bar").style.width=progress()+"%";
+$("session").textContent=s.phase==="complete"?"Finished":s.phase==="stopped"?"Stopped":s.phase==="running"?"Playing":s.phase==="rest"?"Resting":s.phase==="paused"?"Paused":"Ready";
+$("start").textContent=s.phase==="paused"?"▶ Resume":s.phase==="rest"?"▶ Continue rest":"▶ Start";
+$("start").disabled=s.phase==="complete"||s.phase==="stopped";$("pause").disabled=!["running","rest"].includes(s.phase);
+$("complete").disabled=["complete","stopped","rest"].includes(s.phase);
+$("complete").textContent=x.reps?"✓ Log set done":"✓ Finish stage";
+$("next").disabled=s.phase==="complete"||s.phase==="stopped";
+document.querySelectorAll('input[name="playMode"]').forEach(function(r){r.checked=r.value===s.mode;r.disabled=s.phase!=="ready"});
+$("reps").disabled=s.mode==="demo"||!x.reps;$("weight").disabled=s.mode==="demo"||!x.reps;
+if(mediaId!==x.id){mediaId=x.id;$("film").pause();$("film").src=x.src;$("film").load();$("mediaWarning").hidden=true}
+var list=$("list");list.replaceChildren();
+scene.forEach(function(o,i){var b=document.createElement("button");b.type="button";b.className="item"+(i===s.index?" active":"")+(i<s.index?" done":"");
+var d=document.createElement("span");d.className="dot";d.textContent=i<s.index?"✓":String(i+1);
+var n=document.createElement("span");n.textContent=o.name+" · "+o.sets+" set"+(o.sets>1?"s":"");
+b.append(d,n);b.addEventListener("click",function(){if(s.phase==="running"||s.phase==="rest")freeze();s.index=i;s.set=1;s.phase="ready";s.remaining=o.seconds;save();render();setNotice("Preview selected. Earlier recorded entries remain in your local history.")});list.append(b)});
+save()
+}
+function begin(){if(!safeToTrain())return;if(s.phase==="complete"||s.phase==="stopped")return;if(s.phase==="rest"||s.phase==="running")return;
+if(s.remaining<=0)s.remaining=stage().seconds;s.phase="running";if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();render()}
+function runTick(){clearInterval(tick);tick=setInterval(function(){if(s.phase!=="running"&&s.phase!=="rest")return;var n=Math.max(0,Math.ceil((due-Date.now())/1000));if(n!==s.remaining){s.remaining=n;$("clock").textContent=String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");save()}
+if(n===0){clearInterval(tick);tick=null;if(s.phase==="rest"){s.phase="ready";s.remaining=stage().seconds;setNotice("Rest finished. Tap Start for the next stage.");}else{s.phase="paused";setNotice("Exercise timer ended. Only log reps you actually completed. The app does not automatically credit repetitions.");}$("film").pause();render()}},250)}
+function advance(){if(s.index===scene.length-1){s.phase="complete";s.remaining=0;setNotice("Workout walkthrough complete. Export your record or reset the demo.");return}
+if(s.set<stage().sets){s.set++}else{s.index++;s.set=1}
+s.remaining=stage().seconds;s.phase="ready"}
+function done(){if(s.phase==="stopped"||s.phase==="complete"||s.phase==="rest")return;if(!safeToTrain())return;
+var x=stage(),actualReps=Number($("reps").value),actualWeight=Number($("weight").value);
+if(s.mode==="active"&&x.reps&&(!Number.isFinite(actualReps)||actualReps<0||actualReps>200||!Number.isFinite(actualWeight)||actualWeight<0||actualWeight>2000)){setNotice("Enter valid actual reps (0–200) and weight (0–2000 lb), or use demo mode.");return}
+freeze();s.log.push({at:new Date().toISOString(),scene:x.id,name:x.name,set:s.set,kind:s.mode==="demo"?"simulation":"user-reported",reps:s.mode==="active"&&x.reps?actualReps:null,weightLb:s.mode==="active"&&x.reps?actualWeight:null});
+s.completed++;if(s.mode==="demo")s.points+=100;var last=s.index===scene.length-1&&s.set===x.sets;
+advance();
+if(!last){s.phase="rest";s.remaining=20;due=Date.now()+20000;runTick();setNotice("20-second rest. Tap Pause or let the clock finish.")}else{clearInterval(tick);tick=null}
+$("reps").value="0";$("weight").value="0";render()}
+$("start").addEventListener("click",begin);
+$("pause").addEventListener("click",function(){freeze();render();setNotice("Paused. Tap Resume to continue.")});
+$("complete").addEventListener("click",done);
+$("demo").addEventListener("click",function(){$("film").currentTime=0;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap the video play icon to allow approved audio on your device.")})});
+$("next").addEventListener("click",function(){if(s.phase==="running"||s.phase==="rest")freeze();if(s.phase==="stopped"||s.phase==="complete")return;if(s.index===scene.length-1&&s.set===stage().sets){s.phase="complete";s.remaining=0}else advance();render();setNotice("Stage skipped. No rep or completion was recorded.")});
+$("restart").addEventListener("click",function(){if(!confirm("Reset only the playable demo progress on this device?"))return;clearInterval(tick);s=fresh();mediaId="";setNotice("Demo reset. Original M3 FLEX workout records were not changed.");render()});
+$("stop").addEventListener("click",function(){freeze();s.phase="stopped";clearInterval(tick);$("film").pause();render();setNotice("Session stopped. You can export this record or reset the demo.")});
+$("export").addEventListener("click",function(){var data=JSON.stringify({schema:1,project:"M3 FLEX playable demo",savedAt:new Date().toISOString(),session:s},null,2);var blob=new Blob([data],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="m3-flex-playable-log.json";document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);setNotice("Local JSON backup prepared; your browser controls where it is saved.")});
+$("film").addEventListener("error",function(){$("mediaWarning").hidden=false;setNotice("Original approved video is unavailable at this source. No substitute avatar was shown.")});
+document.querySelectorAll('input[name="playMode"]').forEach(function(r){r.addEventListener("change",function(){if(s.phase!=="ready")return;s.mode=r.value;save();render()})});
+document.addEventListener("keydown",function(e){if(["INPUT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();if(["running","rest"].includes(s.phase))$("pause").click();else $("start").click()}if(e.key==="Escape")$("pause").click()});
+window.addEventListener("pagehide",function(){if(s.phase==="running"||s.phase==="rest")freeze()});
+render();setNotice("Start in interactive demo mode. The approved videos are unchanged; actual exercise requires your treating clinician's clearance.");
+})();
+</script></body></html>
