@@ -5,8 +5,8 @@ const coach=readFileSync(new URL("../public/recovery-coach/index.html",import.me
 const home=readFileSync(new URL("../src/routes/index.tsx",import.meta.url),"utf8");
 const browser=readFileSync(new URL("./browser-mobile-smoke.mjs",import.meta.url),"utf8");
 
-test("Marcus is a first-screen guided experience with unchanged owner-approved voice testing",()=>{
- assert.match(home,/Marcus Guided Flex · 7 approved animated scenes/);
+test("Flex is a first-screen guided experience with unchanged owner-approved voice testing",()=>{
+ assert.match(home,/Flex Guided Flex · 7 approved animated scenes/);
  assert.match(coach,/id="marcusStage"/);
  assert.match(coach,/id="marcusBegin"/);
  assert.match(coach,/id="marcusVoiceStatus"/);
@@ -29,7 +29,7 @@ test("Marcus start/pause uses the existing clinician-gated exact media workout s
  assert.match(coach,/stages\[restNext\.phase\]\.items\[restNext\.idx\]\.name/);
  assert.match(coach,/restNext=\{phase:1,idx:leader\}/);
  assert.match(coach,/role="status"/);
- assert.match(coach,/Original Marcus audio · no moving clip/);
+ assert.match(coach,/Original Flex audio · no moving clip/);
 });
 test("Galaxy focus and screen wake do not require an always-running background microphone",()=>{
  assert.match(coach,/body\.coachFocus/);
