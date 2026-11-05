@@ -726,8 +726,8 @@ window.M3_FLEX_SCENE_LIBRARY=[
     "group": "Original M3/BIG FLEX workout renders",
     "source": "HeyGen primary",
     "status": "owner-review",
-    "video": "https://files2.heygen.ai/aws_pacific/avatar_tmp/f9cf147f9f16428d960df47c12971b9f/v8296739f877d473fbc599b916a34d731/ae85ad75ae3d4fada5c24751fd4dd198.mp4?Expires=1793882248&Signature=KHBKIi2rbTJUFi5Gf7A1HTlcqWsRg~gTzs7SsdH6On~pLIVdVpJDxNNylLMwXPmRFNBmpOqnx98IqIQ1mY5B7hPphlkLpWT14k3BfdYEvB1P1SkzQGVEAvtntTz2x8rBKPc23MGEK6Hrc~dat98vzLtpskQuGRNEQLyTxTL7ZDSbc07mmyTEmLZTY017~eb-z9bHMhPhPQUturE5TyWGwMQ6zaHji7~erw1qcANLXMmMfGtA4xRsMKhbZyBnPJiJKL7fkIv134DfhPzSj3ogBz2WHKqQaMonOpSGS6OA2y~PVZ4CKLlbrOSh-U0jwvF10ejMbqV~uhcy3hAfOlrhKg__&Key-Pair-Id=K38HBHX5LX3X2H",
-    "note": "Original app render. Exercise, posture, cast/boot and Flex voice must match before timed training."
+    "video": "https://resource2.heygen.ai/aws_pacific/avatar_tmp/f9cf147f9f16428d960df47c12971b9f/v8296739f877d473fbc599b916a34d731/caption_ae85ad75ae3d4fada5c24751fd4dd198.mp4",
+    "note": "Original app render. Exercise, posture, cast/boot and Flex voice must match before timed training. Review player source refreshed to the same HeyGen video ID, using provider's current captioned render; historical original URL preserved in Git history."
   },
   {
     "id": "REF-LATERAL-2REPS",
