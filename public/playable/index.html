@@ -106,7 +106,7 @@ function setNotice(x){$("notice").textContent=x}
 function stage(){return scene[s.index]}
 function total(){return scene.reduce(function(a,b){return a+b.sets},0)}
 function safeToTrain(){if(s.mode==="demo")return true;if(!$("clearance").checked){setNotice("Active logging requires today's specific clinician clearance checkbox. You may use demo mode without it.");return false}return true}
-function freeze(){if(s.phase==="running"||s.phase==="rest"){s.remaining=Math.max(0,Math.ceil((due-Date.now())/1000));clearInterval(tick);tick=null;s.phase="paused";$("film").pause();save()}}
+function freeze(){if(s.phase==="running"||s.phase==="rest"){s.remaining=Math.max(0,Math.ceil((due-Date.now())/1000));clearInterval(tick);tick=null;s.pausedFrom=s.phase;s.phase="paused";$("film").pause();save()}}
 function progress(){return Math.min(100,Math.round(100*s.completed/total()))}
 function render(){
 var x=stage();$("name").textContent=x.name;$("cue").textContent=x.cue;$("counter").textContent="Scene "+(s.index+1)+" of "+scene.length;
@@ -116,8 +116,8 @@ $("phase").textContent=s.phase==="rest"?"REST · NEXT SET":s.phase.toUpperCase()
 $("kind").textContent=s.mode==="demo"?"DEMO MODE · NO REAL REPS LOGGED":"ACTIVE MODE · MANUAL LOG ONLY";
 $("score").textContent=String(s.points);$("progress").textContent=s.completed+" of "+total()+" stages completed";$("bar").style.width=progress()+"%";
 $("session").textContent=s.phase==="complete"?"Finished":s.phase==="stopped"?"Stopped":s.phase==="running"?"Playing":s.phase==="rest"?"Resting":s.phase==="paused"?"Paused":"Ready";
-$("start").textContent=s.phase==="paused"?"▶ Resume":s.phase==="rest"?"▶ Continue rest":"▶ Start";
-$("start").disabled=s.phase==="complete"||s.phase==="stopped";$("pause").disabled=!["running","rest"].includes(s.phase);
+$("start").textContent=s.phase==="paused"?(s.pausedFrom==="rest"?"▶ Resume rest":"▶ Resume"):s.phase==="rest"?"Rest counting…":"▶ Start";
+$("start").disabled=s.phase==="complete"||s.phase==="stopped"||s.phase==="rest";$("pause").disabled=!["running","rest"].includes(s.phase);
 $("complete").disabled=["complete","stopped","rest"].includes(s.phase);
 $("complete").textContent=x.reps?"✓ Log set done":"✓ Finish stage";
 $("next").disabled=s.phase==="complete"||s.phase==="stopped";
@@ -128,23 +128,24 @@ var list=$("list");list.replaceChildren();
 scene.forEach(function(o,i){var b=document.createElement("button");b.type="button";b.className="item"+(i===s.index?" active":"")+(i<s.index?" done":"");
 var d=document.createElement("span");d.className="dot";d.textContent=i<s.index?"✓":String(i+1);
 var n=document.createElement("span");n.textContent=o.name+" · "+o.sets+" set"+(o.sets>1?"s":"");
-b.append(d,n);b.addEventListener("click",function(){if(s.phase==="running"||s.phase==="rest")freeze();s.index=i;s.set=1;s.phase="ready";s.remaining=o.seconds;save();render();setNotice("Preview selected. Earlier recorded entries remain in your local history.")});list.append(b)});
+b.append(d,n);b.addEventListener("click",function(){if(s.phase==="running"||s.phase==="rest")freeze();s.index=i;s.set=1;s.phase="ready";s.pausedFrom=null;s.remaining=o.seconds;save();render();setNotice("Preview selected. Earlier recorded entries remain in your local history.")});list.append(b)});
 save()
 }
 function begin(){if(!safeToTrain())return;if(s.phase==="complete"||s.phase==="stopped")return;if(s.phase==="rest"||s.phase==="running")return;
-if(s.remaining<=0)s.remaining=stage().seconds;s.phase="running";if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();render()}
+var resumingRest=s.phase==="paused"&&s.pausedFrom==="rest";
+if(s.remaining<=0)s.remaining=resumingRest?20:stage().seconds;s.phase=resumingRest?"rest":"running";s.pausedFrom=null;if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();if(s.phase==="running"){var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Workout timer is running. Tap Play on the approved video if audio is blocked.")})}render()}
 function runTick(){clearInterval(tick);tick=setInterval(function(){if(s.phase!=="running"&&s.phase!=="rest")return;var n=Math.max(0,Math.ceil((due-Date.now())/1000));if(n!==s.remaining){s.remaining=n;$("clock").textContent=String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");save()}
-if(n===0){clearInterval(tick);tick=null;if(s.phase==="rest"){s.phase="ready";s.remaining=stage().seconds;setNotice("Rest finished. Tap Start for the next stage.");}else{s.phase="paused";setNotice("Exercise timer ended. Only log reps you actually completed. The app does not automatically credit repetitions.");}$("film").pause();render()}},250)}
+if(n===0){clearInterval(tick);tick=null;if(s.phase==="rest"){s.phase="ready";s.pausedFrom=null;s.remaining=stage().seconds;setNotice("Rest finished. Tap Start for the next stage.");}else{s.phase="paused";setNotice("Exercise timer ended. Only log reps you actually completed. The app does not automatically credit repetitions.");}$("film").pause();render()}},250)}
 function advance(){if(s.index===scene.length-1){s.phase="complete";s.remaining=0;setNotice("Workout walkthrough complete. Export your record or reset the demo.");return}
 if(s.set<stage().sets){s.set++}else{s.index++;s.set=1}
-s.remaining=stage().seconds;s.phase="ready"}
+s.remaining=stage().seconds;s.phase="ready";s.pausedFrom=null}
 function done(){if(s.phase==="stopped"||s.phase==="complete"||s.phase==="rest")return;if(!safeToTrain())return;
 var x=stage(),actualReps=Number($("reps").value),actualWeight=Number($("weight").value);
 if(s.mode==="active"&&x.reps&&(!Number.isFinite(actualReps)||actualReps<0||actualReps>200||!Number.isFinite(actualWeight)||actualWeight<0||actualWeight>2000)){setNotice("Enter valid actual reps (0–200) and weight (0–2000 lb), or use demo mode.");return}
 freeze();s.log.push({at:new Date().toISOString(),scene:x.id,name:x.name,set:s.set,kind:s.mode==="demo"?"simulation":"user-reported",reps:s.mode==="active"&&x.reps?actualReps:null,weightLb:s.mode==="active"&&x.reps?actualWeight:null});
 s.completed++;if(s.mode==="demo")s.points+=100;var last=s.index===scene.length-1&&s.set===x.sets;
 advance();
-if(!last){s.phase="rest";s.remaining=20;due=Date.now()+20000;runTick();setNotice("20-second rest. Tap Pause or let the clock finish.")}else{clearInterval(tick);tick=null}
+if(!last){s.phase="rest";s.pausedFrom=null;s.remaining=20;due=Date.now()+20000;runTick();setNotice("20-second rest. Tap Pause or let the clock finish.")}else{clearInterval(tick);tick=null}
 $("reps").value="0";$("weight").value="0";render()}
 $("start").addEventListener("click",begin);
 $("pause").addEventListener("click",function(){freeze();render();setNotice("Paused. Tap Resume to continue.")});
