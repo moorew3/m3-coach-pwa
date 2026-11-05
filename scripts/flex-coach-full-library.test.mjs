@@ -13,7 +13,7 @@ const original=JSON.parse(read("approved-recovery-media.json")).items.filter(x=>
 
 test("one clean dashboard exposes all original and recorded videos, including previous archived approvals",()=>{
  assert.equal(original.length,7);
- assert.equal(scenes.length,80);
+ assert.equal(scenes.length,84);
  assert.ok(scenes.filter(x=>x.video).length>=76);
  assert.equal(scenes.filter(x=>x.status==="archived-approved-link").length,2);
  for(const id of ["m3-workout-select","m3-video-category","m3-video-select","m3-flex-video","m3-show-approved","m3-show-unapproved"])
