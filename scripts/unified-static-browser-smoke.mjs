@@ -47,7 +47,7 @@ try{
   await page.getByTestId("app-entry-yes").click();
   await page.getByTestId("app-entry-gate").waitFor({state:"detached"});
  }
- await page.getByTestId("m3-unified-workout-picker").waitFor();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Settings"}).click();
  await page.getByTestId("m3-full-device-backup").click();
  await page.locator("#counts").waitFor();
@@ -100,9 +100,9 @@ try{
  await page.getByTestId("m3-start-selected").click();
  await page.getByTestId("v2-approved-avatar-entrance").waitFor();
   await page.getByTestId("v2-opening-exit").click();
- await page.getByTestId("m3-unified-workout-picker").waitFor();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
  await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
- await page.getByTestId("m3-unified-workout-picker").waitFor();
+ await page.getByTestId("m3-primary-workout-menu").waitFor();
  assert.equal(log.length,0,"Static original React app had client errors: "+log.join("; ").slice(0,800));
  console.log("ONE unified original M3 FLEX app navigates Home → Recovery → Progress → Program → Home on static hosting. No Node server needed for this smoke.");
 }finally{
