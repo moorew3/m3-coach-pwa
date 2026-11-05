@@ -76,7 +76,7 @@ const expiredSignedMedia = (url: string | null) => {
 // Never silently substitute a different exercise, identity or clip.
 const heygenVideoPage = (url: string | null): string | null => {
   if (!url || !/^https:\/\/files2\.heygen\.ai\//i.test(url)) return null;
-  const match = url.match(/\/([a-f\d]{32})\.mp4(?:\?|$)/i);
+  const match = url.match(/\/(?:caption_)?([a-f\d]{32})\.mp4(?:\?|$)/i);
   return match ? "https://app.heygen.com/videos/" + match[1] : null;
 };
 const getInventory = (): Scene[] =>
