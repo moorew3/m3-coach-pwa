@@ -14,7 +14,7 @@ export const FLEX_FOCUS_OPTIONS: {value: FlexFocus; label: string}[] = [
 ];
 export function isFlexExcludedExercise(exercise: string): boolean {
   const normalized=exercise.toLowerCase().replace(/[-_]+/g," ").trim();
-  return /\bsquats?\b|\bleg presses?\b/.test(normalized);
+  return /\bsquats?\b|\bleg press(?:es)?\b/.test(normalized);
 }
 function exerciseBodyCue(exercise: string): string {
   const name=exercise.toLowerCase();
