@@ -60,6 +60,25 @@ const WORKOUTS: { value: Workout; label: string }[] = [
   { value: "v2", label: "Flex V2 visual coach" },
 ];
 const validMedia = (url: string | null) => !!url && /^https:\/\//i.test(url);
+const canonicalMedia = (url: string | null | undefined) => (url ?? "").split("?")[0];
+// Signed CDN parameters rotate. Keep a user's review attached to the actual
+// video file, not the expiring signature/query string.
+const sameMedia = (left: string | null | undefined, right: string | null | undefined) =>
+  canonicalMedia(left) === canonicalMedia(right);
+const expiredSignedMedia = (url: string | null) => {
+  if (!url || !url.includes("Expires=")) return false;
+  try {
+    const expires = Number(new URL(url).searchParams.get("Expires"));
+    return Number.isFinite(expires) && expires > 0 && Date.now() >= expires * 1000;
+  } catch { return false; }
+};
+// Durable owner-accessible video page if a short-lived signed render link dies.
+// Never silently substitute a different exercise, identity or clip.
+const heygenVideoPage = (url: string | null): string | null => {
+  if (!url || !/^https:\/\/files2\.heygen\.ai\//i.test(url)) return null;
+  const match = url.match(/\/([a-f\d]{32})\.mp4(?:\?|$)/i);
+  return match ? "https://app.heygen.com/videos/" + match[1] : null;
+};
 const getInventory = (): Scene[] =>
   Array.isArray(window.M3_FLEX_SCENE_LIBRARY) ? window.M3_FLEX_SCENE_LIBRARY : [];
 const mappedScene = (s: Scene): Item => ({
@@ -120,7 +139,7 @@ export function UnifiedWorkoutDashboard() {
     if (item.status === "approved") return true;
     const record = reviewRecords[item.id];
     return !!item.video && !!record && typeof record === "object" &&
-      record.video === item.video && record.audio === item.audio;
+      sameMedia(record.video, item.video) && sameMedia(record.audio, item.audio);
   };
   // The old archive explicitly records user approvals even when the Flow export is not an MP4.
   const previouslyApprovedArchive = (item: Item) =>
@@ -135,6 +154,8 @@ export function UnifiedWorkoutDashboard() {
   const filtered = useMemo(() => all.filter(item => inGroup(item, filter)),
     [all, filter, reviewRecords]);
   const current = filtered.find(x => x.key === selectedKey) ?? filtered[0] ?? null;
+  const clipExpired = expiredSignedMedia(current?.video ?? null);
+  const savedHeyGenPage = heygenVideoPage(current?.video ?? null);
   const count = (f: Filter) => all.filter(item => inGroup(item, f)).length;
   const pickFilter = (next: Filter) => {
     setFilter(next);
@@ -230,7 +251,7 @@ export function UnifiedWorkoutDashboard() {
           {current && (matchesApproval(current) || previouslyApprovedArchive(current)) ? <CheckCircle2 className="size-5 text-primary"/> :
             <CircleAlert className="size-5 text-amber-300"/>}
         </div>
-        {current?.video && validMedia(current.video) && !videoError ? (
+        {current?.video && validMedia(current.video) && !clipExpired && !videoError ? (
           <video key={current.key} controls playsInline preload="metadata" data-testid="m3-flex-video"
             className="aspect-video max-h-[42vh] w-full bg-black object-contain"
             src={current.video} onError={() => setVideoError(true)}
@@ -238,9 +259,14 @@ export function UnifiedWorkoutDashboard() {
         ) : (
           <div className="flex min-h-28 flex-col items-center justify-center px-4 py-4 text-center" role="status">
             <CircleAlert className="mb-2 size-6 text-amber-300"/>
-            <p className="text-sm font-semibold">{videoError ? "This file could not play" :
-              "No direct playable video is saved in this record"}</p>
-            <p className="mt-1 text-xs text-muted-foreground">This is a saved record, not a substitute demonstration.</p>
+            <p className="text-sm font-semibold">{clipExpired
+              ? "This video exists, but its temporary playback address expired"
+              : videoError ? "This saved video could not play"
+              : "No direct playable video is saved in this record"}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {savedHeyGenPage ? "Open your original saved video in HeyGen below. No replacement clip is used." :
+                "This record is retained without substituting another exercise."}
+            </p>
           </div>
         )}
         <div className="space-y-2 px-3 pb-3 text-xs">
@@ -262,8 +288,15 @@ export function UnifiedWorkoutDashboard() {
               This exercise is excluded from your workout: no squats or leg press. Archived media is for reference only.
             </p>
           )}
-          {current?.video && <a href={current.video} target="_blank" rel="noopener noreferrer"
+          {current?.video && !clipExpired && <a href={current.video} target="_blank" rel="noopener noreferrer"
             className="inline-block font-bold text-primary">Open this original video file</a>}
+          {(clipExpired || videoError) && savedHeyGenPage && (
+            <a href={savedHeyGenPage} target="_blank" rel="noopener noreferrer"
+              data-testid="m3-heygen-fallback"
+              className="inline-flex min-h-11 items-center rounded-lg border border-primary/40 bg-primary/10 px-3 font-bold text-primary">
+              Open this saved video in HeyGen
+            </a>
+          )}
           {!current?.video && current?.external && <a href={current.external} target="_blank" rel="noopener noreferrer"
             className="inline-block font-bold text-primary">Open archived original link</a>}
           {current?.audio && validMedia(current.audio) && (
