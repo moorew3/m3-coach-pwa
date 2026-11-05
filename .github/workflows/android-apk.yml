@@ -14,6 +14,20 @@ on:
       - "scripts/stage-unified-static.mjs"
       - "package.json"
       - "vite.config.ts"
+  push:
+    branches:
+      - "fix/**"
+    paths:
+      - ".github/workflows/android-apk.yml"
+      - "capacitor.config.json"
+      - "scripts/stage-android-recovery.mjs"
+      - "scripts/stage-pose-runtime.mjs"
+      - "approved-recovery-media.json"
+      - "public/recovery-coach/**"
+      - "src/**"
+      - "scripts/stage-unified-static.mjs"
+      - "package.json"
+      - "vite.config.ts"
 
 jobs:
   android-debug-apk:
