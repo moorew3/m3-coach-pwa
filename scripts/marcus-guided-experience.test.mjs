@@ -16,7 +16,7 @@ test("Flex is a first-screen guided experience with unchanged owner-approved voi
  assert.match(coach,/id="marcusTestAudio"/);
  assert.match(coach,/9226f649-9808-4275-b269-bcc93d3b0342\.mp3/);
  assert.match(coach,/Only approved exercises have moving demonstrations/);
- assert.match(coach,/Displayed guidance is on-screen text, not newly generated Marcus speech/);
+ assert.match(coach,/Displayed guidance is on-screen text, not newly generated Flex speech/);
  assert.match(browser,/Marcus one-tap full guided session/);
 });
 test("Marcus start/pause uses the existing clinician-gated exact media workout state machine",()=>{
