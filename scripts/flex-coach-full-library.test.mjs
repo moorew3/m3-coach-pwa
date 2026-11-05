@@ -20,6 +20,10 @@ test("one clean dashboard exposes all original and recorded videos, including pr
    assert.ok(source.includes('data-testid="'+id+'"'),id);
  assert.match(source,/scene-library\.js/);
  assert.match(source,/archived-approved-link/);
+ assert.match(source,/expiredSignedMedia/);
+ assert.match(source,/m3-heygen-fallback/);
+ assert.match(source,/sameMedia\(record.video, item.video\)/);
+ assert.match(source,/sameMedia\(record.audio, item.audio\)/);
 });
 test("owner can explicitly approve or undo any available review video; audio-less clips stay visual only",()=>{
  for(const needle of ['REVIEW_KEY = "m3-flex-review-approval-v1"','data-testid="m3-approve-video"','localStorage.setItem(REVIEW_KEY',
