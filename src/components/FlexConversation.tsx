@@ -195,6 +195,7 @@ export function FlexConversation() {
     stopFlexSpeech();
     const previous = turnsRef.current;
     const question = normalizedFollowup(q, previous);
+    const isFollowup = question !== q;
     const input = [...previous, { role: "user" as const, content: q }];
     commit(input);
     setMessage("");
@@ -204,7 +205,7 @@ export function FlexConversation() {
     let answer = local.text;
     let kind: Turn["kind"] = local.category === "help" ? "help" : "record";
     try {
-      if (modelStatus === "ready" && (local.category === "help" || !preciseQuestion(q))) {
+      if (modelStatus === "ready" && (isFollowup || local.category === "help" || !preciseQuestion(q))) {
         // General knowledge or follow-ups run on the phone, using dialogue context.
         const output = await modelAsk([...previous, {role: "user", content: question}], factsOf(state));
         if (output) { answer = output; kind = "model"; }
@@ -229,7 +230,7 @@ export function FlexConversation() {
   useEffect(() => {
     // The existing voice command module routes spoken questions to this same
     // chat engine; workouts retain their own command handler.
-    setConversationHandler(q => { void askRef.current(q); });
+    setConversationHandler(q => { void askRef.current(q); }, { acceptAnyWhenListening: true });
     return () => { setConversationHandler(null); micRef.current = false; stopListening(); };
   }, []);
 
