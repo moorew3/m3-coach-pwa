@@ -259,7 +259,7 @@ export function FlexConversation() {
     });
   };
   return (
-    <div data-testid="flex-conversation" className="mt-3 rounded-xl border border-cyan-400/30 bg-background/70 p-2.5">
+    <div id="flex-conversation-panel" data-testid="flex-conversation" className="mt-3 scroll-mt-24 rounded-xl border border-cyan-400/30 bg-background/70 p-2.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-sm font-black"><MessageCircle className="size-4 text-accent" /> Talk to Flex</h3>
         <div className="flex items-center gap-1.5">
