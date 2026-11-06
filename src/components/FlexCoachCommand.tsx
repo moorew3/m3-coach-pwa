@@ -31,6 +31,7 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.2em] text-accent">M3 FLEX · Personal coach</p>
           <h2 className="mt-1 text-xl font-black leading-tight sm:text-2xl">Train. Talk. Eat. Improve.</h2>
+          <a href="#flex-conversation-panel" data-testid="flex-jump-to-chat" className="mt-2 inline-flex min-h-10 items-center rounded-lg border border-accent/40 bg-accent/15 px-3 text-sm font-black text-accent">Talk to Flex now →</a>
         </div>
         <span className="rounded-full border border-green-500/50 bg-green-500/10 px-2.5 py-1 text-[10px] font-bold uppercase text-green-200">
           No paid AI calls
