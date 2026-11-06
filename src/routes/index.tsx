@@ -152,6 +152,20 @@ function Today() {
           your original weekly workouts and the full scene library. The same
           original Flex and Marcus media stay protected.
         </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <a href="/playable/" data-testid="open-m3-flex-movie"
+            className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-lime-400 bg-lime-400/20 px-3 text-center text-sm font-black text-lime-100">
+            🎬 Coach Session · Workout Movie
+          </a>
+          <a href="/playable/#loop" data-testid="open-m3-flex-continuous"
+            className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-cyan-400 bg-cyan-400/10 px-3 text-center text-sm font-bold text-cyan-100">
+            🔁 Continuous Exercise Demo
+          </a>
+          <a href="/playable/#review" data-testid="open-m3-flex-approvals"
+            className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-amber-400 bg-amber-400/10 px-3 text-center text-sm font-bold text-amber-100">
+            ✓ Approve / Disapprove Videos
+          </a>
+        </div>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           <Link to="/v2" data-testid="open-existing-v2" className="tap-target flex items-center justify-center rounded-xl border-2 border-accent bg-accent/15 px-3 text-center text-sm font-bold text-accent">
             Open M3 Coach V2 · Visual workout
