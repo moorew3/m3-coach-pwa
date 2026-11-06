@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Send, Volume2, Square, MessageCircle, Cpu, X } from "lucide-react";
 import { answerFlexLocal } from "@/lib/flex-local-advice";
+import { everydayFallback } from "@/lib/flex-everyday-chat";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 import { useApp, type AppState } from "@/lib/store";
 import { stopFlexSpeech } from "@/lib/flex-answer-audio";
@@ -20,7 +21,7 @@ import {
 type Turn = { role: "user" | "assistant"; content: string; kind?: "record" | "model" | "help" };
 type ModelStatus = "off" | "loading" | "ready" | "unavailable" | "error";
 const SESSION_KEY = "m3-flex-conversation-session-v1";
-const SUGGESTED = ["How much protein have I logged?", "What is today's workout?", "What should I eat?", "Explain progressive overload"];
+const SUGGESTED = ["Hey Flex, how are you?", "Let’s talk about my day", "Tell me a joke", "How much protein have I logged?"];
 const MAX_TURNS = 16;
 
 function factsOf(s: AppState) {
@@ -55,7 +56,8 @@ function loadTurns(): Turn[] {
   } catch { return []; }
 }
 function preciseQuestion(question: string) {
-  return /\b(protein|calori|macros?|carbs?|fat intake|water|hydration|lactose|cheese|injur|pain|boot|workout|exercise|reps?|sets?|progress|food|meal|breakfast|lunch|dinner|snack|next session)\b/i.test(question);
+  // Preserve deterministic recorded facts without hijacking general topics.
+  return /\b(how (much|many)|have i (logged|eaten|drunk|done)|did i (log|eat|drink)|my (calories|protein|carbs|macros|water|reps|sets|weight|workout|plan|progress)|today's (protein|calories|workout|plan)|current (set|reps|weight)|food (preferences|allergy)|chest pain|can't breathe|injured (left )?leg|leg (pain|injury)|is it safe)\b/i.test(question);
 }
 function normalizedFollowup(question: string, turns: Turn[]) {
   if (!/^(why\??|how so\??|explain (?:that|more)|what do you mean\??|can you explain\??|tell me more|what about (?:that|it)\??)$/i.test(question.trim())) return question;
@@ -204,15 +206,21 @@ export function FlexConversation() {
     const local = answerFlexLocal(question, state);
     let answer = local.text;
     let kind: Turn["kind"] = local.category === "help" ? "help" : "record";
+    const shouldUseRecorded = local.category === "safety" || (!isFollowup && local.category !== "help" && preciseQuestion(q));
     try {
-      if (modelStatus === "ready" && (isFollowup || local.category === "help" || !preciseQuestion(q))) {
-        // General knowledge or follow-ups run on the phone, using dialogue context.
+      if (modelStatus === "ready" && !shouldUseRecorded) {
+        // Open-ended and ordinary dialogue uses the same conversation history.
         const output = await modelAsk([...previous, {role: "user", content: question}], factsOf(state));
         if (output) { answer = output; kind = "model"; }
-      } else if (local.category === "help") {
-        answer = "I can answer questions about your logged nutrition, workout, and training now. " +
-          "For broader questions and follow-ups, enable the optional On-device AI below (about 500 MB, Wi-Fi recommended). " +
-          "I won't make up facts or switch to a different voice.";
+      } else if (!shouldUseRecorded) {
+        const casual = everydayFallback(q, previous);
+        if (casual) { answer = casual; kind = "help"; }
+        else {
+          answer = "I'd like to talk about that, but my open-ended AI isn't enabled yet. " +
+            "Tap Enable Natural Conversation below (about a 500 MB download, Wi-Fi recommended). " +
+            "Without it I can chat about familiar everyday topics and your recorded workout and nutrition information.";
+          kind = "help";
+        }
       }
     } catch (err) {
       answer = "The local AI could not answer this question. " +
@@ -271,12 +279,20 @@ export function FlexConversation() {
             className="grid size-10 place-items-center rounded-lg border border-border"><X className="size-4" /></button>
         </div>
       </div>
-      <p className="mt-1 text-[11px] text-muted-foreground">A real two-way conversation: ask, read the response, and ask follow-ups. Speak questions with the mic or type. Changing replies require approved Marcus synthesis to be heard; no substitute voice is used.</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">Talk about your day, hobbies, family, work, music, movies, sports, or fitness. Ask follow-ups or change subjects whenever you want. Use the microphone or type. New spoken replies require authorized Marcus synthesis, so there is no substitute voice.</p>
+      {modelStatus==="off" && supportsGPU && (
+        <button data-testid="flex-natural-chat-enable" type="button" onClick={startModel}
+          className="mt-2 min-h-12 w-full rounded-xl border border-cyan-400/40 bg-cyan-400/15 px-3 text-sm font-black text-cyan-100">
+          Enable Natural Conversation · ~500 MB download
+        </button>
+      )}
+      {modelStatus==="ready" && <p data-testid="flex-natural-chat-ready" role="status" className="mt-2 text-xs font-bold text-accent">Natural Conversation active on this device. No per-question AI provider charges.</p>}
+      {modelStatus==="loading" && <p role="status" className="mt-2 text-xs text-accent">Preparing Natural Conversation… {modelInfo}</p>}
       {audioStatus && <p className="mt-1 text-[11px] text-accent" role="status">{audioStatus}</p>}
 
       <div role="log" aria-live="polite" aria-label="Flex conversation" data-testid="flex-chat-history"
         className="mt-2 max-h-80 min-h-14 space-y-2 overflow-y-auto rounded-xl bg-black/15 p-2">
-        {!turns.length && <p className="p-2 text-xs text-muted-foreground">Flex: What would you like to discuss? Ask about a workout, meal, recovery, or a follow-up question.</p>}
+        {!turns.length && <p className="p-2 text-xs text-muted-foreground">Flex: Hey! We can talk about your day, family, hobbies, work, music, or training. What’s on your mind?</p>}
         {turns.map((t,i) => (
           <div key={i} className={t.role==="user" ? "ml-5 rounded-xl bg-primary/15 px-3 py-2" : "mr-5 rounded-xl border border-accent/20 bg-accent/5 px-3 py-2"}>
             <p className="text-[10px] font-black uppercase text-accent">{t.role==="user"?"You":t.kind==="model"?"Flex · on-device AI":t.kind==="record"?"Flex · your recorded data":"Flex · help"}</p>
