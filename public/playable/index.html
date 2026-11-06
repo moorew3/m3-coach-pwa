@@ -336,6 +336,6 @@ $("exercisePick").addEventListener("change",function(){var value=this.value;var 
 document.querySelectorAll('input[name="playMode"]').forEach(function(r){r.addEventListener("change",function(){if(s.phase!=="ready")return;s.mode=r.value;save();render()})});
 document.addEventListener("keydown",function(e){if(["INPUT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();if(["running","rest"].includes(s.phase))$("pause").click();else $("start").click()}if(e.key==="Escape")$("pause").click()});
 window.addEventListener("pagehide",function(){if(s.phase==="running"||s.phase==="rest")freeze()});
-render();setNotice("Select any exercise above the video; approved videos are ready to preview. Start in interactive demo mode. The approved videos are unchanged; actual exercise requires your treating clinician's clearance.");
+render();setNotice("Select any exercise above the video; approved videos are ready to preview. Start in interactive demo mode. The approved videos are unchanged; actual exercise requires your treating clinician's clearance.");if(window.location&&window.location.hash==="#review")setExperience("review");else if(window.location&&window.location.hash==="#loop")setExperience("loop");
 })();
 </script></body></html>
