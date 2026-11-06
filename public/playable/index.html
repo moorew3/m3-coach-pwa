@@ -124,7 +124,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <div id="reviewReceipt" role="status" aria-live="polite"></div>
 </div>
 <div id="exerciseControls">
-<div class="quickLog"><label for="reps"><span>Reps</span><input id="reps" type="number" min="0" max="200" value="0" inputmode="numeric"></label><label for="weight"><span>Weight lb</span><input id="weight" type="number" min="0" max="2000" value="0" inputmode="decimal"></label></div>
+<div class="quickLog" id="quickLog"><label for="reps"><span>Reps</span><input id="reps" type="number" min="0" max="200" value="0" inputmode="numeric"></label><label for="weight"><span>Weight lb</span><input id="weight" type="number" min="0" max="2000" value="0" inputmode="decimal"></label></div>
 <div class="buttons">
 <button id="start" class="primary">▶ Start</button><button id="pause">Ⅱ Pause</button><button id="complete">✓ Log set</button>
 <button id="demo">▶ Play video</button><button id="next">→ Next</button><button id="stop" class="danger">■ Stop</button>
@@ -206,7 +206,7 @@ function freeze(){if(s.phase==="running"||s.phase==="rest"){s.remaining=Math.max
 function progress(){return Math.min(100,Math.round(100*s.completed/total()))}
 function render(){
 $("workoutPicker").hidden=experience==="review";$("reviewPicker").hidden=experience!=="review";
-$("approvalControls").hidden=experience!=="review";$("exerciseControls").hidden=experience==="review";
+$("approvalControls").hidden=experience!=="review";$("exerciseControls").hidden=experience==="review";$("quickLog").hidden=experience==="loop";
 ["coach","loop","review"].forEach(function(k){var b=$("mode"+k[0].toUpperCase()+k.slice(1));b.className="mode"+(experience===k?" on":"");b.setAttribute("aria-pressed",experience===k?"true":"false")});
 var x=selected();if(!x)return;var restScene=experience==="coach"&&(s.phase==="rest"||(s.phase==="paused"&&s.pausedFrom==="rest"));
 $("sceneTop").textContent=experience==="review"?"OWNER APPROVAL · REVIEW":experience==="loop"?"M3 FLEX · ENDLESS DEMONSTRATION":restScene?"RECOVERY · REST":"COACH SESSION · SCENE "+(s.index+1);
@@ -234,7 +234,7 @@ $("watermark").textContent=experience==="review"?"REVIEW CANDIDATE":view.type===
 $("score").textContent=String(s.points);$("progress").textContent=s.completed+" of "+total()+" stages completed";$("bar").style.width=progress()+"%";
 $("session").textContent=s.phase==="complete"?"Finished":s.phase==="stopped"?"Stopped":s.phase==="running"?"Playing":s.phase==="rest"?"Resting":s.phase==="paused"?"Paused":"Ready";
 $("start").textContent=s.phase==="paused"?(s.pausedFrom==="rest"?"▶ Resume rest":"▶ Resume"):s.phase==="rest"?"Rest counting…":"▶ Start";
-$("start").disabled=previewMode()||experience==="loop"||s.phase==="complete"||s.phase==="stopped"||s.phase==="rest";$("pause").disabled=!["running","rest"].includes(s.phase);
+$("start").hidden=experience==="loop";$("complete").hidden=experience==="loop";$("start").disabled=previewMode()||experience==="loop"||s.phase==="complete"||s.phase==="stopped"||s.phase==="rest";$("pause").disabled=experience==="loop"?$("film").paused:!["running","rest"].includes(s.phase);
 $("complete").disabled=previewMode()||experience==="loop"||["complete","stopped","rest"].includes(s.phase);
 $("complete").textContent=x.reps?"✓ Log set done":"✓ Finish stage";
 $("next").disabled=(experience!=="loop"&&previewMode())||s.phase==="complete"||s.phase==="stopped";
@@ -293,13 +293,13 @@ $("reps").value="0";$("weight").value="0";render();
 if(s.phase==="rest"){try{var restPlay=$("film").play();if(restPlay&&restPlay.catch)restPlay.catch(function(){setNotice("Rest timer runs. Tap the video to enable breathing audio if Android blocks playback.")})}catch(e){}}
 }
 $("start").addEventListener("click",begin);
-$("pause").addEventListener("click",function(){freeze();render();setNotice("Paused. Tap Resume to continue.")});
+$("pause").addEventListener("click",function(){if(experience==="loop"){$("film").pause();$("pause").disabled=true;setNotice("Continuous demonstration paused. Tap Play video to resume.");return}freeze();render();setNotice("Paused. Tap Resume to continue.")});
 $("complete").addEventListener("click",done);
-$("demo").addEventListener("click",function(){if($("demo").disabled)return;var demoRest=experience==="coach"&&(s.phase==="rest"||(s.phase==="paused"&&s.pausedFrom==="rest"));$("film").loop=demoRest||(experience==="loop"&&["workout","legacy","owner"].includes(view.type));$("film").currentTime=0;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap the video play icon to allow approved audio on your device.")})});
+$("demo").addEventListener("click",function(){if($("demo").disabled)return;if(experience==="loop")$("pause").disabled=false;var demoRest=experience==="coach"&&(s.phase==="rest"||(s.phase==="paused"&&s.pausedFrom==="rest"));$("film").loop=demoRest||(experience==="loop"&&["workout","legacy","owner"].includes(view.type));$("film").currentTime=0;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap the video play icon to allow approved audio on your device.")})});
 $("next").addEventListener("click",function(){if(experience==="review")return;
 if(experience==="loop"){var kind=view.type;var arr=kind==="workout"?scene:kind==="legacy"?legacyApproved:kind==="owner"?reviewItems.filter(function(x){return reviewDecision(x)==="approved"}):null;
 if(!arr||!arr.length){setNotice("Choose one of the approved exercise videos to loop.");return}
-var next=(view.index+1)%arr.length;choose(kind,next);$("film").loop=true;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap Play video to resume the loop.")});return}
+var next=(view.index+1)%arr.length;choose(kind,next);$("film").loop=true;$("pause").disabled=false;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap Play video to resume the loop.")});return}
 if(previewMode())return;if(s.phase==="running"||s.phase==="rest")freeze();if(s.phase==="stopped"||s.phase==="complete")return;if(s.index===scene.length-1&&s.set===stage().sets){s.phase="complete";s.remaining=0}else advance();render();setNotice("Stage skipped. No rep or completion was recorded.")});
 $("restart").addEventListener("click",function(){if(!confirm("Reset only the playable demo progress on this device?"))return;clearInterval(tick); s=fresh();experience="coach";view={type:"workout",index:0};mediaId="";setNotice("Demo reset. Original M3 FLEX workout records were not changed.");render()});
 $("stop").addEventListener("click",function(){freeze();s.phase="stopped";clearInterval(tick);$("film").pause();render();setNotice("Session stopped. You can export this record or reset the demo.")});
@@ -326,6 +326,7 @@ $("importReviews").addEventListener("change",function(){var file=this.files&&thi
 $("autoFlow").addEventListener("change",function(){s.autoFlow=!!this.checked;save();render();setNotice(s.autoFlow?"Automatic demo progress enabled. Only simulated sets are credited.":"Automatic progression off. You control each set.")});
 $("approvedClipReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<0||n>30){this.value=String(approvedCycles[stage().id]||0);return}if(n===0)delete approvedCycles[stage().id];else approvedCycles[stage().id]=n;try{localStorage.setItem(CAL_KEY,JSON.stringify(approvedCycles))}catch(e){}render();setNotice(n?"Whole-cycle calibration saved: "+n+" full repetitions seen in the selected clip. Verify transitions during playback.":"Clip repetition calibration reset. No automatic visual reps will be claimed.")});
 $("goalReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<1||n>30){this.value=String(targetReps(stage()));return}goalFor[stage().id]=n;render();setNotice("Set goal updated to "+n+" reps for "+stage().name+". This does not count actual repetitions.")});
+$("film").addEventListener("play",function(){if(experience==="loop")$("pause").disabled=false});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true});
 $("film").addEventListener("ended",function(){
 if(experience==="review"){watched[reviewItems[reviewIndex].id]=true;render();return}
 if(experience!=="coach"||s.phase!=="running")return;
