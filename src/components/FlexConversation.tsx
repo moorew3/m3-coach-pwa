@@ -206,7 +206,7 @@ export function FlexConversation() {
     const local = answerFlexLocal(question, state);
     let answer = local.text;
     let kind: Turn["kind"] = local.category === "help" ? "help" : "record";
-    const shouldUseRecorded = local.category === "safety" || (!isFollowup && local.category !== "help" && preciseQuestion(q));
+    const shouldUseRecorded = local.category === "safety" || (!isFollowup && local.category !== "help" && (preciseQuestion(q) || /\b(what (should|can) i eat|meal ideas|what(?:'s| is) (my |today(?:'s)? )?workout|what is my training|food preferences)\b/i.test(q)));
     try {
       if (modelStatus === "ready" && !shouldUseRecorded) {
         // Open-ended and ordinary dialogue uses the same conversation history.
@@ -215,6 +215,7 @@ export function FlexConversation() {
       } else if (!shouldUseRecorded) {
         const casual = everydayFallback(q, previous);
         if (casual) { answer = casual; kind = "help"; }
+        else if (local.category !== "help") { answer = local.text; kind = "record"; }
         else {
           answer = "I'd like to talk about that, but my open-ended AI isn't enabled yet. " +
             "Tap Enable Natural Conversation below (about a 500 MB download, Wi-Fi recommended). " +
