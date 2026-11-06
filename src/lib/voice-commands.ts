@@ -278,7 +278,7 @@ export function startListening() {
       const cmd = matchCommand(phrase);
       set({ heard: phrase, lastCommand: cmd, error: null });
       if (cmd && handler) handler(cmd, phrase.toLowerCase());
-      else if (!cmd && conversationHandler && (conversationAcceptAny || soundsDirectedAtCoach(phrase)))
+      else if (conversationHandler && (conversationAcceptAny || soundsDirectedAtCoach(phrase)))
         conversationHandler(phrase);
     }
   };
