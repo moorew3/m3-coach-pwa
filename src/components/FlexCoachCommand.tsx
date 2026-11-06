@@ -238,7 +238,7 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
         {voiceInfo && <p data-testid="flex-audio-state" role="status" aria-live="polite"
           className={voiceStatus === "error" ? "mt-1 text-xs text-amber-300" : "mt-1 text-xs text-muted-foreground"}>
           {voiceInfo}
-        </p>
+        </p>}
         {vc.heard && <p className="mt-1 text-xs text-muted-foreground">Heard: {vc.heard}</p>}
         {vc.error && <p role="alert" className="mt-1 text-xs text-destructive">{vc.error}</p>}
         {answer && (
