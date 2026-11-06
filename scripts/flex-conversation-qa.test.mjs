@@ -40,6 +40,6 @@ check("User can stop local model", chat.includes("turnOffModel"));
 check("No wrong voice synth", !chat.includes("speechSynthesis.speak") && !chat.includes("SpeechSynthesisUtterance"));
 check("Approved Marcus audio only", chat.includes("playApprovedMarcusTest") && chat.includes("Changing replies require approved Marcus synthesis"));
 check("No silent subscriptions", worker.includes("Runs entirely inside") && chat.includes("No AI subscription or per-question fee"));
-check("Do not assert all answers correct", worker.includes("do not pretend to have current web access") && chat.includes("may be imperfect"));
+check("Do not assert all answers correct", worker.includes("do not pretend to have current web access") && chat.includes("Answers can be imperfect"));
 check("Workout safety remains authoritative", worker.includes("injured LEFT leg") && worker.includes("never prescribe loading"));
 console.log("M3 FLEX conversation QA passed: " + passed + " checks; no model downloaded.");
