@@ -133,6 +133,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <details class="accordion" id="settingsPanel"><summary>Session settings, reset &amp; export</summary><div class="detailBody">
 <div class="goalRow"><label for="goalReps">Target reps per set</label><input id="goalReps" type="number" min="1" max="30" value="8" inputmode="numeric"></div>
 <div class="goalRow"><label for="approvedClipReps">Whole reps visible in approved video (verify)</label><input id="approvedClipReps" type="number" min="0" max="30" value="0" inputmode="numeric"></div>
+<label class="check"><input id="autoFlow" type="checkbox" checked> Automatically advance through sets and rests in GAME DEMO. Never auto-log physical reps.</label>
 <p class="label">Keep clip reps at 0 until verified. Looping a complete clip can extend its demonstration, but smooth motion and accurate rep transitions must be checked.</p>
 <fieldset><legend>Log mode</legend><label class="check"><input type="radio" name="playMode" value="demo" checked> Demo: simulate sets, don't record real reps</label><label class="check"><input type="radio" name="playMode" value="active"> Active: record my actual reps and weights</label></fieldset>
 <label class="check"><input id="clearance" type="checkbox"> My treating clinician has cleared these specific seated movements and resistance; my injured LEFT leg will remain supported and unloaded.</label>
@@ -161,7 +162,7 @@ var legacyApproved=[{"id":"bandPullApart","name":"Band Pull Apart","src":"https:
 var archive=(window.M3_FLEX_SCENE_LIBRARY||[]).filter(function(x){return !!(x.id&&x.name)});
 var view={type:"workout",index:0};
 function $(id){return document.getElementById(id)}
-function fresh(){return {index:0,set:1,mode:"demo",phase:"ready",remaining:scene[0].seconds,completed:0,points:0,log:[],startedAt:null,visualReps:0}}
+function fresh(){return {index:0,set:1,mode:"demo",phase:"ready",remaining:scene[0].seconds,completed:0,points:0,log:[],startedAt:null,visualReps:0,autoFlow:true}}
 var approvals={};try{approvals=JSON.parse(localStorage.getItem(REVIEW_KEY)||"{}")||{}}catch(e){approvals={}}
 var approvedCycles={};try{approvedCycles=JSON.parse(localStorage.getItem(CAL_KEY)||"{}")||{}}catch(e){approvedCycles={}}
 var watched={};
@@ -180,7 +181,7 @@ function targetReps(x){return goalFor[x.id]||x.reps||8}
 function setExperience(mode){if(!["coach","loop","review"].includes(mode))return;if(s.phase==="running"||s.phase==="rest")freeze();$("film").pause();experience=mode;if(mode==="review"){var next=reviewItems.findIndex(function(x){return reviewDecision(x)==="pending"});if(next>=0)reviewIndex=next;view={type:"review",index:reviewIndex,item:reviewItems[reviewIndex]}}else{view={type:"workout",index:s.index};}mediaId="";render();setNotice(mode==="review"?"Inspect each candidate and approve/disapprove. Nothing is deleted from original storage.":mode==="loop"?"Loop demo: the approved moving exercise repeats until you tap Next or Pause.":"Coach Session: approved video repeats through the set; only verified rep calibration can drive the visual rep count.");}
 var s;try{s=JSON.parse(localStorage.getItem(V)||"null")}catch(e){s=null}
 if(!s||!Number.isInteger(s.index)||s.index<0||s.index>=scene.length||!["ready","running","paused","rest","complete","stopped"].includes(s.phase))s=fresh();
-if(s.phase==="running"){s.phase="paused"}
+if(s.phase==="running"){s.phase="paused"}if(typeof s.autoFlow!=="boolean")s.autoFlow=true;
 var due=0,tick=null,mediaId="";view.index=s.index;initLibrary();renderReviewPicker();
 function save(){try{localStorage.setItem(V,JSON.stringify(s))}catch(e){}}
 function setNotice(x){$("notice").textContent=x}
@@ -210,7 +211,7 @@ $("approveVideo").disabled=!watched[x.id];$("reviewReceipt").textContent=approva
 $("reviewAudio").hidden=!x.audio;if(x.audio&&$("reviewAudio").src!==x.audio)$("reviewAudio").src=x.audio;
 renderReviewPicker();
 }
-$("goalReps").value=String(targetReps(stage()));$("approvedClipReps").value=String(approvedCycles[stage().id]||0);
+$("goalReps").value=String(targetReps(stage()));$("approvedClipReps").value=String(approvedCycles[stage().id]||0);$("autoFlow").checked=s.autoFlow;
 $("gameRep").textContent=experience==="review"?"OWNER REVIEW":experience==="loop"?"∞ LOOP UNTIL NEXT":safeRepsPerClip(stage())?"VIDEO CYCLE "+(s.visualReps||0)+" / "+targetReps(stage()):"VIDEO LOOPS · REPS UNVERIFIED";
 $("gameCue").textContent=experience==="review"?"Check every motion and audio detail before approval.":experience==="loop"?"EXERCISE DEMO · Continuous moving video · Next to advance": "COACH SESSION · "+(s.visualReps&&safeRepsPerClip(stage())?s.visualReps+" visual repetitions shown":"Marcus approved audio when available · motion loops through each set");
 
@@ -251,8 +252,22 @@ if(s.remaining<=0)s.remaining=resumingRest?20:stage().seconds;
 if(!resumingRest&&s.phase!=="paused")s.visualReps=0;
 if(!resumingRest&&safeRepsPerClip(stage())&&Number.isFinite($("film").duration)&&$("film").duration>0){s.remaining=Math.max(s.remaining,Math.ceil($("film").duration*Math.ceil(targetReps(stage())/safeRepsPerClip(stage())))+3)}
 s.phase=resumingRest?"rest":"running";s.pausedFrom=null;if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();if(s.phase==="running"){$("film").loop=false;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Workout timer is running. Tap Play on the approved video if audio is blocked.")})}render()}
-function runTick(){clearInterval(tick);tick=setInterval(function(){if(s.phase!=="running"&&s.phase!=="rest")return;var n=Math.max(0,Math.ceil((due-Date.now())/1000));if(n!==s.remaining){s.remaining=n;$("clock").textContent=String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");save()}
-if(n===0){clearInterval(tick);tick=null;if(s.phase==="rest"){s.phase="ready";s.pausedFrom=null;s.remaining=stage().seconds;setNotice("Rest finished. Tap Start for the next stage.");}else{s.phase="paused";setNotice("Exercise timer ended. Only log reps you actually completed. The app does not automatically credit repetitions.");}$("film").pause();render()}},250)}
+function runTick(){clearInterval(tick);tick=setInterval(function(){
+if(s.phase!=="running"&&s.phase!=="rest")return;
+var n=Math.max(0,Math.ceil((due-Date.now())/1000));
+if(n!==s.remaining){s.remaining=n;$("clock").textContent=String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");save()}
+if(n!==0)return;
+clearInterval(tick);tick=null;
+if(s.phase==="rest"){
+s.phase="ready";s.pausedFrom=null;s.remaining=stage().seconds;$("film").pause();render();
+if(s.autoFlow&&s.mode==="demo"&&experience==="coach")begin();
+else setNotice("Rest finished. Tap Start for the next stage.");
+}else if(s.autoFlow&&s.mode==="demo"&&experience==="coach"){
+done();setNotice("Timed demo stage finished. Simulation progress only; actual repetitions not logged.");
+}else{
+s.phase="paused";setNotice("Exercise timer ended. Log only the actual reps you performed.");$("film").pause();render()
+}
+},250)}
 function advance(){s.visualReps=0;if(s.index===scene.length-1){s.phase="complete";s.remaining=0;setNotice("Workout walkthrough complete. Export your record or reset the demo.");return}
 if(s.set<stage().sets){s.set++}else{s.index++;s.set=1}
 s.remaining=stage().seconds;s.phase="ready";s.pausedFrom=null}
@@ -295,12 +310,13 @@ nextPending();
 }
 $("exportReviews").addEventListener("click",function(){downloadJSON({schema:1,project:"M3 FLEX owner video approvals",exportedAt:new Date().toISOString(),approvals:approvals},"m3-flex-video-approvals.json");setNotice("Approval decisions exported as a JSON file.")});
 $("importReviews").addEventListener("change",function(){var file=this.files&&this.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(String(reader.result));if(obj.schema!==1||!obj.approvals||typeof obj.approvals!=="object"||Array.isArray(obj.approvals))throw Error("invalid");var valid={};reviewItems.forEach(function(x){var d=obj.approvals[x.id];if(d&&["approved","disapproved"].includes(d.decision)&&d.video===x.video){valid[x.id]={decision:d.decision,clipReps:Math.max(0,Math.min(30,Number(d.clipReps)||0)),at:d.at||new Date().toISOString(),video:x.video}}});if(!confirm("Restore "+Object.keys(valid).length+" saved decisions on this device?"))return;approvals=valid;saveApprovals();initLibrary();render();setNotice("Imported "+Object.keys(valid).length+" approved/rejected decisions.")}catch(e){setNotice("Could not restore review file. Use an exported M3 FLEX approvals JSON.")}};reader.readAsText(file)});
+$("autoFlow").addEventListener("change",function(){s.autoFlow=!!this.checked;save();render();setNotice(s.autoFlow?"Automatic demo progress enabled. Only simulated sets are credited.":"Automatic progression off. You control each set.")});
 $("approvedClipReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<0||n>30){this.value=String(approvedCycles[stage().id]||0);return}if(n===0)delete approvedCycles[stage().id];else approvedCycles[stage().id]=n;try{localStorage.setItem(CAL_KEY,JSON.stringify(approvedCycles))}catch(e){}render();setNotice(n?"Whole-cycle calibration saved: "+n+" full repetitions seen in the selected clip. Verify transitions during playback.":"Clip repetition calibration reset. No automatic visual reps will be claimed.")});
 $("goalReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<1||n>30){this.value=String(targetReps(stage()));return}goalFor[stage().id]=n;render();setNotice("Set goal updated to "+n+" reps for "+stage().name+". This does not count actual repetitions.")});
 $("film").addEventListener("ended",function(){
 if(experience==="review"){watched[reviewItems[reviewIndex].id]=true;render();return}
 if(experience!=="coach"||s.phase!=="running")return;
-var per=safeRepsPerClip(stage());if(per>0){s.visualReps=Math.min(targetReps(stage()),(s.visualReps||0)+per);$("gameRep").textContent="VIDEO CYCLE "+s.visualReps+" / "+targetReps(stage());if(s.visualReps>=targetReps(stage())){freeze();setNotice("Visual demonstration reached target (based on owner-reviewed clip count). Log only the reps YOU actually performed.");render();return}}
+var per=safeRepsPerClip(stage());if(per>0){s.visualReps=Math.min(targetReps(stage()),(s.visualReps||0)+per);$("gameRep").textContent="VIDEO CYCLE "+s.visualReps+" / "+targetReps(stage());if(s.visualReps>=targetReps(stage())){if(s.autoFlow&&s.mode==="demo"){done();setNotice("Visual set complete. Simulation only; physical reps were NOT logged.");}else{freeze();setNotice("Visual demonstration reached the calibrated target. Log only the reps YOU performed.");render()}return}}
 if(s.phase==="running"){try{this.currentTime=0;var promise=this.play();if(promise&&promise.catch)promise.catch(function(){})}catch(e){}}save();
 });
 $("exercisePick").addEventListener("change",function(){var value=this.value;var kind=value.startsWith("legacy")?"legacy":value.startsWith("archive")?"archive":value.startsWith("owner")?"owner":"workout";var index=Number(value.slice(kind==="workout"?1:kind.length));var collection=kind==="workout"?scene:kind==="legacy"?legacyApproved:kind==="owner"?reviewItems.filter(function(x){return reviewDecision(x)==="approved"}):archive;if(!Number.isInteger(index)||!collection[index])return;choose(kind,index)});
