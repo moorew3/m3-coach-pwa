@@ -295,7 +295,7 @@ if(s.phase==="rest"){try{var restPlay=$("film").play();if(restPlay&&restPlay.cat
 $("start").addEventListener("click",begin);
 $("pause").addEventListener("click",function(){freeze();render();setNotice("Paused. Tap Resume to continue.")});
 $("complete").addEventListener("click",done);
-$("demo").addEventListener("click",function(){if($("demo").disabled)return;$("film").loop=restScene||(experience==="loop"&&["workout","legacy","owner"].includes(view.type));$("film").currentTime=0;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap the video play icon to allow approved audio on your device.")})});
+$("demo").addEventListener("click",function(){if($("demo").disabled)return;var demoRest=experience==="coach"&&(s.phase==="rest"||(s.phase==="paused"&&s.pausedFrom==="rest"));$("film").loop=demoRest||(experience==="loop"&&["workout","legacy","owner"].includes(view.type));$("film").currentTime=0;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Tap the video play icon to allow approved audio on your device.")})});
 $("next").addEventListener("click",function(){if(experience==="review")return;
 if(experience==="loop"){var kind=view.type;var arr=kind==="workout"?scene:kind==="legacy"?legacyApproved:kind==="owner"?reviewItems.filter(function(x){return reviewDecision(x)==="approved"}):null;
 if(!arr||!arr.length){setNotice("Choose one of the approved exercise videos to loop.");return}
