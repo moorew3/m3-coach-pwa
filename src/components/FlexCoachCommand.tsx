@@ -8,7 +8,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Apple, ArrowRight, Check, Dumbbell, Mic, MicOff, Send, ShieldCheck, TrendingUp, Waves, Volume2, VolumeX } from "lucide-react";
 import { answerFlexLocal, foodPreferencesFor, type FlexLocalReply } from "@/lib/flex-local-advice";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
-import { flexDeviceVoiceAvailable, speakFlexAnswer, stopFlexSpeech } from "@/lib/flex-answer-audio";
+import { stopFlexSpeech } from "@/lib/flex-answer-audio";
+import { marcusRecordedAudioAvailable, playApprovedMarcusTest, stopApprovedMarcus } from "@/lib/flex-marcus-audio";
 import {
   currentDayNumber, getNutrition, setState, todayKey, updateNutrition, useApp,
   type AppState, type FlexFoodPreferences,
@@ -28,50 +29,44 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
   const [lastQuestion, setLastQuestion] = useState("");
   const [answer, setAnswer] = useState<FlexLocalReply | null>(null);
   const [ready, setReady] = useState(false);
-  const [deviceVoiceReady, setDeviceVoiceReady] = useState(false);
+  const [marcusReady, setMarcusReady] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<"idle" | "playing" | "error">("idle");
   const [voiceInfo, setVoiceInfo] = useState("");
   const vc = useVoiceControl();
   const current = useRef<AppState>(state);
   const wantMic = useRef(false);
-  const voiceOn = state.flexAnswerAudioEnabled !== false;
-  const voiceOnRef = useRef(voiceOn);
   current.current = state;
-  voiceOnRef.current = voiceOn;
-  useEffect(() => { setReady(true); setDeviceVoiceReady(flexDeviceVoiceAvailable()); }, []);
+  useEffect(() => {
+    setReady(true);
+    setMarcusReady(marcusRecordedAudioAvailable());
+    // Stop the previously installed phone-voice fallback, if it is still queued.
+    stopFlexSpeech();
+  }, []);
   const canListen = ready && voiceControlAvailable();
 
-  const readAnswer = useCallback((text: string, spokenQuestion = false) => {
-    if (!text) return;
-    if (spokenQuestion && wantMic.current) stopListening(); // Don't re-transcribe our own reply.
-    if (!voiceOnRef.current) {
-      setVoiceStatus("idle");
-      setVoiceInfo("Voice replies are switched off. Tap Voice on to hear answers.");
-      if (spokenQuestion && wantMic.current) startListening();
-      return;
-    }
+  const playMarcus = useCallback(() => {
+    stopFlexSpeech();
+    if (wantMic.current) stopListening(); // Never transcribe approved audio as the user's question.
     setVoiceStatus("idle");
-    setVoiceInfo("Starting phone speech…");
-    const resumeMic = () => {
-      if (wantMic.current) {
-        // Avoid the Android recognition engine picking up the last syllable.
-        window.setTimeout(() => { if (wantMic.current) startListening(); }, 350);
-      }
+    setVoiceInfo("Loading an original approved Marcus recording…");
+    const restartMic = () => {
+      if (wantMic.current)
+        window.setTimeout(() => { if (wantMic.current) startListening(); }, 450);
     };
-    speakFlexAnswer(text, {
-      onStart: () => {
+    playApprovedMarcusTest({
+      onPlaying: () => {
         setVoiceStatus("playing");
-        setVoiceInfo("Speaking with your phone's voice (not Marcus).");
+        setVoiceInfo("Playing Marcus – Warm & Friendly (original approved recording).");
       },
       onDone: () => {
         setVoiceStatus("idle");
-        setVoiceInfo("Reply finished. Tap Hear answer to replay.");
-        resumeMic();
+        setVoiceInfo("Marcus recording finished.");
+        restartMic();
       },
       onError: (message) => {
         setVoiceStatus("error");
         setVoiceInfo(message);
-        resumeMic();
+        restartMic();
       },
     });
   }, []);
@@ -79,12 +74,18 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
   const ask = useCallback((raw: string, spokenQuestion = false) => {
     const text = raw.trim().slice(0, 600);
     if (!text) return;
+    stopApprovedMarcus();
+    stopFlexSpeech();
     const result = answerFlexLocal(text, current.current);
     setLastQuestion(text);
     setQuestion("");
     setAnswer(result);
-    readAnswer(result.text, spokenQuestion);
-  }, [readAnswer]);
+    setVoiceStatus("idle");
+    setVoiceInfo("Answer shown below. Marcus can speak approved recordings; live narration of changing answers is not available without his voice-generation service.");
+    if (spokenQuestion && wantMic.current) {
+      window.setTimeout(() => { if (wantMic.current) startListening(); }, 450);
+    }
+  }, []);
 
   useEffect(() => {
     setConversationHandler((phrase) => ask(phrase, true));
@@ -93,6 +94,7 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
       setConversationHandler(null);
       stopListening();
       stopFlexSpeech();
+      stopApprovedMarcus();
     };
   }, [ask]);
 
@@ -172,29 +174,23 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-black">Ask Flex</h3>
           <div className="flex flex-wrap gap-1.5">
-            <button data-testid="flex-voice-output-toggle" type="button"
-              aria-pressed={voiceOn}
-              onClick={() => {
-                if (voiceOn) {
-                  stopFlexSpeech();
-                  setVoiceStatus("idle");
-                  setVoiceInfo("Voice replies switched off.");
-                } else setVoiceInfo("Voice replies switched on. Tap Test sound.");
-                setState((s) => ({ ...s, flexAnswerAudioEnabled: !voiceOn }));
-              }}
-              className="inline-flex min-h-10 items-center gap-1 rounded-lg border border-border bg-elevated px-2 text-[11px] font-bold">
-              {voiceOn ? <Volume2 className="size-4 text-accent" /> : <VolumeX className="size-4" />}
-              {voiceOn ? "Voice on" : "Voice off"}
+            <button data-testid="flex-sound-test" type="button" onClick={playMarcus}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-accent/50 bg-accent/20 px-3 text-[12px] font-bold text-accent">
+              <Volume2 className="size-4" aria-hidden /> Test Marcus
             </button>
-            <button data-testid="flex-sound-test" type="button"
-              onClick={() => readAnswer("Sound test. Flex can read your answers with your device voice. Marcus is still your workout coach.")}
-              className="min-h-10 rounded-lg border border-accent/40 bg-accent/15 px-2 text-[11px] font-bold text-accent">
-              Test sound
+            <button data-testid="flex-stop-marcus" type="button" onClick={() => {
+              stopApprovedMarcus();
+              setVoiceStatus("idle");
+              setVoiceInfo("Marcus playback stopped.");
+            }} className="min-h-11 rounded-lg border border-border bg-elevated px-3 text-[12px] font-bold">
+              Stop audio
             </button>
           </div>
         </div>
-        <p className="mt-0.5 text-[11px] text-muted-foreground">Ask by typing or microphone. Replies are read aloud using your phone's voice; approved Marcus workout audio is unchanged.</p>
-        {!deviceVoiceReady && ready && <p role="status" className="mt-1 text-xs text-amber-300">This browser cannot provide a device reading voice. Text answers still work.</p>}
+        <p className="mt-1 text-[11px] text-muted-foreground">
+          Voice: Marcus – Warm & Friendly, approved recordings only. New nutrition answers appear as text until his exact voice is available for dynamic speech.
+        </p>
+        {!marcusReady && ready && <p role="status" className="mt-1 text-xs text-amber-300">This browser cannot play Marcus recordings. Written answers remain available.</p>}
         <div className="mt-2 flex flex-wrap gap-1.5">
           {IDEAS.map((idea) => (
             <button key={idea} type="button" onClick={() => ask(idea)}
@@ -218,10 +214,12 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
                   wantMic.current = false;
                   stopListening();
                   stopFlexSpeech();
+                  stopApprovedMarcus();
                   setVoiceStatus("idle");
                   setVoiceInfo("Microphone off.");
                 } else {
                   stopFlexSpeech();
+                  stopApprovedMarcus();
                   wantMic.current = true;
                   if (!startListening()) {
                     wantMic.current = false;
@@ -248,10 +246,9 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
             </p>
             <p className="mt-1 text-xs text-muted-foreground">You: {lastQuestion}</p>
             <p className="mt-1 text-sm leading-relaxed">{answer.text}</p>
-            <button data-testid="flex-hear-answer" type="button" onClick={() => readAnswer(answer.text)}
-              className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-lg border border-accent/50 bg-accent/15 px-3 text-sm font-bold text-accent">
-              <Volume2 className="size-4" aria-hidden /> Hear answer again
-            </button>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Marcus has not recorded this changing answer. No other voice will be substituted.
+            </p>
           </div>
         )}
       </div>
@@ -280,7 +277,7 @@ export function FlexCoachCommand({ compact = false }: { compact?: boolean }) {
         </div>
       </details>
       <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-        <span><Check className="mr-1 inline size-3 text-accent" aria-hidden /> Original Marcus audio stays unchanged. New spoken answers use the phone's speech voice, not Marcus.</span>
+        <span><Check className="mr-1 inline size-3 text-accent" aria-hidden /> Original Marcus recordings are preserved. No generic phone voice is used in Ask Flex.</span>
         {!compact && <a href="/playable/#review" className="shrink-0 font-bold text-accent">Review videos <ArrowRight className="inline size-3" /></a>}
       </div>
     </section>
