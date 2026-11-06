@@ -8,7 +8,7 @@ COPY . .
 # The default build never enables chargeable generative coach services.
 ENV VITE_FLEX_PAID_AI_ENABLED=false
 RUN node scripts/stage-pose-runtime.mjs && npm run build
-RUN test -s .output/server/index.mjs && test -s .output/public/recovery-coach/index.html
+RUN node scripts/playable-movie-qa.test.mjs && test -s .output/server/index.mjs && test -s .output/public/recovery-coach/index.html
 
 FROM node:22-bookworm-slim AS runtime
 ENV NODE_ENV=production \
