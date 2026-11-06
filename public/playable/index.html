@@ -107,7 +107,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <section class="card" aria-label="M3 Flex interactive workout player">
 <div class="quickBar">
 <div id="workoutPicker"><label class="pickerLabel" for="exercisePick">CHOOSE EXERCISE / APPROVED VIDEO</label><select id="exercisePick" aria-label="Choose exercise or approved video"><option>Loading exercise library…</option></select></div>
-<div id="reviewPicker" hidden><label class="pickerLabel" for="reviewPick">VIDEO APPROVAL QUEUE <span id="reviewCount"></span></label><select id="reviewPick" aria-label="Choose video to approve or disapprove"></select></div>
+<div id="reviewPicker" hidden><label class="pickerLabel" for="reviewPick">VIDEO APPROVAL QUEUE <span id="reviewCount"></span></label><select id="reviewPick" aria-label="Choose video to approve or disapprove"></select>
+<div class="reviewButtons" id="reviewTopButtons"><button class="approve" id="approveVideo">✓ Approve</button><button class="reject" id="rejectVideo">✕ Disapprove</button><button id="nextReview">→ Next pending</button></div>
+</div>
 <div class="heroRow"><div class="exerciseMeta"><div id="name">Seated breathing</div><span id="target">Guided preparation</span><span id="sets" hidden>Set 1 / 1</span><span id="counter">Scene 1 of 7</span></div><div class="clockWrap"><span id="phase" aria-live="polite">READY</span><div id="clock" aria-label="Remaining time">00:30</div><div id="gameRep" aria-live="polite">REP — / 8</div></div></div>
 </div>
 <div id="kind">DEMO MODE · Original approved coach video</div>
@@ -128,7 +130,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <select id="rejectWhy"><option value="">Needs correction — unspecified</option><option value="wrong-avatar">Wrong face / tattoos / avatar</option><option value="wrong-leg">LEFT leg, cast or boot incorrect</option><option value="wrong-motion">Exercise motion or rep count incorrect</option><option value="wrong-equipment">Equipment or band setup incorrect</option><option value="wrong-voice">Marcus voice, narration or lip sync incorrect</option><option value="bad-quality">Blurry, poor video or abrupt loop</option><option value="playback-error">Video won't play</option><option value="other">Other correction</option></select>
 <textarea id="reviewFix" rows="2" maxlength="500" placeholder="Optional correction notes (saved with your decision)"></textarea></div>
 <audio id="reviewAudio" controls preload="none" hidden></audio>
-<div class="reviewButtons"><button class="approve" id="approveVideo">✓ Approve</button><button class="reject" id="rejectVideo">✕ Disapprove</button><button id="nextReview">→ Next pending</button></div>
+
 <div id="reviewReceipt" role="status" aria-live="polite"></div>
 </div>
 <div id="exerciseControls">
@@ -288,7 +290,7 @@ var resumingRest=s.phase==="paused"&&s.pausedFrom==="rest";
 if(s.remaining<=0)s.remaining=resumingRest?20:stage().seconds;
 if(!resumingRest&&s.phase!=="paused")s.visualReps=0;
 if(!resumingRest&&safeRepsPerClip(stage())&&Number.isFinite($("film").duration)&&$("film").duration>0){s.remaining=Math.max(s.remaining,Math.ceil($("film").duration*Math.ceil(targetReps(stage())/safeRepsPerClip(stage())))+3)}
-s.phase=resumingRest?"rest":"running";s.pausedFrom=null;if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();if(s.phase==="running"||resumingRest){$("film").loop=resumingRest;var p=$("film").play();if(p&&p.then)p.then(function(){if(s.phase==="running"&&!resumingRest&&s.set===1)playMarcus(stage().id);else if(resumingRest)playMarcus("rest")}).catch(function(){mediaFailure("Video playback was blocked or failed. Tap the original play icon before retrying.")});else if(s.phase==="running"&&!resumingRest&&s.set===1)playMarcus(stage().id);
+s.phase=resumingRest?"rest":"running";s.pausedFrom=null;if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();if(s.phase==="running"||resumingRest){$("film").loop=resumingRest;var p=$("film").play();if(s.phase==="running"&&!resumingRest&&s.set===1)playMarcus(stage().id);else if(resumingRest)playMarcus("rest");if(p&&p.catch)p.catch(function(){mediaFailure("Video playback was blocked or failed. Tap the original play icon before retrying.")});
 }render()}
 function runTick(){clearInterval(tick);tick=setInterval(function(){
 if(s.phase!=="running"&&s.phase!=="rest")return;
@@ -300,10 +302,10 @@ if(s.phase==="rest"){
 s.phase="ready";s.pausedFrom=null;s.remaining=stage().seconds;$("film").pause();render();
 if(s.autoFlow&&s.mode==="demo"&&experience==="coach")begin();
 else setNotice("Rest finished. Tap Start for the next stage.");
-}else if(s.autoFlow&&s.mode==="demo"&&experience==="coach"){
-done();setNotice("Timed demo stage finished. Simulation progress only; actual repetitions not logged.");
+}else if(s.autoFlow&&s.mode==="demo"&&experience==="coach"&&(stage().reps===0||safeRepsPerClip(stage())>0)){
+done();setNotice("Completed an approved demo stage. Simulated progress only; physical reps not logged.");
 }else{
-s.phase="paused";setNotice("Exercise timer ended. Log only the actual reps you performed.");$("film").pause();render()
+s.phase="paused";setNotice(stage().reps&&safeRepsPerClip(stage())===0?"Movement is not rep-calibrated. Open Session Settings, verify the full repetitions in this clip, or log a manually completed set. No automatic credit was recorded.":"Exercise timer ended. Log only actual reps you performed.");$("film").pause();stopMarcus();render()
 }
 },250)}
 function advance(){s.visualReps=0;if(s.index===scene.length-1){s.phase="complete";s.remaining=0;setNotice("Workout walkthrough complete. Export your record or reset the demo.");return}
@@ -359,6 +361,13 @@ $("importReviews").addEventListener("change",function(){var file=this.files&&thi
 $("autoFlow").addEventListener("change",function(){s.autoFlow=!!this.checked;save();render();setNotice(s.autoFlow?"Automatic demo progress enabled. Only simulated sets are credited.":"Automatic progression off. You control each set.")});
 $("approvedClipReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<0||n>30){this.value=String(approvedCycles[stage().id]||0);return}if(n===0)delete approvedCycles[stage().id];else approvedCycles[stage().id]=n;try{localStorage.setItem(CAL_KEY,JSON.stringify(approvedCycles))}catch(e){}render();setNotice(n?"Whole-cycle calibration saved: "+n+" full repetitions seen in the selected clip. Verify transitions during playback.":"Clip repetition calibration reset. No automatic visual reps will be claimed.")});
 $("goalReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<1||n>30){this.value=String(targetReps(stage()));return}goalFor[stage().id]=n;render();setNotice("Set goal updated to "+n+" reps for "+stage().name+". This does not count actual repetitions.")});
+$("film").addEventListener("timeupdate",function(){
+if(experience!=="coach"||s.phase!=="running"||!safeRepsPerClip(stage()))return;
+var movie=$("film"),d=movie.duration||0,per=safeRepsPerClip(stage()),local=Math.min(per,Math.floor((movie.currentTime||0)/Math.max(d,0.1)*per));
+var onscreen=Math.min(targetReps(stage()),(s.visualReps||0)+local);
+$("gameRep").textContent="VIDEO REP "+onscreen+" / "+targetReps(stage())+" (timed)";
+$("sceneBottom").textContent=onscreen>=targetReps(stage())-2?"FINISH CONTROLLED · LEFT LEG SUPPORTED":"CONTROLLED REPS · LEFT LEG SUPPORTED";
+});
 $("film").addEventListener("play",function(){if(experience==="loop")$("pause").disabled=false});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true});
 $("film").addEventListener("ended",function(){
 if(experience==="review"){watched[reviewItems[reviewIndex].id]=true;render();return}
