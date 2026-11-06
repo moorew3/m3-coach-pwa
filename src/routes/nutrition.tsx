@@ -13,6 +13,7 @@ import {
   type FoodEntry,
 } from "@/lib/store";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
+import { FlexCoachCommand } from "@/components/FlexCoachCommand";
 
 export const Route = createFileRoute("/nutrition")({
   head: () => ({
@@ -93,6 +94,8 @@ function Nutrition() {
     <main className="px-4 pt-6">
       <h1 className="text-3xl font-bold">Nutrition</h1>
       <p className="mt-1 text-sm text-muted-foreground">Today · {date}</p>
+
+      <FlexCoachCommand compact />
 
       <section
         data-testid="nutrition-coach"
