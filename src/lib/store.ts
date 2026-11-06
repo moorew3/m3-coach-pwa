@@ -316,6 +316,8 @@ export interface FlexFoodPreferences {
 export interface AppState {
   /** Food preferences share the existing workout/nutrition data and backup. */
   flexFoodPreferences?: FlexFoodPreferences;
+  /** Free device reader for Ask Flex; not the approved Marcus recording. */
+  flexAnswerAudioEnabled?: boolean;
   startDate: string;
   days: Record<number, DayLog>;
   measurements: Measurement[];
@@ -372,6 +374,7 @@ export const defaultState: AppState = {
   nutrition: {},
   favorites: [],
   flexFoodPreferences: { avoidCheese: true, preferLactoseFree: true, flavor: "chocolate" },
+  flexAnswerAudioEnabled: true,
   targets: defaultTargets,
   savedPairs: {},
   warmupPrefs: {},
@@ -460,6 +463,7 @@ function merge(parsed: Partial<AppState>): AppState {
       avoidCheese: true, preferLactoseFree: true, flavor: "chocolate",
       ...(parsed.flexFoodPreferences ?? {}),
     },
+    flexAnswerAudioEnabled: parsed.flexAnswerAudioEnabled ?? true,
     savedPairs: parsed.savedPairs ?? {},
     warmupPrefs: parsed.warmupPrefs ?? {},
     adaptiveOff: parsed.adaptiveOff ?? [],
