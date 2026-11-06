@@ -81,6 +81,6 @@ expect("Home embeds existing coach component", home.includes("<FlexCoachCommand 
 expect("Nutrition embeds same component", nutritionPage.includes("<FlexCoachCommand compact />"));
 expect("Native coached session can answer nutrition", nativeCoach.includes("answerFlexLocal(phrase, state)"));
 expect("Native coaching route remains intact", nativeCoach.includes('createFileRoute("/coach/$day")'));
-expect("Mic is opt-in", command.includes("onClick={() => vc.listening ? stopListening() : startListening()}"));
+expect("Mic remains user-initiated", command.includes('data-testid="flex-voice-input"') && command.includes("onClick={() => {") && command.includes("if (!startListening())") && command.includes("stopListening()"));
 expect("No paid AI API in free component", !command.includes("/api/public/coach-talk") && !logic.includes("fetch("));
 console.log("M3 FLEX native coaching + nutrition QA passed: " + checks + " checks.");
