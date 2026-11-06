@@ -26,6 +26,7 @@ import {
 } from "@/lib/store";
 
 import { COACH_REFERENCE } from "@/data/coach-identity";
+import { FlexCoachCommand } from "@/components/FlexCoachCommand";
 import { ExerciseLibraryButton } from "@/components/ExerciseLibrary";
 import { ReadinessCheck } from "@/components/ReadinessCheck";
 import { LEGACY_MODE_KEY } from "@/components/LegacyRouteGate";
@@ -144,6 +145,8 @@ function Today() {
           {mounted ? ` · ${dayDateLabel(state, day)}` : ""}
         </p>
       </header>
+
+      <FlexCoachCommand />
 
       <section data-testid="m3-unified-workout-picker" className="surface-card mb-5 rounded-2xl p-4">
         <h2 className="text-xl font-bold">M3 FLEX · Choose your workout</h2>
