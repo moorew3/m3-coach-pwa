@@ -1,84 +1,58 @@
 #!/usr/bin/env node
 /**
- * M3 FLEX phone-voice regression test.
- * Tests the device reader directly without any microphone, generated Marcus
- * voice, network traffic or paid calls.
+ * M3 FLEX VOICE IDENTITY / APPROVED-ONLY PLAYBACK GATE
+ * No paid synthesis, browser speech, or network calls.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
 
-const source = readFileSync(new URL("../src/lib/flex-answer-audio.ts", import.meta.url), "utf8");
-const component = readFileSync(new URL("../src/components/FlexCoachCommand.tsx", import.meta.url), "utf8");
-const compiled = ts.transpileModule(source, {
-  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
-  reportDiagnostics: true,
-});
-assert.equal((compiled.diagnostics || []).filter(x => x.category === ts.DiagnosticCategory.Error).length, 0);
-let checks = 0;
-const verify = (name, pass) => { assert.ok(pass, name); checks++; };
-
-let utterances = [], cancels = 0, resumed = 0, watchdog, nextTimer = 1;
-const fakeSpeech = {
-  cancel() { cancels++; },
-  resume() { resumed++; },
-  speak(utterance) { utterances.push(utterance); },
-};
-class FakeUtterance {
-  constructor(text) { this.text = text; }
+const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
+const file = read("src/lib/flex-marcus-audio.ts");
+const retired = read("src/lib/flex-answer-audio.ts");
+const comp = read("src/components/FlexCoachCommand.tsx");
+const manifest = JSON.parse(read("approved-recovery-media.json"));
+const compile = ts.transpileModule(file, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS }, reportDiagnostics: true });
+assert.equal((compile.diagnostics || []).filter(d => d.category === ts.DiagnosticCategory.Error).length, 0);
+let n = 0;
+const check = (label, passes) => { assert.ok(passes, label); n++; };
+let created = [], timeouts = new Map(), next = 0;
+class FakeAudio {
+  constructor(url) { this.src=url; this.paused=true; created.push(this); }
+  play() { this.paused=false; return Promise.resolve(); }
+  pause() { this.paused=true; }
 }
-const globals = {
-  window: { speechSynthesis: fakeSpeech },
-  SpeechSynthesisUtterance: FakeUtterance,
-  exports: {},
-  setTimeout(fn) { watchdog = fn; return nextTimer++; },
-  clearTimeout() { watchdog = null; },
+const runtime = {
+  exports: {}, window: { Audio: FakeAudio },
+  setTimeout(fn) { let key=++next; timeouts.set(key,fn); return key; },
+  clearTimeout(id) { timeouts.delete(id); },
 };
-vm.runInNewContext(compiled.outputText, globals, { timeout: 1000 });
-const { splitFlexSpeech, speakFlexAnswer, stopFlexSpeech, flexDeviceVoiceAvailable } = globals.exports;
-
-verify("Device reader available", flexDeviceVoiceAvailable());
-verify("No empty utterance", splitFlexSpeech(" ").length === 0);
-const chunks = Array.from(splitFlexSpeech(("Protein 60 grams. " + "Food guidance. ").repeat(18)));
-verify("Long response is chunked", chunks.length >= 3 && chunks.every(x => x.length <= 185));
-let started = 0, finished = 0, errors = [], sequence = [];
-verify("Speech accepted", speakFlexAnswer("Hello, coach. A second sentence.",
-  { onStart: () => { started++; sequence.push("start"); },
-    onDone: () => { finished++; sequence.push("done"); },
-    onError: x => errors.push(x) }));
-verify("Don't claim audio until onstart", started === 0 && !!utterances[0]);
-utterances[0].onstart();
-verify("Speaker begins after audible start", started === 1);
-utterances[0].onend();
-verify("Speech finishes", finished === 1 && errors.length === 0);
-verify("Only device voice used", utterances[0].lang === "en-US" && resumed > 0);
-
-utterances = []; errors = []; finished = 0; started = 0;
-speakFlexAnswer(("A complete answer includes protein and calories. ").repeat(9), {
-  onStart: () => started++, onDone: () => finished++, onError: x => errors.push(x),
-});
-let i = 0;
-while (i < utterances.length) {
-  utterances[i].onstart();
-  utterances[i].onend();
-  i++;
-  assert.ok(i < 40, "speech should terminate");
-}
-verify("Chunked answer fully spoken", finished === 1 && errors.length === 0 && utterances.length >= 2);
-
-utterances = []; let failed = "";
-speakFlexAnswer("This should have a voice error.", { onError: x => failed = x });
-verify("Watchdog attached", typeof watchdog === "function");
-watchdog();
-verify("Silent browser reports error instead of pretending", failed.includes("did not start"));
-verify("No generated voice endpoint", !source.includes("/api/public/coach-speech") && !source.includes("fetch("));
-verify("User can test sound in real interface", component.includes('data-testid="flex-sound-test"'));
-verify("User can replay answers", component.includes('data-testid="flex-hear-answer"'));
-verify("Sound preference visible", component.includes('data-testid="flex-voice-output-toggle"'));
-verify("Microphone pauses while speaking", component.includes("spokenQuestion && wantMic.current") && component.includes("stopListening()"));
-verify("Label says phone voice, not Marcus", component.includes("phone's voice (not Marcus)") && component.includes("not Marcus"));
-stopFlexSpeech();
-verify("Stop sends cancel to reader", cancels >= 2);
-
-console.log("M3 FLEX phone voice QA passed: " + checks + " checks.");
+vm.runInNewContext(compile.outputText, runtime, { timeout: 1500 });
+const {MARCUS_VOICE_ID,MARCUS_APPROVED_TEST_URL,playApprovedMarcusTest,stopApprovedMarcus,marcusRecordedAudioAvailable}=runtime.exports;
+check("Exactly selected Marcus voice ID", MARCUS_VOICE_ID === "0fadce1e82af494a93873aa38ea8d106");
+check("Original audio is approved in media manifest", manifest.items.some(x => x.id==="C09-MARCUS" && x.approvedSource === true && x.url === MARCUS_APPROVED_TEST_URL));
+check("Audio supported", marcusRecordedAudioAvailable());
+let playing=0,ended=0,errors=[];
+check("User-gesture request starts approved audio", playApprovedMarcusTest({onPlaying:()=>playing++,onDone:()=>ended++,onError:e=>errors.push(e)}));
+check("Source is original recorded Marcus", created[0].src===MARCUS_APPROVED_TEST_URL);
+check("Do not claim sound before playing event", playing===0);
+created[0].onplaying();
+check("Sound status starts only on verified playing event", playing===1);
+created[0].onended();
+check("Completion reports finished and releases audio", ended===1 && created[0].paused && errors.length===0);
+playing=0;ended=0;errors=[];
+playApprovedMarcusTest({onPlaying:()=>playing++,onDone:()=>ended++,onError:e=>errors.push(e)});
+created.at(-1).onerror();
+check("Broken approved recording shows error, not fallback", errors.length===1 && errors[0].includes("No substitute voice"));
+check("Error stops player", created.at(-1).paused);
+playApprovedMarcusTest();
+const track=created.at(-1);stopApprovedMarcus();
+check("Stop works", track.paused);
+check("Audio logic contains no TTS synthesizer", !file.includes("speechSynthesis.speak(") && !file.includes("new SpeechSynthesisUtterance") && !file.includes("fetch("));
+check("Legacy wrong voice disabled", !retired.includes("speechSynthesis.speak(") && !retired.includes("synth.speak("));
+check("No generic text speech is called by the coach UI", !comp.includes("speakFlexAnswer(") && !comp.includes("readAnswer("));
+check("Marcus test and stop are on screen", comp.includes('data-testid="flex-sound-test"') && comp.includes('data-testid="flex-stop-marcus"'));
+check("Dynamic food replies are clearly not claimed to be spoken", comp.includes("Marcus has not recorded this changing answer"));
+check("Approved Marcus remains the only offered voice", comp.includes("Marcus – Warm & Friendly") && !comp.includes("Speaking with your phone's voice"));
+console.log("M3 FLEX approved-Marcus-only voice QA passed: " + n + " checks.");
