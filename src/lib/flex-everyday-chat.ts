@@ -46,6 +46,7 @@ export function everydayFallback(question: string, prior: EverydayTurn[] = []): 
   if (/\b(what are you (?:up to|doing)|how about you|and you\??)\b/.test(q))
     return "I'm here to listen and talk, or help you work through something. What's on your mind?";
   if (/\b(my (?:son|daughter|kids?|grandson|granddaughter|family|friend)|at work|my business|my job)\b/.test(q) &&
+      !/\b(can we talk|let\'s talk|just chat|chat with me|i want to talk|keep me company)\b/.test(q) &&
       !/\b(calori|protein|workout|exercise|meal)\b/.test(q))
     return "I'm listening. What's going on with that?";
   if (/\b(thanks|thank you|appreciate it)\b/.test(q))
