@@ -260,7 +260,7 @@ var resumingRest=s.phase==="paused"&&s.pausedFrom==="rest";
 if(s.remaining<=0)s.remaining=resumingRest?20:stage().seconds;
 if(!resumingRest&&s.phase!=="paused")s.visualReps=0;
 if(!resumingRest&&safeRepsPerClip(stage())&&Number.isFinite($("film").duration)&&$("film").duration>0){s.remaining=Math.max(s.remaining,Math.ceil($("film").duration*Math.ceil(targetReps(stage())/safeRepsPerClip(stage())))+3)}
-s.phase=resumingRest?"rest":"running";s.pausedFrom=null;if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();if(s.phase==="running"){$("film").loop=false;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Workout timer is running. Tap Play on the approved video if audio is blocked.")})}render()}
+s.phase=resumingRest?"rest":"running";s.pausedFrom=null;if(!s.startedAt)s.startedAt=new Date().toISOString();due=Date.now()+1000*s.remaining;setNotice(s.mode==="demo"?"Demo timer running. Points are for interface testing only.":"Timer running. Enter real reps and resistance before logging the completed set.");runTick();if(s.phase==="running"||resumingRest){$("film").loop=resumingRest;var p=$("film").play();if(p&&p.catch)p.catch(function(){setNotice("Workout timer is running. Tap Play on the approved video if audio is blocked.")})}render()}
 function runTick(){clearInterval(tick);tick=setInterval(function(){
 if(s.phase!=="running"&&s.phase!=="rest")return;
 var n=Math.max(0,Math.ceil((due-Date.now())/1000));
