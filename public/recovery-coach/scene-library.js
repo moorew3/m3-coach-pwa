@@ -732,5 +732,38 @@ window.M3_FLEX_SCENE_LIBRARY=[
 ,
   {"id":"REF-LATERAL-2REPS","name":"Original seated lateral raises two-repetition motion driver","group":"Workout A motion references","source":"Original Motion Reference","status":"motion-reference-only","external":"https://drive.google.com/file/d/1ZxVW3pNdnWWWndvw9Ohhtd-z85VkMR8C/view","note":"Original two-repetition driver recovered from M3 FLEX Google Drive motion-reference folder. This is not certified as the final approved Flex avatar with Marcus. Preserve the original Flow-approved lateral-raise clip; do not substitute the driver during timed coaching."}
  ,
- {"id":"ROW-R5","name":"Legless rowing · black boot candidate","group":"Recovery cardio · Rowing","source":"M3 FLEX rowing review","status":"qa-rejected","video":"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19c19-8cbb-7637-88ae-e19acde8a876.mp4","note":"BLOCKED FROM WORKOUT USE: the generated black boot appears separate from the left leg. This six-second silent render is retained only for inspection, never timed coaching. No approved Marcus rowing track exists. Requires correct identity, one anatomically connected left leg inside its boot, supported/unloaded leg, stationary knees/seat and complete arm-only strokes before approval."}
+ {"id":"ROW-R5","name":"Legless rowing · black boot candidate","group":"Recovery cardio · Rowing","source":"M3 FLEX rowing review","status":"qa-rejected","video":"https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19c19-8cbb-7637-88ae-e19acde8a876.mp4","note":"BLOCKED FROM WORKOUT USE: the generated black boot appears separate from the left leg. This six-second silent render is retained only for inspection, never timed coaching. No approved Marcus rowing track exists. Requires correct identity, one anatomically connected left leg inside its boot, supported/unloaded leg, stationary knees/seat and complete arm-only strokes before approval."},
+  {
+  "id": "HG-8e3fe564a",
+  "name": "M3 FLEX: correct legless rowing demonstration. One continuous si",
+  "group": "Recovery cardio · New rowing review",
+  "source": "HeyGen backup",
+  "status": "owner-review",
+  "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b63-4212-788c-b398-e583243e77f5.mp4",
+  "videoPage": "https://app.heygen.com/videos/8e3fe564a79a46f3aa6be5c9e753747f",
+  "audio": null,
+  "note": "Not yet approved. Check exact Flex face and tattoos, the black orthopedic boot fully connected to the supported LEFT leg, stationary knees/seat, arms-only rowing, motion continuity and original Marcus voice. Reject any mismatch. NOT active coaching."
+},
+  {
+  "id": "HG-6859825ea",
+  "name": "CORRECTED M3 FLEX — ARMS-ONLY ROW. Animate this exact first fram",
+  "group": "Recovery cardio · New rowing review",
+  "source": "HeyGen backup",
+  "status": "owner-review",
+  "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b33-7ff4-7ac7-a081-61745cfbb0a4.mp4",
+  "videoPage": "https://app.heygen.com/videos/6859825ea9b9420f8083d378a43b99c5",
+  "audio": null,
+  "note": "Not yet approved. Check exact Flex face and tattoos, the black orthopedic boot fully connected to the supported LEFT leg, stationary knees/seat, arms-only rowing, motion continuity and original Marcus voice. Reject any mismatch. NOT active coaching."
+},
+  {
+  "id": "HG-e3546b294",
+  "name": "M3 FLEX ROWING MOVEMENT PROOF — one continuous realistic full-bo",
+  "group": "Recovery cardio · New rowing review",
+  "source": "HeyGen backup",
+  "status": "owner-review",
+  "video": "https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a19b30-9dce-73a4-96aa-25a30ed7fb9c.mp4",
+  "videoPage": "https://app.heygen.com/videos/e3546b294d8349f7a3dbd8e1196cd611",
+  "audio": null,
+  "note": "Not yet approved. Check exact Flex face and tattoos, the black orthopedic boot fully connected to the supported LEFT leg, stationary knees/seat, arms-only rowing, motion continuity and original Marcus voice. Reject any mismatch. NOT active coaching."
+}
 ];
