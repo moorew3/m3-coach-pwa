@@ -38,7 +38,7 @@ check("Open licensed small model", worker.includes("Qwen2.5-0.5B-Instruct"));
 check("Conversation context forwarded safely", chat.includes("normalizedFollowup") && worker.includes(".slice(-10)"));
 check("User can stop local model", chat.includes("turnOffModel"));
 check("No wrong voice synth", !chat.includes("speechSynthesis.speak") && !chat.includes("SpeechSynthesisUtterance"));
-check("Approved Marcus audio only", chat.includes("playApprovedMarcusTest") && chat.includes("Changing replies require approved Marcus synthesis"));
+check("Approved Marcus audio only", chat.includes("playApprovedMarcusTest") && chat.includes("New spoken replies require authorized Marcus synthesis"));
 check("No silent subscriptions", worker.includes("Runs entirely inside") && chat.includes("No AI subscription or per-question fee"));
 check("Do not assert all answers correct", worker.includes("do not pretend to have current web access") && chat.includes("Answers can be imperfect"));
 check("Workout safety remains authoritative", worker.includes("injured LEFT leg") && worker.includes("never prescribe loading"));
