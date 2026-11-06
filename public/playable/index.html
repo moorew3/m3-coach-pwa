@@ -124,7 +124,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <audio id="marcusAudio" preload="none" hidden></audio>
 <div id="approvalControls" hidden>
 <div class="reviewStatus" id="reviewStatus">PENDING OWNER REVIEW</div>
-<p class="reviewNote" id="reviewNote">Watch the complete clip and check the avatar, LEFT boot, exercise form, equipment and Marcus voice.</p><a id="reviewSource" class="back" target="_blank" rel="noopener noreferrer" hidden>Open the original HeyGen video</a>
+<p class="reviewNote" id="reviewNote">Watch the complete clip and check the avatar, LEFT boot, exercise form, equipment and Marcus voice.</p><a id="reviewSource" class="back" target="_blank" rel="noopener noreferrer" hidden>Open original video in HeyGen</a>
+<label class="check" id="externalReviewCheck" hidden><input id="externalWatched" type="checkbox"> I watched this entire clip on HeyGen and verified its motion, avatar, equipment, LEFT leg and voice.</label>
 <div class="reviewCalibration"><label for="clipReps">Complete reps shown in THIS clip (0 = unverified)</label><input id="clipReps" type="number" min="0" max="30" value="0" inputmode="numeric" /></div>
 <div class="reviewReason"><label for="rejectWhy">Reason for disapproval (optional)</label>
 <select id="rejectWhy"><option value="">Needs correction — unspecified</option><option value="wrong-avatar">Wrong face / tattoos / avatar</option><option value="wrong-leg">LEFT leg, cast or boot incorrect</option><option value="wrong-motion">Exercise motion or rep count incorrect</option><option value="wrong-equipment">Equipment or band setup incorrect</option><option value="wrong-voice">Marcus voice, narration or lip sync incorrect</option><option value="bad-quality">Blurry, poor video or abrupt loop</option><option value="playback-error">Video won't play</option><option value="other">Other correction</option></select>
@@ -243,6 +244,7 @@ if(experience==="review"){
 var decision=reviewDecision(x);$("reviewStatus").textContent=(decision==="pending"?"PENDING APPROVAL":decision==="approved"?"✓ APPROVED BY YOU":"✕ DISAPPROVED BY YOU")+" · "+x.id;
 $("reviewNote").textContent=x.note||"Check identity, movement, left leg, equipment and voice before marking approved.";
 $("reviewSource").hidden=!x.videoPage;if(x.videoPage)$("reviewSource").href=x.videoPage;
+$("externalReviewCheck").hidden=!x.videoPage;$("externalWatched").checked=!!watched[x.id]&&!!x.videoPage;
 $("clipReps").value=approvals[x.id]&&Number.isInteger(approvals[x.id].clipReps)?String(approvals[x.id].clipReps):"0";
 $("rejectWhy").value=approvals[x.id]&&approvals[x.id].reason||"";
 $("reviewFix").value=approvals[x.id]&&approvals[x.id].notes||"";
@@ -338,6 +340,11 @@ $("modeCoach").addEventListener("click",function(){setExperience("coach")});
 $("modeLoop").addEventListener("click",function(){setExperience("loop");$("film").loop=true});
 $("modeReview").addEventListener("click",function(){setExperience("review")});
 $("reviewPick").addEventListener("change",function(){chooseReview(Number(this.value))});
+$("externalWatched").addEventListener("change",function(){
+if(experience!=="review")return;var x=reviewItems[reviewIndex];if(!x||!x.videoPage)return;
+watched[x.id]=!!this.checked;render();
+setNotice(this.checked?"Owner confirmed full external HeyGen review. You can approve or disapprove this source.":"External review confirmation cleared.");
+});
 $("approveVideo").addEventListener("click",function(){reviewMark("approved")});
 $("rejectVideo").addEventListener("click",function(){reviewMark("disapproved")});
 $("nextReview").addEventListener("click",nextPending);
