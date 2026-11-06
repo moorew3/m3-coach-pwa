@@ -24,7 +24,7 @@ const checks=[
 ["Followup",everydayFallback("Why?",[{role:"user",content:"I had a rough day"},{role:"assistant",content:"What happened?"}])?.includes("what made the day difficult")],
 ["Unknown questions are routed to actual model",everydayFallback("What's the history of jazz?")===null],
 ["Personalized tracker still authoritative",chat.includes('else if (local.category !== "help") { answer = local.text')],
-["Open conversation branch uses real model",chat.includes("modelStatus === \\"ready\\" && !shouldUseRecorded")],
+["Open conversation branch uses real model",chat.includes('modelStatus === "ready" && !shouldUseRecorded')],
 ["Natural conversation model opt-in obvious",chat.includes('data-testid="flex-natural-chat-enable"')],
 ["Model instructed to converse beyond exercise",worker.includes("music, movies, entertainment, work")],
 ["Model told not to redirect to workout",worker.includes("never steer every discussion back to exercise")],
