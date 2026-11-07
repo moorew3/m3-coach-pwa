@@ -212,6 +212,7 @@ const set = (patch: Partial<VoiceControlState>) => {
 let rec: Recognition | null = null;
 let handler: ((cmd: VoiceCommand, phrase: string) => void) | null = null;
 let conversationHandler: ((phrase: string) => void) | null = null;
+let conversationAcceptAny = false;
 let wanted = false;
 
 export function setCommandHandler(fn: ((cmd: VoiceCommand, phrase: string) => void) | null) {
@@ -223,8 +224,13 @@ export function setCommandHandler(fn: ((cmd: VoiceCommand, phrase: string) => vo
  * commands. Only phrases that sound directed at the trainer are forwarded,
  * so background room talk does not become an API request.
  */
-export function setConversationHandler(fn: ((phrase: string) => void) | null) {
+export function setConversationHandler(
+  fn: ((phrase: string) => void) | null,
+  options: { acceptAnyWhenListening?: boolean } = {},
+) {
   conversationHandler = fn;
+  // Enabled only for the explicit Talk to Flex microphone, not the whole gym.
+  conversationAcceptAny = !!fn && options.acceptAnyWhenListening === true;
 }
 
 /** Reuse existing V2 typed questions without overriding listening or sending background speech. */
@@ -272,7 +278,7 @@ export function startListening() {
       const cmd = matchCommand(phrase);
       set({ heard: phrase, lastCommand: cmd, error: null });
       if (cmd && handler) handler(cmd, phrase.toLowerCase());
-      else if (!cmd && conversationHandler && soundsDirectedAtCoach(phrase))
+      else if (conversationHandler && (conversationAcceptAny || soundsDirectedAtCoach(phrase)))
         conversationHandler(phrase);
     }
   };
