@@ -39,7 +39,7 @@ const checks=[
 ["Natural conversation model opt-in obvious",chat.includes('data-testid="flex-natural-chat-enable"')],
 ["Model instructed to converse beyond exercise",worker.includes("music, movies, entertainment, work")],
 ["Model told not to redirect to workout",worker.includes("never steer every discussion back to exercise")],
-["Original voice only",!chat.includes("speakFlexAnswer(")&&chat.includes("Marcus synthesis")],
+["Original voice only",!chat.includes("speakFlexAnswer(")&&chat.includes("approved Marcus voice")],
 ["No paid API",!worker.includes("api.openai.com")&&!chat.includes("/api/public/coach-talk")]
 ];
 for(const [name,pass] of checks)assert.ok(pass,name);
