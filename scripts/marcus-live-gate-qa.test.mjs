@@ -38,5 +38,5 @@ check("Client never uses browser TTS",!client.includes("speechSynthesis")&&!chat
 check("UI shows truth about missing funding",chat.includes("Live spoken replies are not connected yet"));
 check("UI has voice replay and stop",chat.includes('data-testid="flex-live-marcus-replay"')&&chat.includes('data-testid="flex-stop-live-marcus"'));
 check("UI keeps original Marcus clips",chat.includes('data-testid="marcus-sample"')&&chat.includes("playApprovedMarcusTest"));
-check("Zero enabled paid calls in tests",!source.includes("http://api.heygen.com")); // benign literal check
+check("No plaintext or untrusted voice endpoint",!route.includes("http://api.heygen.com")&&!client.includes("api.heygen.com")); // benign literal check
 console.log("M3 FLEX live Marcus gateway QA passed: "+passed+" tests; no paid calls performed.");
