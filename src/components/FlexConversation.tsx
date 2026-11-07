@@ -14,6 +14,7 @@ import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 import { useApp, type AppState } from "@/lib/store";
 import { stopFlexSpeech } from "@/lib/flex-answer-audio";
 import { stopApprovedMarcus, playApprovedMarcusTest } from "@/lib/flex-marcus-audio";
+import { getMarcusSpeechAvailability, requestMarcusLiveSpeech } from "@/lib/marcus-live-client";
 import {
   setConversationHandler, startListening, stopListening, useVoiceControl, voiceControlAvailable,
 } from "@/lib/voice-commands";
@@ -79,12 +80,81 @@ export function FlexConversation() {
   const [modelInfo, setModelInfo] = useState("");
   const [modelProgress, setModelProgress] = useState<number | null>(null);
   const [audioStatus, setAudioStatus] = useState("");
+  const [liveMarcusEnabled, setLiveMarcusEnabled] = useState(false);
+  const speechAbort = useRef<AbortController | null>(null);
+  const speechAudio = useRef<HTMLAudioElement | null>(null);
+  const speechGeneration = useRef(0);
+  const audioCache = useRef(new Map<string,string>());
   const [supportsGPU, setSupportsGPU] = useState(false);
   const [mounted, setMounted] = useState(false);
   const worker = useRef<Worker | null>(null);
   const pending = useRef(new Map<number, { resolve: (value: string) => void; reject: (err: Error) => void }>());
   const requestNumber = useRef(0);
   const vc = useVoiceControl();
+
+  const stopLiveMarcus = useCallback(() => {
+    speechGeneration.current++;
+    speechAbort.current?.abort();
+    speechAbort.current = null;
+    const element = speechAudio.current;
+    speechAudio.current = null;
+    if (element) {
+      element.onplaying = null;
+      element.onended = null;
+      element.onerror = null;
+      try { element.pause(); element.currentTime = 0; } catch { /* disposed */ }
+    }
+  }, []);
+
+  const speakLiveMarcus = useCallback(async (line: string) => {
+    if (!liveMarcusEnabled || !line.trim()) return;
+    stopLiveMarcus();
+    stopApprovedMarcus();
+    const token = speechGeneration.current;
+    const controller = new AbortController();
+    speechAbort.current = controller;
+    if (micRef.current) stopListening();
+    setAudioStatus("Generating the reply in the approved Marcus voice…");
+    try {
+      let url = audioCache.current.get(line);
+      if (!url) {
+        url = await requestMarcusLiveSpeech(line, controller.signal);
+        if (controller.signal.aborted || token !== speechGeneration.current) return;
+        audioCache.current.set(line, url);
+      }
+      if (controller.signal.aborted || token !== speechGeneration.current) return;
+      const audio = new Audio(url);
+      audio.volume = 1;
+      audio.preload = "auto";
+      speechAudio.current = audio;
+      audio.onplaying = () => {
+        if (token === speechGeneration.current)
+          setAudioStatus("Marcus – Warm & Friendly is speaking.");
+      };
+      const resumeMic = () => {
+        if (micRef.current) window.setTimeout(() => {
+          if (micRef.current && token === speechGeneration.current) startListening();
+        }, 300);
+      };
+      audio.onended = () => {
+        if (token !== speechGeneration.current) return;
+        setAudioStatus("Marcus finished speaking.");
+        resumeMic();
+      };
+      audio.onerror = () => {
+        if (token !== speechGeneration.current) return;
+        audioCache.current.delete(line);
+        setAudioStatus("The Marcus audio file could not play. No other voice was substituted.");
+        resumeMic();
+      };
+      await audio.play();
+    } catch (error) {
+      if (controller.signal.aborted || token !== speechGeneration.current) return;
+      setAudioStatus(error instanceof Error
+        ? error.message : "Marcus speech failed; no substitute voice was used.");
+      if (micRef.current) startListening();
+    }
+  }, [liveMarcusEnabled, stopLiveMarcus]);
 
   const commit = useCallback((newTurns: Turn[]) => {
     const kept = newTurns.slice(-MAX_TURNS);
@@ -96,6 +166,7 @@ export function FlexConversation() {
   useEffect(() => {
     setMounted(true);
     setSupportsGPU(typeof navigator !== "undefined" && !!("gpu" in navigator));
+    void getMarcusSpeechAvailability().then(setLiveMarcusEnabled);
     const loaded = loadTurns();
     turnsRef.current = loaded;
     setTurns(loaded);
@@ -106,8 +177,9 @@ export function FlexConversation() {
       pending.current.clear();
       stopApprovedMarcus();
       stopFlexSpeech();
+      stopLiveMarcus();
     };
-  }, []);
+  }, [stopLiveMarcus]);
 
   const turnOffModel = useCallback(() => {
     worker.current?.terminate();
@@ -195,6 +267,7 @@ export function FlexConversation() {
     if (!q || busy) return;
     stopApprovedMarcus();
     stopFlexSpeech();
+    stopLiveMarcus();
     const previous = turnsRef.current;
     const question = normalizedFollowup(q, previous);
     const isFollowup = question !== q;
@@ -231,8 +304,9 @@ export function FlexConversation() {
     } finally {
       commit([...input, { role: "assistant", content: answer, kind }]);
       setBusy(false);
+      if (liveMarcusEnabled) void speakLiveMarcus(answer);
     }
-  }, [busy, commit, modelAsk, modelStatus]);
+  }, [busy, commit, modelAsk, modelStatus, liveMarcusEnabled, speakLiveMarcus, stopLiveMarcus]);
 
   const askRef = useRef(ask);
   askRef.current = ask;
@@ -251,6 +325,7 @@ export function FlexConversation() {
       return;
     }
     stopApprovedMarcus();
+    stopLiveMarcus();
     if (startListening()) { micRef.current = true; setMicRequested(true); }
     else { micRef.current = false; setMicRequested(false); }
   };
@@ -261,7 +336,7 @@ export function FlexConversation() {
     playApprovedMarcusTest({
       onPlaying: () => setAudioStatus("Marcus – Warm & Friendly recording playing."),
       onDone: () => {
-        setAudioStatus("Recording finished. Live answers are text-only without authorized Marcus synthesis.");
+        setAudioStatus("Recording finished. Dynamic voice replies require authorized HeyGen API access.");
         if (micRef.current) startListening();
       },
       onError: m => { setAudioStatus(m); if (micRef.current) startListening(); },
@@ -280,7 +355,30 @@ export function FlexConversation() {
             className="grid size-10 place-items-center rounded-lg border border-border"><X className="size-4" /></button>
         </div>
       </div>
-      <p className="mt-1 text-[11px] text-muted-foreground">Talk about your day, hobbies, family, work, music, movies, sports, or fitness. Ask follow-ups or change subjects whenever you want. Use the microphone or type. New spoken replies require authorized Marcus synthesis, so there is no substitute voice.</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">Talk about your day, family, work, interests or fitness. Ask follow-ups and change subjects. Spoken replies can use only the exact approved Marcus voice—not your phone's generic reader.</p>
+      <div data-testid="flex-live-marcus-status" role="status"
+        className="mt-2 rounded-lg border border-border bg-elevated/50 px-3 py-2 text-xs">
+        {liveMarcusEnabled
+          ? "Live Marcus voice is configured. Answers will attempt to play automatically; you can replay your last reply below."
+          : "Live spoken replies are not connected yet. HeyGen voice API activation and prepaid credits are required. No charges are being made."}
+      </div>
+      {liveMarcusEnabled && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button type="button" data-testid="flex-live-marcus-replay"
+            className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-accent/40 px-3 text-xs font-bold text-accent"
+            onClick={() => {
+              const last = [...turnsRef.current].reverse().find(t => t.role === "assistant");
+              if (last) void speakLiveMarcus(last.content);
+            }}>
+            <Volume2 className="size-4"/> Hear latest answer
+          </button>
+          <button type="button" data-testid="flex-stop-live-marcus"
+            className="min-h-11 rounded-lg border border-border px-3 text-xs font-bold"
+            onClick={() => { stopLiveMarcus(); setAudioStatus("Marcus voice stopped."); }}>
+            Stop speaking
+          </button>
+        </div>
+      )}
       {modelStatus==="off" && supportsGPU && (
         <button data-testid="flex-natural-chat-enable" type="button" onClick={startModel}
           className="mt-2 min-h-12 w-full rounded-xl border border-cyan-400/40 bg-cyan-400/15 px-3 text-sm font-black text-cyan-100">
