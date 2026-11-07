@@ -3,8 +3,9 @@
  * signed in; no request can reach HeyGen before explicit budget approval.
  *
  * Required protected Railway config (never browser env):
- * FLEX_PAID_AI_ENABLED=true, FLEX_MARCUS_TTS_ENABLED=true,
- * HEYGEN_API_KEY, FLEX_AI_ALLOWED_USER_IDS, and existing Supabase auth.
+ * FLEX_MARCUS_TTS_ENABLED=true, HEYGEN_API_KEY,
+ * FLEX_AI_ALLOWED_USER_IDS, SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY.
+ * This voice-only flag never enables the legacy paid OpenAI routes.
  *
  * The API key must be scoped to voice generation. Billing/overage must be
  * controlled by the HeyGen prepaid API wallet; the in-process limiter is
@@ -32,8 +33,9 @@ export const Route = createFileRoute("/api/public/marcus-speech")({
     handlers: {
       GET: async () => safeJson({
         voice: "Marcus – Warm & Friendly English",
-        enabled: !disabled() && process.env["FLEX_PAID_AI_ENABLED"] === "true" &&
-          !!process.env["HEYGEN_API_KEY"],
+        enabled: !disabled() && !!process.env["HEYGEN_API_KEY"] &&
+          !!process.env["FLEX_AI_ALLOWED_USER_IDS"] && !!process.env["SUPABASE_URL"] &&
+          !!process.env["SUPABASE_PUBLISHABLE_KEY"],
         dynamic: true,
         fallbackVoice: false,
         cost: "Requires separately funded HeyGen API credits; no auto-charges authorized.",
@@ -46,7 +48,11 @@ export const Route = createFileRoute("/api/public/marcus-speech")({
         if (!process.env["HEYGEN_API_KEY"]) return aiError(503,
           "Live Marcus voice key is not configured. No charges were made.");
 
-        const user = await authorizePaidAi(request, "speech");
+        // Reuse verified Supabase identity and request limiting, but DO NOT
+        // enable unrelated metered OpenAI endpoints just to use Marcus voice.
+        const user = await authorizePaidAi(request, "speech", {
+          env: { ...process.env, FLEX_PAID_AI_ENABLED: process.env["FLEX_MARCUS_TTS_ENABLED"] },
+        });
         if (user instanceof Response) return user;
         const body = await readBoundedAiJson(request);
         if (body instanceof Response) return body;
