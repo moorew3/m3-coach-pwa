@@ -31,7 +31,8 @@ check("Hard budget switch defaults off",route.includes('process.env["FLEX_MARCUS
 check("No request reaches HeyGen without flag",route.indexOf('if (disabled()) return aiError(503')<route.indexOf('fetch("https://api.heygen.com'));
 check("Server auth and user allowlist",route.includes("authorizePaidAi(request")&&route.includes("FLEX_AI_ALLOWED_USER_IDS"));
 check("Other paid providers remain disabled",route.includes('FLEX_PAID_AI_ENABLED: process.env["FLEX_MARCUS_TTS_ENABLED"]')&&!route.includes("api.openai.com"));
-check("Only documented catalog TTS endpoint",route.includes("https://api.heygen.com/v3/voices/speech"));
+check("Uses HeyGen published speech endpoint",route.includes("https://api.heygen.com/v3/models/audio/tts") && !route.includes("https://api.heygen.com/v3/voices/speech"));
+check("Exact documented body fields",route.includes("voice_id: APPROVED_MARCUS_VOICE_ID") && !route.includes("input_type:") && !route.includes("speed: 1"));
 check("Never auto-retry paid calls",!route.includes("for (")&&!route.includes("retry("));
 check("Client checks returned voice identity",client.includes("payload.voiceId !== APPROVED_MARCUS_VOICE_ID"));
 check("Client never uses browser TTS",!client.includes("speechSynthesis")&&!chat.includes("speakFlexAnswer("));
