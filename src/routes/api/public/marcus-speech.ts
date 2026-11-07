@@ -66,7 +66,7 @@ export const Route = createFileRoute("/api/public/marcus-speech")({
         // return an explicit error rather than using another voice.
         let upstream: Response;
         try {
-          upstream = await fetch("https://api.heygen.com/v3/voices/speech", {
+          upstream = await fetch("https://api.heygen.com/v3/models/audio/tts", {
             method: "POST",
             headers: {
               "X-Api-Key": process.env["HEYGEN_API_KEY"]!,
@@ -75,8 +75,6 @@ export const Route = createFileRoute("/api/public/marcus-speech")({
             body: JSON.stringify({
               voice_id: APPROVED_MARCUS_VOICE_ID,
               text: line,
-              input_type: "text",
-              speed: 1,
               language: "en",
             }),
             signal: AbortSignal.timeout(40_000),
