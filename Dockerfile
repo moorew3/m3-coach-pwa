@@ -13,6 +13,7 @@ RUN node scripts/flex-native-coach-qa.test.mjs
 RUN node scripts/flex-answer-audio-qa.test.mjs
 RUN node --check public/flex-local-ai-worker.mjs && node scripts/flex-conversation-qa.test.mjs
 RUN node scripts/flex-everyday-chat-qa.test.mjs
+RUN node scripts/marcus-live-gate-qa.test.mjs
 RUN test -s .output/server/index.mjs && test -s .output/public/recovery-coach/index.html
 
 FROM node:22-bookworm-slim AS runtime
