@@ -81,6 +81,8 @@ try {
   await page.getByTestId("app-entry-tap").click();
   await page.getByTestId("app-entry-yes").click({ timeout: 12000 });
   await page.getByTestId("app-entry-gate").waitFor({ state: "detached", timeout: 10000 });
+  await page.getByRole("button", {name:"Workout library and tools"}).click();
+  await page.getByTestId("flex-existing-tools").waitFor();
   await page.getByTestId("seated-program-warning").waitFor();
   await page.getByTestId("legacy-workout-start").click();
   await page.getByTestId("legacy-safety-gate").waitFor();
@@ -101,7 +103,7 @@ try {
     assert.equal(await link.count(), 1, "One M3 FLEX native workout choice: " + name);
     assert.match(await link.getAttribute("href") ?? "", /^\/recovery\?program=/);
   }
-  await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Recovery"}).click();
+  await page.getByTestId("m3-unified-workout-picker").getByRole("link", {name:"Recovery · 5 approved moves"}).click();
   await page.getByTestId("m3-native-recovery").waitFor();
   await page.getByTestId("m3-recovery-existing-player").waitFor();
   assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),
@@ -117,8 +119,9 @@ try {
   // without a fake rep log or separate M3 FLEX account.
   await embedded.locator("#setRounds").selectOption("2");
   await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Today"}).click();
+  await page.getByRole("button", {name:"Workout library and tools"}).click();
   await page.getByTestId("m3-unified-workout-picker").waitFor();
-  step("Existing M3 FLEX now includes a native Recovery tab, same-origin approved player and unchanged original Home");
+  step("Existing M3 FLEX uses one collapsed workout library, native Recovery route and same-origin approved player");
 
   // All old and new approved/review scenes must be accessible from ONE
   // app with direct Recovery/A/B choices, not separate competing projects.
