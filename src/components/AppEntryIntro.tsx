@@ -78,6 +78,8 @@ export function AppEntryGate({ children }: { children: ReactNode }) {
   // Closed only once we know this session already answered — so the app
   // never flashes behind the gate on a cold open.
   const [open, setOpen] = useState(!secondary);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => { setHydrated(true); }, []);
   const [phase, setPhase] = useState<Phase>("arrive");
   const timer = useRef<number | undefined>(undefined);
 
@@ -124,6 +126,7 @@ export function AppEntryGate({ children }: { children: ReactNode }) {
   return (
     <div
       data-testid="app-entry-gate"
+      data-hydrated={hydrated ? "true" : "false"}
       role="dialog"
       aria-modal="true"
       aria-label="Coach entrance"
