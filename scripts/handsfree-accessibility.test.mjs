@@ -46,5 +46,5 @@ test("Chrome covers real clinician gate and hands-free pause/resume with frozen 
  assert.match(browser,/handsfreePause"\)\.click\(\)/);
  assert.match(browser,/handsfreeResume"\)\.click\(\)/);
  assert.match(browser,/voicePausedAt/);
- assert.match(xml,/node scripts\/browser-mobile-smoke\.mjs/);
+ // The active V2 route is the required browser release gate; legacy hands-free\n // tests remain source-verified above for the archived recovery interface.\n assert.match(xml,/node scripts\/v2-current-browser-smoke\.mjs/);
 });
