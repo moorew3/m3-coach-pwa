@@ -856,16 +856,6 @@ function V2Coach() {
           <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
           <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
         </div>}
-        {!projectionFocus && <>
-          {selectorPanel}
-          <div className="flex items-center gap-2">
-            <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"} onClick={() => void toggleVoice()} className="flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}Marcus voice {voiceOn?"on":"off"}</button>
-          {voiceControlAvailable() && <button type="button" aria-pressed={voiceControl.listening} onClick={() => voiceControl.listening ? stopListening() : startListening()} className="mt-2 flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceControl.listening ? <Mic className="size-4" /> : <MicOff className="size-4" />}{voiceControl.listening ? "Mic on" : "Talk to Marcus"}</button>}
-          </div>
-          {liveCue && <details className="mt-2"><summary className="cursor-pointer py-2 text-xs text-cyan-200">Marcus’s current guidance</summary><p role="status" data-testid="marcus-current-cue" className="mt-3 rounded-xl bg-cyan-300/10 p-3 text-sm text-cyan-100">{liveCue}</p></details>}
-          {voiceError && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceError}</p>}
-          {voiceControl.error && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceControl.error}</p>}
-        </>}
         {athleteError && (!projectionFocus || projectionSettingsOpen) && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
@@ -875,7 +865,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[68dvh] min-h-[420px] max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
+            : "relative h-[56dvh] min-h-[340px] max-h-[740px] sm:h-[68dvh] sm:min-h-[420px] sm:max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -900,7 +890,7 @@ function V2Coach() {
                 preloadUrl={stagePreloadUrl}
                 className={projectionFocus
                   ? "absolute inset-0 h-full w-full"
-                  : "absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"}
+                  : "absolute inset-x-0 top-[76px] bottom-[104px] w-full sm:top-[90px] sm:bottom-[124px] lg:top-[72px] lg:bottom-[118px]"}
                 label={`Marcus · ${resolvedScene.role} · ${stageMedia.label}`}
               />
             )}
@@ -1381,6 +1371,18 @@ function V2Coach() {
             </p>
           </aside>)}
         </div>
+        {/* On phones, the actual moving Marcus stage comes before configuration.
+            Keep the original selectors, clearance gates and voice controls intact. */}
+        {!projectionFocus && <>
+          {selectorPanel}
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"} onClick={() => void toggleVoice()} className="flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}Marcus voice {voiceOn?"on":"off"}</button>
+          {voiceControlAvailable() && <button type="button" aria-pressed={voiceControl.listening} onClick={() => voiceControl.listening ? stopListening() : startListening()} className="mt-2 flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceControl.listening ? <Mic className="size-4" /> : <MicOff className="size-4" />}{voiceControl.listening ? "Mic on" : "Talk to Marcus"}</button>}
+          </div>
+          {liveCue && <details className="mt-2"><summary className="cursor-pointer py-2 text-xs text-cyan-200">Marcus’s current guidance</summary><p role="status" data-testid="marcus-current-cue" className="mt-3 rounded-xl bg-cyan-300/10 p-3 text-sm text-cyan-100">{liveCue}</p></details>}
+          {voiceError && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceError}</p>}
+          {voiceControl.error && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceControl.error}</p>}
+        </>}
       </div>
       {showOpening && (
         <WorkoutOpeningScene
