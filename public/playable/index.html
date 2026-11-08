@@ -241,28 +241,30 @@ var x=selected();if(!x)return;var restScene=experience==="coach"&&(s.phase==="re
 $("sceneTop").textContent=experience==="review"?"OWNER APPROVAL · REVIEW":experience==="loop"?"M3 FLEX · ENDLESS DEMONSTRATION":restScene?"RECOVERY · REST":"COACH SESSION · SCENE "+(s.index+1);
 $("sceneBottom").textContent=restScene?"APPROVED SEATED BREATHING":"ORIGINAL FLEX MOTION";
 $("exercisePick").value=pickValue();$("name").textContent=x.name;$("cue").textContent=previewMode()?(view.type==="legacy"?"This is an original verified coach video, presented for PREVIEW ONLY. Some movements use the legs or require standing. It is not part of your injury-safe seated workout.":(x.note||"This archived scene is not cleared for guided workouts.")) :x.cue;
-$("counter").textContent=experience==="review"?"Approval "+(reviewIndex+1)+" / "+reviewItems.length:previewMode()?(view.type==="legacy"?"Verified original clip":view.type==="owner"?"✓ Approved by you":"Archive · "+x.status):"Scene "+(s.index+1)+" of "+scene.length;
+$("counter").textContent=experience==="review"?"Approval "+(reviewIndex+1)+" / "+reviewItems.length:previewMode()?(view.type==="legacy"?"Verified original clip":view.type==="owner"?"✓ Approved by you":view.type==="silent"?"✓ Visuals kept · Audio muted":"Archive · "+x.status):"Scene "+(s.index+1)+" of "+scene.length;
 if(experience==="review"){
-var decision=reviewDecision(x);$("reviewStatus").textContent=(decision==="pending"?"PENDING APPROVAL":decision==="approved"?"✓ APPROVED BY YOU":"✕ DISAPPROVED BY YOU")+" · "+x.id;
+var decision=reviewDecision(x);$("reviewStatus").textContent=(decision==="pending"?"PENDING APPROVAL":decision==="approved"?"✓ FULLY APPROVED BY YOU":decision==="visual-approved"?"✓ VISUALS KEPT · MARCUS VOICE REQUIRED":"✕ FOOTAGE REJECTED")+" · "+x.id;
+$("voiceFixStatus").hidden=decision!=="visual-approved";
 $("reviewNote").textContent=x.note||"Check identity, movement, left leg, equipment and voice before marking approved.";
 $("reviewSource").hidden=!x.videoPage;if(x.videoPage)$("reviewSource").href=x.videoPage;
 $("externalReviewCheck").hidden=!x.videoPage;$("externalWatched").checked=!!watched[x.id]&&!!x.videoPage;
 $("clipReps").value=approvals[x.id]&&Number.isInteger(approvals[x.id].clipReps)?String(approvals[x.id].clipReps):"0";
 $("rejectWhy").value=approvals[x.id]&&approvals[x.id].reason||"";
+$("reviewMute").checked=reviewMuted[x.id]===undefined?decision==="visual-approved":!!reviewMuted[x.id];
 $("reviewFix").value=approvals[x.id]&&approvals[x.id].notes||"";
-$("approveVideo").disabled=!watched[x.id];$("reviewReceipt").textContent=approvals[x.id]?"Last decision saved on this device · "+new Date(approvals[x.id].at).toLocaleString():watched[x.id]?"Full video watched. You may approve or disapprove.":"Watch the complete video before Approve is enabled";
+$("approveVideo").disabled=!watched[x.id];$("visualApproveVideo").disabled=!watched[x.id];$("reviewReceipt").textContent=approvals[x.id]?"Last decision saved on this device · "+new Date(approvals[x.id].at).toLocaleString():watched[x.id]?"Full video watched. Choose full approval, keep visuals/fix voice, or reject.":"Watch the complete video before approving its visuals";
 $("reviewAudio").hidden=!x.audio;if(x.audio&&$("reviewAudio").src!==x.audio)$("reviewAudio").src=x.audio;
 renderReviewPicker();
 }
 $("goalReps").value=String(targetReps(stage()));$("approvedClipReps").value=String(approvedCycles[stage().id]||0);$("autoFlow").checked=s.autoFlow;
 $("gameRep").textContent=experience==="review"?"OWNER REVIEW":experience==="loop"?"∞ LOOP UNTIL NEXT":safeRepsPerClip(stage())?"VIDEO CYCLE "+(s.visualReps||0)+" / "+targetReps(stage()):"VIDEO LOOPS · REPS UNVERIFIED";
-$("gameCue").textContent=experience==="review"?"Watch each movement and its voice before approving.":experience==="loop"?"EXERCISE DEMO · Moving video loops until Next":restScene?"RECOVERY SCENE · The approved breathing video loops while you rest.":"COACH SESSION · "+(s.visualReps&&safeRepsPerClip(stage())?s.visualReps+" reviewed visual repetitions shown":"Approved audio, when present, repeats with the set.");
+$("gameCue").textContent=experience==="review"?"Inspect movement and original voice; keep the footage separately if only narration is wrong.":view.type==="silent"?"VISUAL DEMO · ORIGINAL VOICE MUTED · NOT FULLY APPROVED":experience==="loop"?"EXERCISE DEMO · Moving video loops until Next":restScene?"RECOVERY SCENE · The approved breathing video loops while you rest.":"COACH SESSION · "+(s.visualReps&&safeRepsPerClip(stage())?s.visualReps+" reviewed visual repetitions shown":"Approved audio, when present, repeats with the set.");
 
 $("sets").textContent=previewMode()?"Preview only":"Set "+s.set+" / "+x.sets;$("target").textContent=previewMode()?"VIDEO PREVIEW · NO WORKOUT CREDIT":(x.reps?x.reps+" reps · Set "+s.set+" of "+x.sets:"Preparation · "+x.seconds+"s");
 $("clock").textContent=previewMode()?"—:—":String(Math.floor(s.remaining/60)).padStart(2,"0")+":"+String(s.remaining%60).padStart(2,"0");
 $("phase").textContent=experience==="review"?"REVIEW CLIP":experience==="loop"?"LOOP DEMO":previewMode()?"PREVIEW ONLY":s.phase==="rest"?"REST · NEXT SET":s.phase.toUpperCase();
-$("kind").textContent=experience==="review"?"OWNER MEDIA REVIEW · "+reviewCounts().pending+" WAITING":experience==="loop"?"CONTINUOUS EXERCISE DEMONSTRATION":previewMode()?(view.type==="legacy"?"✓ VERIFIED ORIGINAL · not in seated workout":view.type==="owner"?"✓ YOUR APPROVED VIDEO · demonstration only":"REVIEW ONLY · not approved for coached workouts"):(s.mode==="demo"?"COACH GAME · simulated reps":"COACH SESSION · manual exercise log");
-$("watermark").textContent=experience==="review"?"REVIEW CANDIDATE":view.type==="archive"?"⚠ OWNER REVIEW ONLY":"✓ APPROVED FLEX";
+$("kind").textContent=experience==="review"?"OWNER MEDIA REVIEW · "+reviewCounts().pending+" WAITING":view.type==="silent"?"VISUALS SAVED · AUDIO MUTED · NEEDS MARCUS VOICE":experience==="loop"?"CONTINUOUS EXERCISE DEMONSTRATION":previewMode()?(view.type==="legacy"?"✓ VERIFIED ORIGINAL · not in seated workout":view.type==="owner"?"✓ YOUR APPROVED VIDEO · demonstration only":"REVIEW ONLY · not approved for coached workouts"):(s.mode==="demo"?"COACH GAME · simulated reps":"COACH SESSION · manual exercise log");
+$("watermark").textContent=experience==="review"?"REVIEW CANDIDATE":view.type==="silent"?"VISUALS KEPT · VOICE PENDING":view.type==="archive"?"⚠ OWNER REVIEW ONLY":"✓ APPROVED FLEX";
 $("score").textContent=String(s.points);$("progress").textContent=s.completed+" of "+total()+" stages completed";$("bar").style.width=progress()+"%";
 $("session").textContent=s.phase==="complete"?"Finished":s.phase==="stopped"?"Stopped":s.phase==="running"?"Playing":s.phase==="rest"?"Resting":s.phase==="paused"?"Paused":"Ready";
 $("start").textContent=s.phase==="paused"?(s.pausedFrom==="rest"?"▶ Resume rest":"▶ Resume"):s.phase==="rest"?"Rest counting…":"▶ Start";
@@ -275,12 +277,19 @@ $("reps").disabled=previewMode()||!x.reps;$("weight").disabled=previewMode()||!x
 if(mediaId!==experience+"-"+view.type+"-"+x.id+(restScene?"-rest":"")){
 mediaId=experience+"-"+view.type+"-"+x.id+(restScene?"-rest":"");sceneEpoch++;mediaFailed=false;stopMarcus();$("film").pause();
 var blocked=view.type==="archive"&&(x.status==="qa-rejected"||x.status==="hold"||reviewDecision(x)==="disapproved");
-var media=restScene?scene[0].src:blocked?null:(view.type==="archive"||view.type==="review"||view.type==="owner")?x.video:x.src;
-$("film").loop=restScene||(experience==="loop"&&["workout","legacy","owner"].includes(view.type));
+var media=restScene?scene[0].src:blocked?null:(view.type==="archive"||view.type==="review"||view.type==="owner"||view.type==="silent")?x.video:x.src;
+$("film").loop=restScene||(experience==="loop"&&["workout","legacy","owner","silent"].includes(view.type));
 if(media){$("film").src=media}else{$("film").removeAttribute("src");mediaFailed=true}
 $("film").load();$("mediaWarning").hidden=!!media;
 $("mediaWarning").textContent=blocked?"Rejected or held footage is blocked from playback.":x.external?"This scene has an external source, not a verified playable MP4.": "No playable video is available for this entry.";
 $("demo").disabled=!media;
+}
+if(view.type==="silent"||(experience==="review"&&$("reviewMute").checked)){
+$("film").muted=true;
+$("voiceState").textContent="SOURCE AUDIO MUTED · Original footage preserved · Marcus voice replacement pending";
+}else if(experience==="review"){
+$("film").muted=false;
+$("voiceState").textContent="OWNER REVIEW · Original clip audio enabled for inspection only";
 }
 var list=$("list");list.replaceChildren();
 scene.forEach(function(o,i){var b=document.createElement("button");b.type="button";b.className="item"+(i===s.index?" active":"")+(i<s.index?" done":"");
