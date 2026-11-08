@@ -53,7 +53,7 @@ export async function askLiveCoach(
   if (!text) return null;
   // Workout conversation and general chat must use the SAME actual sensor value.
   // Answer before paid-AI routing; do not invent BPM or treat readings as diagnoses.
-  if (/\\b(heart[ -]?rate|pulse|bpm)\\b/i.test(text)) {
+  if (/\b(heart[ -]?rate|pulse|bpm)\b/i.test(text)) {
     const reading = lastHeartRateReading();
     if (!reading) return "I do not have a fresh heart-rate reading. Tap Connect HR in the workout, connect a compatible Bluetooth sensor, and ask again.";
     const secondsAgo = Math.max(0, Math.round((Date.now() - reading.recordedAt) / 1000));
