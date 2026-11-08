@@ -35,7 +35,9 @@ const data = {
   },
 };
 const totals = n => n.entries.reduce((v, x) => ({ cal: v.cal + x.cal, protein: v.protein + x.protein, carbs: v.carbs + x.carbs, fat: v.fat + x.fat }), { cal: 0, protein: 0, carbs: 0, fat: 0 });
+let testHeartRateReading = null;
 const stub = (name) => {
+  if (name === "@/lib/health/hr-monitor") return { lastHeartRateReading: () => testHeartRateReading };
   if (name === "@/lib/store") return {
     currentDayNumber: () => 1, todayKey: () => now,
     getNutrition: (s, d) => s.nutrition[d] || { entries: [], water: 0, trainingDay: true, bodyweight: "" },
@@ -62,6 +64,10 @@ assert.equal(typeof answerFlexLocal, "function");
 
 let checks = 0;
 const expect = (name, condition) => { assert.ok(condition, name); checks++; };
+expect("No invented heart-rate reading", answerFlexLocal("what's my heart rate", data).text.includes("do not have a fresh heart-rate reading"));
+testHeartRateReading = { bpm: 78, recordedAt: Date.now() - 3000, provider: "Gym test HR" };
+expect("Measured heart rate is described as sensor data", answerFlexLocal("what's my heart rate", data).text.includes("78 beats per minute"));
+testHeartRateReading = null;
 expect("No cheese snack", !answerFlexLocal("what should I eat", data).text.toLowerCase().includes("add cheese"));
 expect("Meal suggestion explicitly avoids cheese", answerFlexLocal("what should I eat", data).text.includes("(no cheese)"));
 expect("Keeps lactose-free flavor preference", answerFlexLocal("what should I eat", data).text.includes("chocolate lactose-free"));
