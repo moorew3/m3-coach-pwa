@@ -54,10 +54,26 @@ export function HealthPanel({ day: dayProp }: { day?: number }) {
   const [tracking, setTracking] = useState(false);
   const [note, setNote] = useState("");
 
+  const sensorValue = useRef<number | null>(null);
   useEffect(() => onHeartRate((reading) => {
     setBpm(reading);
+    sensorValue.current = reading;
     setValues((prev) => ({ ...prev, heartRate: String(reading) }));
   }), []);
+  // Do not leave a sensor-populated BPM field on screen when it is no longer fresh.
+  // Preserve a measurement that the user explicitly typed over.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (lastHeartRateReading()) return;
+      setBpm(null);
+      const old = sensorValue.current;
+      if (old === null) return;
+      setValues((prev) => prev.heartRate === String(old)
+        ? { ...prev, heartRate: "" } : prev);
+      sensorValue.current = null;
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
   useEffect(() => onWalkSample(setWalk), []);
 
   const put = (patch: Record<string, string>) => setValues((p) => ({ ...p, ...patch }));
