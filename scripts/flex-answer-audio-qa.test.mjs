@@ -53,6 +53,6 @@ check("Audio logic contains no TTS synthesizer", !file.includes("speechSynthesis
 check("Legacy wrong voice disabled", !retired.includes("speechSynthesis.speak(") && !retired.includes("synth.speak("));
 check("No generic text speech is called by the coach UI", !comp.includes("speakFlexAnswer(") && !comp.includes("readAnswer("));
 check("Approved Marcus sample on conversation screen", comp.includes('data-testid="marcus-sample"') && comp.includes("stopApprovedMarcus()"));
-check("New AI replies are not falsely claimed to be spoken", comp.includes("Spoken replies can use only the exact approved Marcus voice") && comp.includes("No charges are being made"));
+check("Free voice disclosure is accurate", comp.includes("Spoken replies can use only the exact approved Marcus voice") && comp.includes("No paid model is enabled"));
 check("Approved Marcus remains the only offered voice", comp.includes("Marcus") && !comp.includes("Speaking with your phone's voice") && !comp.includes("speakFlexAnswer("));
 console.log("M3 FLEX approved-Marcus-only voice QA passed: " + n + " checks.");
