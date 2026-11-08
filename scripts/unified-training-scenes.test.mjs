@@ -36,16 +36,20 @@ test('every workout and every set uses approved breathing during rest and transi
  }
  assert.ok(rests>100);
 });
-test('recovery movements retain their exact approved videos and preparation/cooldown sequence',()=>{
+test('Recovery and A/B schedule only their original approved animated clips; guidance-only items remain outside timed steps',()=>{
  for(const workout of RECOVERY_WORKOUTS){
-  assert.equal(workout.exercises[0].sceneId,'C09-PRE-BREATH-R2');assert.equal(workout.requiresClearance,true);
+  assert.equal(workout.exercises[0].sceneId,'C09-PRE-BREATH-R2');
+  assert.equal(workout.requiresClearance,true);
+  assert.equal(workout.exercises.at(-1).sceneId,'C10-POST-BREATH-R1');
+  const expectedCount=workout.id==='recovery'?7:workout.id==='A'?4:5;
+  assert.equal(workout.exercises.length,expectedCount);
   for(const exercise of workout.exercises){
    const expected=approved.find(x=>x.type==='video'&&x.id===exercise.sceneId);
-   if(expected)assert.equal(exerciseScene(exercise).url,expected.url);
-   else if(exercise.sceneId==='recovery-0-2') assert.equal(exerciseScene(exercise).sceneId,'C16-CONTROLLED-REACHES');
-   else assert.equal(exerciseScene(exercise),undefined,'Missing demos never borrow another exercise video');
+   assert.ok(expected,exercise.sceneId+' must have owner-approved moving footage');
+   assert.equal(exerciseScene(exercise)?.url,expected.url);
   }
  }
+ assert.equal(exerciseScene({id:'guidance-only',sceneId:'recovery-0-2',motionKey:'unavailable'}),undefined,'Unapproved C16 cannot run as a timed demo');
  assert.equal(REST_SCENE.url,approved.find(x=>x.id==='C09-PRE-BREATH-R2').url);
  assert.equal(COOLDOWN_SCENE.url,approved.find(x=>x.id==='C10-POST-BREATH-R1').url);
 });
@@ -86,13 +90,17 @@ test('Workout B keeps its original press-first order and exact narration is serv
 });
 
 test('missing demonstrations cannot start, tick, auto-complete or count sets in either mode',()=>{
- const w=RECOVERY_WORKOUTS[0];
+ const original=RECOVERY_WORKOUTS[0];
+ // Inject an unapproved exercise into a test-only session to prove fail-closed
+ // protection remains effective without forcing it into the real workout.
+ const unknown={...original.exercises[1],id:'unreviewed-scene',sceneId:'never-approved',motionKey:'no-movement'};
+ const w={...original,exercises:[original.exercises[0],unknown,original.exercises[1]]};
  for(const mode of ['coach','hologram']){
   let s={...createV2Session(w),mode,exerciseIndex:1};
   assert.equal(sceneForSession(s).missing,true);
   assert.deepEqual(guardedStep(s,{type:'start'}),s);
   const stale={...s,phase:'work',running:true,phaseSecondsLeft:1};
-  for(const type of ['tick','complete-set']) {
+  for(const type of ['tick','complete-set']){
    const next=guardedStep(stale,{type});
    assert.equal(next.running,false);assert.equal(next.elapsedSeconds,0);
    assert.deepEqual(next.completedSetIds,[]);assert.equal(next.phaseSecondsLeft,1);
@@ -105,7 +113,7 @@ test('missing demonstrations cannot start, tick, auto-complete or count sets in 
   s=guardedStep(s,{type:'next'});
   while(s.phase==='transition')s=guardedStep(s,{type:'tick'});
   assert.equal(s.exerciseIndex,2);assert.equal(s.running,true);
-  assert.equal(sceneForSession(s).media.sceneId,'C16-CONTROLLED-REACHES');
-  assert.equal(s.completedSetIds.length,1,'Skipping unavailable hands never logs a set');
+  assert.equal(sceneForSession(s).media.sceneId,'C01-R3');
+  assert.equal(s.completedSetIds.length,1,'Skipping unapproved exercise never logs a set');
  }
 });

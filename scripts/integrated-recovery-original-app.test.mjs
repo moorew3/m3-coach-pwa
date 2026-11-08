@@ -19,9 +19,12 @@ function sample(overrides={}) {
 }
 
 test("original M3 FLEX tabs preserved; native Recovery and Workout A/B are same-application routes",()=>{
-  assert.match(nav,/to: "\/recovery", label: "Recovery"/);
-  for (const route of ["/program","/nutrition","/progress","/settings"])
-    assert.ok(nav.includes('to: "'+route+'"'),"Original tab changed: "+route);
+  // The intentionally compact three-tab navigation is kept. Original
+  // Recovery, Nutrition and Settings are still reachable from Home.
+  for (const route of ["/","/program","/progress"])
+    assert.ok(nav.includes('to: "'+route+'"'),"Compact tab missing: "+route);
+  for (const route of ["/nutrition","/settings","/recovery"])
+    assert.ok(original.includes('to="'+route+'"'),"Original route inaccessible from Home: "+route);
   assert.match(original,/data-testid="m3-unified-workout-picker"/);
   assert.match(original,/to="\/recovery" search=\{\{ program: "recovery" \}\}/);
   assert.match(original,/to="\/recovery" search=\{\{ program: "A" \}\}/);

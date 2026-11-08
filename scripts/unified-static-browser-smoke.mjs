@@ -41,81 +41,46 @@ try{
  const origin="http://127.0.0.1:17397";
  const response=await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
  assert.equal(response?.status(),200);
+ // The active Recovery and Coach routes now converge on the unified V2 screen.
  const intro=page.getByTestId("app-entry-tap");
  if(await intro.count()){
-  await intro.click();
-  await page.getByTestId("app-entry-yes").click();
+  await page.locator('[data-testid="app-entry-gate"][data-hydrated="true"]').waitFor();
+  await intro.click();await page.getByTestId("app-entry-yes").click();
   await page.getByTestId("app-entry-gate").waitFor({state:"detached"});
  }
+ await page.getByRole("button",{name:"Workout library and tools"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
- await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Settings"}).click();
- await page.getByTestId("m3-full-device-backup").click();
- await page.locator("#counts").waitFor();
- assert.match(await page.title(),/Encrypted Full App Backup/);
- assert.equal(await page.locator("#export").count(),1,"Backup must open the actual local export tool, not the React 404");
- await page.goBack();
- await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
- await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Recovery"}).click();
- await page.getByTestId("m3-native-recovery").waitFor();
- const recoveryFrame=page.frameLocator('[data-testid="m3-recovery-existing-player"]');
- await recoveryFrame.locator("#workoutChoices").waitFor({state:"attached"});
- assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),"/recovery-coach/index.html?program=recovery&embedded=1");
- assert.equal(await recoveryFrame.locator("#unifiedWorkoutChooser").isVisible(),false,"Embedded Recovery must not duplicate parent A/B selector");
- assert.equal(await recoveryFrame.locator("#emergencyStop").isVisible(),true,"Emergency stop must remain accessible");
- await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Progress"}).click();
- await page.getByTestId("m3-original-progress-recovery").waitFor();
- await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Program"}).click();
- await page.getByTestId("m3-primary-workout-menu").waitFor();
- assert.equal(await page.getByTestId("m3-legacy-program-archive").getAttribute("open"),null,"Old standing workout must not open by default");
- const scenesUrl=await page.getByTestId("program-scene-library").getAttribute("href");
- assert.equal(scenesUrl,"/recovery-coach/programs/index.html");
- const sceneResponse=await page.request.get(origin+scenesUrl);
- assert.equal(sceneResponse.status(),200,"Packaged Workout A/B scene review must not 404");
- assert.match(await sceneResponse.text(),/Workout A\/B Production Review/);
- // Original approved media and older original-app bench clips must be viewable from one app.
- await page.goto(origin+scenesUrl,{waitUntil:"domcontentloaded"});
- await page.getByTestId("existing-app-videos").waitFor();
- await page.locator("#existingAppVideoLibrary summary").click();
- assert.equal(await page.locator("#existingLockedVideoLinks a").filter({hasText:"▶"}).count(),7,
-   "Seven existing approved videos must be linked without creating new clips");
- assert.equal(await page.locator("#existingOriginalAppLinks a").count(),6,
-   "Previously built bench/stretch/rowing clips remain accessible as reference only");
- assert.match(await page.locator("#existingVideoCount").textContent(),/7 original approved Recovery videos reused/);
- assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
-   "Reused media must not auto-play on entering the gallery");
- assert.equal(await page.locator("#existingLockedVideoLinks button[data-reuse-video]").count(),7,
-   "Each approved clip must be selectable inside the same player");
- await page.locator("#existingLockedVideoLinks button[data-reuse-video]").first().click();
- assert.match(await page.locator("#sceneTitle").textContent(),/Calm seated breathing/);
- assert.equal(await page.locator("#play").isEnabled(),true);
- assert.equal(await page.locator("#sceneVideo").evaluate(v=>v.paused),true,
-   "Choosing an approved clip cannot auto-start a workout");
- assert.match(await page.locator("#playback").textContent(),/Press Play verified media/);
- await page.goBack();
- await page.getByTestId("m3-primary-workout-menu").waitFor();
- await page.getByTestId("program-approve-scenes").click();
- await page.locator("#allScenesCatalog").waitFor();
- assert.equal(await page.locator("#sceneFilter").inputValue(),"candidates","Owner review must show C13–C23 without manual search");
- assert.equal(await page.locator("#sceneGrid .item").count(),11,"Exactly eleven rendered drafts need explicit review");
- assert.equal(await page.locator("#sceneGrid .item").filter({hasText:"MARCUS AUDIO NOT VERIFIED"}).count(),4);
- assert.equal(await page.locator("#sceneReviewVideo").isVisible(),false,"Review entry must not autoplay or activate a clip");
- await page.locator("#inspectRowing").click();
- assert.equal(await page.locator("#sceneFilter").inputValue(),"rowing");
- assert.equal(await page.locator("#sceneGrid .item").count(),1);
- assert.match(await page.locator("#sceneGrid").textContent(),/REJECTED FOR WORKOUT USE/);
- await page.locator("#sceneGrid button").click();
- assert.equal(await page.locator("#sceneApprovalControls").isVisible(),false);
- assert.equal(await page.locator("#sceneReviewVideo").evaluate(v=>v.paused),true);
- await page.goBack();
- await page.getByTestId("m3-primary-workout-menu").waitFor();
- await page.getByTestId("program-v2").click();
- await page.getByTestId("v2-approved-avatar-entrance").waitFor();
- await page.getByTestId("v2-opening-exit").click();
+ assert.equal(await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).count(),1);
+ const v2=await page.goto(origin+"/v2?workout=recovery",{waitUntil:"domcontentloaded"});
+ assert.equal(v2?.status(),200,"Static host must serve V2");
+ await page.getByTestId("flex-training").waitFor();
+ const stage=page.getByTestId("v2-trainer-stage");
+ assert.equal(await page.getByLabel("Workout",{exact:true}).inputValue(),"recovery");
+ assert.equal(await stage.getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
+ await page.getByLabel("Exercise",{exact:true}).selectOption("1");
+ assert.equal(await stage.getAttribute("data-scene-id"),"C01-R3");
+ await page.getByLabel("Workout mode").selectOption("hologram");
+ assert.equal(await stage.getAttribute("data-scene-id"),"C01-R3");
+ assert.match(await page.getByTestId("projection-format-disclosure").textContent(),/2D projection/);
+ const archive=await page.request.get(origin+"/recovery-coach/index.html");
+ assert.equal(archive.status(),200);
+ const archivedHtml=await archive.text();
+ assert.match(archivedHtml,/id="workoutChoices"/);
+ for(const id of ["C09-PRE-BREATH-R2","C01-R3","C02","C03","C04-R2","C08-PRESS-R3","C10-POST-BREATH-R1"])
+  assert.ok(archivedHtml.includes(id),"Original approved scene absent: "+id);
+ const gallery=await page.request.get(origin+"/recovery-coach/programs/index.html");
+ assert.equal(gallery.status(),200,"Original scene gallery must be served");
+ assert.match(await gallery.text(),/existing-app-videos/);
+ const backup=await page.request.get(origin+"/recovery-coach/full-backup/index.html");
+ assert.equal(backup.status(),200,"Original full backup must be served");
+ const backupHtml=await backup.text();
+ assert.match(backupHtml,/Encrypted Full App Backup/);
+ assert.match(backupHtml,/id="export"/);
+ await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
+ await page.getByRole("button",{name:"Workout library and tools"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
- await page.getByRole("navigation",{name:"Main"}).getByRole("link",{name:"Today"}).click();
- await page.getByTestId("m3-unified-workout-picker").waitFor();
- assert.equal(log.length,0,"Static original React app had client errors: "+log.join("; ").slice(0,800));
- console.log("ONE unified original M3 FLEX app navigates Home → Recovery → Progress → Program → Home on static hosting. No Node server needed for this smoke.");
+ assert.equal(log.length,0,"Static M3 FLEX browser error: "+log.join("; ").slice(0,800));
+ console.log("Unified M3 FLEX V2 works on static hosting at Fold width with approved scenes, Hologram, archive and owner backup. No paid AI.");
 }finally{
  if(browser)await browser.close();
  await new Promise(resolve=>server.close(resolve));

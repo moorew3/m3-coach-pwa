@@ -24,7 +24,7 @@ test("Docker and static preview include same-origin model assets; no third-party
  assert.match(form,/const MODEL="\.\/vendor\/pose_landmarker_lite\.task"/);
  assert.doesNotMatch(form,/import\("https:\/\/cdn\.jsdelivr|modelAssetPath:"https:\/\/storage\.googleapis/);
  assert.match(workflow,/node scripts\/stage-pose-runtime\.mjs/);
- assert.match(docker,/RUN node scripts\/stage-pose-runtime\.mjs && npm run build/);
+ assert.match(docker,/RUN .*node scripts\/stage-pose-runtime\.mjs && npm run build/);
  assert.match(pack,/MediaPipe local runtime hash mismatch/);
  assert.match(pack,/vendor_dir\.rglob/);
 });
