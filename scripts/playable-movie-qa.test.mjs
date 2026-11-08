@@ -142,4 +142,38 @@ Date.now = savedNow;
 check("Unverified exercise freezes rather than auto-crediting", state().phase === "paused");
 check("No unverified set was recorded", state().log.length === 1);
 
+// Visual quality can be retained WITHOUT approving incorrect source narration.
+el.modeReview.click();
+check("Separate keep-visuals voice-repair action appears before film", html.indexOf('id="visualApproveVideo"') < html.indexOf('id="film"'));
+check("Unwatched visual-only approval blocked", el.visualApproveVideo.disabled);
+el.film.emit("ended");
+check("Watching full candidate unlocks visual-only approval", !el.visualApproveVideo.disabled);
+el.clipReps.value = "2";
+el.reviewFix.value = "Excellent motion, but a different narrator. Revoice with Marcus.";
+el.visualApproveVideo.click();
+const visualId = pending[2].id;
+check("Visuals preserved as separate non-coached decision", reviews()[visualId]?.decision === "visual-approved" && reviews()[visualId]?.voiceStatus === "needs-marcus");
+check("Original media stable key and rep count saved", reviews()[visualId]?.mediaKey?.includes(".mp4") && reviews()[visualId]?.clipReps === 2);
+check("Voice replacement tracked without regenerating video", reviews()[visualId]?.reason === "wrong-voice" && reviews()[visualId]?.notes?.includes("Excellent motion"));
+check("Voice fix is not fully approved", el.reviewCount.textContent.includes("1 voice fixes") && !el.reviewCount.textContent.includes("2 full"));
+el.modeLoop.click();
+el.exercisePick.change("silent0");
+check("Preserved visual-only clip remains playable", el.film.src.includes(".mp4") && el.film.muted === true);
+check("Visual-only clip is preview only, not coached workout", el.start.disabled && el.complete.disabled);
+el.film.muted = false;
+el.film.emit("volumechange");
+check("Visual-only clip cannot unmute original wrong speaker in demo", el.film.muted);
+el.demo.click();
+check("Voice-fix video loops silently", el.film.loop && !el.film.paused && el.film.muted);
+el.pause.click();
+el.exportRepairs.click();
+check("CSV repair export includes voice-only fixes and rejected footage", el.notice.textContent.includes("2 videos needing voice replacement or footage repair"));
+el.modeReview.click();
+el.reviewPick.change("2");
+check("Owner can revisit saved visual approval", el.reviewStatus.textContent.includes("VISUALS KEPT") && !el.voiceFixStatus.hidden);
+check("Audio defaults to muted on reviewing saved visual-only clips", el.reviewMute.checked && el.film.muted);
+check("A visual clip can be fully approved later after fixing the voice", !el.approveVideo.disabled);
+check("Original archive and existing approved scenes stay intact", scenes.some(x => x.id === visualId) && Object.values(reviews()).some(x => x.decision === "approved"));
+check("Backup restores all three approval classifications", html.includes('["approved","visual-approved","disapproved"].includes(d.decision)'));
+
 console.log("M3 FLEX game QA passed: " + checks + " checks; " + pending.length + " review videos indexed.");
