@@ -65,7 +65,7 @@ try{
  await page.getByRole("button",{name:"Start workout"}).waitFor();
  console.log("✓ Clearance guard, set-to-rest breathing and pause");
  const archive=await context.newPage();archive.setDefaultTimeout(15000);
- response=await archive.goto(base+"/recovery-coach/?program=A",{waitUntil:"domcontentloaded"});
+ response=await archive.goto(base+"/recovery-coach/index.html?program=A",{waitUntil:"domcontentloaded"});
  assert.equal(response?.status(),200);
  await archive.locator("#workoutChoices").waitFor({state:"attached"});
  assert.equal(await archive.locator('[data-workout="A"]').count(),1);
