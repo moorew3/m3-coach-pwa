@@ -1529,6 +1529,28 @@ try {
     await bridgeContext.close();
   }
 
+  // Projection-first UI must remain one actual workout screen, not a fake rigged hologram.
+  await page.evaluate(() => sessionStorage.setItem("m3-v2-entrance-seen", "1"));
+  const projected = await page.goto(base + "/v2?focus=1", { waitUntil: "domcontentloaded" });
+  assert.equal(projected?.status(), 200, "Projection-focus link must serve successfully");
+  await page.getByTestId("v2-trainer-stage").waitFor();
+  await page.locator('[data-projection-focus="true"]').waitFor();
+  assert.equal(await page.getByTestId("projection-format-disclosure").isVisible(), true);
+  assert.match(await page.getByTestId("projection-format-disclosure").innerText(), /2D projection.*3D avatar pending/i);
+  assert.equal(await page.getByRole("button", { name: "Start workout" }).isVisible(), true);
+  assert.equal(await page.getByTestId("projection-controls-toggle").isVisible(), true);
+  assert.equal(await page.locator('aside[aria-label="Optional workout settings"]').count(), 0,
+    "Default focus mode must hide the overcrowded settings");
+  await page.getByTestId("projection-controls-toggle").click();
+  await page.locator('aside[aria-label="Optional workout settings"]').waitFor();
+  await page.getByTestId("projection-close-settings").click();
+  assert.equal(await page.locator('aside[aria-label="Optional workout settings"]').count(), 0);
+  await page.getByTestId("projection-exit-toggle").click();
+  await page.locator('[data-projection-focus="false"]').waitFor();
+  await page.getByTestId("projection-focus-enter").click();
+  await page.locator('[data-projection-focus="true"]').waitFor();
+  step("M3 FLEX 390px immersive projection view: 2D disclosure, working workout controls, hidden settings, reversible focus");
+
   // These checks are intentionally NOT certification of Android hardware,
   // microphone/camera output, physical speaker sound, or remote media CDN.
   console.log("Chromium mobile-width interaction smoke check passed. No deployment performed.");
