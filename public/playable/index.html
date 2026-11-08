@@ -426,7 +426,7 @@ if((value==="approved"||value==="visual-approved")&&!watched[x.id]){setNotice("P
 approvals[x.id]={decision:value,clipReps:value==="approved"||value==="visual-approved"?n:0,reason:value==="visual-approved"?"wrong-voice":value==="disapproved"?$("rejectWhy").value||"needs-correction":"",voiceStatus:value==="visual-approved"?"needs-marcus":value==="approved"?"owner-approved":"rejected",dubScript:value==="visual-approved"&&approvals[x.id]&&approvals[x.id].dubScript||"",notes:$("reviewFix").value.trim().slice(0,500),at:new Date().toISOString(),mediaKey:sourceKey(x.video)};
 if(value==="visual-approved")reviewMuted[x.id]=true;
 saveApprovals();initLibrary();$("film").pause();mediaId="";render();setNotice(value==="approved"?"Fully approved and saved. Video available for preview, not automatically added to a workout.":value==="visual-approved"?"Kept the excellent footage. Original speaker muted in silent demos; Marcus narration and lip sync must be reviewed before full approval.":"Footage rejected and hidden from the pending queue. Protected original retained.");
-nextPending();
+if(value!=="visual-approved")nextPending();
 }
 $("exportReviews").addEventListener("click",function(){downloadJSON({schema:1,project:"M3 FLEX owner video approvals",exportedAt:new Date().toISOString(),approvals:approvals},"m3-flex-video-approvals.json");setNotice("Approval decisions exported as JSON.")});
 $("exportRepairs").addEventListener("click",function(){
