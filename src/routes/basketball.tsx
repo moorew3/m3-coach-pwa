@@ -7,7 +7,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Camera, CameraOff, ChevronLeft, RotateCcw, ScanEye } from "lucide-react";
 import {
-  attachVideo, cameraSupported, startCamera, stopCamera, useCamera,
+  attachVideo, cameraSupported, setCameraFraming, startCamera, stopCamera, useCamera,
 } from "@/lib/vision/camera";
 import {
   BasketballReleaseTracker, type ShootingArm, type ShootingSnapshot,
@@ -49,6 +49,7 @@ function BasketballTechnique() {
     }
   }, [cam.landmarks, live]);
   const start = async () => {
+    setCameraFraming("upper");
     setMessage("Starting your private on-device camera analysis…");
     await startCamera(null);
   };
