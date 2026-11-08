@@ -53,6 +53,14 @@ try{
  await verifyMovingVideo("C09 breathing preview");
  await exercise.selectOption("1");assert.equal(await stage.getAttribute("data-scene-id"),"C01-R3");
  await verifyMovingVideo("C01 seated shrugs preview");
+ // The old UI scrolled Marcus below the Fold; video must now be FIRST.
+ await page.evaluate(()=>window.scrollTo(0,0));
+ const stageBox=await stage.boundingBox();
+ const coachBox=await page.getByTestId("coach-motion").boundingBox();
+ assert.ok(stageBox && stageBox.y<185,"Marcus stage must be visible near the TOP of the phone");
+ assert.ok(coachBox && coachBox.y<320 && coachBox.y+coachBox.height>360,
+  "Actual moving coach, not a black panel, must occupy the visible phone viewport");
+ console.log("✓ Visible-first Fold layout: stage at "+stageBox.y.toFixed(0)+"px, moving coach at "+coachBox.y.toFixed(0)+"px");
  await mkdir("artifacts",{recursive:true});
  await page.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:8000});
  await exercise.selectOption("2");assert.equal(await stage.getAttribute("data-scene-id"),"C02");
