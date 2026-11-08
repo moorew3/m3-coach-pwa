@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "items": [
+    {
+      "id": "C09-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3",
+      "path": "/media/marcus-recovery/C09-MARCUS.mp3",
+      "bytes": 251446,
+      "sha256": "5710c0c60fbb744715aed4232ad7c94e8a882843bdbb06c53cbe178eae2d9fbf"
+    },
+    {
+      "id": "PRE-HANDS-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/2dcdf842-9177-4bc6-a6a4-a274fc726876.mp3",
+      "path": "/media/marcus-recovery/PRE-HANDS-MARCUS.mp3",
+      "bytes": 145598,
+      "sha256": "604dad16b726c400fde342ebcb13d46294cee8b2900343dc3024d0bcae26dd3d"
+    },
+    {
+      "id": "PRE-SHOULDERS-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/7d5d5483-9888-4471-a71e-8206d5f4ebb6.mp3",
+      "path": "/media/marcus-recovery/PRE-SHOULDERS-MARCUS.mp3",
+      "bytes": 179610,
+      "sha256": "92f9e635d9a439b6c77abed21404504727d5343d97648919fc05aa3d0ebb777b"
+    },
+    {
+      "id": "C02-MARCUS",
+      "sourceURL": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav",
+      "path": "/media/marcus-recovery/C02-MARCUS.wav",
+      "bytes": 273345,
+      "sha256": "43dda91cee7ea09e3f3628c4d8e8473234323c3a07ff0c2feb0479f9ce61b259"
+    },
+    {
+      "id": "C03-MARCUS",
+      "sourceURL": "https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav",
+      "path": "/media/marcus-recovery/C03-MARCUS.wav",
+      "bytes": 301766,
+      "sha256": "c5ff336589cc2cd330fe6b73c4c895a708c22d0dcaeadf562eef71bbeccd3341"
+    },
+    {
+      "id": "C10-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3",
+      "path": "/media/marcus-recovery/C10-MARCUS.mp3",
+      "bytes": 103828,
+      "sha256": "054b4e0d43779055608d8d6f09847e6e755b84be8bbdd42ddd4ccc9f45c5767a"
+    },
+    {
+      "id": "COOLDOWN-HANDS-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/3ca174e3-16e6-42f5-91f2-332713cd6d69.mp3",
+      "path": "/media/marcus-recovery/COOLDOWN-HANDS-MARCUS.mp3",
+      "bytes": 195701,
+      "sha256": "92d91f595b64bc89fe33cb29787e826e365a5a31323a375649d863bea41d2586"
+    },
+    {
+      "id": "REST-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3",
+      "path": "/media/marcus-recovery/REST-MARCUS.mp3",
+      "bytes": 189850,
+      "sha256": "24859b4266b7aa0dda93578b4ff7466015f6447764b93aad40f8f5863c28636c"
+    },
+    {
+      "id": "END-MARCUS",
+      "sourceURL": "https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3",
+      "path": "/media/marcus-recovery/END-MARCUS.mp3",
+      "bytes": 220204,
+      "sha256": "8a215c3a2951774075db7f7c2788525231f9389d7f4d890d2ce737fc976d28db"
+    }
+  ]
+}

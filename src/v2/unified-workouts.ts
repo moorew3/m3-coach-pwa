@@ -9,7 +9,7 @@ const motion: Record<string,string> = {'C01-R3':'shrugs','C02':'hammerCurl','C03
 const selections = {recovery:['C01-R3','C02','C03','C04-R2','C08-PRESS-R3'], A:['C01-R3','C02'], B:['C08-PRESS-R3','C03','C04-R2']};
 const main = recovery[1].items;
 export const RECOVERY_WORKOUTS: V2Workout[] = Object.entries(selections).map(([id, ids]) => {
-  const stages = [recovery[0].items, main.filter(x=>ids.includes(x.id ?? '')), recovery[2].items];
+  const stages = [recovery[0].items, ids.map(sceneId=>main.find(x=>x.id===sceneId)!), recovery[2].items];
   return {id, title:id==='recovery'?'Seated Recovery':`Workout ${id} · Approved scenes`,
     focus:id==='recovery'?'Five approved seated movements with original preparation and cooldown.':`Approved ${id} preview. Additional draft scenes remain in review.`, requiresClearance:true,
     exercises:stages.flatMap((items,phase)=>items.map((item,index):V2Exercise=>({

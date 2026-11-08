@@ -117,7 +117,7 @@ function V2Coach() {
     let restored:V2Session|null=null;
     try {restored=restoreSavedSession(window.localStorage.getItem(V2_LOCAL_SAVE+":"+id),next,mountainDayKey());} catch { /* optional local history */ }
     setVisualStopped(false);
-    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setLiveCue(null);
+    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setLiveCue(null); setVoiceError(null);
     const address=new URL(window.location.href); address.searchParams.set("workout",id);
     window.history.replaceState(window.history.state,"",address.pathname+address.search+address.hash);
   };
@@ -350,7 +350,6 @@ function V2Coach() {
     stopMarcusCue();
     stopFridayPremiumCue();
     stopDetailedExerciseSpeech();
-    stopRecordedCoachAudio("trainer-scene");
     stopRecordedCoachAudio("trainer-scene");
 
     let message = "";
@@ -698,7 +697,6 @@ function V2Coach() {
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
     stopRecordedCoachAudio("trainer-scene");
-      stopRecordedCoachAudio("trainer-scene");
       dispatch({ type: "pause" });
       return;
     }
@@ -1005,7 +1003,7 @@ function V2Coach() {
                       <Check className="size-5" />
                     </button>
                     <button type="button" aria-label="Stop workout" onClick={() => {setVisualStopped(true);dispatch({type:"pause"}); stopMarcusCue(); stopFridayPremiumCue(); stopDetailedExerciseSpeech();
-    stopRecordedCoachAudio("trainer-scene");stopRecordedCoachAudio("trainer-scene");stopListening();stopCamera();setClearance([false,false,false]);setLiveCue("Workout stopped. Your progress is saved.");}} className="min-h-11 rounded-xl bg-red-500/20 px-3 text-xs font-bold text-red-200">Stop</button>
+    stopRecordedCoachAudio("trainer-scene");stopListening();stopCamera();setClearance([false,false,false]);setLiveCue("Workout stopped. Your progress is saved.");}} className="min-h-11 rounded-xl bg-red-500/20 px-3 text-xs font-bold text-red-200">Stop</button>
                     {!projectionFocus && <button
                       type="button"
                       onClick={() => dispatch({ type: "reset", workout })}

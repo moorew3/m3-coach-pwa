@@ -1,12 +1,14 @@
 /** One identity-gated scene resolver for Coach and Hologram views. */
 import recovery from '../data/recovery-scenes.json';
+import audioRuntime from '../../approved-recovery-audio-runtime.json';
+const localAudio = (source:string|undefined) => source ? audioRuntime.items.find(x=>x.sourceURL===source)?.path : undefined;
 import { approvedCoachMedia } from './approved-coach-media';
 import type { V2Exercise, V2Session } from './types';
 export type TrainingScene = {url:string;sceneId:string;label:string;audioUrl?:string;embeddedAudio?:boolean};
 const trusted = new Map<string,TrainingScene>();
 recovery.forEach((stage,phase)=>stage.items.forEach((item,index)=>{
   const id=item.id ?? `recovery-${phase}-${index}`;
-  if ('video' in item && item.video) trusted.set(id,{url:item.video,sceneId:id,label:item.name,audioUrl:'voice' in item?item.voice:undefined,embeddedAudio:'embedded' in item&&item.embedded===true});
+  if ('video' in item && item.video) trusted.set(id,{url:item.video,sceneId:id,label:item.name,audioUrl:localAudio('voice' in item?item.voice:undefined),embeddedAudio:'embedded' in item&&item.embedded===true});
 }));
 export const REST_SCENE = trusted.get('C09-PRE-BREATH-R2')!;
 export const COOLDOWN_SCENE = trusted.get('C10-POST-BREATH-R1')!;
@@ -31,6 +33,6 @@ export function sceneAudio(exercise?:V2Exercise): string|undefined {
   for(const stage of recovery) for(let index=0;index<stage.items.length;index++){
     const item=stage.items[index];
     if((item.id??`recovery-${recovery.indexOf(stage)}-${index}`)===exercise.sceneId)
-      return 'voice' in item?item.voice:undefined;
+      return localAudio('voice' in item?item.voice:undefined);
   }
 }

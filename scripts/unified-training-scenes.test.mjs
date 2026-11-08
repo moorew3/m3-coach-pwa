@@ -77,3 +77,9 @@ test('existing saved and alternate workouts preserve their movements and join th
   const s=step(step(createV2Session(w),{type:'start'}),{type:'complete-set'});assert.equal(sceneForSession(s).media.sceneId,'C09-PRE-BREATH-R2');
  }
 });
+test('Workout B keeps its original press-first order and exact narration is served from the app',async()=>{
+ assert.deepEqual(RECOVERY_WORKOUTS.find(w=>w.id==='B').exercises.filter(e=>e.stageRole==='exercise').map(e=>e.sceneId),['C08-PRESS-R3','C03','C04-R2']);
+ const {sceneAudio}=await import('../src/v2/training-scenes.ts');
+ for(const e of RECOVERY_WORKOUTS[0].exercises){const audio=sceneAudio(e);if(audio)assert.match(audio,/^\/media\/marcus-recovery\//);}
+ assert.match(COOLDOWN_SCENE.audioUrl,/^\/media\/marcus-recovery\//);
+});

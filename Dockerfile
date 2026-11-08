@@ -7,7 +7,7 @@ RUN npm ci --no-audit --no-fund
 COPY . .
 # The default build never enables chargeable generative coach services.
 ENV VITE_FLEX_PAID_AI_ENABLED=false
-RUN node scripts/stage-marcus-runtime.mjs && node scripts/stage-pose-runtime.mjs && npm run build
+RUN node scripts/stage-marcus-runtime.mjs && node scripts/stage-recovery-audio.mjs && node scripts/stage-pose-runtime.mjs && npm run build
 RUN node --check public/playable/marcus-dub.js && node scripts/playable-movie-qa.test.mjs
 RUN node --test scripts/unified-training-scenes.test.mjs
 RUN node scripts/flex-native-coach-qa.test.mjs
