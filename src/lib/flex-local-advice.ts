@@ -74,6 +74,16 @@ export function answerFlexLocal(
   if (/\b(water|hydration|drink|thirst)\b/.test(q))
     return reply("nutrition", "Water logged today: " + water +
       ". Tap +1 cup only when you actually drink an eight-ounce cup. This isn't a medical hydration prescription.");
+  if (/\b(what(?:'s| is) my (?:current )?weight|how much do i weigh|last weigh[- ]?in|latest scale reading)\b/.test(q)) {
+    const entries = Object.entries(state.nutrition)
+      .filter(([, value]) => Number(value.bodyweight) > 0)
+      .sort(([x], [y]) => y.localeCompare(x));
+    if (!entries.length) return reply("nutrition", "I don't have a recorded body weight. Enter a real measurement or connect a supported scale on Nutrition.");
+    const [loggedDate, logged] = entries[0];
+    return reply("nutrition", "Your most recent recorded weight is " + logged.bodyweight + " " + state.settings.units +
+      " from " + loggedDate + (logged.bodyweightSource === "bluetooth-scale" ? " (confirmed Bluetooth scale)" : " (nutrition log)") +
+      ". This is a logged measurement, not an estimate.");
+  }
   if (/\b(weight loss|lose weight|body fat|bodyweight|weigh|progress)\b/.test(q))
     return reply("nutrition", snap.headline + ". " + snap.detail +
       " Use trends across logged days rather than changing calories from one weigh-in.");
