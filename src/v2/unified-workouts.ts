@@ -9,7 +9,11 @@ const motion: Record<string,string> = {'C01-R3':'shrugs','C02':'hammerCurl','C03
 const selections = {recovery:['C01-R3','C02','C03','C04-R2','C08-PRESS-R3'], A:['C01-R3','C02'], B:['C08-PRESS-R3','C03','C04-R2']};
 const main = recovery[1].items;
 export const RECOVERY_WORKOUTS: V2Workout[] = Object.entries(selections).map(([id, ids]) => {
-  const stages = [recovery[0].items, ids.map(sceneId=>main.find(x=>x.id===sceneId)!), recovery[2].items];
+  // Only original video-backed, owner-approved stages run as timed workouts.
+  // Text-only guidance stays in recovery-scenes.json and the existing recovery
+  // library; a still image or unrelated video must not stand in for movement.
+  const videoSteps = (items: typeof recovery[number]["items"]) => items.filter(item => "video" in item && Boolean(item.video));
+  const stages = [videoSteps(recovery[0].items), ids.map(sceneId=>main.find(x=>x.id===sceneId)!), videoSteps(recovery[2].items)];
   return {id, title:id==='recovery'?'Seated Recovery':`Workout ${id} · Approved scenes`,
     focus:id==='recovery'?'Five approved seated movements with original preparation and cooldown.':`Approved ${id} preview. Additional draft scenes remain in review.`, requiresClearance:true,
     exercises:stages.flatMap((items,phase)=>items.map((item,index):V2Exercise=>({
