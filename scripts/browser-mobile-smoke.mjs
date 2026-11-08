@@ -104,25 +104,17 @@ try {
     assert.equal(await link.count(), 1, "One M3 FLEX native workout choice: " + name);
     assert.match(await link.getAttribute("href") ?? "", /^\/recovery\?program=/);
   }
+  // /recovery intentionally redirects into the one unified V2 workout screen.
+  // The old embedded recovery page is still tested directly below for archives.
   await page.getByTestId("m3-unified-workout-picker").getByRole("link", {name:"Recovery · 5 approved moves"}).click();
-  await page.getByTestId("m3-native-recovery").waitFor();
-  await page.getByTestId("m3-recovery-existing-player").waitFor();
-  assert.equal(await page.getByTestId("m3-recovery-existing-player").getAttribute("src"),
-    "/recovery-coach/index.html?program=recovery&embedded=1");
-  const embedded = page.frameLocator('[data-testid="m3-recovery-existing-player"]');
-  await embedded.locator("#workoutChoices").waitFor({state:"attached"});
-  assert.equal(await embedded.locator("#unifiedWorkoutChooser").isVisible(),false,"Embedded player must not show duplicate workout menu");
-  assert.equal(await embedded.locator("#emergencyStop").isVisible(),true,"Safety stop must remain visible");
-  await embedded.locator('[data-stage="1"]').click();
-  for (const box of await embedded.locator("#clearance .check").all()) await box.check();
-  await embedded.locator("#workDuration").selectOption("20");
-  // Do not start media; explicitly verify shared same-origin progress
-  // without a fake rep log or separate M3 FLEX account.
-  await embedded.locator("#setRounds").selectOption("2");
-  await page.getByRole("navigation", {name: "Main"}).getByRole("link", {name: "Today"}).click();
+  await page.getByTestId("flex-training").waitFor();
+  assert.equal(await page.getByLabel("Workout").inputValue(),"recovery");
+  assert.equal(await page.getByTestId("v2-trainer-stage").getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
+  assert.equal(await page.getByTestId("v2-trainer-stage").getAttribute("data-scene-role"),"preparation");
+  await page.goto(base + "/", {waitUntil:"domcontentloaded"});
   await page.getByRole("button", {name:"Workout library and tools"}).click();
   await page.getByTestId("m3-unified-workout-picker").waitFor();
-  step("Existing M3 FLEX uses one collapsed workout library, native Recovery route and same-origin approved player");
+  step("Same original M3 FLEX app launches V2 approved seated recovery and preserves the archive player");
 
   // All old and new approved/review scenes must be accessible from ONE
   // app with direct Recovery/A/B choices, not separate competing projects.
