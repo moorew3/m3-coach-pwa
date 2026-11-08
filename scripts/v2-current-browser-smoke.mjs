@@ -32,9 +32,29 @@ try{
  await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).click();
  await page.getByTestId("flex-training").waitFor();
  const stage=page.getByTestId("v2-trainer-stage"),workout=page.getByLabel("Workout",{exact:true}),exercise=page.getByLabel("Exercise",{exact:true});
+ const verifyMovingVideo=async(label)=>{
+  // This rejects the previous false green: a matching URL can still be black.
+  await page.waitForFunction(()=>{
+   const box=document.querySelector('[data-testid="coach-motion"]');
+   const v=box?.querySelector('video[data-active="true"]');
+   return box?.getAttribute('data-frame-ready')==="true" &&
+    v?.readyState>=2 && v.videoWidth>0 && !v.paused && v.currentTime>0.15;
+  },null,{timeout:25000});
+  const video=page.locator('[data-testid="coach-motion"] video[data-active="true"]');
+  const before=await video.evaluate(v=>v.currentTime);
+  await page.waitForTimeout(650);
+  const after=await video.evaluate(v=>v.currentTime);
+  assert.ok(after>before+0.08,label+" must render advancing, decoded frames, not only a video URL");
+  assert.equal(await page.getByTestId("coach-motion-loading").count(),0,"No poster covering moving "+label);
+  console.log("✓ Decoded moving frame: "+label+" ("+before.toFixed(2)+" → "+after.toFixed(2)+"s)");
+ };
  assert.equal(await workout.inputValue(),"recovery");
  assert.equal(await stage.getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
+ await verifyMovingVideo("C09 breathing preview");
  await exercise.selectOption("1");assert.equal(await stage.getAttribute("data-scene-id"),"C01-R3");
+ await verifyMovingVideo("C01 seated shrugs preview");
+ await mkdir("artifacts",{recursive:true});
+ await page.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:8000});
  await exercise.selectOption("2");assert.equal(await stage.getAttribute("data-scene-id"),"C02");
  console.log("✓ Recovery selects exact original approved Marcus demonstrations");
  await workout.selectOption("A");await exercise.selectOption("1");
@@ -42,6 +62,7 @@ try{
  await exercise.selectOption("2");assert.equal(await stage.getAttribute("data-scene-id"),"C02");
  await workout.selectOption("B");await exercise.selectOption("1");
  assert.equal(await stage.getAttribute("data-scene-id"),"C08-PRESS-R3");
+ await verifyMovingVideo("C08 INNSTAR chest press preview");
  await exercise.selectOption("2");assert.equal(await stage.getAttribute("data-scene-id"),"C03");
  console.log("✓ Workouts A/B maintain existing exercise order and identity");
  await page.getByLabel("Workout mode").selectOption("hologram");
@@ -59,11 +80,11 @@ try{
  for(const c of await clearance.all())await c.check();
  await page.getByRole("button",{name:"Start workout"}).click();
  await page.getByRole("button",{name:"Pause workout"}).waitFor();
- await mkdir("artifacts",{recursive:true});
- await page.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:8000});
+ await verifyMovingVideo("C01 active work after Start");
  await page.getByRole("button",{name:"Complete set and advance"}).click();
  assert.equal(await stage.getAttribute("data-scene-role"),"rest");
  assert.equal(await stage.getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
+ await verifyMovingVideo("C09 rest breathing after set");
  await page.getByRole("button",{name:"Pause workout"}).click();
  await page.getByRole("button",{name:"Start workout"}).waitFor();
  console.log("✓ Clearance guard, set-to-rest breathing and pause");
