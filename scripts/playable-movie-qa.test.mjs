@@ -194,6 +194,7 @@ check("Final source MP4 remains unchanged", !dub.includes("film.src=") && !dub.i
 check("Marcus-only voice remains locked", dub.includes("0fadce1e82af494a93873aa38ea8d106"));
 check("Only free model accepted", dub.includes("heygen-voice-1-turbo-free"));
 check("Owner-paired API used", dub.includes("/api/public/marcus-speech") && dub.includes("x-m3-flex-owner"));
+check("Private direct review link pairs without leaking secret into HTTP", dub.includes("claimOwnerLink()") && dub.includes("window.history.replaceState") && html.includes('get("mode")==="review"'));
 check("No wrong source voice can play in preview", dub.includes("film.muted=true") && dub.includes("this.muted=true"));
 check("No automatic generation on review selection", !dub.includes("void prepare()\n    var id"));
 check("Audio change never upgrades coached approval", !dub.includes('decision="approved"'));
