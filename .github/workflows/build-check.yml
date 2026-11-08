@@ -95,10 +95,12 @@ jobs:
       - name: Install CI-only Playwright controller
         run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund playwright-core@1.64.1
 
-      - name: Verify real phone-width coach interactions
+      # The archived 2026 legacy script targets routes now redirected to V2.
+      # Gate releases against the active unified Coach/Hologram route instead.
+      - name: Verify current V2 Samsung Fold Coach and Hologram interactions
         env:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: node scripts/browser-mobile-smoke.mjs
+        run: node scripts/v2-current-browser-smoke.mjs
 
       - name: Retain real Fold-width Recovery Coach QA screenshot for owner review
         uses: actions/upload-artifact@v4
