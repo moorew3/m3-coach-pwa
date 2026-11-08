@@ -59,6 +59,7 @@ import { askLiveCoach, premiumAiAvailableOnClient } from "@/lib/coach-talk";
 import { FLEX_NAME } from "@/lib/coach-persona";
 import { exerciseMemoryFor } from "@/lib/coach-memory";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
+import { answerFlexLocal } from "@/lib/flex-local-advice";
 
 import { recordWorkStep, resetCoachSession, useCoachEngine } from "@/lib/coach-session";
 import { CameraCoach } from "@/components/CameraCoach";
@@ -798,6 +799,18 @@ function CoachSession() {
   useEffect(() => {
     const answerQuestion = (phrase: string) => {
       if (coachTalkBusy.current) return;
+      // Free, state-grounded nutrition answers work inside the real coached
+      // session, not a separate assistant or a metered chat provider.
+      if (/\b(nutrition|protein|calori|macros?|carbs?|food|meal|snack|breakfast|lunch|dinner|hydration|water|cheese|lactose|dairy)\b/i.test(phrase)) {
+        const local = answerFlexLocal(phrase, state);
+        setCoachReply(local.text);
+        coachDialogue.current = [
+          ...coachDialogue.current,
+          "Athlete: " + phrase,
+          FLEX_NAME + ": " + local.text,
+        ].slice(-8);
+        return;
+      }
       const ex = step?.exerciseId ? effectiveExercise(state, day, step.exerciseId) : undefined;
       const m = metricsSnapshot();
       const memory = ex ? exerciseMemoryFor(state, ex, day) : null;
