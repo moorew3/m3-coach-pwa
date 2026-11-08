@@ -94,6 +94,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 #reviewAudio{width:100%;height:37px;margin:5px 0}
 .voiceFixNotice{border:1px solid #4790a8;background:#143b4e;padding:9px;border-radius:11px;font-size:12px;line-height:1.4;color:#e0faff;margin:7px 0}
 .muteReviewOption{border:1px solid #405b70;border-radius:10px;padding:8px;margin:7px 0;font-size:12px}
+#dubPanel{margin:7px 0 10px;border:1px solid #2b9ba5;border-radius:12px;background:#102f38;padding:10px}
+#dubPanel h3{margin:0;color:#b7f4e1;font-size:13px}
+#dubPanel label{display:block;font-size:12px;color:#cbf4f3;font-weight:800;margin-top:7px}
+#dubScript{display:block;width:100%;resize:vertical;min-height:72px;max-height:190px;border-radius:9px;background:#061c28;color:white;border:1px solid #557c90;margin-top:6px;padding:8px;font:12px/1.45 inherit}
+.dubActions{display:grid;grid-template-columns:1fr 1fr 72px;gap:5px;margin:9px 0}
+.dubActions button{min-height:44px;background:#235065;color:white;border-radius:9px;border:1px solid #6fa7b6;font-size:12px;font-weight:850;padding:5px}
+.dubActions button:first-child{background:#236e57;border-color:#9cd6b6}
+#dubStatus,#dubSource{font-size:11px;line-height:1.4;color:#cee6f4;min-height:15px;margin-top:5px}
+#dubPanel .dubDisclosure{font-size:11px;color:#ffde9a;margin:7px 0 0}
 #importReviews{display:block;width:100%;margin-top:6px;font-size:12px}
 .importRow{display:block;margin:11px 0 5px;font-size:12px;font-weight:800;color:#c4d9e3}
 .goalRow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
@@ -123,6 +132,19 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <div class="actionPanel">
 <div id="gameCue" aria-live="polite">MARCUS · Original recording and live session cues.</div>
 <div id="voiceState" role="status" aria-live="polite">MARCUS · Approved audio only, no substitute voice</div>
+<div id="dubPanel" hidden data-testid="marcus-dub-panel" aria-label="Marcus voice replacement for approved visuals">
+<h3>🎙 Keep the good video · Hear Marcus instead</h3>
+<p class="dubDisclosure">The wrong source voice stays muted. Marcus speaks over the original motion. This previews the replacement but does not yet render new lip movements or permanently edit the MP4.</p>
+<div id="dubSource">Visual-only approved clip</div>
+<label for="dubScript">Marcus's narration · edit before generating (up to 350 characters)</label>
+<textarea id="dubScript" maxlength="350" rows="3" spellcheck="true" placeholder="Describe the movement, including the supported LEFT leg."></textarea>
+<div class="dubActions">
+<button id="dubGenerate" type="button" data-testid="marcus-dub-generate">Generate Marcus</button>
+<button id="dubPlay" type="button" data-testid="marcus-dub-play" disabled>▶ Play together</button>
+<button id="dubStop" type="button" data-testid="marcus-dub-stop">■ Stop</button>
+</div>
+<div id="dubStatus" role="status" aria-live="polite">Awaiting a visually approved clip.</div>
+</div>
 <audio id="marcusAudio" preload="none" hidden></audio>
 <div id="approvalControls" hidden>
 <div class="reviewStatus" id="reviewStatus">PENDING OWNER REVIEW</div><p class="voiceFixNotice" id="voiceFixStatus" hidden>Visuals approved. Original narration is muted. Awaiting Marcus – Warm &amp; Friendly audio and final lip-sync review. Not cleared for the coached workout.</p>
@@ -166,6 +188,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <footer>Keep Video · Fix Voice preserves approved movement as a silent demonstration while Marcus narration and lip sync await correction. It never grants full coached-video approval. Originals are never deleted. Back up review decisions before switching devices.</footer>
 </main>
 <script src="/recovery-coach/scene-library.js"></script>
+<script src="/playable/marcus-dub.js"></script>
 <script>
 (function(){
 "use strict";
@@ -186,10 +209,17 @@ function fresh(){return {index:0,set:1,mode:"demo",phase:"ready",remaining:scene
 var approvals={};try{approvals=JSON.parse(localStorage.getItem(REVIEW_KEY)||"{}")||{}}catch(e){approvals={}}
 var approvedCycles={};try{approvedCycles=JSON.parse(localStorage.getItem(CAL_KEY)||"{}")||{}}catch(e){approvedCycles={}}
 var watched={},reviewMuted={};
+if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.onSave(function(id,line){
+  var old=approvals[id];
+  if(old&&old.decision==="visual-approved"){
+    old.dubScript=line.slice(0,350);
+    saveApprovals();
+  }
+});
 function saveApprovals(){try{localStorage.setItem(REVIEW_KEY,JSON.stringify(approvals))}catch(e){}}
 var experience="coach",reviewIndex=0,reviewItems=archive.filter(function(x){return x.status==="owner-review"&&!!x.video}),goalFor={};
 var MARCUS_AUDIO={"C09-PRE-BREATH-R2":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3","C02":"https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav","C03":"https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav","C10-POST-BREATH-R1":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3","rest":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3","end":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3"}, mediaFailed=false, sceneEpoch=0;
-function stopMarcus(){try{$("marcusAudio").pause()}catch(e){}try{$("film").muted=false}catch(e){}}
+function stopMarcus(){try{$("marcusAudio").pause()}catch(e){}if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.stop();try{$("film").muted=view.type==="silent"}catch(e){}}
 function playMarcus(key){
 var src=MARCUS_AUDIO[key];if(!src||experience!=="coach")return false;
 var f=$("film"),a=$("marcusAudio");
@@ -291,6 +321,10 @@ $("voiceState").textContent="SOURCE AUDIO MUTED · Original footage preserved ·
 $("film").muted=false;
 $("voiceState").textContent="OWNER REVIEW · Original clip audio enabled for inspection only";
 }
+if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.sync(x,{
+  visualApproved:(experience==="review"||view.type==="silent")&&reviewDecision(x)==="visual-approved",
+  savedScript:approvals[x.id]&&approvals[x.id].dubScript||""
+});
 var list=$("list");list.replaceChildren();
 scene.forEach(function(o,i){var b=document.createElement("button");b.type="button";b.className="item"+(i===s.index?" active":"")+(i<s.index?" done":"");
 var d=document.createElement("span");d.className="dot";d.textContent=i<s.index?"✓":String(i+1);
@@ -366,7 +400,7 @@ if(experience!=="review")return;
 var x=reviewItems[reviewIndex];if(!x||!x.video||x.status!=="owner-review")return;
 var n=Number($("clipReps").value);if(!Number.isInteger(n)||n<0||n>30){setNotice("Complete reps in clip must be between 0 and 30.");return}
 if((value==="approved"||value==="visual-approved")&&!watched[x.id]){setNotice("Please watch the full video before approving its visuals. You can reject immediately.");return}
-approvals[x.id]={decision:value,clipReps:value==="approved"||value==="visual-approved"?n:0,reason:value==="visual-approved"?"wrong-voice":value==="disapproved"?$("rejectWhy").value||"needs-correction":"",voiceStatus:value==="visual-approved"?"needs-marcus":value==="approved"?"owner-approved":"rejected",notes:$("reviewFix").value.trim().slice(0,500),at:new Date().toISOString(),mediaKey:sourceKey(x.video)};
+approvals[x.id]={decision:value,clipReps:value==="approved"||value==="visual-approved"?n:0,reason:value==="visual-approved"?"wrong-voice":value==="disapproved"?$("rejectWhy").value||"needs-correction":"",voiceStatus:value==="visual-approved"?"needs-marcus":value==="approved"?"owner-approved":"rejected",dubScript:value==="visual-approved"&&approvals[x.id]&&approvals[x.id].dubScript||"",notes:$("reviewFix").value.trim().slice(0,500),at:new Date().toISOString(),mediaKey:sourceKey(x.video)};
 if(value==="visual-approved")reviewMuted[x.id]=true;
 saveApprovals();initLibrary();$("film").pause();mediaId="";render();setNotice(value==="approved"?"Fully approved and saved. Video available for preview, not automatically added to a workout.":value==="visual-approved"?"Kept the excellent footage. Original speaker muted in silent demos; Marcus narration and lip sync must be reviewed before full approval.":"Footage rejected and hidden from the pending queue. Protected original retained.");
 nextPending();
@@ -378,7 +412,7 @@ reviewItems.forEach(function(x){var status=reviewDecision(x);if(status!=="disapp
 var q=function(x){return '"'+String(x??"").replace(/"/g,'""')+'"'};var csv=rows.map(function(r){return r.map(q).join(",")}).join("\r\n");
 var blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="m3-flex-video-repairs.csv";document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);setNotice((rows.length-1)+" videos needing voice replacement or footage repair exported.");
 });
-$("importReviews").addEventListener("change",function(){var file=this.files&&this.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(String(reader.result));if(obj.schema!==1||!obj.approvals||typeof obj.approvals!=="object"||Array.isArray(obj.approvals))throw Error("invalid");var valid={};reviewItems.forEach(function(x){var d=obj.approvals[x.id];if(d&&["approved","visual-approved","disapproved"].includes(d.decision)&&(d.mediaKey||sourceKey(d.video))===sourceKey(x.video)){valid[x.id]={decision:d.decision,clipReps:Math.max(0,Math.min(30,Number(d.clipReps)||0)),voiceStatus:d.decision==="visual-approved"?"needs-marcus":d.decision==="approved"?"owner-approved":"rejected",reason:typeof d.reason==="string"?d.reason.slice(0,50):"",notes:typeof d.notes==="string"?d.notes.slice(0,500):"",at:d.at||new Date().toISOString(),mediaKey:sourceKey(x.video)}}});if(!confirm("Restore "+Object.keys(valid).length+" saved decisions on this device?"))return;approvals=valid;saveApprovals();initLibrary();render();setNotice("Imported "+Object.keys(valid).length+" approved/rejected decisions.")}catch(e){setNotice("Could not restore review file. Use an exported M3 FLEX approvals JSON.")}};reader.readAsText(file)});
+$("importReviews").addEventListener("change",function(){var file=this.files&&this.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var obj=JSON.parse(String(reader.result));if(obj.schema!==1||!obj.approvals||typeof obj.approvals!=="object"||Array.isArray(obj.approvals))throw Error("invalid");var valid={};reviewItems.forEach(function(x){var d=obj.approvals[x.id];if(d&&["approved","visual-approved","disapproved"].includes(d.decision)&&(d.mediaKey||sourceKey(d.video))===sourceKey(x.video)){valid[x.id]={decision:d.decision,clipReps:Math.max(0,Math.min(30,Number(d.clipReps)||0)),voiceStatus:d.decision==="visual-approved"?"needs-marcus":d.decision==="approved"?"owner-approved":"rejected",dubScript:d.decision==="visual-approved"&&typeof d.dubScript==="string"?d.dubScript.slice(0,350):"",reason:typeof d.reason==="string"?d.reason.slice(0,50):"",notes:typeof d.notes==="string"?d.notes.slice(0,500):"",at:d.at||new Date().toISOString(),mediaKey:sourceKey(x.video)}}});if(!confirm("Restore "+Object.keys(valid).length+" saved decisions on this device?"))return;approvals=valid;saveApprovals();initLibrary();render();setNotice("Imported "+Object.keys(valid).length+" approved/rejected decisions.")}catch(e){setNotice("Could not restore review file. Use an exported M3 FLEX approvals JSON.")}};reader.readAsText(file)});
 $("autoFlow").addEventListener("change",function(){s.autoFlow=!!this.checked;save();render();setNotice(s.autoFlow?"Automatic demo progress enabled. Only simulated sets are credited.":"Automatic progression off. You control each set.")});
 $("approvedClipReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<0||n>30){this.value=String(approvedCycles[stage().id]||0);return}if(n===0)delete approvedCycles[stage().id];else approvedCycles[stage().id]=n;try{localStorage.setItem(CAL_KEY,JSON.stringify(approvedCycles))}catch(e){}render();setNotice(n?"Whole-cycle calibration saved: "+n+" full repetitions seen in the selected clip. Verify transitions during playback.":"Clip repetition calibration reset. No automatic visual reps will be claimed.")});
 $("goalReps").addEventListener("change",function(){var n=Number(this.value);if(!Number.isInteger(n)||n<1||n>30){this.value=String(targetReps(stage()));return}goalFor[stage().id]=n;render();setNotice("Set goal updated to "+n+" reps for "+stage().name+". This does not count actual repetitions.")});
