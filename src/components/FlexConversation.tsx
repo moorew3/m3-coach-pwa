@@ -14,7 +14,7 @@ import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 import { useApp, type AppState } from "@/lib/store";
 import { stopFlexSpeech } from "@/lib/flex-answer-audio";
 import { stopApprovedMarcus, playApprovedMarcusTest } from "@/lib/flex-marcus-audio";
-import { getMarcusSpeechAvailability, requestMarcusLiveSpeech } from "@/lib/marcus-live-client";
+import { claimMarcusOwnerPairingLink, getMarcusSpeechAvailability, isMarcusOwnerPaired, requestMarcusLiveSpeech } from "@/lib/marcus-live-client";
 import {
   setConversationHandler, startListening, stopListening, useVoiceControl, voiceControlAvailable,
 } from "@/lib/voice-commands";
@@ -81,10 +81,11 @@ export function FlexConversation() {
   const [modelProgress, setModelProgress] = useState<number | null>(null);
   const [audioStatus, setAudioStatus] = useState("");
   const [liveMarcusEnabled, setLiveMarcusEnabled] = useState(false);
+  const [ownerPaired, setOwnerPaired] = useState(false);
   const speechAbort = useRef<AbortController | null>(null);
   const speechAudio = useRef<HTMLAudioElement | null>(null);
   const speechGeneration = useRef(0);
-  const audioCache = useRef(new Map<string,string>());
+  const audioCache = useRef(new Map<string, { url: string; at: number }>());
   const [supportsGPU, setSupportsGPU] = useState(false);
   const [mounted, setMounted] = useState(false);
   const worker = useRef<Worker | null>(null);
@@ -116,11 +117,12 @@ export function FlexConversation() {
     if (micRef.current) stopListening();
     setAudioStatus("Generating the reply in the approved Marcus voice…");
     try {
-      let url = audioCache.current.get(line);
+      const saved = audioCache.current.get(line);
+      let url = saved && Date.now() - saved.at < 20 * 60_000 ? saved.url : "";
       if (!url) {
         url = await requestMarcusLiveSpeech(line, controller.signal);
         if (controller.signal.aborted || token !== speechGeneration.current) return;
-        audioCache.current.set(line, url);
+        audioCache.current.set(line, { url, at: Date.now() });
       }
       if (controller.signal.aborted || token !== speechGeneration.current) return;
       const audio = new Audio(url);
@@ -166,6 +168,8 @@ export function FlexConversation() {
   useEffect(() => {
     setMounted(true);
     setSupportsGPU(typeof navigator !== "undefined" && !!("gpu" in navigator));
+    claimMarcusOwnerPairingLink(); // Fragment removed before any external navigation.
+    setOwnerPaired(isMarcusOwnerPaired());
     void getMarcusSpeechAvailability().then(setLiveMarcusEnabled);
     const loaded = loadTurns();
     turnsRef.current = loaded;
@@ -359,8 +363,10 @@ export function FlexConversation() {
       <div data-testid="flex-live-marcus-status" role="status"
         className="mt-2 rounded-lg border border-border bg-elevated/50 px-3 py-2 text-xs">
         {liveMarcusEnabled
-          ? "Live Marcus voice is configured. Answers will attempt to play automatically; you can replay your last reply below."
-          : "Live spoken replies are not connected yet. HeyGen voice API activation and prepaid credits are required. No charges are being made."}
+          ? "Marcus live voice is ON (HeyGen Turbo Free). Ask a question; he will attempt to answer aloud. No paid model is enabled."
+          : ownerPaired
+            ? "Your phone is paired, but the free Marcus voice service is not active or the selected voice is unavailable. The app will never switch to a different voice."
+            : "Marcus voice access is private. Open your M3 FLEX owner pairing link on this phone to hear live replies."}
       </div>
       {liveMarcusEnabled && (
         <div className="mt-2 flex flex-wrap gap-2">
@@ -387,7 +393,7 @@ export function FlexConversation() {
       )}
       {modelStatus==="ready" && <p data-testid="flex-natural-chat-ready" role="status" className="mt-2 text-xs font-bold text-accent">Natural Conversation active on this device. No per-question AI provider charges.</p>}
       {modelStatus==="loading" && <p role="status" className="mt-2 text-xs text-accent">Preparing Natural Conversation… {modelInfo}</p>}
-      {audioStatus && <p className="mt-1 text-[11px] text-accent" role="status">{audioStatus}</p>}
+      {audioStatus && <p data-testid="flex-marcus-playback-status" className="mt-1 text-[11px] text-accent" role="status">{audioStatus}</p>}
 
       <div role="log" aria-live="polite" aria-label="Flex conversation" data-testid="flex-chat-history"
         className="mt-2 max-h-80 min-h-14 space-y-2 overflow-y-auto rounded-xl bg-black/15 p-2">
