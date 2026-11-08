@@ -45,4 +45,10 @@ assert.match(cam,/calibratePose\(lm, cam\.framing\)/);
 assert.match(v2,/kickKind \|\| pattern === "squat" \|\| pattern === "lunge"/);
 assert.match(v2,/setCameraFraming\(framing\)/);
 assert.match(basketball,/setCameraFraming\("upper"\)/);
+assert.match(cam,/wall - alignmentReadySince >= 1200/,
+  "A stable visible posture should automatically complete alignment after consent");
+assert.match(cam,/analyzer && !cam.calibrating/,
+  "Never count movement during calibration frames");
+assert.match(cam,/analyzer = cam.pattern/,
+  "At calibration completion restart tracked reps from zero");
 console.log("M3 FLEX camera calibration QA passed: injury-safe upper body and strict full-body gating.");
