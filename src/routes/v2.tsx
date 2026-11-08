@@ -166,7 +166,11 @@ function V2Coach() {
     preloadMarcusAudio();
     setAthletePortrait(readAthletePortrait());
     try {
-      if (session.phase === "ready" &&
+      const focusRequested = new URLSearchParams(window.location.search).get("focus") === "1";
+      let focusSaved = false;
+      try { focusSaved = window.localStorage.getItem("m3-flex-projection-focus-v1") === "1"; }
+      catch { /* optional saved preference */ }
+      if (session.phase === "ready" && !focusRequested && !focusSaved &&
           !window.sessionStorage.getItem("m3-v2-entrance-seen"))
         setShowOpening(true);
     } catch { /* still allow a skippable entrance without storage */ }
