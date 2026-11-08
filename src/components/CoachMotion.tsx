@@ -18,6 +18,8 @@ export function CoachMotion({
   playing = true,
   muted = true,
   onPlaybackFailure,
+  onVideoReady,
+  onRetry,
   rate = 1,
   preloadUrl,
   className = "",
@@ -34,6 +36,10 @@ export function CoachMotion({
   playing?: boolean;
   muted?: boolean;
   onPlaybackFailure?: () => void;
+  /** Only fires after this exact clip has rendered a decoded video frame. */
+  onVideoReady?: () => void;
+  /** Retry the same clip and resume the parent session after a media error. */
+  onRetry?: () => void;
   /** Playback speed so the coach's cadence matches the movement's target tempo. */
   rate?: number;
   /** Next movement's clip — fetched quietly so the transition is instant. */
@@ -53,6 +59,33 @@ export function CoachMotion({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failure, setFailure] = useState<"source" | "stalled" | "blocked" | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const [frameVisible, setFrameVisible] = useState(false);
+  const [silentFallback, setSilentFallback] = useState(false);
+  const frameReported = useRef(false);
+  const videoReadyCallback = useRef(onVideoReady);
+  videoReadyCallback.current = onVideoReady;
+
+  const firstDecodedFrame = (video: HTMLVideoElement) => {
+    if (frameReported.current || video.videoWidth === 0 || video.readyState < 2) return;
+    frameReported.current = true;
+    clearStalledTimer();
+    setFrameVisible(true);
+    videoReadyCallback.current?.();
+  };
+
+  const attemptPlayback = (video: HTMLVideoElement) => {
+    void video.play().catch(async (error: unknown) => {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      if (error instanceof DOMException && error.name === "NotAllowedError" && !video.muted) {
+        // Approved embedded narration can be blocked on automatic scene changes.
+        // Keep the SAME approved actor moving rather than substituting any media.
+        video.muted = true;
+        setSilentFallback(true);
+        try { await video.play(); return; } catch { /* handled below */ }
+      }
+      setFailure(error instanceof DOMException && error.name === "NotAllowedError" ? "blocked" : "source");
+    });
+  };
   const stalledTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clearStalledTimer = () => {
     if (stalledTimer.current !== null) clearTimeout(stalledTimer.current);
@@ -72,6 +105,9 @@ export function CoachMotion({
     setFailure(null);
     setLoaded(false);
     setIsPlaying(false);
+    setFrameVisible(false);
+    setSilentFallback(false);
+    frameReported.current = false;
     clearStalledTimer();
   }, [url, attempt, cycleKey]);
 
@@ -82,15 +118,12 @@ export function CoachMotion({
     if (!video || failure) return;
     video.playbackRate = Math.max(0.5, Math.min(2, rate || 1));
     if (playing) {
-      void video.play().catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "NotAllowedError") {
-          setFailure("blocked");
-        }
-      });
+      if (!frameReported.current) watchStall();
+      attemptPlayback(video);
     } else {
       video.pause();
+      clearStalledTimer();
     }
-    if (!playing) clearStalledTimer();
   }, [playing, rate, url, failure, loaded, attempt]);
 
   useEffect(() => { if (failure) onPlaybackFailure?.(); }, [failure, onPlaybackFailure]);
@@ -110,7 +143,7 @@ export function CoachMotion({
 
   return (
     <div
-      className={`relative overflow-hidden bg-black ${className}`}
+      className={`${/\b(?:absolute|fixed|sticky)\b/.test(className) ? "" : "relative"} overflow-hidden bg-black ${className}`}
       data-testid="coach-motion"
       data-stable-framing={stableFraming ? "true" : "false"}
       data-failed={failure ? "true" : "false"}
@@ -118,6 +151,8 @@ export function CoachMotion({
       data-url={url}
       data-playing={isPlaying ? "true" : "false"}
       data-shown-url={loaded && !failure ? url : ""}
+      data-frame-ready={frameVisible && !failure ? "true" : "false"}
+      data-audio-muted-fallback={silentFallback ? "true" : "false"}
       aria-label={label ?? "Coach demonstration"}
       role="img"
     >
@@ -144,20 +179,25 @@ export function CoachMotion({
             data-active="true"
             onCanPlay={(event) => {
               setLoaded(true);
-              if (playing) void event.currentTarget.play().catch((error: unknown) => {
-                if (error instanceof DOMException && error.name === "NotAllowedError") setFailure("blocked");
-              });
+              if (playing) attemptPlayback(event.currentTarget);
             }}
             onLoadedData={(event) => {
               setLoaded(true);
               callbackRef.current?.(0, "transition");
-              if (playing) void event.currentTarget.play().catch((error: unknown) => {
-                if (error instanceof DOMException && error.name === "NotAllowedError") setFailure("blocked");
-              });
+              if (playing) attemptPlayback(event.currentTarget);
             }}
-            onPlaying={() => {
-              clearStalledTimer();
+            onPlaying={(event) => {
               setIsPlaying(true);
+              const video = event.currentTarget;
+              if (typeof video.requestVideoFrameCallback === "function") {
+                video.requestVideoFrameCallback(() => firstDecodedFrame(video));
+              } else {
+                // Older Android WebViews lack requestVideoFrameCallback.
+                firstDecodedFrame(video);
+              }
+            }}
+            onTimeUpdate={(event) => {
+              if (event.currentTarget.currentTime > 0) firstDecodedFrame(event.currentTarget);
             }}
             onWaiting={watchStall}
             onStalled={watchStall}
@@ -178,6 +218,18 @@ export function CoachMotion({
         )}
       </div>
 
+      {/* A native video element can be black while its first frame decodes.
+          Never present an empty exercise stage as if Marcus were demonstrating. */}
+      {!failure && !frameVisible && (
+        <div className="pointer-events-none absolute inset-0 z-[2] flex flex-col items-center justify-end pb-4">
+          <img src={still} alt="" draggable={false}
+            className="absolute inset-0 h-full w-full object-contain" />
+          <span data-testid="coach-motion-loading"
+            className="relative rounded-lg bg-black/80 px-3 py-2 text-center text-xs font-semibold text-white">
+            Loading this approved moving demonstration…
+          </span>
+        </div>
+      )}
       {failure && (
         <div
           role="status"
@@ -197,7 +249,10 @@ export function CoachMotion({
           <button
             type="button"
             data-testid="retry-coach-video"
-            onClick={() => setAttempt((value) => value + 1)}
+            onClick={() => {
+              setAttempt((value) => value + 1);
+              onRetry?.();
+            }}
             className="mt-2 rounded-lg border border-white/30 bg-white/15 px-4 py-2 text-xs font-bold"
           >
             Retry approved video
