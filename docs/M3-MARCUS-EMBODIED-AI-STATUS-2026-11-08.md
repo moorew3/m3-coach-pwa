@@ -30,6 +30,7 @@ MARCUS is intended to be a *multimodal, conversational, camera-aware, sensor-awa
 | Weight provenance | Optional source and timestamp on NutritionDay, with manual entry still supported | Backward compatible with older logs |
 | Nutrition query | Answers most recent recorded weight from nutrition log with source, units and date | No guessing unlogged results |
 | Basketball lab | New `/basketball` route on existing website, upper-body MediaPipe pose estimation and counted visible arm extensions for seated shooting drill | Cannot detect ball, made baskets, trajectory or medical-safe mechanics; no fake coach voice |
+| Seated camera calibration | Upper-body exercises no longer require the injured leg or ankles in frame; full-body checks still required for leg and kick movements. User-initiated camera can auto-finish stable alignment after 1.2 seconds. | Neither calibration frames nor hidden joints count as verified exercise reps; physical phone test pending |
 | QA | Automated BLE packet, freshness, permissions/UI source, image landmark, confidence, bilateral, stale-state and route tests | Mock sensors and synthetic landmarks do not prove phone hardware |
 
 No new hosting service, paid provider, recurring subscription, developer asset, or voice model has been added. No changes have been deployed to production.
