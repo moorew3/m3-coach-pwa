@@ -90,6 +90,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .reviewButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
 .reviewButtons button{min-height:44px;background:#214458;color:#fff;border:1px solid #5c8292;border-radius:9px;font-size:12px;line-height:1.2;font-weight:900;padding:7px 3px}
 .reviewButtons button.approve{background:#3b6231;border-color:#9acb76}.reviewButtons button.voiceFix{background:#194e66;border-color:#83d4eb;color:#ecfbff}.reviewButtons button.reject{background:#713437;border-color:#c17c7d}
+.reviewPlayback{display:flex;gap:6px;margin-top:6px}
+.reviewPlayback button{min-height:43px;flex:1;border-radius:9px;background:#1b4961;color:#fff;border:1px solid #7ab7c7;font-size:12px;font-weight:900;padding:7px 4px}
+.reviewPlayback button:first-child{background:#206d65;border-color:#a1edbd}
+.reviewPlayback button:disabled{opacity:.45}
 .reviewButtons button:disabled{opacity:.5}#reviewReceipt{font-size:11px;color:#bfdfbe;min-height:13px;margin:6px 0}
 #reviewAudio{width:100%;height:37px;margin:5px 0}
 .voiceFixNotice{border:1px solid #4790a8;background:#143b4e;padding:9px;border-radius:11px;font-size:12px;line-height:1.4;color:#e0faff;margin:7px 0}
@@ -120,6 +124,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <div id="workoutPicker"><label class="pickerLabel" for="exercisePick">CHOOSE EXERCISE / APPROVED VIDEO</label><select id="exercisePick" aria-label="Choose exercise or approved video"><option>Loading exercise library…</option></select></div>
 <div id="reviewPicker" hidden><label class="pickerLabel" for="reviewPick">VIDEO APPROVAL QUEUE <span id="reviewCount"></span></label><select id="reviewPick" aria-label="Choose video to approve or disapprove"></select>
 <div class="reviewButtons" id="reviewTopButtons"><button class="approve" id="approveVideo">✓ Approve everything</button><button class="voiceFix" id="visualApproveVideo">✓ Keep video · Fix voice</button><button class="reject" id="rejectVideo">✕ Reject footage</button><button id="nextReview">→ Next pending</button></div>
+<div class="reviewPlayback"><button id="playReviewVideo" type="button" data-testid="play-review-clip">▶ Watch selected video</button><button id="pauseReviewVideo" type="button">Ⅱ Pause review</button></div>
 </div>
 <div class="heroRow"><div class="exerciseMeta"><div id="name">Seated breathing</div><span id="target">Guided preparation</span><span id="sets" hidden>Set 1 / 1</span><span id="counter">Scene 1 of 7</span></div><div class="clockWrap"><span id="phase" aria-live="polite">READY</span><div id="clock" aria-label="Remaining time">00:30</div><div id="gameRep" aria-live="polite">REP — / 8</div></div></div>
 </div>
@@ -282,7 +287,9 @@ $("clipReps").value=approvals[x.id]&&Number.isInteger(approvals[x.id].clipReps)?
 $("rejectWhy").value=approvals[x.id]&&approvals[x.id].reason||"";
 $("reviewMute").checked=reviewMuted[x.id]===undefined?decision==="visual-approved":!!reviewMuted[x.id];
 $("reviewFix").value=approvals[x.id]&&approvals[x.id].notes||"";
-$("approveVideo").disabled=!watched[x.id];$("visualApproveVideo").disabled=!watched[x.id];$("reviewReceipt").textContent=approvals[x.id]?"Last decision saved on this device · "+new Date(approvals[x.id].at).toLocaleString():watched[x.id]?"Full video watched. Choose full approval, keep visuals/fix voice, or reject.":"Watch the complete video before approving its visuals";
+$("approveVideo").disabled=!watched[x.id];$("visualApproveVideo").disabled=!watched[x.id];
+$("playReviewVideo").disabled=!x.video;
+$("pauseReviewVideo").disabled=$("film").paused;$("reviewReceipt").textContent=approvals[x.id]?"Last decision saved on this device · "+new Date(approvals[x.id].at).toLocaleString():watched[x.id]?"Full video watched. Choose full approval, keep visuals/fix voice, or reject.":"Watch the complete video before approving its visuals";
 $("reviewAudio").hidden=!x.audio;if(x.audio&&$("reviewAudio").src!==x.audio)$("reviewAudio").src=x.audio;
 renderReviewPicker();
 }
@@ -380,11 +387,27 @@ if(previewMode())return;if(s.phase==="running"||s.phase==="rest")freeze();if(s.p
 $("restart").addEventListener("click",function(){if(!confirm("Reset only the playable demo progress on this device?"))return;clearInterval(tick); s=fresh();experience="coach";view={type:"workout",index:0};mediaId="";setNotice("Demo reset. Original M3 FLEX workout records were not changed.");render()});
 $("stop").addEventListener("click",function(){freeze();s.phase="stopped";clearInterval(tick);$("film").pause();render();setNotice("Session stopped. You can export this record or reset the demo.")});
 $("export").addEventListener("click",function(){var data=JSON.stringify({schema:1,project:"M3 FLEX playable demo",savedAt:new Date().toISOString(),session:s},null,2);var blob=new Blob([data],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="m3-flex-playable-log.json";document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);setNotice("Local JSON backup prepared; your browser controls where it is saved.")});
-$("film").addEventListener("error",function(){if(experience==="review"){watched[reviewItems[reviewIndex].id]=false;$("approveVideo").disabled=true;$("mediaWarning").hidden=false;$("mediaWarning").textContent="Original video unavailable. Use the HeyGen source link or mark disapproved (Won't play).";setNotice("Video failed. It cannot be approved without playback.")}else mediaFailure("Selected approved video could not load. No replacement or fake progress is allowed.")});
+$("film").addEventListener("error",function(){if(experience==="review"){watched[reviewItems[reviewIndex].id]=false;$("approveVideo").disabled=true;$("visualApproveVideo").disabled=true;$("playReviewVideo").disabled=true;$("mediaWarning").hidden=false;$("mediaWarning").textContent="Original video unavailable. Use the HeyGen source link or mark disapproved (Won't play).";setNotice("Video failed. It cannot be approved without playback.")}else mediaFailure("Selected approved video could not load. No replacement or fake progress is allowed.")});
 $("modeCoach").addEventListener("click",function(){setExperience("coach")});
 $("modeLoop").addEventListener("click",function(){setExperience("loop");$("film").loop=true});
 $("modeReview").addEventListener("click",function(){setExperience("review")});
 $("reviewPick").addEventListener("change",function(){chooseReview(Number(this.value))});
+$("playReviewVideo").addEventListener("click",function(){
+ if(experience!=="review")return;
+ var item=reviewItems[reviewIndex];
+ if(!item||!$("film").src){setNotice("This review has no playable video source. Inspect it on HeyGen before deciding.");return}
+ $("film").loop=false;
+ if(watched[item.id]){try{$("film").currentTime=0}catch(e){}}
+ $("pauseReviewVideo").disabled=false;
+ var p=$("film").play();
+ if(p&&p.catch)p.catch(function(){$("pauseReviewVideo").disabled=true;setNotice("Review video could not play. Tap the player controls or use the HeyGen original link.");});
+ setNotice("Watching the selected "+item.id+" video. Let it finish to unlock the visual approval choices.");
+});
+$("pauseReviewVideo").addEventListener("click",function(){
+ if(experience!=="review")return;
+ $("film").pause();$("pauseReviewVideo").disabled=true;
+ setNotice("Review video paused. Tap Watch selected video to resume.");
+});
 $("externalWatched").addEventListener("change",function(){
 if(experience!=="review")return;var x=reviewItems[reviewIndex];if(!x||!x.videoPage)return;
 watched[x.id]=!!this.checked;render();
@@ -423,8 +446,8 @@ var onscreen=Math.min(targetReps(stage()),(s.visualReps||0)+local);
 $("gameRep").textContent="VIDEO REP "+onscreen+" / "+targetReps(stage())+" (timed)";
 $("sceneBottom").textContent=onscreen>=targetReps(stage())-2?"FINISH CONTROLLED · LEFT LEG SUPPORTED":"CONTROLLED REPS · LEFT LEG SUPPORTED";
 });
-$("film").addEventListener("play",function(){if(view.type==="silent")this.muted=true;if(experience==="loop")$("pause").disabled=false});
-$("film").addEventListener("volumechange",function(){if(view.type==="silent"&&!this.muted)this.muted=true});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true});
+$("film").addEventListener("play",function(){if(view.type==="silent")this.muted=true;if(experience==="loop")$("pause").disabled=false;if(experience==="review")$("pauseReviewVideo").disabled=false});
+$("film").addEventListener("volumechange",function(){if(view.type==="silent"&&!this.muted)this.muted=true});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true;if(experience==="review")$("pauseReviewVideo").disabled=true});
 $("film").addEventListener("ended",function(){
 if(experience==="review"){watched[reviewItems[reviewIndex].id]=true;render();return}
 if(experience!=="coach"||s.phase!=="running")return;
