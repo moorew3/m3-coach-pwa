@@ -271,6 +271,9 @@ export interface NutritionDay {
   /** Glasses / cups of water (8 oz each). */
   water: number;
   bodyweight: string;
+  /** Provenance only. A connected scale never changes an entry without consent. */
+  bodyweightSource?: "manual" | "bluetooth-scale";
+  bodyweightRecordedAt?: string;
   trainingDay: boolean;
 }
 export interface NutritionTargets {
