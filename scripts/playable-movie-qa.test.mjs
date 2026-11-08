@@ -176,4 +176,19 @@ check("A visual clip can be fully approved later after fixing the voice", !el.ap
 check("Original archive and existing approved scenes stay intact", scenes.some(x => x.id === visualId) && Object.values(reviews()).some(x => x.decision === "approved"));
 check("Backup restores all three approval classifications", html.includes('["approved","visual-approved","disapproved"].includes(d.decision)'));
 
+const dub = readFileSync(new URL("../public/playable/marcus-dub.js", import.meta.url), "utf8");
+new Function(dub);
+check("Dub script is included in existing player", html.includes('src="/playable/marcus-dub.js"'));
+check("Dub controls are on same page", html.includes('id="dubPanel"') && html.includes('id="dubGenerate"') && html.includes('id="dubPlay"'));
+check("Dubbing requires visual owner approval", html.includes('decision==="visual-approved"') && html.includes("visualApproved:"));
+check("Narration draft persists with review", html.includes("dubScript:") && html.includes("old.dubScript"));
+check("Final source MP4 remains unchanged", !dub.includes("film.src=") && !dub.includes("video.src="));
+check("Marcus-only voice remains locked", dub.includes("0fadce1e82af494a93873aa38ea8d106"));
+check("Only free model accepted", dub.includes("heygen-voice-1-turbo-free"));
+check("Owner-paired API used", dub.includes("/api/public/marcus-speech") && dub.includes("x-m3-flex-owner"));
+check("No wrong source voice can play in preview", dub.includes("film.muted=true") && dub.includes("this.muted=true"));
+check("No automatic generation on review selection", !dub.includes("void prepare()\n    var id"));
+check("Audio change never upgrades coached approval", !dub.includes('decision="approved"'));
+check("Editing retains source and validates audio", dub.includes("voiceURL") && dub.includes("saveDraft()"));
+
 console.log("M3 FLEX game QA passed: " + checks + " checks; " + pending.length + " review videos indexed.");
