@@ -15,6 +15,18 @@
   var byId=function(id){return document.getElementById(id)};
   var panel=function(){return byId("dubPanel")};
   function status(message){var e=byId("dubStatus");if(e)e.textContent=message}
+  function claimOwnerLink(){
+    try{
+      var fragment=window.location.hash||"";
+      if(!fragment.includes("marcus_access="))return false;
+      var data=new URLSearchParams(fragment.slice(1)),value=data.get("marcus_access")||"";
+      if(!/^[a-zA-Z0-9_-]{32,80}$/.test(value))return false;
+      sessionStorage.setItem(PAIR_KEY,value);
+      window.history.replaceState(window.history.state,"",window.location.pathname+window.location.search);
+      return true;
+    }catch(e){return false}
+  }
+  claimOwnerLink();
   function getToken(){
     try {
       var token=sessionStorage.getItem(PAIR_KEY)||"";
