@@ -57,12 +57,13 @@ try{
  await page.evaluate(()=>window.scrollTo(0,0));
  const stageBox=await stage.boundingBox();
  const coachBox=await page.getByTestId("coach-motion").boundingBox();
- assert.ok(stageBox && stageBox.y<185,"Marcus stage must be visible near the TOP of the phone");
- assert.ok(coachBox && coachBox.y<320 && coachBox.y+coachBox.height>360,
-  "Actual moving coach, not a black panel, must occupy the visible phone viewport");
- console.log("✓ Visible-first Fold layout: stage at "+stageBox.y.toFixed(0)+"px, moving coach at "+coachBox.y.toFixed(0)+"px");
+ console.log("Fold visible-frame bounds:",JSON.stringify({stageBox,coachBox}));
  await mkdir("artifacts",{recursive:true});
  await page.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:8000});
+ assert.ok(stageBox && stageBox.y<185,"Marcus stage must be visible near the TOP of the phone");
+ assert.ok(coachBox && coachBox.y<320 && coachBox.y+coachBox.height>360 && coachBox.height>=200,
+  "Moving Marcus must occupy at least 200 visible vertical pixels in the Fold viewport");
+ console.log("✓ Visible-first Fold layout: stage at "+stageBox.y.toFixed(0)+"px, moving coach at "+coachBox.y.toFixed(0)+"px");
  await exercise.selectOption("2");assert.equal(await stage.getAttribute("data-scene-id"),"C02");
  console.log("✓ Recovery selects exact original approved Marcus demonstrations");
  await workout.selectOption("A");await exercise.selectOption("1");
