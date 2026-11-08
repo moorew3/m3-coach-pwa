@@ -116,6 +116,27 @@ function V2Coach() {
   const [lastCoachAnswer, setLastCoachAnswer] = useState<string | null>(null);
   const [flexQuestion, setFlexQuestion] = useState("");
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  // Hide secondary settings without losing workout/session state or the exact approved media.
+  const [projectionFocus, setProjectionFocus] = useState(false);
+  const [projectionSettingsOpen, setProjectionSettingsOpen] = useState(false);
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("focus") === "1";
+    let remembered = false;
+    try { remembered = window.localStorage.getItem("m3-flex-projection-focus-v1") === "1"; }
+    catch { /* preferences are optional */ }
+    if (requested || remembered) setProjectionFocus(true);
+  }, []);
+  const changeProjectionFocus = (enabled: boolean) => {
+    setProjectionFocus(enabled);
+    setProjectionSettingsOpen(false);
+    if (enabled) dispatch({ type: "set-mode", mode: "coach" });
+    try { window.localStorage.setItem("m3-flex-projection-focus-v1", enabled ? "1" : "0"); }
+    catch { /* preview still works */ }
+    const address = new URL(window.location.href);
+    if (enabled) address.searchParams.set("focus", "1");
+    else address.searchParams.delete("focus");
+    window.history.replaceState(window.history.state, "", address.pathname + address.search + address.hash);
+  };
   const [boxingStance, setBoxingStance] = useState<BoxingStance>("orthodox");
   const [roundFeedback, setRoundFeedback] = useState<string | null>(null);
   const latestBoxing = useRef<BoxingSnapshot | null>(null);
@@ -729,8 +750,8 @@ function V2Coach() {
   });
 
   return (
-    <main className="min-h-dvh bg-[#080b0f] text-white">
-      <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5">
+    <main className={projectionFocus ? "h-dvh min-h-0 overflow-hidden bg-black text-white" : "min-h-dvh bg-[#080b0f] text-white"} data-projection-focus={projectionFocus ? "true" : "false"}>
+      <div className={projectionFocus ? "relative mx-auto h-full w-full max-w-none overflow-hidden" : "mx-auto max-w-7xl px-3 py-3 sm:px-5"}>
         <input
           ref={athletePicker}
           type="file"
@@ -749,6 +770,30 @@ function V2Coach() {
               ));
           }}
         />
+        {projectionFocus && (
+          <nav aria-label="Projection workout controls" className="absolute right-3 top-3 z-[35] flex max-w-[76%] flex-wrap justify-end gap-2">
+            <button type="button"
+              onClick={() => {
+                if (voiceControlAvailable()) {
+                  if (voiceControl.listening) stopListening();
+                  else startListening();
+                } else setVoiceError("This browser does not support live voice listening.");
+              }}
+              className="min-h-11 rounded-xl border border-cyan-300/40 bg-black/80 px-3 text-xs font-black text-cyan-100"
+              aria-label={voiceControl.listening ? "Stop listening to voice" : "Start voice listening"}
+              data-testid="projection-voice-toggle"
+            >
+              {voiceControl.listening ? "Mic on" : "Talk"}
+            </button>
+            <button type="button" onClick={() => setProjectionSettingsOpen(true)}
+              className="min-h-11 rounded-xl border border-white/25 bg-black/80 px-3 text-xs font-black text-white"
+              data-testid="projection-controls-toggle">Controls</button>
+            <button type="button" onClick={() => changeProjectionFocus(false)}
+              className="min-h-11 rounded-xl border border-white/25 bg-black/80 px-3 text-xs font-black text-white"
+              data-testid="projection-exit-toggle">Exit</button>
+          </nav>
+        )}
+        {!projectionFocus && (
         <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#111820] px-4 py-3">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[.32em] text-cyan-300">
@@ -766,6 +811,11 @@ function V2Coach() {
             >
               ← Workouts
             </a>
+            <button type="button" onClick={() => changeProjectionFocus(true)}
+              data-testid="projection-focus-enter"
+              className="min-h-11 rounded-xl bg-cyan-300 px-3 text-xs font-black text-black">
+              Full-screen Marcus
+            </button>
 
             <button
               type="button"
@@ -793,7 +843,8 @@ function V2Coach() {
           </button>
           </div>
         </header>
-        <div
+        )}
+        {!projectionFocus && <div
           role="status"
           aria-live="polite"
           data-flex-presence={flexPresence}
@@ -801,8 +852,8 @@ function V2Coach() {
         >
           <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
           <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
-        </div>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
+        </div>}
+        {!projectionFocus && <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
           <div>
             <p className="text-xs font-black text-cyan-200">Your original seven-day training plan is available here.</p>
             <p className="mt-1 text-xs text-white/65">Today's program: {originalWorkoutForToday().title}. Missing videos do not remove exercises.</p>
@@ -819,15 +870,17 @@ function V2Coach() {
           >
             Load today's FULL workout
           </button>
-        </div>
-        {athleteError && (
+        </div>}
+        {athleteError && (!projectionFocus || projectionSettingsOpen) && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
           </p>
         )}
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
+        <div className={projectionFocus ? "relative h-full w-full" : "mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]"}>
+          <section className={projectionFocus
+            ? "relative h-dvh min-h-0 overflow-hidden bg-black"
+            : "relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage">
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && (showTalkingFace || !stageMedia)}
@@ -842,7 +895,9 @@ function V2Coach() {
                 stableFraming={stableCoachFraming}
                 cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
                 preloadUrl={stagePreloadUrl}
-                className="absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"
+                className={projectionFocus
+                  ? "absolute inset-0 h-full w-full"
+                  : "absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"}
                 label={
                   stageUsesRecovered
                     ? `Motion demo of ${exercise?.name ?? "movement"}`
@@ -885,12 +940,22 @@ function V2Coach() {
             )}
             <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/70 via-transparent to-black/75" />
 
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-[4] p-3">
-              <div className="max-w-[min(80%,450px)] rounded-xl bg-black/60 p-3 backdrop-blur-sm">
+            {projectionFocus && (
+              <div className="pointer-events-none absolute left-3 top-3 z-[7] max-w-[44%] text-[10px] font-semibold text-cyan-200/70"
+                data-testid="projection-format-disclosure">
+                {realTimeRigReady ? "Approved 3D renderer" : "2D projection · 3D avatar pending"}
+              </div>
+            )}
+            <div className={projectionFocus
+              ? "pointer-events-none absolute inset-x-0 top-12 z-[4] px-3"
+              : "pointer-events-none absolute inset-x-0 top-0 z-[4] p-3"}>
+              <div className={projectionFocus
+                ? "max-w-[min(58%,320px)] rounded-xl bg-black/25 p-2"
+                : "max-w-[min(80%,450px)] rounded-xl bg-black/60 p-3 backdrop-blur-sm"}>
                 <p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-300">
                   {viewpoint.label} · {session.phase}
                 </p>
-                <h2 className="mt-1 text-xl font-black uppercase leading-tight sm:text-2xl">
+                <h2 className={projectionFocus ? "mt-1 text-base font-black uppercase leading-tight" : "mt-1 text-xl font-black uppercase leading-tight sm:text-2xl"}>
                   {stageTitle}
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-white/70">
@@ -910,11 +975,19 @@ function V2Coach() {
               onRoundSummary={reportRound}
             />
 
-            <div className="absolute inset-x-0 bottom-0 z-[9] p-3">
+            {projectionFocus && (flexThinking || lastCoachAnswer) && (
+              <p className="pointer-events-none absolute bottom-[96px] left-3 right-3 z-[12] max-w-[90%] rounded-xl bg-black/70 px-3 py-2 text-xs text-cyan-50"
+                data-testid="projection-coach-answer" aria-live="polite">
+                {flexThinking ? "Marcus is preparing an answer…" : lastCoachAnswer?.slice(0, 200)}
+              </p>
+            )}
+            <div className={projectionFocus
+              ? "absolute inset-x-0 bottom-0 z-[9] p-2"
+              : "absolute inset-x-0 bottom-0 z-[9] p-3"}>
               <div className="rounded-2xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-black">{session.workout.title}</p>
+                    <p className="truncate text-xs font-black">{projectionFocus ? (exercise?.name ?? session.workout.title) : session.workout.title}</p>
                     <p className="mt-1 text-[11px] text-white/50">
                       {mmss(session.elapsedSeconds)} elapsed
                       {session.phaseSecondsLeft !== null
@@ -942,21 +1015,34 @@ function V2Coach() {
                     >
                       <SkipForward className="size-5" />
                     </button>
-                    <button
+                    {!projectionFocus && <button
                       type="button"
                       onClick={() => dispatch({ type: "reset", workout })}
                       className="grid size-11 place-items-center rounded-xl bg-white/15"
                       aria-label="Reset workout"
                     >
                       <RotateCcw className="size-5" />
-                    </button>
+                    </button>}
                   </div>
                 </div>
               </div>
             </div>
           </section>
 
-          <aside className="space-y-3">
+          {(!projectionFocus || projectionSettingsOpen) && (
+          <aside className={projectionFocus
+            ? "absolute inset-0 z-[50] space-y-3 overflow-y-auto bg-[#080b0f] p-3 pb-20"
+            : "space-y-3"} aria-label="Optional workout settings">
+            {projectionFocus && (
+              <div className="sticky top-0 z-10 flex items-center justify-between gap-2 rounded-xl border border-cyan-300/25 bg-[#111820] p-3">
+                <span className="text-sm font-black text-cyan-200">Workout controls</span>
+                <button type="button" onClick={() => setProjectionSettingsOpen(false)}
+                  data-testid="projection-close-settings"
+                  className="min-h-11 rounded-lg bg-cyan-300 px-4 text-sm font-black text-black">
+                  Return to Marcus
+                </button>
+              </div>
+            )}
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
               <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 p-2">
                 <div className="flex items-center gap-2">
@@ -1324,7 +1410,7 @@ function V2Coach() {
               Camera tracking does not verify weight, impact, foot pivot, or injury risk.
               The approved 3D character and remaining exercise animations are still being produced.
             </p>
-          </aside>
+          </aside>)}
         </div>
       </div>
       {showOpening && (
