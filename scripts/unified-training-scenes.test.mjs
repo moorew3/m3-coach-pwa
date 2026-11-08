@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const {ALL_WORKOUTS,RECOVERY_WORKOUTS}=await import('../src/v2/unified-workouts.ts');
-const {sceneForSession,exerciseScene,REST_SCENE,COOLDOWN_SCENE}=await import('../src/v2/training-scenes.ts');
+const {sceneForSession,exerciseScene,REST_SCENE,COOLDOWN_SCENE,trainingSessionReducer:guardedStep}=await import('../src/v2/training-scenes.ts');
 const {createV2Session,v2SessionReducer:step}=await import('../src/v2/session.ts');
 const approved=JSON.parse(readFileSync(new URL('../approved-recovery-media.json',import.meta.url))).items;
 
@@ -42,7 +42,8 @@ test('recovery movements retain their exact approved videos and preparation/cool
   for(const exercise of workout.exercises){
    const expected=approved.find(x=>x.type==='video'&&x.id===exercise.sceneId);
    if(expected)assert.equal(exerciseScene(exercise).url,expected.url);
-   else assert.equal(exerciseScene(exercise),undefined,'Audio-only steps never borrow another exercise video');
+   else if(exercise.sceneId==='recovery-0-2') assert.equal(exerciseScene(exercise).sceneId,'C16-CONTROLLED-REACHES');
+   else assert.equal(exerciseScene(exercise),undefined,'Missing demos never borrow another exercise video');
   }
  }
  assert.equal(REST_SCENE.url,approved.find(x=>x.id==='C09-PRE-BREATH-R2').url);
@@ -82,4 +83,29 @@ test('Workout B keeps its original press-first order and exact narration is serv
  const {sceneAudio}=await import('../src/v2/training-scenes.ts');
  for(const e of RECOVERY_WORKOUTS[0].exercises){const audio=sceneAudio(e);if(audio)assert.match(audio,/^\/media\/marcus-recovery\//);}
  assert.match(COOLDOWN_SCENE.audioUrl,/^\/media\/marcus-recovery\//);
+});
+
+test('missing demonstrations cannot start, tick, auto-complete or count sets in either mode',()=>{
+ const w=RECOVERY_WORKOUTS[0];
+ for(const mode of ['coach','hologram']){
+  let s={...createV2Session(w),mode,exerciseIndex:1};
+  assert.equal(sceneForSession(s).missing,true);
+  assert.deepEqual(guardedStep(s,{type:'start'}),s);
+  const stale={...s,phase:'work',running:true,phaseSecondsLeft:1};
+  for(const type of ['tick','complete-set']) {
+   const next=guardedStep(stale,{type});
+   assert.equal(next.running,false);assert.equal(next.elapsedSeconds,0);
+   assert.deepEqual(next.completedSetIds,[]);assert.equal(next.phaseSecondsLeft,1);
+  }
+  s=guardedStep({...s,exerciseIndex:0},{type:'start'});
+  for(let i=0;i<40&&s.exerciseIndex===0;i++)s=guardedStep(s,{type:'tick'});
+  while(s.phase==='transition')s=guardedStep(s,{type:'tick'});
+  assert.equal(s.exerciseIndex,1);assert.equal(s.running,false);assert.equal(s.phase,'ready');
+  assert.equal(s.completedSetIds.length,1);
+  s=guardedStep(s,{type:'next'});
+  while(s.phase==='transition')s=guardedStep(s,{type:'tick'});
+  assert.equal(s.exerciseIndex,2);assert.equal(s.running,true);
+  assert.equal(sceneForSession(s).media.sceneId,'C16-CONTROLLED-REACHES');
+  assert.equal(s.completedSetIds.length,1,'Skipping unavailable hands never logs a set');
+ }
 });

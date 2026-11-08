@@ -22,7 +22,7 @@ import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-
 import { useApp } from "@/lib/store";
 import { restoreSavedSession } from "@/v2/saved-session";
 import { workoutsForApp } from "@/v2/unified-workouts";
-import { sceneForSession, exerciseScene, sceneAudio, COOLDOWN_SCENE } from "@/v2/training-scenes";
+import { sceneForSession, exerciseScene, sceneAudio, COOLDOWN_SCENE, trainingSessionReducer as v2SessionReducer } from "@/v2/training-scenes";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import {
   unlockRecordedCoachAudio,
@@ -51,7 +51,7 @@ import {
 import { readAthletePortrait, saveAthletePortrait } from "@/v2/athlete-portrait";
 import { WorkoutOpeningScene } from "@/v2/workout-opening-scene";
 import { recommendProgression, warmupPlanFor } from "@/v2/progression";
-import { createV2Session, v2SessionReducer } from "@/v2/session";
+import { createV2Session } from "@/v2/session";
 import type { V2Mode, V2Session } from "@/v2/types";
 
 export const Route = createFileRoute("/v2")({
@@ -893,8 +893,11 @@ function V2Coach() {
                 data-testid="motion-pending-stage"
                 aria-label={`Approved motion pending for ${exercise?.name ?? "movement"}`}
               >
-                <img src={COACH_REFERENCE} alt="Marcus, your approved trainer" className="h-full w-full object-contain object-top" />
-                <p className="absolute bottom-32 left-3 rounded-lg bg-black/80 px-3 py-2 text-xs text-white/75">Moving demonstration pending for this exercise.</p>
+                <div role="status" className="absolute inset-x-5 top-1/3 rounded-2xl border border-amber-300/40 bg-black/90 p-5 text-center">
+                  <p className="text-lg font-bold">Demonstration unavailable</p>
+                  <p className="mt-3 text-sm text-white/80">Marcus does not yet have a matching moving demonstration for {exercise?.name ?? "this movement"}. This step is paused and will not be counted.</p>
+                  <button type="button" onClick={() => dispatch({type:"next"})} className="mt-4 min-h-11 rounded-xl bg-cyan-300 px-5 font-bold text-black">Skip this step</button>
+                </div>
               </div>
             )}
             {glasses && !realTimeRigReady && (

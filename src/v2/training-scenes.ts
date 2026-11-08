@@ -3,6 +3,8 @@ import recovery from '../data/recovery-scenes.json';
 import audioRuntime from '../../approved-recovery-audio-runtime.json';
 const localAudio = (source:string|undefined) => source ? audioRuntime.items.find(x=>x.sourceURL===source)?.path : undefined;
 import { approvedCoachMedia } from './approved-coach-media';
+import { v2SessionReducer, type V2Action } from './session';
+import { hasApprovedRealTimeCoach } from './rig-release';
 import type { V2Exercise, V2Session } from './types';
 export type TrainingScene = {url:string;sceneId:string;label:string;audioUrl?:string;embeddedAudio?:boolean};
 const trusted = new Map<string,TrainingScene>();
@@ -10,6 +12,13 @@ recovery.forEach((stage,phase)=>stage.items.forEach((item,index)=>{
   const id=item.id ?? `recovery-${phase}-${index}`;
   if ('video' in item && item.video) trusted.set(id,{url:item.video,sceneId:id,label:item.name,audioUrl:localAudio('voice' in item?item.voice:undefined),embeddedAudio:'embedded' in item&&item.embedded===true});
 }));
+// Existing C16 render, visually checked 2026-11-08 for actual empty-hand
+// forward reaches, cornrows/tattoos and supported left cast. Preview repair;
+// this is not a claim of prior owner approval or a replacement of locked clips.
+trusted.set('recovery-0-2', {
+  url:'https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1572f-71b2-7966-91e8-4b1995fe477d.mp4',
+  sceneId:'C16-CONTROLLED-REACHES', label:'Controlled arm reaches',
+});
 export const REST_SCENE = trusted.get('C09-PRE-BREATH-R2')!;
 export const COOLDOWN_SCENE = trusted.get('C10-POST-BREATH-R1')!;
 export function exerciseScene(exercise?:V2Exercise):TrainingScene|undefined {
@@ -30,9 +39,25 @@ export function sceneForSession(session:V2Session) {
 /** Voice-only existing preparation steps remain exact guidance, never unrelated motion. */
 export function sceneAudio(exercise?:V2Exercise): string|undefined {
   if (!exercise?.sceneId) return;
+  // The legacy shoulder-mobility recording is not a reach-specific instruction.
+  if (exercise.sceneId==='recovery-0-2') return;
   for(const stage of recovery) for(let index=0;index<stage.items.length;index++){
     const item=stage.items[index];
     if((item.id??`recovery-${recovery.indexOf(stage)}-${index}`)===exercise.sceneId)
       return localAudio('voice' in item?item.voice:undefined);
   }
+}
+
+/** The visible session cannot start/count a movement without its matching demo. */
+export function trainingSessionReducer(session:V2Session, action:V2Action):V2Session {
+  const canDemonstrate=(s:V2Session)=> {
+    const e=s.workout.exercises[s.exerciseIndex];
+    return Boolean(exerciseScene(e)||hasApprovedRealTimeCoach(e?.motionKey));
+  };
+  if ((session.phase==='ready'||session.phase==='work') && !canDemonstrate(session)
+      && ['start','tick','complete-set'].includes(action.type))
+    return session.running?{...session,running:false}:session;
+  const next=v2SessionReducer(session,action);
+  return next.phase==='work'&&next.running&&!canDemonstrate(next)
+    ? {...next,phase:'ready',phaseSecondsLeft:null,running:false}:next;
 }
