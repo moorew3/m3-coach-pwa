@@ -146,6 +146,25 @@ function Today() {
         </p>
       </header>
 
+      <section className="mb-5 overflow-hidden rounded-3xl border border-cyan-300/35 bg-[#030b13] p-4 text-white"
+        data-testid="m3-immersive-launcher">
+        <div className="flex items-center gap-4">
+          <img src={COACH_REFERENCE} alt="Approved original Marcus coach" loading="eager"
+            className="h-24 w-20 shrink-0 rounded-xl object-cover object-top" />
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[.2em] text-cyan-300">M3 FLEX · MARCUS</p>
+            <h2 className="text-xl font-black">Your trainer. One screen.</h2>
+            <p className="mt-1 text-xs text-white/70">Full-screen coaching, voice, and workouts. Secondary controls stay out of the way.</p>
+          </div>
+        </div>
+        <a href="/v2?focus=1" data-testid="open-marcus-focus"
+          className="mt-4 flex min-h-14 items-center justify-center rounded-xl bg-cyan-300 px-4 text-center text-base font-black text-black">
+          Open Marcus — Full Screen
+        </a>
+        <p className="mt-2 text-[11px] text-white/50">
+          Projection-ready 2D preview. The approved interactive 3D Marcus model is not finished.
+        </p>
+      </section>
       <FlexCoachCommand />
 
       <section data-testid="m3-unified-workout-picker" className="surface-card mb-5 rounded-2xl p-4">
