@@ -356,6 +356,7 @@ export async function startCamera(
 export function stopCamera() {
   cancelAnimationFrame(raf);
   raf = 0;
+  alignmentReadySince = 0;
   stream?.getTracks().forEach((t) => t.stop());
   stream = null;
   if (video) video.srcObject = null;
@@ -393,6 +394,12 @@ export function setOverlayOn(on: boolean) {
   set({ overlayOn: on });
 }
 export function setCalibrating(on: boolean) {
+  if (cam.calibrating && !on) {
+    // Calibration frames were not workout reps. Begin assessment from zero.
+    analyzer = cam.pattern ? new MoveAnalyzer(cam.pattern) : null;
+    set({ calibrating: false, metrics: cam.pattern ? emptyMetrics(cam.pattern) : null });
+    return;
+  }
   set({ calibrating: on });
 }
 /** Upper-body sessions should not force visibility of a supported/unloaded leg. */
@@ -411,6 +418,7 @@ let lastPose = 0;
 let lastHand = 0;
 let frames = 0;
 let fpsAt = 0;
+let alignmentReadySince = 0;
 
 function loop() {
   raf = requestAnimationFrame(loop);
@@ -435,7 +443,18 @@ function loop() {
       fpsAt = now;
     }
     const cal = calibratePose(lm, cam.framing);
-    const metrics = analyzer ? analyzer.push(lm, wall) : null;
+    // After one explicit user consent, avoid a second start button:
+    // a steady 1.2-second valid camera frame completes framing automatically.
+    if (cam.calibrating && cal.ready) {
+      if (!alignmentReadySince) alignmentReadySince = wall;
+      if (wall - alignmentReadySince >= 1200) {
+        alignmentReadySince = 0;
+        setCalibrating(false);
+      }
+    } else {
+      alignmentReadySince = 0;
+    }
+    const metrics = analyzer && !cam.calibrating ? analyzer.push(lm, wall) : null;
     set({ landmarks: lm, calibration: cal, metrics });
     if (metrics?.cue && !cam.calibrating) onCue?.(metrics.cue, metrics);
   }
