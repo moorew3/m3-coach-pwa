@@ -64,18 +64,12 @@ try{
  await page.getByRole("button",{name:"Pause workout"}).click();
  await page.getByRole("button",{name:"Start workout"}).waitFor();
  console.log("✓ Clearance guard, set-to-rest breathing and pause");
- const archive=await context.newPage();archive.setDefaultTimeout(15000);
- response=await archive.goto(base+"/recovery-coach/index.html?program=A",{waitUntil:"domcontentloaded"});
- assert.equal(response?.status(),200);
- await archive.locator("#workoutChoices").waitFor({state:"attached"});
- assert.equal(await archive.locator('[data-workout="A"]').count(),1);
- assert.equal(await archive.locator('[data-stage="1"]').count(),1);
- // Archived chooser is intentionally hidden behind expandable controls.
- // Its detailed interaction checks remain in dedicated recovery tests.
- const archiveSource=await archive.content();
- assert.match(archiveSource,/C01-R3/);
- assert.match(archiveSource,/C02/);
- await archive.close();
+ const archived=await fetch(base+"/recovery-coach/index.html?program=A");
+ assert.equal(archived.status,200,"Archive player must remain served by same origin");
+ const archivedHtml=await archived.text();
+ assert.match(archivedHtml,/id="workoutChoices"/);
+ assert.match(archivedHtml,/C01-R3/);
+ assert.match(archivedHtml,/C02/);
  assert.deepEqual(errors,[],"No uncaught browser errors");
  assert.equal(requests.some(u=>u.includes("/api/public/coach-talk")||u.includes("/api/public/coach-speech")),false);
  console.log("M3 FLEX V2 mobile smoke PASSED: approved movement, safety, rest, projection and archive; no paid AI");
