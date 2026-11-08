@@ -143,7 +143,7 @@ export function CoachMotion({
 
   return (
     <div
-      className={`relative overflow-hidden bg-black ${className}`}
+      className={`${/\b(?:absolute|fixed|sticky)\b/.test(className) ? "" : "relative"} overflow-hidden bg-black ${className}`}
       data-testid="coach-motion"
       data-stable-framing={stableFraming ? "true" : "false"}
       data-failed={failure ? "true" : "false"}
