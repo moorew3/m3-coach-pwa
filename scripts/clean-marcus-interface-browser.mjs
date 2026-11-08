@@ -14,7 +14,7 @@ try {
     });
     // These checks exercise UI/session state without spending provider credits.
     await context.route('**/*',async route=>{
-      if(!route.request().url().startsWith(base)) return route.abort();
+      if(!route.request().url().startsWith(base) && !/\.(mp4|mp3|wav|png)(\?|$)/.test(route.request().url())) return route.abort();
       return route.continue();
     });
     const page=await context.newPage();
@@ -29,7 +29,7 @@ try {
     assert.equal(await page.locator('aside').count(),0);
     await page.getByRole('button',{name:'Coach controls',exact:true}).click();
     assert.equal(await page.locator('aside').isVisible(),true);
-    await page.locator('select').selectOption('pull-arms');
+    await page.getByRole('combobox',{name:'Workout',exact:true}).selectOption('pull-arms');
     await page.getByRole('button',{name:'Coach controls',exact:true}).click();
     await page.getByRole('button',{name:'Start workout',exact:true}).click();
     await page.waitForTimeout(250);
@@ -37,7 +37,7 @@ try {
     await page.getByRole('button',{name:'Complete set and advance',exact:true}).click();
     const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('m3-coach-v2-local-session-v1')));
     assert.equal(before.session.completedSetIds.length,1);
-    await page.getByRole('button',{name:'Hologram display',exact:true}).click();
+    await page.getByRole('combobox',{name:'Workout mode',exact:true}).selectOption('hologram');
     assert.equal(await page.getByTestId('flex-training').getAttribute('data-display-mode'),'true');
     const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('m3-coach-v2-local-session-v1')));
     assert.equal(after.workoutId,before.workoutId);

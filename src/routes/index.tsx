@@ -214,13 +214,13 @@ function Today() {
           original Flex and Marcus media stay protected.
         </p>
         <div className="mt-3 grid gap-2 sm:grid-cols-3">
-          <a href="/playable/" data-testid="open-m3-flex-movie"
+          <a href="/v2?workout=recovery" data-testid="open-m3-flex-movie"
             className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-lime-400 bg-lime-400/20 px-3 text-center text-sm font-black text-lime-100">
-            🎬 Coach Session · Workout Movie
+            Coach workout · Shared screen
           </a>
-          <a href="/playable/#loop" data-testid="open-m3-flex-continuous"
+          <a href="/v2?workout=recovery&focus=1" data-testid="open-m3-flex-continuous"
             className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-cyan-400 bg-cyan-400/10 px-3 text-center text-sm font-bold text-cyan-100">
-            🔁 Continuous Exercise Demo
+            Hologram workout · Shared screen
           </a>
           <a href="/playable/#review" data-testid="open-m3-flex-approvals"
             className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-amber-400 bg-amber-400/10 px-3 text-center text-sm font-bold text-amber-100">
@@ -438,7 +438,7 @@ function Today() {
             </p>
 
             <a
-              href="/recovery-coach/bench-core/index.html"
+              href="/v2?workout=core-foundation"
               data-testid="bench-core-workouts"
               className="tap-target mt-3 flex w-full items-center justify-center rounded-xl border border-accent/70 bg-elevated px-4 py-3 text-center text-sm font-bold text-accent"
             >

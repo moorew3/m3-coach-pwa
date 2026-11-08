@@ -16,16 +16,21 @@ import {
   repsIn, setCommandHandler, setConversationHandler, startListening,
   stopListening, submitCoachConversation, useVoiceControl, voiceControlAvailable, weightIn,
 } from "@/lib/voice-commands";
-import { V2_VIEWPOINTS, V2_WORKOUTS, viewpointFor } from "@/v2/catalog";
+import { V2_VIEWPOINTS, viewpointFor } from "@/v2/catalog";
 import { ORIGINAL_WEEK_WORKOUTS, originalWorkoutForToday } from "@/v2/original-week-workouts";
 import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-media";
-import { recoveredMotionFor } from "@/v2/recovered-motion-media";
+import { useApp } from "@/lib/store";
+import { restoreSavedSession } from "@/v2/saved-session";
+import { workoutsForApp } from "@/v2/unified-workouts";
+import { sceneForSession, exerciseScene, sceneAudio, COOLDOWN_SCENE } from "@/v2/training-scenes";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import {
   unlockRecordedCoachAudio,
   recordedCoachAudioBusy,
   recordedCoachSpeaking,
   subscribeRecordedCoachSpeech,
+  playRecordedCoachAudio,
+  stopRecordedCoachAudio,
 } from "@/v2/recorded-coach-player";
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
@@ -64,7 +69,7 @@ export const Route = createFileRoute("/v2")({
 
 const V2_LOCAL_SAVE = "m3-coach-v2-local-session-v1";
 // Full original week first; keep every existing V2 workout including improved boxing.
-const ALL_V2_WORKOUTS = [...ORIGINAL_WEEK_WORKOUTS, ...V2_WORKOUTS];
+
 
 const modeIcon: Record<V2Mode, typeof Eye> = {
   coach: UserRound,
@@ -84,6 +89,9 @@ const mountainDayKey = () =>
   }).format(new Date());
 
 function V2Coach() {
+  const appState = useApp();
+  const ALL_V2_WORKOUTS = useMemo(()=>workoutsForApp(appState),[appState.savedWorkouts,appState.days]);
+  const workoutById = (id:string|null|undefined)=>ALL_V2_WORKOUTS.find(w=>w.id===id);
   // New sessions open the ORIGINAL plan for today, not the shortened V2 showcase.
   // Paused older sessions are still restored below and can be resumed safely.
   const [workoutId, setWorkoutId] = useState(() => originalWorkoutForToday().id);
@@ -93,6 +101,29 @@ function V2Coach() {
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [hydrated, setHydrated] = useState(false);
+  const [visualStopped, setVisualStopped] = useState(false);
+  const [clearance, setClearance] = useState([false, false, false]);
+  const [confirmWorkout, setConfirmWorkout] = useState<string | null>(null);
+  const cleared = !session.workout.requiresClearance || clearance.every(Boolean);
+  const chooseWorkout = (id: string) => {
+    const next = workoutById(id);
+    if (!next) return;
+    if ((session.running || session.completedSetIds.length > 0) && id !== session.workout.id) {
+      dispatch({type:"pause"}); setConfirmWorkout(id); return;
+    }
+    loadWorkout(id);
+  };
+  const loadWorkout = (id: string) => {
+    const next = workoutById(id); if (!next) return;
+    stopRecordedCoachAudio("trainer-scene"); stopMarcusCue(); stopFridayPremiumCue(); stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
+    let restored:V2Session|null=null;
+    try {restored=restoreSavedSession(window.localStorage.getItem(V2_LOCAL_SAVE+":"+id),next,mountainDayKey());} catch { /* optional local history */ }
+    setVisualStopped(false);
+    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setConfirmWorkout(null); setLiveCue(null);
+    const address=new URL(window.location.href); address.searchParams.set("workout",id);
+    window.history.replaceState(window.history.state,"",address.pathname+address.search+address.hash);
+  };
   const [showOpening, setShowOpening] = useState(false);
   const [openingStarting, setOpeningStarting] = useState(false);
   const [athletePortrait, setAthletePortrait] = useState<string | null>(null);
@@ -166,15 +197,7 @@ function V2Coach() {
     if (!hydrated) return;
     preloadMarcusAudio();
     setAthletePortrait(readAthletePortrait());
-    try {
-      const focusRequested = (new URLSearchParams(window.location.search).get("focus") === "1" || new URLSearchParams(window.location.search).get("display") === "1");
-      let focusSaved = false;
-      try { focusSaved = window.localStorage.getItem("m3-flex-projection-focus-v1") === "1"; }
-      catch { /* optional saved preference */ }
-      if (session.phase === "ready" && !focusRequested && !focusSaved &&
-          !window.sessionStorage.getItem("m3-v2-entrance-seen"))
-        setShowOpening(true);
-    } catch { /* still allow a skippable entrance without storage */ }
+    // The shared app entrance already ran; every workout opens the same screen.
   }, [hydrated]);
 
   useEffect(() => {
@@ -193,57 +216,15 @@ function V2Coach() {
     // A paused local snapshot protects the current workout during a refresh.
     // This never records or persists camera frames, microphone audio or secrets.
     try {
-      const raw = window.localStorage.getItem(V2_LOCAL_SAVE);
-      if (raw) {
-        const saved = JSON.parse(raw) as {
-          version?: number;
-          savedOn?: string;
-          workoutId?: string;
-          session?: Partial<V2Session>;
-        };
-        const savedWorkout = ALL_V2_WORKOUTS.find((item) => item.id === saved.workoutId);
-        const s = saved.session;
-        // Never let yesterday's phone snapshot override today's prescribed
-        // workout. Version 1 had no date stamp, so it is intentionally not
-        // restored after this fix.
-        if (saved.version === 2 && saved.savedOn === mountainDayKey() && savedWorkout && s) {
-          const exIdx = Math.max(0, Math.min(
-            savedWorkout.exercises.length - 1,
-            Number.isInteger(s.exerciseIndex) ? s.exerciseIndex! : 0,
-          ));
-          const setIdx = Math.max(0, Math.min(
-            savedWorkout.exercises[exIdx].sets - 1,
-            Number.isInteger(s.setIndex) ? s.setIndex! : 0,
-          ));
-          const restored: V2Session = {
-            ...createV2Session(savedWorkout),
-            workout: savedWorkout,
-            mode: V2_VIEWPOINTS.some((v) => v.id === s.mode) ? s.mode! : "coach",
-            phase: s.phase === "complete" ? "complete" : "ready",
-            exerciseIndex: exIdx,
-            setIndex: setIdx,
-            elapsedSeconds:
-              typeof s.elapsedSeconds === "number" && Number.isFinite(s.elapsedSeconds)
-                ? Math.max(0, Math.floor(s.elapsedSeconds))
-                : 0,
-            running: false,
-            phaseSecondsLeft: null,
-            completedSetIds: Array.isArray(s.completedSetIds)
-              ? s.completedSetIds.filter((id): id is string => typeof id === "string")
-              : [],
-            targetWeights:
-              s.targetWeights && typeof s.targetWeights === "object" && !Array.isArray(s.targetWeights)
-                ? s.targetWeights
-                : {},
-            setResults:
-              s.setResults && typeof s.setResults === "object" && !Array.isArray(s.setResults)
-                ? s.setResults
-                : {},
-          };
-          setWorkoutId(savedWorkout.id);
-          dispatch({ type: "restore", session: restored });
-        }
-      }
+      const requested = workoutById(new URLSearchParams(window.location.search).get("workout"));
+      const globalRaw=window.localStorage.getItem(V2_LOCAL_SAVE);
+      let savedId:string|undefined;
+      try {savedId=JSON.parse(globalRaw??"null")?.workoutId;} catch { /* corrupt entry ignored */ }
+      const selected=requested??workoutById(savedId)??originalWorkoutForToday();
+      const raw=window.localStorage.getItem(V2_LOCAL_SAVE+":"+selected.id)??globalRaw;
+      const restored=restoreSavedSession(raw,selected,mountainDayKey());
+      setWorkoutId(selected.id);
+      if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset",workout:selected});
     } catch {
       // Storage may be unavailable; use the in-memory session in that case.
     }
@@ -253,12 +234,14 @@ function V2Coach() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.localStorage.setItem(V2_LOCAL_SAVE, JSON.stringify({
+      const snapshot=JSON.stringify({
         version: 2,
         savedOn: mountainDayKey(),
         workoutId: session.workout.id,
         session: { ...session, running: false },
-      }));
+      });
+      window.localStorage.setItem(V2_LOCAL_SAVE,snapshot);
+      window.localStorage.setItem(V2_LOCAL_SAVE+":"+session.workout.id,snapshot);
     } catch {
       // Private-browsing/storage restrictions must never prevent training.
     }
@@ -278,13 +261,18 @@ function V2Coach() {
     stopMarcusCue();
     stopListening();
     stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
     stopFridayPremiumCue();
   }, []);
 
   const exercise = session.workout.exercises[session.exerciseIndex];
   const viewpoint = viewpointFor(session.mode);
-  const media = approvedCoachMedia(exercise);
-  const recoveredMedia = media ? undefined : recoveredMotionFor(exercise);
+  const media = exerciseScene(exercise);
+  const resolvedScene = sceneForSession(session);
+  const mediaFailed = useCallback(() => {
+    dispatch({type:"pause"}); setVisualStopped(true);
+    setVoiceError("The matching approved scene could not play. Workout paused; retry the video before resuming.");
+  }, []);
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   useEffect(() => {
     if (!hydrated) return;
@@ -365,7 +353,8 @@ function V2Coach() {
     stopMarcusCue();
     stopFridayPremiumCue();
     stopDetailedExerciseSpeech();
-
+    stopRecordedCoachAudio("trainer-scene");
+    stopRecordedCoachAudio("trainer-scene");
 
     let message = "";
     const setupCue = exercise.cues[0] ?? "Get into a stable starting position.";
@@ -380,7 +369,7 @@ function V2Coach() {
       message = `Rest ${exercise.restSeconds} seconds. Reset your breathing and prepare for set ${session.setIndex + 1}.`;
     } else if (session.phase === "transition") {
       const setWord = exercise.sets === 1 ? "set" : "sets";
-      message = `Next: ${exercise.name}. ${exercise.sets} ${setWord}, ${exercise.reps ?? `${exercise.seconds ?? 30} seconds`}. ${setupCue}`;
+      message = `Rest ${session.phaseSecondsLeft ?? 8} seconds. Next: ${exercise.name}. ${exercise.sets} ${setWord}, ${exercise.reps ?? `${exercise.seconds ?? 30} seconds`}. ${setupCue}`;
     } else if (session.phase === "complete") {
       message = "Workout complete. Good work finishing your session.";
     }
@@ -390,7 +379,12 @@ function V2Coach() {
       if (voiceOn) {
         let cancelled = false;
         const announce = async () => {
-          const started = session.phase === "work"
+          const sceneVoice = sceneAudio(exercise);
+          const started = session.phase === "complete" && COOLDOWN_SCENE.audioUrl
+            ? await playRecordedCoachAudio(COOLDOWN_SCENE.audioUrl, "trainer-scene")
+            : session.phase === "work" && media?.embeddedAudio ? true
+            : session.phase === "work" && sceneVoice ? await playRecordedCoachAudio(sceneVoice, "trainer-scene")
+            : session.phase === "work"
             ? await playMarcusTrainer(exercise.motionKey)
             : session.phase === "transition"
               ? await playMarcusTrainer(exercise.motionKey, "name")
@@ -403,7 +397,9 @@ function V2Coach() {
           cancelled = true;
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
           stopMarcusCue();
+          stopRecordedCoachAudio("trainer-scene");
         };
       }
     }
@@ -414,7 +410,7 @@ function V2Coach() {
 
   // Brief reminders during the set; never infer unseen reps or form.
   useEffect(() => {
-    if (!session.running || !exercise || !["work", "rest"].includes(session.phase)) return;
+    if (!session.running || !exercise || !["work", "rest"].includes(session.phase) || media?.embeddedAudio || exercise.sceneId) return;
     const key = `${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase}`;
     if (coachingClock.current.key !== key) {
       coachingClock.current = { key, start: session.elapsedSeconds, last: "" };
@@ -453,9 +449,11 @@ function V2Coach() {
   // ignores the coach's own spoken responses. Workout state remains authoritative.
   useEffect(() => {
     setCommandHandler((command, phrase) => {
+      if (!cleared && ["start","resume","completeSet","next"].includes(command)) { setLiveCue("Confirm your existing seated-exercise clearance before starting."); return; }
       switch (command) {
         case "start":
         case "resume":
+          setVisualStopped(false);
           dispatch({ type: "start" });
           setLiveCue("Workout resumed.");
           return;
@@ -464,6 +462,7 @@ function V2Coach() {
           stopMarcusCue();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
           dispatch({ type: "pause" });
           setLiveCue("Workout paused.");
           return;
@@ -540,6 +539,7 @@ function V2Coach() {
           if (voiceOn) {
             if (session.workout.id === "weekly-fri" && next) {
               stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
               void playFridayPremiumCue(next.motionKey).then((started) => {
                 if (!started) speakDetailedExercise(
                   `${line} ${next.cues[0] ?? "Get into position."}`,
@@ -558,6 +558,7 @@ function V2Coach() {
           setVoiceOn(false);
           stopMarcusCue();
           stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
           stopFridayPremiumCue();
           return;
         case "unmuteCoach":
@@ -571,6 +572,7 @@ function V2Coach() {
           stopMarcusCue();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
           dispatch({ type: "pause" });
           stopListening();
           setLiveCue("Workout paused. Your session stays here.");
@@ -588,6 +590,7 @@ function V2Coach() {
       stopMarcusTrainer();
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
       stopCoachReply();
       interruptLiveFlex();
 
@@ -658,7 +661,7 @@ function V2Coach() {
     };
   }, [
     session.exerciseIndex, session.workout, session.phase,
-    session.setIndex, exercise?.id, exercise?.motionKey,
+    session.setIndex, cleared, exercise?.id, exercise?.motionKey,
     exercise?.name, exercise?.sets, exercise?.reps, targetWeight, voiceOn,
   ]);
 
@@ -667,6 +670,7 @@ function V2Coach() {
       stopCoachReply();
       stopMarcusCue();
       stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
       stopFridayPremiumCue();
       setVoiceOn(false);
       setVoiceError(null);
@@ -696,13 +700,17 @@ function V2Coach() {
       stopMarcusCue();
       stopFridayPremiumCue();
       stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
+      stopRecordedCoachAudio("trainer-scene");
       dispatch({ type: "pause" });
       return;
     }
 
+    if (!cleared) { setLiveCue("Confirm your seated-exercise clearance below before starting."); return; }
     // A Start/Resume tap is a browser-approved user gesture. Use it to keep
     // coach audio unlocked across Coach, Shadow, Manual and Glasses scenes.
     unlockRecordedCoachAudio();
+    setVisualStopped(false);
     if (voiceControlAvailable() && !voiceControl.listening) startListening();
     lastDirectedCue.current = "";
     dispatch({ type: "start" });
@@ -726,32 +734,46 @@ function V2Coach() {
     dispatch({ type: "start" });
   };
 
-  const stageTitle = session.phase === "complete" ? "Workout complete"
-    : session.phase === "rest" ? "Rest / get ready" : exercise?.name ?? "";
-  const showCoach = session.mode === "coach" || session.mode === "shadow";
-  const glasses = session.mode === "glasses";
-  const isFighterMovement = exercise?.category === "boxing" || exercise?.category === "kickboxing";
-  const guardClip = isFighterMovement ? coachMotionFor("guardReset") : undefined;
-  const stageMedia = session.phase === "rest" && guardClip ? guardClip : (media ?? recoveredMedia);
-  const stableCoachFraming = exercise?.motionKey === "hamstringCurl";
-  const stageUsesRecovered = Boolean(!media && recoveredMedia && stageMedia === recoveredMedia);
-  const stagePreloadUrl = isFighterMovement
-    ? session.phase === "rest" ? media?.url : guardClip?.url
-    : preload?.url;
-  const videoPlaying = session.running && (session.phase === "work" ||
-    (session.phase === "rest" && isFighterMovement && Boolean(guardClip)));
-  // Full 6s technique demonstrations play seven complete guard-to-guard
-  // cycles within the 40s bell. The full-length combo is nearly 1:1.
-  const videoRate = session.phase === "work" && isFighterMovement && exercise?.seconds === 40
-    ? exercise.motionKey === "boxingCombination" ? 1.017 : 1.05
-    : 1;
-  const realTimeRigReady = (showCoach || glasses) && hasApprovedRealTimeCoach(exercise?.motionKey);
+  const stageTitle = session.phase === "complete" ? "Cooldown breathing"
+    : session.phase === "rest" || session.phase === "transition" ? "Rest · breathe" : exercise?.name ?? "";
+  const showCoach = true;
+  const glasses = false;
+  const stageMedia = resolvedScene.media;
+  const stableCoachFraming = true;
+  const stagePreloadUrl = session.phase === "rest" || session.phase === "transition" ? media?.url : COOLDOWN_SCENE.url;
+  const videoPlaying = resolvedScene.playing && !visualStopped;
+  const videoRate = 1;
+  const realTimeRigReady = session.phase === "work" && hasApprovedRealTimeCoach(exercise?.motionKey);
   const flexPresence = resolveFlexPresence({
     thinking: flexThinking,
     speaking: liveSpeechPlaying || recordedSpeechPlaying || liveProviderSpeaking,
     demonstrating: Boolean(stageMedia && videoPlaying),
     listening: voiceControl.listening,
   });
+
+  const selectorPanel = (
+    <section data-testid="unified-workout-selectors" className="my-3 grid grid-cols-2 gap-2 rounded-2xl bg-[#111820] p-3">
+      <label className="col-span-2 text-xs font-semibold text-white/60">Workout
+        <select aria-label="Workout" value={session.workout.id} onChange={e=>chooseWorkout(e.target.value)} className="mt-1 min-h-11 w-full rounded-xl border border-white/15 bg-[#080b0f] px-3 text-sm text-white">
+          {ALL_V2_WORKOUTS.map(w=><option key={w.id} value={w.id}>{w.title}</option>)}
+        </select>
+      </label>
+      <label className="min-w-0 text-xs font-semibold text-white/60">Exercise
+        <select aria-label="Exercise" value={session.exerciseIndex} onChange={e=>{stopRecordedCoachAudio("trainer-scene");dispatch({type:"select-exercise",exerciseIndex:Number(e.target.value)});}} className="mt-1 min-h-11 w-full rounded-xl border border-white/15 bg-[#080b0f] px-2 text-sm text-white">
+          {session.workout.exercises.map((e,i)=><option key={e.id} value={i}>{i+1}. {e.name}</option>)}
+        </select>
+      </label>
+      <label className="min-w-0 text-xs font-semibold text-white/60">Mode
+        <select aria-label="Workout mode" value={projectionFocus?"hologram":"coach"} onChange={e=>changeProjectionFocus(e.target.value==="hologram")} className="mt-1 min-h-11 w-full rounded-xl border border-white/15 bg-[#080b0f] px-2 text-sm text-white">
+          <option value="coach">Coach</option><option value="hologram">Hologram</option>
+        </select>
+      </label>
+      {session.workout.requiresClearance && <details className="col-span-2 rounded-xl bg-black/30 p-3" open={!cleared}>
+        <summary className="cursor-pointer text-xs font-bold text-cyan-100">Seated setup {cleared?"confirmed":"· confirm before starting"}</summary>
+        {["My clinician has cleared these seated movements and resistance.","I will keep my left leg supported and follow my actual weight-bearing restrictions.","My clinician cleared this duration and effort; I will stop for new pain, swelling or cast pressure."].map((text,i)=><label key={text} className="mt-3 flex items-start gap-2 text-xs leading-relaxed"><input type="checkbox" aria-label={text} checked={clearance[i]} onChange={e=>setClearance(old=>old.map((v,j)=>j===i?e.target.checked:v))} className="mt-0.5 size-5 shrink-0"/>{text}</label>)}
+      </details>}
+    </section>
+  );
 
   return (
     <main className={projectionFocus ? "h-dvh min-h-0 overflow-hidden bg-black text-white" : "min-h-dvh bg-[#080b0f] text-white"} data-projection-focus={projectionFocus ? "true" : "false"} data-testid="flex-training" data-display-mode={projectionFocus}>
@@ -829,13 +851,12 @@ function V2Coach() {
           <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
         </div>}
         {!projectionFocus && <>
-          <div className="mt-3 flex gap-2" aria-label="Training display">
-            <button type="button" aria-pressed="true" className="min-h-11 flex-1 rounded-xl bg-cyan-300 px-3 text-sm font-bold text-black">Workout app</button>
-            <button type="button" data-testid="projection-focus-enter" onClick={() => changeProjectionFocus(true)} className="min-h-11 flex-1 rounded-xl bg-white/10 px-3 text-sm font-bold">Hologram display</button>
-            <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"} onClick={() => void toggleVoice()} className="grid min-h-11 w-12 place-items-center rounded-xl bg-white/10">{voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}</button>
+          {selectorPanel}
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"} onClick={() => void toggleVoice()} className="flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}Marcus voice {voiceOn?"on":"off"}</button>
+          {voiceControlAvailable() && <button type="button" aria-pressed={voiceControl.listening} onClick={() => voiceControl.listening ? stopListening() : startListening()} className="mt-2 flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceControl.listening ? <Mic className="size-4" /> : <MicOff className="size-4" />}{voiceControl.listening ? "Mic on" : "Talk to Marcus"}</button>}
           </div>
-          {voiceControlAvailable() && <button type="button" aria-pressed={voiceControl.listening} onClick={() => voiceControl.listening ? stopListening() : startListening()} className="mt-2 flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceControl.listening ? <Mic className="size-4" /> : <MicOff className="size-4" />}{voiceControl.listening ? "Marcus is listening · tap to stop" : "Enable hands-free coaching"}</button>}
-          {liveCue && <p role="status" data-testid="marcus-current-cue" className="mt-3 rounded-xl bg-cyan-300/10 p-3 text-sm text-cyan-100">{liveCue}</p>}
+          {liveCue && <details className="mt-2"><summary className="cursor-pointer py-2 text-xs text-cyan-200">Marcus’s current guidance</summary><p role="status" data-testid="marcus-current-cue" className="mt-3 rounded-xl bg-cyan-300/10 p-3 text-sm text-cyan-100">{liveCue}</p></details>}
           {voiceError && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceError}</p>}
           {voiceControl.error && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceControl.error}</p>}
         </>}
@@ -848,7 +869,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[68dvh] min-h-[420px] max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage">
+            : "relative h-[68dvh] min-h-[420px] max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -859,18 +880,16 @@ function V2Coach() {
                 key={stageMedia.url}
                 url={stageMedia.url}
                 playing={showCoach && videoPlaying}
+                muted={!voiceOn || !stageMedia.embeddedAudio || flexThinking || liveProviderSpeaking}
+                onPlaybackFailure={mediaFailed}
                 rate={videoRate}
                 stableFraming={stableCoachFraming}
-                cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase === "rest" ? "rest" : "work"}`}
+                cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase}`}
                 preloadUrl={stagePreloadUrl}
                 className={projectionFocus
                   ? "absolute inset-0 h-full w-full"
                   : "absolute inset-x-0 top-[90px] bottom-[124px] w-full lg:top-[72px] lg:bottom-[118px]"}
-                label={
-                  stageUsesRecovered
-                    ? `Motion demo of ${exercise?.name ?? "movement"}`
-                    : `Approved coach demonstrating ${exercise?.name ?? "movement"}`
-                }
+                label={`Marcus · ${resolvedScene.role} · ${stageMedia.label}`}
               />
             )}
             {showCoach && !realTimeRigReady && !stageMedia && (
@@ -970,7 +989,7 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={toggleWorkout}
-                      disabled={session.phase === "complete"}
+                      disabled={session.phase === "complete" || !cleared}
                       className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-black disabled:opacity-35"
                       aria-label={session.running ? "Pause workout" : "Start workout"}
                     >
@@ -980,12 +999,14 @@ function V2Coach() {
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "complete-set" })}
-                      disabled={session.phase !== "work"}
+                      disabled={session.phase !== "work" || !session.running || !cleared}
                       className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
                       aria-label="Complete set and advance"
                     >
-                      <SkipForward className="size-5" />
+                      <Check className="size-5" />
                     </button>
+                    <button type="button" aria-label="Stop workout" onClick={() => {setVisualStopped(true);dispatch({type:"pause"}); stopMarcusCue(); stopFridayPremiumCue(); stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");stopRecordedCoachAudio("trainer-scene");stopListening();stopCamera();setClearance([false,false,false]);setLiveCue("Workout stopped. Your progress is saved.");}} className="min-h-11 rounded-xl bg-red-500/20 px-3 text-xs font-bold text-red-200">Stop</button>
                     {!projectionFocus && <button
                       type="button"
                       onClick={() => dispatch({ type: "reset", workout })}
@@ -1014,6 +1035,7 @@ function V2Coach() {
                 </button>
               </div>
             )}
+            {projectionFocus && selectorPanel}
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
               <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 p-2">
                 <div className="flex items-center gap-2">
@@ -1032,30 +1054,6 @@ function V2Coach() {
                 >
                   {athletePortrait ? "Change my avatar" : "Add my avatar"}
                 </button>
-              </div>
-              <p className="px-1 text-[10px] font-black uppercase tracking-[.24em] text-white/50">
-                One workout · four viewpoints
-              </p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {V2_VIEWPOINTS.map((mode) => {
-                  const Icon = modeIcon[mode.id];
-                  const active = session.mode === mode.id;
-                  return (
-                    <button
-                      key={mode.id}
-                      type="button"
-                      onClick={() => dispatch({ type: "set-mode", mode: mode.id })}
-                      className={`min-h-[76px] rounded-2xl border p-3 text-left ${
-                        active
-                          ? "border-cyan-300 bg-cyan-300/15"
-                          : "border-white/10 bg-black/25"
-                      }`}
-                    >
-                      <Icon className={`size-5 ${active ? "text-cyan-300" : "text-white/55"}`} />
-                      <p className="mt-2 text-sm font-black">{mode.label}</p>
-                    </button>
-                  );
-                })}
               </div>
             </section>
 
@@ -1131,6 +1129,7 @@ function V2Coach() {
                     stopMarcusCue();
                     stopFridayPremiumCue();
                     stopDetailedExerciseSpeech();
+    stopRecordedCoachAudio("trainer-scene");
                     void playFridayPremiumCue(exercise?.motionKey).then((started) => {
                       setVoiceError(started ? null : "Exercise coaching could not play. Tap Replay exercise coaching to retry.");
                     });
@@ -1182,7 +1181,7 @@ function V2Coach() {
                     {voiceControl.listening ? `Stop ${FLEX_NAME} listening` : `Enable ${FLEX_NAME} listening`}
                   </button>
                   <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-                    Start or Resume enables hands-free listening with microphone permission. Ask “Flex, how do I do this?” Android recognition restarts after silence while the page is open; background listening depends on phone restrictions.
+                    Start or Resume enables hands-free listening with microphone permission. Ask “Marcus, how do I do this?” Android recognition restarts after silence while the page is open; background listening depends on phone restrictions.
                   </p>
                   {voiceControl.heard && (
                     <p className="mt-1 text-[11px] text-cyan-200">
@@ -1227,36 +1226,18 @@ function V2Coach() {
             </section>
 
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-4">
-              <label className="text-[10px] font-black uppercase tracking-[.24em] text-white/50">
-                Workout
-                <select
-                  value={workoutId}
-                  onChange={(event) => {
-                    const nextWorkout = ALL_V2_WORKOUTS.find((w) => w.id === event.target.value) ??
-                      originalWorkoutForToday();
-                    setWorkoutId(nextWorkout.id);
-                    dispatch({ type: "reset", workout: nextWorkout });
-                    setLiveCue(null);
-                  }}
-                  className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#111920] px-3 text-sm font-bold text-white"
-                >
-                  {ALL_V2_WORKOUTS.map((item) => (
-                    <option key={item.id} value={item.id}>{item.title} · {item.exercises.length} exercises</option>
-                  ))}
-                </select>
-              </label>
               <p className="mt-2 text-xs text-white/50">{workout.focus}</p>
-              {session.workout.exercises.some((item) => !approvedCoachMedia(item) && !recoveredMotionFor(item)) && (
+              {session.workout.exercises.some((item) => !exerciseScene(item)) && (
                 <p role="status" className="mt-2 text-xs text-amber-200">
                   Moving demos still missing: {session.workout.exercises
-                    .filter((item) => !approvedCoachMedia(item) && !recoveredMotionFor(item))
+                    .filter((item) => !exerciseScene(item))
                     .map((item) => item.name).join(", ")}. These exercises remain in your workout.
                 </p>
               )}
               <div className="mt-3 space-y-1">
                 {session.workout.exercises.map((item, index) => {
-                  const approved = Boolean(approvedCoachMedia(item));
-                  const recovered = !approved ? recoveredMotionFor(item) : undefined;
+                  const approved = Boolean(exerciseScene(item));
+                  const recovered = false;
                   const selected = index === session.exerciseIndex;
                   return (
                     <button
@@ -1322,7 +1303,7 @@ function V2Coach() {
                     ))}
                   </div>
                 )}
-                {session.mode === "manual" && (
+                {exercise?.category === "strength" && (
                   <div className="mt-4 border-t border-white/10 pt-3">
                     <p className="text-[10px] font-black uppercase tracking-[.24em] text-white/50">Actual sets</p>
                     <div className="mt-2 space-y-2">
@@ -1384,6 +1365,7 @@ function V2Coach() {
           </aside>)}
         </div>
       </div>
+      {confirmWorkout && <div role="dialog" aria-modal="true" aria-label="Change workout" className="fixed inset-0 z-[80] grid place-items-center bg-black/80 p-5"><div className="max-w-sm rounded-2xl bg-[#111820] p-5"><h2 className="text-lg font-bold">Change workout?</h2><p className="mt-2 text-sm text-white/70">The current session is paused. Your current workout position stays saved. You can return to it from the Workout dropdown.</p><div className="mt-4 flex gap-3"><button type="button" onClick={()=>setConfirmWorkout(null)} className="min-h-11 rounded-xl bg-white/10 px-4">Keep current</button><button type="button" onClick={()=>loadWorkout(confirmWorkout)} className="min-h-11 rounded-xl bg-cyan-300 px-4 font-bold text-black">Change workout</button></div></div></div>}
       {showOpening && (
         <WorkoutOpeningScene
           starting={openingStarting}

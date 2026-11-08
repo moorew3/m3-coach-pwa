@@ -1,3 +1,4 @@
+import { workoutsForApp } from "@/v2/unified-workouts";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Glasses } from "lucide-react";
 import { useState } from "react";
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/program")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Program,
+  component: UnifiedPrograms,
 });
 
 const SESSION_KEYS = SESSIONS.map((s) => s.key);
@@ -274,4 +275,9 @@ function Program() {
       </details>
     </main>
   );
+}
+function UnifiedPrograms() {
+ const state=useApp(); const workouts=workoutsForApp(state);
+ const [chooser,setChooser]=useState(false); const day=currentDayNumber(state);
+ return <main className="px-4 py-6" data-testid="m3-unified-program"><h1 className="text-3xl font-bold">Your workouts</h1><p className="mt-2 text-sm text-muted-foreground">Every workout uses the same Marcus screen. Choose Coach or Hologram from its Mode dropdown.</p><div className="mt-5 space-y-2">{workouts.map(w=><a key={w.id} href={"/v2?workout="+encodeURIComponent(w.id)} className="tap-target flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-bold">{w.title}<span className="text-xs font-normal text-muted-foreground">{w.exercises.length} steps</span></a>)}</div><button type="button" onClick={()=>setChooser(true)} className="tap-target mt-4 w-full rounded-xl border border-border px-3 text-sm font-bold">Saved workouts and activity builder</button><ActivityChooser day={day} open={chooser} onClose={()=>setChooser(false)} onSelect={()=>{window.location.assign("/v2?workout=session-"+day);}}/><a href="/playable/#review" className="tap-target mt-4 flex items-center justify-center text-sm text-primary">Review exercise scenes</a></main>;
 }

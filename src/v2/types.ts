@@ -32,6 +32,9 @@ export type V2Exercise = {
   warmupStyle?: "compound" | "small" | "none";
   loadClass?: "upper" | "lower" | "machine" | "bodyweight";
   optional?: boolean;
+  sceneId?: string;
+  stageRole?: "preparation" | "exercise" | "cooldown";
+  transitionSeconds?: number;
 };
 
 export type V2Workout = {
@@ -39,6 +42,7 @@ export type V2Workout = {
   title: string;
   focus: string;
   exercises: V2Exercise[];
+  requiresClearance?: boolean;
 };
 
 export type V2SetEntry = {

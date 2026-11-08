@@ -1,3 +1,4 @@
+import { UnifiedWorkoutEntry } from "@/components/UnifiedWorkoutEntry";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Activity, ArrowUpRight, Info, MonitorPlay } from "lucide-react";
@@ -17,8 +18,10 @@ export const Route = createFileRoute("/recovery")({
       { name: "description", content: "Original M3 FLEX app with the same approved Flex and Marcus recovery exercise player, workout history and safety checks." },
     ],
   }),
-  component: UnifiedRecovery,
+  component: RecoveryEntry,
 });
+
+function RecoveryEntry() { const {program}=Route.useSearch(); return <UnifiedWorkoutEntry workout={program}/>; }
 
 function UnifiedRecovery() {
   const { program } = Route.useSearch();

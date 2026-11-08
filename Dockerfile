@@ -9,6 +9,7 @@ COPY . .
 ENV VITE_FLEX_PAID_AI_ENABLED=false
 RUN node scripts/stage-marcus-runtime.mjs && node scripts/stage-pose-runtime.mjs && npm run build
 RUN node --check public/playable/marcus-dub.js && node scripts/playable-movie-qa.test.mjs
+RUN node --test scripts/unified-training-scenes.test.mjs
 RUN node scripts/flex-native-coach-qa.test.mjs
 RUN node scripts/flex-answer-audio-qa.test.mjs
 RUN node --check public/flex-local-ai-worker.mjs && node scripts/flex-conversation-qa.test.mjs

@@ -1,3 +1,4 @@
+import { UnifiedWorkoutEntry } from "@/components/UnifiedWorkoutEntry";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -92,7 +93,7 @@ export const Route = createFileRoute("/workout/$day")({
       },
     ],
   }),
-  component: Workout,
+  component: UnifiedDayEntry,
 });
 
 const mmss = (sec: number) =>
@@ -1932,4 +1933,9 @@ function CompletedScreen({
       </button>
     </main>
   );
+}
+function UnifiedDayEntry() {
+ const {day}=Route.useParams();
+ const state=useApp();
+ return <UnifiedWorkoutEntry workout={state.days[Number(day)]?.sessionPlan?.exercises.length ? "session-"+day : "weekly-"+planForDay(Number(day)).key}/>;
 }

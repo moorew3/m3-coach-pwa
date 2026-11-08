@@ -1,0 +1,75 @@
+{
+  "movements": {
+    "brace": {
+      "name": "Seated 360° abdominal brace",
+      "setup": "Sit on a stable, locked bench with back support if needed and the injured casted leg comfortably supported, not pushing into the floor.",
+      "cue": "Breathe out slowly. Gently firm your midsection without holding your breath, moving the cast or tensing into pain. Reset between gentle contractions.",
+      "limit": "Unloaded · gentle effort · no breath-holding"
+    },
+    "palms": {
+      "name": "Seated palms-together midline press",
+      "setup": "Sit upright on the bench with the cast supported. Place palms lightly together at chest height; stay in a comfortable shoulder range.",
+      "cue": "Press your palms together lightly while keeping ribs stacked over hips. Exhale softly without leaning or leg bracing. Release as needed.",
+      "limit": "Unloaded · no forceful shoulder pressing"
+    },
+    "rotation": {
+      "name": "Seated small-range torso turns",
+      "setup": "Sit tall with supported back and injured leg stable. Cross arms loosely over chest; move only if your clinician specifically cleared trunk rotation.",
+      "cue": "Gently turn your upper body a small comfortable distance, return to center, then alternate. Do not twist through your cast or push with either foot.",
+      "limit": "No weights · small range · skip if spine/hip/leg symptoms"
+    },
+    "reach": {
+      "name": "Bench-supported alternating forward reach",
+      "setup": "Sit upright with the bench back supporting you and the leg supported. Keep both arms near torso before each reach.",
+      "cue": "Reach one hand a short comfortable distance forward and return without leaning or pushing with the injured foot. Alternate slowly.",
+      "limit": "Unloaded · controlled range · shoulder clearance required"
+    },
+    "pallofL": {
+      "name": "Seated Pallof hold · band pulling from left",
+      "setup": "Secure a very light resistance band to a stable chest-height rack anchor to your LEFT side, away from the cast. Sit on a locked bench with the leg supported; no band behind the neck or around the cast.",
+      "cue": "Hold the band at your chest or gently press forward within your shoulder clearance. Keep torso facing straight ahead and breathe. Do not push your foot into the floor.",
+      "limit": "Optional very light resistance · stable chest-height rack anchor"
+    },
+    "pallofR": {
+      "name": "Seated Pallof hold · band pulling from right",
+      "setup": "Move the very light band to a stable chest-height rack anchor on your RIGHT side, far from the injured cast. Keep bench stable and cast independently supported.",
+      "cue": "Maintain a tall neutral torso without twisting toward the band. Exhale as you hold or press gently in your cleared range; no leg bracing.",
+      "limit": "Optional very light resistance · independent cast support"
+    },
+    "offsetL": {
+      "name": "Seated offset dumbbell hold · left hand",
+      "setup": "On a locked bench with supported cast and torso, hold one clinician-cleared light dumbbell in your LEFT hand at your side. Keep neck and shoulders relaxed.",
+      "cue": "Stay upright against the gentle side pull without leaning or holding your breath. Set weight down safely if shoulder, grip or leg pressure develops.",
+      "limit": "Clinician-cleared light load only · no leaning"
+    },
+    "offsetR": {
+      "name": "Seated offset dumbbell hold · right hand",
+      "setup": "On a locked bench with supported cast, hold one clinician-cleared light dumbbell in your RIGHT hand at your side. Do not prop it against your leg.",
+      "cue": "Maintain upright ribs over hips. Keep the cast relaxed and supported; do not lean, sway or brace with the injured foot.",
+      "limit": "Clinician-cleared light load only · no leaning"
+    }
+  },
+  "routines": {
+    "foundation": {
+      "label": "Core A · Bench foundation",
+      "info": "Four unloaded movements emphasizing gentle bracing, posture and controlled upper-body motion.",
+      "ids": [
+        "brace",
+        "palms",
+        "rotation",
+        "reach"
+      ]
+    },
+    "resistance": {
+      "label": "Core B · Anti-rotation",
+      "info": "A bench-based core circuit using very light, clinician-cleared resistance. Requires a stable chest-height band anchor and an appropriately light dumbbell.",
+      "ids": [
+        "brace",
+        "pallofL",
+        "pallofR",
+        "offsetL",
+        "offsetR"
+      ]
+    }
+  }
+}

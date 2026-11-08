@@ -30,9 +30,9 @@ export function resolveFlexPresence({
 }
 
 export const FLEX_PRESENCE_LABEL: Record<FlexPresenceState, string> = {
-  idle: "Flex · Ready",
-  listening: "Flex · Listening",
-  thinking: "Flex · Thinking",
-  speaking: "Flex · Speaking",
-  demonstrating: "Flex · Demonstrating",
+  idle: "Marcus · Ready",
+  listening: "Marcus · Listening",
+  thinking: "Marcus · Thinking",
+  speaking: "Marcus · Speaking",
+  demonstrating: "Marcus · Demonstrating",
 };

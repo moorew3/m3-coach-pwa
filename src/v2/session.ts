@@ -58,14 +58,11 @@ function advance(session: V2Session): V2Session {
   }
 
   if (session.exerciseIndex + 1 < session.workout.exercises.length) {
-    return {
-      ...session,
-      phase: "transition",
-      exerciseIndex: session.exerciseIndex + 1,
-      setIndex: 0,
-      phaseSecondsLeft: 8,
-      running: true,
-    };
+    const seconds = exercise.transitionSeconds ?? 8;
+    const next = { ...session, exerciseIndex: session.exerciseIndex + 1, setIndex: 0 };
+    return seconds > 0
+      ? { ...next, phase: "transition", phaseSecondsLeft: seconds, running: true }
+      : beginWork(next);
   }
 
   return { ...session, phase: "complete", running: false, phaseSecondsLeft: null };
@@ -138,6 +135,7 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
         cleanForm: action.cleanForm,
       });
     case "start":
+      if (session.phase === "complete") return session;
       return session.phase === "ready" ? beginWork(session) : { ...session, running: true };
     case "pause":
       return { ...session, running: false };
@@ -157,6 +155,7 @@ export function v2SessionReducer(session: V2Session, action: V2Action): V2Sessio
       return next;
     }
     case "complete-set": {
+      if (!session.running || session.phase !== "work") return session;
       const completedSetIds = session.completedSetIds.includes(setKey(session))
         ? session.completedSetIds
         : [...session.completedSetIds, setKey(session)];

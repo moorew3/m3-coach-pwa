@@ -1,3 +1,4 @@
+import { UnifiedWorkoutEntry } from "@/components/UnifiedWorkoutEntry";
 /**
  * COACHED SESSION — PHONE + DESKTOP
  * ------------------------------------------------------------------
@@ -139,7 +140,7 @@ export const Route = createFileRoute("/coach/$day")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: CoachSession,
+  component: UnifiedDayEntry,
 });
 
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.max(0, s) % 60).padStart(2, "0")}`;
@@ -2532,4 +2533,10 @@ function CoachSession() {
       />
     </main>
   );
+}
+
+function UnifiedDayEntry() {
+ const {day}=Route.useParams();
+ const state=useApp();
+ return <UnifiedWorkoutEntry workout={state.days[Number(day)]?.sessionPlan?.exercises.length ? "session-"+day : "weekly-"+planForDay(Number(day)).key}/>;
 }

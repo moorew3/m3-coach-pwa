@@ -16,6 +16,8 @@ export function CoachMotion({
   poster,
   mirrored = false,
   playing = true,
+  muted = true,
+  onPlaybackFailure,
   rate = 1,
   preloadUrl,
   className = "",
@@ -30,6 +32,8 @@ export function CoachMotion({
   poster?: string;
   mirrored?: boolean;
   playing?: boolean;
+  muted?: boolean;
+  onPlaybackFailure?: () => void;
   /** Playback speed so the coach's cadence matches the movement's target tempo. */
   rate?: number;
   /** Next movement's clip — fetched quietly so the transition is instant. */
@@ -89,6 +93,8 @@ export function CoachMotion({
     if (!playing) clearStalledTimer();
   }, [playing, rate, url, failure, loaded, attempt]);
 
+  useEffect(() => { if (failure) onPlaybackFailure?.(); }, [failure, onPlaybackFailure]);
+
   const still = poster || COACH_REFERENCE;
   if (vimeoId)
     return (
@@ -129,7 +135,7 @@ export function CoachMotion({
             ref={videoRef}
             src={url}
             poster={still}
-            muted
+            muted={muted}
             playsInline
             autoPlay={playing}
             loop

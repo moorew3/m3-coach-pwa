@@ -53,7 +53,7 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance, onRound
       : patternFor(motionKey) ?? patternFor(exercise?.id);
   // Full-body checks remain mandatory for kicks and leg patterns. For seated
   // upper-body drills, ankles need not be visible or weight-bearing.
-  const framing = kickKind || pattern === "squat" || pattern === "lunge"
+  const framing = session.workout.requiresClearance ? "upper" : kickKind || pattern === "squat" || pattern === "lunge"
     ? "full" : boxingDrill || pattern ? "upper" : "full";
   useEffect(() => { setCameraFraming(framing); }, [framing]);
 
