@@ -49,8 +49,47 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: Today,
+  component: CleanToday,
 });
+
+function CleanToday() {
+  const [more, setMore] = useState(false);
+  const [saved, setSaved] = useState<{ title: string; sets: number } | null>(null);
+  useEffect(() => {
+    try {
+      const value = JSON.parse(localStorage.getItem("m3-coach-v2-local-session-v1") || "null");
+      if (value?.version === 2 && value.savedOn === new Intl.DateTimeFormat("en-CA", { timeZone: "America/Denver", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()) && value?.session?.workout?.title && value.session.phase !== "complete") {
+        setSaved({ title: value.session.workout.title, sets: value.session.completedSetIds?.length || 0 });
+      }
+    } catch { /* Training remains available without saved data. */ }
+  }, []);
+  return (
+    <main data-testid="flex-clean-today" className="mx-auto max-w-3xl px-5 py-7">
+      <header className="flex items-center justify-between gap-3">
+        <div><p className="text-xs font-bold uppercase tracking-[.25em] text-primary">M3 FLEX COACH</p>
+          <h1 className="mt-2 text-3xl font-bold">Let’s get moving, Willie.</h1></div>
+        <Link to="/settings" className="tap-target rounded-xl border border-border px-3 text-sm">Settings</Link>
+      </header>
+      <section className="relative mt-6 overflow-hidden rounded-3xl border border-border bg-card">
+        <img src={COACH_REFERENCE} alt="Marcus, your approved personal trainer" className="h-[36dvh] min-h-56 max-h-96 w-full object-contain object-top" />
+        <div className="border-t border-border p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-primary">Your personal trainer · Marcus</p>
+          <h2 className="mt-2 text-2xl font-bold">{saved ? "Continue your training" : "Your next workout"}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{saved ? `${saved.title} · ${saved.sets} sets completed` : "One exercise at a time. Demonstrations, coaching, sets and rest in one place."}</p>
+          <Link to="/v2" data-testid="start-with-marcus" className="tap-target mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 font-bold text-primary-foreground"><Play className="size-5" />{saved ? "Continue with Marcus" : "Start with Marcus"}</Link>
+          <p className="mt-2 text-center text-xs text-muted-foreground">Review your workout before starting.</p>
+        </div>
+      </section>
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <Link to="/recovery" search={{ program: "recovery" }} className="tap-target rounded-2xl border border-border p-4 text-sm font-bold">Seated recovery</Link>
+        <a href="/v2?display=1" data-testid="open-hologram-display" className="tap-target rounded-2xl border border-border p-4 text-sm font-bold">Hologram display</a>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Display mode follows the same workout. Use Samsung Smart View with your connected TV or projector; the physical hologram effect depends on your display hardware.</p>
+      <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="tap-target mt-5 w-full rounded-xl border border-border px-4 text-sm font-semibold">{more ? "Close workout library and tools" : "Workout library and tools"}</button>
+      {more && <div data-testid="flex-existing-tools"><Link to="/nutrition" className="tap-target mt-3 flex items-center justify-center rounded-xl border border-border text-sm font-bold">Nutrition</Link><Today /></div>}
+    </main>
+  );
+}
 
 function Today() {
   const state = useApp();

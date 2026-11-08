@@ -1,13 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Apple, CalendarDays, Dumbbell, HeartPulse, LineChart, Settings as Cog } from "lucide-react";
+import { CalendarDays, Dumbbell, LineChart } from "lucide-react";
 
 const items = [
   { to: "/", label: "Today", icon: Dumbbell },
-  { to: "/recovery", label: "Recovery", icon: HeartPulse },
-  { to: "/program", label: "Program", icon: CalendarDays },
-  { to: "/nutrition", label: "Nutrition", icon: Apple },
+  { to: "/program", label: "Programs", icon: CalendarDays },
   { to: "/progress", label: "Progress", icon: LineChart },
-  { to: "/settings", label: "Settings", icon: Cog },
 ] as const;
 
 export function BottomNav() {

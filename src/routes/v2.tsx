@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import {
-  Check, Eye, Glasses, Hand, Pause, Play,
+  Check, Eye, Glasses, Hand, Mic, MicOff, Pause, Play,
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
@@ -30,7 +30,7 @@ import {
 import { speakDetailedExercise, speakDetailedExerciseWhenReady, stopDetailedExerciseSpeech } from "@/v2/detailed-exercise-speech";
 import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, hasFridayPremiumCue } from "@/v2/friday-premium-voice";
 import { playMarcusTrainer, stopMarcusTrainer } from "@/v2/marcus-trainer-audio";
-import { canSpeakCoachReply, coachReplySpeaking, speakCoachReply, stopCoachReply, subscribeCoachReplySpeech } from "@/v2/coach-reply-speech";
+import { coachReplySpeaking, stopCoachReply, subscribeCoachReplySpeech } from "@/v2/coach-reply-speech";
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { V2LiveHeartRate } from "@/v2/live-heart-rate";
 import { M3GymRenderer } from "@/v2/renderer";
@@ -93,6 +93,20 @@ function V2Coach() {
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [hydrated, setHydrated] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [displayOnly, setDisplayOnly] = useState(false);
+  const stageRef = useRef<HTMLElement>(null);
+  useEffect(() => { setDisplayOnly(new URLSearchParams(window.location.search).get("display") === "1"); }, []);
+  const switchDisplay = (display: boolean) => {
+    setDisplayOnly(display);
+    if (display) {
+      dispatch({ type: "set-mode", mode: "coach" });
+      setToolsOpen(false);
+      void stageRef.current?.requestFullscreen?.().catch(() => {});
+    } else if (document.fullscreenElement) {
+      void document.exitFullscreen?.().catch(() => {});
+    }
+  };
   const [showOpening, setShowOpening] = useState(false);
   const [openingStarting, setOpeningStarting] = useState(false);
   const [athletePortrait, setAthletePortrait] = useState<string | null>(null);
@@ -617,9 +631,8 @@ function V2Coach() {
           setFlexThinking(false);
           if (voiceOn) {
             const spokenByLiveFlex = await speakThroughLiveFlex(line);
-            const spokenByDevice = !spokenByLiveFlex && speakCoachReply(line);
-            setVoiceError(spokenByLiveFlex || spokenByDevice ? null :
-              "Reply shown as text because this browser could not play speech.");
+            setVoiceError(spokenByLiveFlex ? null :
+              "Marcus’s approved live voice is unavailable. His answer is shown here; no substitute voice was used.");
           }
         })
         .finally(() => {
@@ -729,7 +742,7 @@ function V2Coach() {
   });
 
   return (
-    <main className="min-h-dvh bg-[#080b0f] text-white">
+    <main data-testid="flex-training" data-display-mode={displayOnly} className="min-h-dvh bg-[#080b0f] text-white">
       <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5">
         <input
           ref={athletePicker}
@@ -749,12 +762,12 @@ function V2Coach() {
               ));
           }}
         />
-        <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#111820] px-4 py-3">
+        <header className="flex items-center justify-between gap-3 px-1 py-2">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[.32em] text-cyan-300">
-              M3 Coach V2
+              M3 FLEX COACH
             </p>
-            <h1 className="mt-1 text-lg font-black">Interactive training</h1>
+            <h1 className="mt-1 text-lg font-black">Train with Marcus</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <a
@@ -767,30 +780,7 @@ function V2Coach() {
               ← Workouts
             </a>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (session.running) dispatch({ type: "pause" });
-                setShowOpening(true);
-                if (voiceOn) void playMarcusCue("intro");
-              }}
-              className="min-h-11 rounded-xl border border-white/20 bg-white/5 px-3 text-xs font-black text-white/85"
-            >
-              Opening scene
-            </button>
-          <button
-            type="button"
-            onClick={() => {
-              const boxing = V2_WORKOUTS.find((item) => item.id === "boxing-kickboxing");
-              if (!boxing) return;
-              setWorkoutId(boxing.id);
-              dispatch({ type: "reset", workout: boxing });
-              dispatch({ type: "set-mode", mode: "shadow" });
-            }}
-            className="min-h-11 max-w-[48%] rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-[11px] font-black uppercase leading-tight tracking-wide text-cyan-200"
-          >
-            Boxing + Kickboxing
-          </button>
+            <button type="button" aria-expanded={toolsOpen} onClick={() => setToolsOpen(!toolsOpen)} className="min-h-11 rounded-xl border border-white/20 px-3 text-xs font-bold">Coach controls</button>
           </div>
         </header>
         <div
@@ -802,35 +792,28 @@ function V2Coach() {
           <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
           <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
         </div>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-cyan-300/25 bg-cyan-300/[.07] px-4 py-3">
-          <div>
-            <p className="text-xs font-black text-cyan-200">Your original seven-day training plan is available here.</p>
-            <p className="mt-1 text-xs text-white/65">Today's program: {originalWorkoutForToday().title}. Missing videos do not remove exercises.</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              const day = originalWorkoutForToday();
-              setWorkoutId(day.id);
-              dispatch({ type: "reset", workout: day });
-              setLiveCue("Original " + day.title + " workout loaded. Press Start when ready.");
-            }}
-            className="min-h-11 rounded-xl bg-cyan-300 px-4 text-xs font-black text-black"
-          >
-            Load today's FULL workout
-          </button>
+        <div className="mt-3 flex gap-2" aria-label="Training display">
+          <button type="button" aria-pressed={!displayOnly} onClick={() => switchDisplay(false)} className={`min-h-11 flex-1 rounded-xl px-3 text-sm font-bold ${!displayOnly ? "bg-cyan-300 text-black" : "bg-white/10"}`}>Workout app</button>
+          <button type="button" aria-pressed={displayOnly} onClick={() => switchDisplay(true)} className={`min-h-11 flex-1 rounded-xl px-3 text-sm font-bold ${displayOnly ? "bg-cyan-300 text-black" : "bg-white/10"}`}>Hologram display</button>
+          <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"} onClick={() => void toggleVoice()} className="grid min-h-11 w-12 place-items-center rounded-xl bg-white/10">{voiceOn ? <Volume2 className="size-5" /> : <VolumeX className="size-5" />}</button>
         </div>
+        {voiceControlAvailable() && <button type="button" aria-pressed={voiceControl.listening} onClick={() => voiceControl.listening ? stopListening() : startListening()} className="mt-2 flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceControl.listening ? <Mic className="size-4" /> : <MicOff className="size-4" />}{voiceControl.listening ? "Marcus is listening · tap to stop" : "Enable hands-free coaching"}</button>}
+        {voiceControl.error && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceControl.error}</p>}
+        {displayOnly && <p className="mt-2 text-xs text-white/50">Same workout, same coach. Connect your TV or projector using Smart View. Display hardware creates the hologram effect.</p>}
+        {liveCue && <p role="status" data-testid="marcus-current-cue" className="mt-3 rounded-xl bg-cyan-300/10 p-3 text-sm text-cyan-100">{liveCue}</p>}
+        {voiceError && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceError}</p>}
         {athleteError && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
           </p>
         )}
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="relative h-[78dvh] min-h-[520px] max-h-[760px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]">
+        <div className={`mt-3 grid gap-3 ${toolsOpen && !displayOnly ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
+          <section ref={stageRef} data-testid="marcus-workout-stage" className={`relative self-start overflow-hidden rounded-3xl border border-white/10 bg-black ${displayOnly ? "h-[82dvh] min-h-[420px]" : "h-[68dvh] min-h-[420px] max-h-[900px]"}`}>
+            {displayOnly && <button type="button" onClick={() => switchDisplay(false)} className="absolute right-3 top-3 z-20 min-h-11 rounded-xl bg-black/80 px-3 text-xs font-bold">Back to workout</button>}
             <LiveFlexProvider
               presence={flexPresence}
-              visible={showCoach && session.phase !== "complete" && (showTalkingFace || !stageMedia)}
+              visible={showCoach && session.phase !== "complete" && showTalkingFace}
             />
             {realTimeRigReady && <M3GymRenderer session={session} />}
             {showCoach && !realTimeRigReady && stageMedia && (
@@ -855,7 +838,10 @@ function V2Coach() {
                 className="absolute inset-0 bg-[#070c12]"
                 data-testid="motion-pending-stage"
                 aria-label={`Approved motion pending for ${exercise?.name ?? "movement"}`}
-              />
+              >
+                <img src={COACH_REFERENCE} alt="Marcus, your approved trainer" className="h-full w-full object-contain object-top" />
+                <p className="absolute bottom-32 left-3 rounded-lg bg-black/80 px-3 py-2 text-xs text-white/75">Moving demonstration pending for this exercise.</p>
+              </div>
             )}
             {glasses && !realTimeRigReady && (
               <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_center,#142630,#05090d_65%)]">
@@ -912,7 +898,7 @@ function V2Coach() {
 
             <div className="absolute inset-x-0 bottom-0 z-[9] p-3">
               <div className="rounded-2xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-xs font-black">{session.workout.title}</p>
                     <p className="mt-1 text-[11px] text-white/50">
@@ -940,7 +926,7 @@ function V2Coach() {
                       className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
                       aria-label="Complete set and advance"
                     >
-                      <SkipForward className="size-5" />
+                      <Check className="size-5" />
                     </button>
                     <button
                       type="button"
@@ -956,7 +942,7 @@ function V2Coach() {
             </div>
           </section>
 
-          <aside className="space-y-3">
+          <aside hidden={!toolsOpen || displayOnly} className="space-y-3">
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
               <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 p-2">
                 <div className="flex items-center gap-2">
@@ -1084,7 +1070,7 @@ function V2Coach() {
                 </button>
               )}
               <p className="mt-2 text-[11px] text-white/45">
-                Marcus's approved recordings teach the workout. Live conversational replies use the device's available speech voice until synchronized Marcus is connected.
+                Marcus’s approved recordings coach your workout. Live answers use his approved voice when connected; otherwise the answer appears here.
               </p>
               {(flexThinking || lastCoachAnswer) && (
                 <div data-testid="flex-conversation-reply" aria-live="polite"
@@ -1097,7 +1083,7 @@ function V2Coach() {
                     {flexThinking ? "Preparing your answer…" : lastCoachAnswer}
                   </p>
                   {!flexThinking && lastCoachAnswer && voiceOn && (
-                    <button type="button" onClick={() => void speakCoachReply(lastCoachAnswer)}
+                    <button type="button" onClick={() => void speakThroughLiveFlex(lastCoachAnswer)}
                       aria-label="Replay Flex answer"
                       className="mt-3 min-h-10 rounded-lg border border-cyan-300/25 px-3 text-xs font-bold text-cyan-100">
                       Replay answer aloud
@@ -1105,8 +1091,8 @@ function V2Coach() {
                   )}
                 </div>
               )}
-              {replySpeaking && <p className="mt-2 text-xs font-bold text-cyan-200">Flex is answering aloud · temporary device voice</p>}
-              {voiceOn && !canSpeakCoachReply() && !liveProviderSpeaking && <p className="mt-2 text-xs text-amber-200">Browser speech unavailable; answers will still appear on screen.</p>}
+              {replySpeaking && <p className="mt-2 text-xs font-bold text-cyan-200">Marcus is answering aloud</p>}
+
               {voiceError && <p className="mt-2 text-xs text-amber-200">{voiceError}</p>}
               {voiceControlAvailable() ? (
                 <>
@@ -1152,8 +1138,8 @@ function V2Coach() {
                 <input
                   value={flexQuestion}
                   onChange={(event) => setFlexQuestion(event.target.value)}
-                  placeholder="Ask Flex anything about this workout…"
-                  aria-label="Ask Flex"
+                  placeholder="Ask Marcus about this workout…"
+                  aria-label="Ask Marcus"
                   className="min-h-11 min-w-0 flex-1 rounded-xl border border-white/10 bg-black/35 px-3 text-xs text-white outline-none placeholder:text-white/35 focus:border-cyan-300/50"
                 />
                 <button
@@ -1161,7 +1147,7 @@ function V2Coach() {
                   disabled={!flexQuestion.trim() || flexThinking}
                   className="min-h-11 rounded-xl bg-cyan-300 px-3 text-xs font-black uppercase text-black disabled:opacity-40"
                 >
-                  {flexThinking ? "Thinking…" : "Ask Flex"}
+                  {flexThinking ? "Thinking…" : "Ask Marcus"}
                 </button>
               </form>
               <p className="mt-1 text-[10px] leading-relaxed text-white/35">
