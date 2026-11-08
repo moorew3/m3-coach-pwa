@@ -78,6 +78,10 @@ const liveWorkoutChat = read("src/lib/coach-talk.ts");
 const chat = read("src/components/FlexConversation.tsx");
 assert.match(panel, /setValues\(\(prev\) => \(\{ \.\.\.prev, heartRate: String\(reading\) \}\)\)/,
   "Real BPM must flow into the user-visible activity form");
+assert.match(panel, /if \(lastHeartRateReading\(\)\) return;/,
+  "Activity form must hide or clear stale sensor data");
+assert.match(panel, /prev.heartRate === String\(old\)/,
+  "Manually edited BPM must not be silently cleared");
 assert.match(v2, /<V2LiveHeartRate\s*\/>/, "Original V2 route must display the sensor");
 assert.match(badge, /lastHeartRateReading\(\)/);
 assert.match(badge, /Connect HR/);
