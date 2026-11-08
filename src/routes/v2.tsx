@@ -102,6 +102,8 @@ function V2Coach() {
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [hydrated, setHydrated] = useState(false);
   const [visualStopped, setVisualStopped] = useState(false);
+  // A timer must not count an exercise before the exact moving clip renders.
+  const [motionReadyKey, setMotionReadyKey] = useState("");
   const [clearance, setClearance] = useState([false, false, false]);
   const cleared = !session.workout.requiresClearance || clearance.every(Boolean);
   const chooseWorkout = (id: string) => {
@@ -244,11 +246,17 @@ function V2Coach() {
     }
   }, [session, hydrated]);
 
+  const expectedMotionKey = [
+    session.workout.id, session.exerciseIndex, session.setIndex, session.phase,
+  ].join(":");
+  const motionRequired = Boolean(sceneForSession(session).media);
+  const motionReadyForTick = !motionRequired || motionReadyKey === expectedMotionKey;
+
   useEffect(() => {
-    if (!session.running) return;
+    if (!session.running || !motionReadyForTick) return;
     const timer = window.setInterval(() => dispatch({ type: "tick" }), 1000);
     return () => window.clearInterval(timer);
-  }, [session.running]);
+  }, [session.running, motionReadyForTick]);
 
   useEffect(() => {
     setLiveCue(null);
@@ -736,7 +744,10 @@ function V2Coach() {
   const stageMedia = resolvedScene.media;
   const stableCoachFraming = true;
   const stagePreloadUrl = session.phase === "rest" || session.phase === "transition" ? media?.url : COOLDOWN_SCENE.url;
-  const videoPlaying = resolvedScene.playing && !visualStopped;
+  // Preview the exact moving exercise even before Start; do not log timed sets.
+  // All videos start muted in preview so phone autoplay policy does not block them.
+  const videoPlaying = !visualStopped &&
+    (resolvedScene.playing || (session.phase === "ready" && Boolean(stageMedia)));
   const videoRate = 1;
   const realTimeRigReady = session.phase === "work" && hasApprovedRealTimeCoach(exercise?.motionKey);
   const flexPresence = resolveFlexPresence({
@@ -864,7 +875,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[68dvh] min-h-[420px] max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"}>
+            : "relative h-[68dvh] min-h-[420px] max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -875,11 +886,17 @@ function V2Coach() {
                 key={stageMedia.url}
                 url={stageMedia.url}
                 playing={showCoach && videoPlaying}
-                muted={!voiceOn || !stageMedia.embeddedAudio || flexThinking || liveProviderSpeaking}
+                muted={session.phase === "ready" || !voiceOn || !stageMedia.embeddedAudio || flexThinking || liveProviderSpeaking}
                 onPlaybackFailure={mediaFailed}
+                onVideoReady={() => setMotionReadyKey(expectedMotionKey)}
+                onRetry={() => {
+                  setVisualStopped(false);
+                  setVoiceError(null);
+                  if (cleared) dispatch({type:"start"});
+                }}
                 rate={videoRate}
                 stableFraming={stableCoachFraming}
-                cycleKey={`${session.workout.id}:${session.exerciseIndex}:${session.setIndex}:${session.phase}`}
+                cycleKey={expectedMotionKey}
                 preloadUrl={stagePreloadUrl}
                 className={projectionFocus
                   ? "absolute inset-0 h-full w-full"
