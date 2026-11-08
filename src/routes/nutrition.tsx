@@ -14,6 +14,7 @@ import {
 } from "@/lib/store";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 import { FlexCoachCommand } from "@/components/FlexCoachCommand";
+import { SmartScalePanel } from "@/components/SmartScalePanel";
 
 export const Route = createFileRoute("/nutrition")({
   head: () => ({
@@ -172,10 +173,28 @@ function Nutrition() {
           <input
             inputMode="decimal"
             value={day.bodyweight}
-            onChange={(e) => updateNutrition(date, (n) => ({ ...n, bodyweight: e.target.value }))}
+            onChange={(e) => updateNutrition(date, (n) => ({
+              ...n, bodyweight: e.target.value,
+              bodyweightSource: "manual", bodyweightRecordedAt: new Date().toISOString(),
+            }))}
             className="tap-target mt-1 w-full rounded-xl border border-input bg-elevated px-3 text-lg"
           />
         </label>
+        {day.bodyweightSource && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {day.bodyweightSource === "bluetooth-scale" ? "Saved from confirmed Bluetooth scale" : "Manually entered"}
+            {day.bodyweightRecordedAt ? " · " + new Date(day.bodyweightRecordedAt).toLocaleString() : ""}
+          </p>
+        )}
+        <SmartScalePanel
+          units={state.settings.units}
+          onSave={(value, reading) => updateNutrition(date, (n) => ({
+            ...n,
+            bodyweight: String(value),
+            bodyweightSource: "bluetooth-scale",
+            bodyweightRecordedAt: new Date(reading.receivedAt).toISOString(),
+          }))}
+        />
       </section>
 
       {state.favorites.length > 0 && (
