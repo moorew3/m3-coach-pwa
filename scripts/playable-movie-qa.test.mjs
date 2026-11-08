@@ -86,6 +86,14 @@ check("Rep and weight controls follow video", html.indexOf('id="film"') < html.i
 
 el.modeReview.click();
 check("Review mode hides workout controls", !el.approvalControls.hidden && el.exerciseControls.hidden);
+check("Review shows dedicated watch/pause buttons", html.includes('id="playReviewVideo"') && html.includes('id="pauseReviewVideo"'));
+check("Review watch button available without entering workout", !el.playReviewVideo.disabled && state().phase!=="running");
+el.playReviewVideo.click();
+check("Review watch button plays selected candidate", !el.film.paused && state().phase!=="running");
+el.pauseReviewVideo.click();
+check("Review pause button pauses candidate", el.film.paused);
+el.playReviewVideo.click();
+check("Review video can resume to completion", !el.film.paused);
 check("Cannot approve unwatched media", el.approveVideo.disabled);
 el.film.emit("ended");
 check("Completed playback unlocks approval", !el.approveVideo.disabled);
