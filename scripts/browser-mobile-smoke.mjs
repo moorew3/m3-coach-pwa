@@ -77,6 +77,7 @@ try {
 
   const first = await page.goto(base + "/", { waitUntil: "domcontentloaded" });
   assert.equal(first?.status(), 200, "Main app must serve successfully");
+  await page.locator(`[data-testid="app-entry-gate"][data-hydrated="true"]`).waitFor({ timeout: 15000 });
   await page.getByTestId("app-entry-tap").waitFor({ timeout: 15000 });
   await page.getByTestId("app-entry-tap").click();
   await page.getByTestId("app-entry-yes").click({ timeout: 12000 });
