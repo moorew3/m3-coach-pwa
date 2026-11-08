@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import {spawn} from "node:child_process";
 import {setTimeout as delay} from "node:timers/promises";
+import {mkdir} from "node:fs/promises";
 import {chromium} from "playwright-core";
 const port=17379,base="http://127.0.0.1:"+port,logs=[];
 const server=spawn(process.execPath,[".output/server/index.mjs"],{
@@ -58,6 +59,8 @@ try{
  for(const c of await clearance.all())await c.check();
  await page.getByRole("button",{name:"Start workout"}).click();
  await page.getByRole("button",{name:"Pause workout"}).waitFor();
+ await mkdir("artifacts",{recursive:true});
+ await page.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:8000});
  await page.getByRole("button",{name:"Complete set and advance"}).click();
  assert.equal(await stage.getAttribute("data-scene-role"),"rest");
  assert.equal(await stage.getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
