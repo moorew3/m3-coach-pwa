@@ -12,13 +12,8 @@ recovery.forEach((stage,phase)=>stage.items.forEach((item,index)=>{
   const id=item.id ?? `recovery-${phase}-${index}`;
   if ('video' in item && item.video) trusted.set(id,{url:item.video,sceneId:id,label:item.name,audioUrl:localAudio('voice' in item?item.voice:undefined),embeddedAudio:'embedded' in item&&item.embedded===true});
 }));
-// Existing C16 render, visually checked 2026-11-08 for actual empty-hand
-// forward reaches, cornrows/tattoos and supported left cast. Preview repair;
-// this is not a claim of prior owner approval or a replacement of locked clips.
-trusted.set('recovery-0-2', {
-  url:'https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1572f-71b2-7966-91e8-4b1995fe477d.mp4',
-  sceneId:'C16-CONTROLLED-REACHES', label:'Controlled arm reaches',
-});
+// C13-C23 candidate footage, including C16, remains owner-review only in
+// public/recovery-coach/scene-library.js. It is not approved for timed playback.
 export const REST_SCENE = trusted.get('C09-PRE-BREATH-R2')!;
 export const COOLDOWN_SCENE = trusted.get('C10-POST-BREATH-R1')!;
 export function exerciseScene(exercise?:V2Exercise):TrainingScene|undefined {
