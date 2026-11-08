@@ -57,7 +57,9 @@ try{
  await page.evaluate(()=>window.scrollTo(0,0));
  const stageBox=await stage.boundingBox();
  const coachBox=await page.getByTestId("coach-motion").boundingBox();
- console.log("Fold visible-frame bounds:",JSON.stringify({stageBox,coachBox}));
+ const videoPosition=await page.getByTestId("coach-motion").evaluate(el=>getComputedStyle(el).position);
+ assert.equal(videoPosition,"absolute","Moving coach must not collapse to a zero-height relative box");
+ console.log("Fold visible-frame bounds:",JSON.stringify({stageBox,coachBox,videoPosition}));
  await mkdir("artifacts",{recursive:true});
  await page.screenshot({path:"artifacts/m3-flex-recovery-visual-check.png",timeout:8000});
  assert.ok(stageBox && stageBox.y<185,"Marcus stage must be visible near the TOP of the phone");
