@@ -288,7 +288,7 @@ $("rejectWhy").value=approvals[x.id]&&approvals[x.id].reason||"";
 $("reviewMute").checked=reviewMuted[x.id]===undefined?decision==="visual-approved":!!reviewMuted[x.id];
 $("reviewFix").value=approvals[x.id]&&approvals[x.id].notes||"";
 $("approveVideo").disabled=!watched[x.id];$("visualApproveVideo").disabled=!watched[x.id];
-$("playReviewVideo").disabled=!$("film").src||mediaFailed;
+$("playReviewVideo").disabled=!x.video;
 $("pauseReviewVideo").disabled=$("film").paused;$("reviewReceipt").textContent=approvals[x.id]?"Last decision saved on this device · "+new Date(approvals[x.id].at).toLocaleString():watched[x.id]?"Full video watched. Choose full approval, keep visuals/fix voice, or reject.":"Watch the complete video before approving its visuals";
 $("reviewAudio").hidden=!x.audio;if(x.audio&&$("reviewAudio").src!==x.audio)$("reviewAudio").src=x.audio;
 renderReviewPicker();
@@ -387,7 +387,7 @@ if(previewMode())return;if(s.phase==="running"||s.phase==="rest")freeze();if(s.p
 $("restart").addEventListener("click",function(){if(!confirm("Reset only the playable demo progress on this device?"))return;clearInterval(tick); s=fresh();experience="coach";view={type:"workout",index:0};mediaId="";setNotice("Demo reset. Original M3 FLEX workout records were not changed.");render()});
 $("stop").addEventListener("click",function(){freeze();s.phase="stopped";clearInterval(tick);$("film").pause();render();setNotice("Session stopped. You can export this record or reset the demo.")});
 $("export").addEventListener("click",function(){var data=JSON.stringify({schema:1,project:"M3 FLEX playable demo",savedAt:new Date().toISOString(),session:s},null,2);var blob=new Blob([data],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="m3-flex-playable-log.json";document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);setNotice("Local JSON backup prepared; your browser controls where it is saved.")});
-$("film").addEventListener("error",function(){if(experience==="review"){watched[reviewItems[reviewIndex].id]=false;$("approveVideo").disabled=true;$("mediaWarning").hidden=false;$("mediaWarning").textContent="Original video unavailable. Use the HeyGen source link or mark disapproved (Won't play).";setNotice("Video failed. It cannot be approved without playback.")}else mediaFailure("Selected approved video could not load. No replacement or fake progress is allowed.")});
+$("film").addEventListener("error",function(){if(experience==="review"){watched[reviewItems[reviewIndex].id]=false;$("approveVideo").disabled=true;$("visualApproveVideo").disabled=true;$("playReviewVideo").disabled=true;$("mediaWarning").hidden=false;$("mediaWarning").textContent="Original video unavailable. Use the HeyGen source link or mark disapproved (Won't play).";setNotice("Video failed. It cannot be approved without playback.")}else mediaFailure("Selected approved video could not load. No replacement or fake progress is allowed.")});
 $("modeCoach").addEventListener("click",function(){setExperience("coach")});
 $("modeLoop").addEventListener("click",function(){setExperience("loop");$("film").loop=true});
 $("modeReview").addEventListener("click",function(){setExperience("review")});
@@ -398,13 +398,14 @@ $("playReviewVideo").addEventListener("click",function(){
  if(!item||!$("film").src){setNotice("This review has no playable video source. Inspect it on HeyGen before deciding.");return}
  $("film").loop=false;
  if(watched[item.id]){try{$("film").currentTime=0}catch(e){}}
+ $("pauseReviewVideo").disabled=false;
  var p=$("film").play();
- if(p&&p.catch)p.catch(function(){setNotice("Review video could not play. Tap the player controls or use the HeyGen original link.");});
+ if(p&&p.catch)p.catch(function(){$("pauseReviewVideo").disabled=true;setNotice("Review video could not play. Tap the player controls or use the HeyGen original link.");});
  setNotice("Watching the selected "+item.id+" video. Let it finish to unlock the visual approval choices.");
 });
 $("pauseReviewVideo").addEventListener("click",function(){
  if(experience!=="review")return;
- $("film").pause();
+ $("film").pause();$("pauseReviewVideo").disabled=true;
  setNotice("Review video paused. Tap Watch selected video to resume.");
 });
 $("externalWatched").addEventListener("change",function(){
@@ -445,8 +446,8 @@ var onscreen=Math.min(targetReps(stage()),(s.visualReps||0)+local);
 $("gameRep").textContent="VIDEO REP "+onscreen+" / "+targetReps(stage())+" (timed)";
 $("sceneBottom").textContent=onscreen>=targetReps(stage())-2?"FINISH CONTROLLED · LEFT LEG SUPPORTED":"CONTROLLED REPS · LEFT LEG SUPPORTED";
 });
-$("film").addEventListener("play",function(){if(view.type==="silent")this.muted=true;if(experience==="loop")$("pause").disabled=false});
-$("film").addEventListener("volumechange",function(){if(view.type==="silent"&&!this.muted)this.muted=true});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true});
+$("film").addEventListener("play",function(){if(view.type==="silent")this.muted=true;if(experience==="loop")$("pause").disabled=false;if(experience==="review")$("pauseReviewVideo").disabled=false});
+$("film").addEventListener("volumechange",function(){if(view.type==="silent"&&!this.muted)this.muted=true});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true;if(experience==="review")$("pauseReviewVideo").disabled=true});
 $("film").addEventListener("ended",function(){
 if(experience==="review"){watched[reviewItems[reviewIndex].id]=true;render();return}
 if(experience!=="coach"||s.phase!=="running")return;
