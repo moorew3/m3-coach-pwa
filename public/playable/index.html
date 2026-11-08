@@ -87,11 +87,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .reviewCalibration{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
 .reviewCalibration label{flex:1;font-size:12px;font-weight:800;color:#d2e6e8}
 .reviewCalibration input{max-width:72px;text-align:center}
-.reviewButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.reviewButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
 .reviewButtons button{min-height:44px;background:#214458;color:#fff;border:1px solid #5c8292;border-radius:9px;font-size:12px;line-height:1.2;font-weight:900;padding:7px 3px}
-.reviewButtons button.approve{background:#3b6231;border-color:#9acb76}.reviewButtons button.reject{background:#713437;border-color:#c17c7d}
+.reviewButtons button.approve{background:#3b6231;border-color:#9acb76}.reviewButtons button.voiceFix{background:#194e66;border-color:#83d4eb;color:#ecfbff}.reviewButtons button.reject{background:#713437;border-color:#c17c7d}
 .reviewButtons button:disabled{opacity:.5}#reviewReceipt{font-size:11px;color:#bfdfbe;min-height:13px;margin:6px 0}
 #reviewAudio{width:100%;height:37px;margin:5px 0}
+.voiceFixNotice{border:1px solid #4790a8;background:#143b4e;padding:9px;border-radius:11px;font-size:12px;line-height:1.4;color:#e0faff;margin:7px 0}
+.muteReviewOption{border:1px solid #405b70;border-radius:10px;padding:8px;margin:7px 0;font-size:12px}
 #importReviews{display:block;width:100%;margin-top:6px;font-size:12px}
 .importRow{display:block;margin:11px 0 5px;font-size:12px;font-weight:800;color:#c4d9e3}
 .goalRow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0}
@@ -108,7 +110,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <div class="quickBar">
 <div id="workoutPicker"><label class="pickerLabel" for="exercisePick">CHOOSE EXERCISE / APPROVED VIDEO</label><select id="exercisePick" aria-label="Choose exercise or approved video"><option>Loading exercise library…</option></select></div>
 <div id="reviewPicker" hidden><label class="pickerLabel" for="reviewPick">VIDEO APPROVAL QUEUE <span id="reviewCount"></span></label><select id="reviewPick" aria-label="Choose video to approve or disapprove"></select>
-<div class="reviewButtons" id="reviewTopButtons"><button class="approve" id="approveVideo">✓ Approve</button><button class="reject" id="rejectVideo">✕ Disapprove</button><button id="nextReview">→ Next pending</button></div>
+<div class="reviewButtons" id="reviewTopButtons"><button class="approve" id="approveVideo">✓ Approve everything</button><button class="voiceFix" id="visualApproveVideo">✓ Keep video · Fix voice</button><button class="reject" id="rejectVideo">✕ Reject footage</button><button id="nextReview">→ Next pending</button></div>
 </div>
 <div class="heroRow"><div class="exerciseMeta"><div id="name">Seated breathing</div><span id="target">Guided preparation</span><span id="sets" hidden>Set 1 / 1</span><span id="counter">Scene 1 of 7</span></div><div class="clockWrap"><span id="phase" aria-live="polite">READY</span><div id="clock" aria-label="Remaining time">00:30</div><div id="gameRep" aria-live="polite">REP — / 8</div></div></div>
 </div>
@@ -123,10 +125,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <div id="voiceState" role="status" aria-live="polite">MARCUS · Approved audio only, no substitute voice</div>
 <audio id="marcusAudio" preload="none" hidden></audio>
 <div id="approvalControls" hidden>
-<div class="reviewStatus" id="reviewStatus">PENDING OWNER REVIEW</div>
+<div class="reviewStatus" id="reviewStatus">PENDING OWNER REVIEW</div><p class="voiceFixNotice" id="voiceFixStatus" hidden>Visuals approved. Original narration is muted. Awaiting Marcus – Warm &amp; Friendly audio and final lip-sync review. Not cleared for the coached workout.</p>
 <p class="reviewNote" id="reviewNote">Watch the complete clip and check the avatar, LEFT boot, exercise form, equipment and Marcus voice.</p><a id="reviewSource" class="back" target="_blank" rel="noopener noreferrer" hidden>Open original video in HeyGen</a>
-<label class="check" id="externalReviewCheck" hidden><input id="externalWatched" type="checkbox"> I watched this entire clip on HeyGen and verified its motion, avatar, equipment, LEFT leg and voice.</label>
-<div class="reviewCalibration"><label for="clipReps">Complete reps shown in THIS clip (0 = unverified)</label><input id="clipReps" type="number" min="0" max="30" value="0" inputmode="numeric" /></div>
+<label class="check" id="externalReviewCheck" hidden><input id="externalWatched" type="checkbox"> I watched this entire clip on HeyGen and checked its movement, avatar, equipment and LEFT leg. I will judge the voice separately.</label>
+<label class="check muteReviewOption"><input type="checkbox" id="reviewMute"> Mute the original voice while reviewing (visual check only)</label><div class="reviewCalibration"><label for="clipReps">Complete reps shown in THIS clip (0 = unverified)</label><input id="clipReps" type="number" min="0" max="30" value="0" inputmode="numeric" /></div>
 <div class="reviewReason"><label for="rejectWhy">Reason for disapproval (optional)</label>
 <select id="rejectWhy"><option value="">Needs correction — unspecified</option><option value="wrong-avatar">Wrong face / tattoos / avatar</option><option value="wrong-leg">LEFT leg, cast or boot incorrect</option><option value="wrong-motion">Exercise motion or rep count incorrect</option><option value="wrong-equipment">Equipment or band setup incorrect</option><option value="wrong-voice">Marcus voice, narration or lip sync incorrect</option><option value="bad-quality">Blurry, poor video or abrupt loop</option><option value="playback-error">Video won't play</option><option value="other">Other correction</option></select>
 <textarea id="reviewFix" rows="2" maxlength="500" placeholder="Optional correction notes (saved with your decision)"></textarea></div>
@@ -157,11 +159,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <p class="label">Video timers never count repetitions. Only reps YOU log in active mode count as self-reported exercise.</p>
 <button id="export" class="secondary full">↓ Export saved demo log</button>
 <button id="exportReviews" class="secondary full" style="margin-top:8px">↓ Back up all approval decisions (JSON)</button>
-<button id="exportRepairs" class="secondary full" style="margin-top:8px">↓ Export rejected videos / repair list (CSV)</button>
+<button id="exportRepairs" class="secondary full" style="margin-top:8px">↓ Export voice replacements &amp; other repairs (CSV)</button>
 <label class="importRow">Restore approval decisions from backup <input id="importReviews" type="file" accept="application/json"></label><button id="restart" class="secondary full" style="margin-top:8px">↻ Reset demo progress</button>
 </div></details>
 <div class="links"><a href="/recovery?program=recovery">Recovery workout</a><a href="/recovery?program=A">Workout A</a><a href="/recovery?program=B">Workout B</a><a href="/v2">Original V2</a></div>
-<footer>Approved clips are never replaced. Rejected footage is hidden from the pending review queue but preserved in the protected archive. Approval decisions stay in this browser until exported or restored.</footer>
+<footer>Keep Video · Fix Voice preserves approved movement as a silent demonstration while Marcus narration and lip sync await correction. It never grants full coached-video approval. Originals are never deleted. Back up review decisions before switching devices.</footer>
 </main>
 <script src="/recovery-coach/scene-library.js"></script>
 <script>
