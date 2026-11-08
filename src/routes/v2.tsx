@@ -936,7 +936,7 @@ function V2Coach() {
               </div>
             </div>
 
-            <V2LiveHeartRate />
+            <div hidden={projectionFocus || !toolsOpen}><V2LiveHeartRate /></div>
             <V2TrainingCamera
               session={session}
               onCue={giveFeedback}

@@ -1,0 +1,346 @@
+{
+  "schema": 1,
+  "source": "https://m3-coach-v2-visual-production.up.railway.app",
+  "items": [
+    {
+      "path": "/media/marcus-trainer/backSquat.mp3",
+      "sha256": "763b2f045679a062d2ebfa12c696a153e8dd24f0fa9dc38e7568445a0dc74b0b",
+      "bytes": 622759
+    },
+    {
+      "path": "/media/marcus-trainer/bandPullApart.mp3",
+      "sha256": "2fe85df708b32ce53d66d506e97a1ed87c16806a719f1265b43e4b79e9d1a511",
+      "bytes": 637805
+    },
+    {
+      "path": "/media/marcus-trainer/battleRopeFinisher.mp3",
+      "sha256": "474c62c201ea514ed985c92224e7f20b870bd843bbbf21a4465f2b0c1666077a",
+      "bytes": 675422
+    },
+    {
+      "path": "/media/marcus-trainer/benchPress.mp3",
+      "sha256": "e41f4c2ffa7fbfa63a5820889c5573aebac8160fb6bd2c35c3ae4ed490773fc1",
+      "bytes": 606040
+    },
+    {
+      "path": "/media/marcus-trainer/bentOverRow.mp3",
+      "sha256": "b4703dd4834c2494ac12d1fa7fabb94277669d21f18c1723b7d93bd76f41e3df",
+      "bytes": 565916
+    },
+    {
+      "path": "/media/marcus-trainer/boxingCombination.mp3",
+      "sha256": "f960bda1519c1228acd524246529f66e0991afe18a68a6b32abc5567ee64514d",
+      "bytes": 609384
+    },
+    {
+      "path": "/media/marcus-trainer/boxingStance.mp3",
+      "sha256": "49a2379d7c4fbc671c47506258196d35b8eef9a669f9c3b5f8c3230a1217dc4a",
+      "bytes": 595173
+    },
+    {
+      "path": "/media/marcus-trainer/bulgarianSplitSquat.mp3",
+      "sha256": "69d6f774dfff4dedf8baa66bb812110c552f89ba832ec97c20cd966e2b4613c6",
+      "bytes": 687960
+    },
+    {
+      "path": "/media/marcus-trainer/cablePunch.mp3",
+      "sha256": "11aecc2126a6d21948f9ceaf36bb171280a46ac434d5847928fd82cc49977e2f",
+      "bytes": 605204
+    },
+    {
+      "path": "/media/marcus-trainer/calfRaise.mp3",
+      "sha256": "3a00b5d45c7f698230757b22c4c9b85ba180e4d3d0387405e2c15b8060b3b535",
+      "bytes": 755670
+    },
+    {
+      "path": "/media/marcus-trainer/chestMobility.mp3",
+      "sha256": "d4ec2890394a66468797744f0fd5c171a3bac800ff23d8d92e0ccbdb75fcd948",
+      "bytes": 535823
+    },
+    {
+      "path": "/media/marcus-trainer/chestPress.mp3",
+      "sha256": "c68006109d4ba476b55bc1606c6ba8786b605b566f496f9451947ef5e4212a36",
+      "bytes": 559229
+    },
+    {
+      "path": "/media/marcus-trainer/chestSupportedRow.mp3",
+      "sha256": "03d37a48de5377e4c6ff710474c10e0e124d9ab6d315d71e44ab4d8ebcbba676",
+      "bytes": 610220
+    },
+    {
+      "path": "/media/marcus-trainer/complete.mp3",
+      "sha256": "d4e263de7ca4c60dfa8f1dabc47f2c655d29f6b772aad19b1e133731e12e519a",
+      "bytes": 350249
+    },
+    {
+      "path": "/media/marcus-trainer/controlledShoulderWork.mp3",
+      "sha256": "bd82917a93e77b4daedd02c605383837fc551eebe4ab22e097271686d522ff8c",
+      "bytes": 550034
+    },
+    {
+      "path": "/media/marcus-trainer/cross.mp3",
+      "sha256": "a909874c05611a9d24027bf67edf3b69d19360641ad5c93ae5c95a46319bcdfc",
+      "bytes": 627774
+    },
+    {
+      "path": "/media/marcus-trainer/deadBug.mp3",
+      "sha256": "3166705ace654ddeb21fce3677092481f0a6be710310e51c8cee198f3206c993",
+      "bytes": 631118
+    },
+    {
+      "path": "/media/marcus-trainer/defensiveReset.mp3",
+      "sha256": "9f8a50b38b879241169213de8f4c18faadd5d5b3e02be75e9ab3cdb8bfe8254a",
+      "bytes": 574275
+    },
+    {
+      "path": "/media/marcus-trainer/dumbbellCurl.mp3",
+      "sha256": "1354c41616150ed4ecb7316f5e4ee898b3d3a61f8c2c7976cbe6f45862c4169f",
+      "bytes": 545018
+    },
+    {
+      "path": "/media/marcus-trainer/easyWalk.mp3",
+      "sha256": "cbd50f8dee4a4deb2a955c8452ba9261508f327dbba61106a08bb67016b2246f",
+      "bytes": 554213
+    },
+    {
+      "path": "/media/marcus-trainer/externalRotation.mp3",
+      "sha256": "30ef11951e81f5194ff88dd57801455c864acc37d02fb5f356518b550fc4e01d",
+      "bytes": 575111
+    },
+    {
+      "path": "/media/marcus-trainer/facePull.mp3",
+      "sha256": "292ba5776594bd0f9e84081647ee03d75a37880399cfb63c87b202708482cb2e",
+      "bytes": 662047
+    },
+    {
+      "path": "/media/marcus-trainer/farmerMarch.mp3",
+      "sha256": "0fa11a995c9d875a4a6bb6dad2067008f238923b8c7c1f4dbdace60cd4c1d387",
+      "bytes": 683781
+    },
+    {
+      "path": "/media/marcus-trainer/finish.mp3",
+      "sha256": "236dac3504f851974f983d3f5b5288229af859ba21710540b4698ceb6d7f681c",
+      "bytes": 168855
+    },
+    {
+      "path": "/media/marcus-trainer/frontKick.mp3",
+      "sha256": "96d0bbbe328250ac271e9dc72bc6559c6d9c8b8d756e73f74aa4fe234489db9e",
+      "bytes": 677093
+    },
+    {
+      "path": "/media/marcus-trainer/gluteBridge.mp3",
+      "sha256": "b97e06dc655aa49b55156a68e76d845f3306a0a070053cbc92946bf75b72d3b3",
+      "bytes": 622759
+    },
+    {
+      "path": "/media/marcus-trainer/guardReset.mp3",
+      "sha256": "027b76d04c8c3c3b4db91b0d04ad0734e4192bbf3926d3686603088df76e4706",
+      "bytes": 529136
+    },
+    {
+      "path": "/media/marcus-trainer/hammerCurl.mp3",
+      "sha256": "19b9516e600a9746552ef4ceb81bfe9bd596c64579965e07f3c78abe945f34f4",
+      "bytes": 484832
+    },
+    {
+      "path": "/media/marcus-trainer/hamstringCurl.mp3",
+      "sha256": "4410241a44d9e5b9fc8521a4d8406b26f94919267f6e44c5f1ca33bfa2cdcb2b",
+      "bytes": 566752
+    },
+    {
+      "path": "/media/marcus-trainer/hamstringMobility.mp3",
+      "sha256": "c15024817c50f8bcb782e30ee54510cd7976050b2f3493948192a13417e79479",
+      "bytes": 571768
+    },
+    {
+      "path": "/media/marcus-trainer/hangingKneeRaise.mp3",
+      "sha256": "db251d20dd3702d179f9caec1f96a362525659268d9a53e5d043938f52c26601",
+      "bytes": 587650
+    },
+    {
+      "path": "/media/marcus-trainer/hipFlexorStretch.mp3",
+      "sha256": "f2da58d437d5a9e4a407d2bd7cd91c729aad3b845b39cd34a6e11108dea1e8a1",
+      "bytes": 560065
+    },
+    {
+      "path": "/media/marcus-trainer/inclineDumbbellPress.mp3",
+      "sha256": "8b4ea736ed66a411d8445f6aec49bf47e65d1ad0006f78584729d7d97ae4a359",
+      "bytes": 609384
+    },
+    {
+      "path": "/media/marcus-trainer/inclinePress.mp3",
+      "sha256": "131b71c3dc249ec522830e134d4fc06f25b7a338941de0379845e19f813ce0d1",
+      "bytes": 687960
+    },
+    {
+      "path": "/media/marcus-trainer/intro.mp3",
+      "sha256": "99bcc43c10d407d22f0144a09de9d979951e9bf17d8717536122ac9f23c3cc8a",
+      "bytes": 371983
+    },
+    {
+      "path": "/media/marcus-trainer/jab.mp3",
+      "sha256": "451e3cfb1d6e1a42f7351bfde3f6cb7c6039a45baf979214f254c6611d805e72",
+      "bytes": 599353
+    },
+    {
+      "path": "/media/marcus-trainer/jabCross.mp3",
+      "sha256": "adc01c976a505a779b8969079d4616bc704f91aab1851ffdd0216e7cf02028cb",
+      "bytes": 538331
+    },
+    {
+      "path": "/media/marcus-trainer/kneeChamber.mp3",
+      "sha256": "d94e2c450332e3c215a6c8c8db063b89c9b0b4fce6b250ad253002b63745fce6",
+      "bytes": 580127
+    },
+    {
+      "path": "/media/marcus-trainer/latPulldown.mp3",
+      "sha256": "6bb785a6cca1dfad3ba646481e66dd401bb30437103e269b2b5b0c9bd51ce49a",
+      "bytes": 572604
+    },
+    {
+      "path": "/media/marcus-trainer/lateralRaise.mp3",
+      "sha256": "e58e4adbc593df1ce0327765e9f36dcef7e5eb3857c19cdf1a964ed7445a6d52",
+      "bytes": 606040
+    },
+    {
+      "path": "/media/marcus-trainer/legExtension.mp3",
+      "sha256": "ba4120cfd43e6e28b82249b57cbf1d3f1b99cc3f383b38661ffc81f8b83f2bb7",
+      "bytes": 585978
+    },
+    {
+      "path": "/media/marcus-trainer/legPress.mp3",
+      "sha256": "029c7187aa2e60bcdccb582038aa827dea800b52828b1d8e46ed09d2813cc5d2",
+      "bytes": 637805
+    },
+    {
+      "path": "/media/marcus-trainer/lightPunches.mp3",
+      "sha256": "46de5a072cbb1f1f0b2f89793fb86e65e0f1aeeb81d7617a1da01e17ffe6b537",
+      "bytes": 609384
+    },
+    {
+      "path": "/media/marcus-trainer/lowerBodyMobility.mp3",
+      "sha256": "008b7472d3ab5d0cfa5477bec79023d62142134fd368366cd2ecfc10f95cd2fd",
+      "bytes": 570932
+    },
+    {
+      "path": "/media/marcus-trainer/medBallChestPass.mp3",
+      "sha256": "7f780bb8a37647eb9d1f758c6fa31204434874247ee9601423deed811065cab1",
+      "bytes": 636133
+    },
+    {
+      "path": "/media/marcus-trainer/ready.mp3",
+      "sha256": "f6621a68765e5a6f4aa850d48757c26c2aef48cf945e82421b87c3f006b91e4c",
+      "bytes": 157988
+    },
+    {
+      "path": "/media/marcus-trainer/rearDeltFly.mp3",
+      "sha256": "85e79c1042dc81718105208224df327a19a8d1f92c392f64620407bfb1917d1f",
+      "bytes": 565916
+    },
+    {
+      "path": "/media/marcus-trainer/recovery.mp3",
+      "sha256": "416dc93a12450209aa1a4f8fbe36fa0868b182fddab23e125c811272cc2a04c1",
+      "bytes": 433005
+    },
+    {
+      "path": "/media/marcus-trainer/rest.mp3",
+      "sha256": "420408fb1fe172321e557c9a67086d3df7fd1b920a303dbf88f52bc7ad9268d1",
+      "bytes": 380342
+    },
+    {
+      "path": "/media/marcus-trainer/reverseLunge.mp3",
+      "sha256": "d5f56b602c9c882b2c23d97550b173d93c19339932026817f84b0d6789995dee",
+      "bytes": 683781
+    },
+    {
+      "path": "/media/marcus-trainer/reverseStepRow.mp3",
+      "sha256": "1f8e626c67f6acb1e85494e9b3c7ffb121e31c93cd93977dc3b64d13655eabcd",
+      "bytes": 621087
+    },
+    {
+      "path": "/media/marcus-trainer/romanianDeadlift.mp3",
+      "sha256": "728b6de66020e97db7f88ca680deadbc613855832bc8d6ba9e7e105f69c5e22a",
+      "bytes": 621923
+    },
+    {
+      "path": "/media/marcus-trainer/roundKick.mp3",
+      "sha256": "323b5e29d14ffb90bb639de3e900f78a2580fb66f6703be875e038062d0fcde6",
+      "bytes": 601861
+    },
+    {
+      "path": "/media/marcus-trainer/seatedRow.mp3",
+      "sha256": "17221355f7a981f335ecad9fd14f670989d072f7bc458337ea6e2079fab22b63",
+      "bytes": 633626
+    },
+    {
+      "path": "/media/marcus-trainer/shoulderMobility.mp3",
+      "sha256": "d1be0bda295f190785bfb6007c6854c7c7a76299bb0b017976b57d52686afc37",
+      "bytes": 564244
+    },
+    {
+      "path": "/media/marcus-trainer/shoulderPress.mp3",
+      "sha256": "f4ec8d0d33ff9f46f1fefb15f62ec4faf8bfdc40eeca895227cb9df44802b588",
+      "bytes": 604369
+    },
+    {
+      "path": "/media/marcus-trainer/sidePlank.mp3",
+      "sha256": "9410d8311f7099ef75cb284c3e7b570b4e2465a5fc537fa32f83dfafdd5feaf8",
+      "bytes": 759013
+    },
+    {
+      "path": "/media/marcus-trainer/squat.mp3",
+      "sha256": "eec07e0f8df0a5b0fb089a35e269142c6d3c09533f7d67b6cc12058bd8efb7f6",
+      "bytes": 591830
+    },
+    {
+      "path": "/media/marcus-trainer/squatToCurl.mp3",
+      "sha256": "b00ec99e78e5bdf9c3e289cc0dfc053ce6a5620745088c072ccd6a80ff4f3325",
+      "bytes": 646164
+    },
+    {
+      "path": "/media/marcus-trainer/stepAltCurl.mp3",
+      "sha256": "361fbf0dbc155f42d066e3c714d87f89c531637b56aefbac47d7edb9d34fa599",
+      "bytes": 634462
+    },
+    {
+      "path": "/media/marcus-trainer/stepShoulderPress.mp3",
+      "sha256": "33e1c91b5fa80962651b2999b51680d395e8956e660d93c08bd7ccfaadd65eac",
+      "bytes": 519105
+    },
+    {
+      "path": "/media/marcus-trainer/suitcaseCarry.mp3",
+      "sha256": "d094452cb512cd512f9a2e8412d8e39801cbc2d0c8efa5ff2f731a293e7044fb",
+      "bytes": 601861
+    },
+    {
+      "path": "/media/marcus-trainer/trapBarDeadlift.mp3",
+      "sha256": "8435eefcf93bed770f7d7e48c8019a79d34f200c30eba84ff383ca4038cd2571",
+      "bytes": 737280
+    },
+    {
+      "path": "/media/marcus-trainer/treadmillWalk.mp3",
+      "sha256": "0baeb04693449d2001a9b4da24b3912bf57a8e6776b54e13292e87731a59f423",
+      "bytes": 490684
+    },
+    {
+      "path": "/media/marcus-trainer/tricepsPressdown.mp3",
+      "sha256": "43a0622ecea05546426cb71e7fd3acd2b5df7fde524d27240edf2706ed3973cf",
+      "bytes": 610220
+    },
+    {
+      "path": "/media/marcus-trainer/vSitCrunch.mp3",
+      "sha256": "c5be71bb5c787c4f80ab0ca412588a0ace140897a2447af3eaf017d391e87c44",
+      "bytes": 711366
+    },
+    {
+      "path": "/media/marcus-trainer/voiceOn.mp3",
+      "sha256": "c90b78d56a695362322528fe7c3569299787e922b3892ecd3082d753a05412b0",
+      "bytes": 312633
+    },
+    {
+      "path": "/media/marcus/cues.wav",
+      "sha256": "0078744ac8cc26d0f71d03be2cfbb18d4e13405a469b189f2d8e26ac8ba44bb1",
+      "bytes": 150465
+    }
+  ]
+}
