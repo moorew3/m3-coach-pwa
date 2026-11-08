@@ -103,14 +103,11 @@ function V2Coach() {
   const [hydrated, setHydrated] = useState(false);
   const [visualStopped, setVisualStopped] = useState(false);
   const [clearance, setClearance] = useState([false, false, false]);
-  const [confirmWorkout, setConfirmWorkout] = useState<string | null>(null);
   const cleared = !session.workout.requiresClearance || clearance.every(Boolean);
   const chooseWorkout = (id: string) => {
     const next = workoutById(id);
     if (!next) return;
-    if ((session.running || session.completedSetIds.length > 0) && id !== session.workout.id) {
-      dispatch({type:"pause"}); setConfirmWorkout(id); return;
-    }
+    if (session.running) dispatch({type:"pause"});
     loadWorkout(id);
   };
   const loadWorkout = (id: string) => {
@@ -120,7 +117,7 @@ function V2Coach() {
     let restored:V2Session|null=null;
     try {restored=restoreSavedSession(window.localStorage.getItem(V2_LOCAL_SAVE+":"+id),next,mountainDayKey());} catch { /* optional local history */ }
     setVisualStopped(false);
-    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setConfirmWorkout(null); setLiveCue(null);
+    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setLiveCue(null);
     const address=new URL(window.location.href); address.searchParams.set("workout",id);
     window.history.replaceState(window.history.state,"",address.pathname+address.search+address.hash);
   };
@@ -949,8 +946,10 @@ function V2Coach() {
                   {stageTitle}
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-white/70">
-                  {exercise?.seconds ? `${exercise.seconds}s work` : exercise?.reps ?? ""} · Set
-                  {" "}{Math.min(session.setIndex + 1, exercise?.sets ?? 1)}/{exercise?.sets ?? 1}
+                  {session.phase === "complete" ? "Workout complete · breathe and recover"
+                    : session.phase === "rest" || session.phase === "transition"
+                      ? `${session.phaseSecondsLeft ?? 0}s rest · Next: ${exercise?.name ?? "next movement"}`
+                      : `${exercise?.seconds ? `${exercise.seconds}s work` : exercise?.reps ?? ""} · Set ${Math.min(session.setIndex+1,exercise?.sets??1)}/${exercise?.sets??1}`}
                 </p>
               </div>
             </div>
@@ -977,7 +976,7 @@ function V2Coach() {
               <div className="rounded-2xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-black">{projectionFocus ? (exercise?.name ?? session.workout.title) : session.workout.title}</p>
+                    <p className="truncate text-xs font-black">{session.phase === "complete" ? "Workout complete" : projectionFocus ? (exercise?.name ?? session.workout.title) : session.workout.title}</p>
                     <p className="mt-1 text-[11px] text-white/50">
                       {mmss(session.elapsedSeconds)} elapsed
                       {session.phaseSecondsLeft !== null
@@ -1365,7 +1364,6 @@ function V2Coach() {
           </aside>)}
         </div>
       </div>
-      {confirmWorkout && <div role="dialog" aria-modal="true" aria-label="Change workout" className="fixed inset-0 z-[80] grid place-items-center bg-black/80 p-5"><div className="max-w-sm rounded-2xl bg-[#111820] p-5"><h2 className="text-lg font-bold">Change workout?</h2><p className="mt-2 text-sm text-white/70">The current session is paused. Your current workout position stays saved. You can return to it from the Workout dropdown.</p><div className="mt-4 flex gap-3"><button type="button" onClick={()=>setConfirmWorkout(null)} className="min-h-11 rounded-xl bg-white/10 px-4">Keep current</button><button type="button" onClick={()=>loadWorkout(confirmWorkout)} className="min-h-11 rounded-xl bg-cyan-300 px-4 font-bold text-black">Change workout</button></div></div></div>}
       {showOpening && (
         <WorkoutOpeningScene
           starting={openingStarting}
