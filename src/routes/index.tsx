@@ -86,7 +86,7 @@ function CleanToday() {
       </div>
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Display mode follows the same workout. Use Samsung Smart View with your connected TV or projector; the physical hologram effect depends on your display hardware.</p>
       <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="tap-target mt-5 w-full rounded-xl border border-border px-4 text-sm font-semibold">{more ? "Close workout library and tools" : "Workout library and tools"}</button>
-      {more && <div data-testid="flex-existing-tools"><Link to="/nutrition" className="tap-target mt-3 flex items-center justify-center rounded-xl border border-border text-sm font-bold">Nutrition</Link><Today /></div>}
+      {more && <div data-testid="flex-existing-tools"><Link to="/nutrition" className="tap-target mt-3 flex items-center justify-center rounded-xl border border-border text-sm font-bold">Nutrition</Link><a href="/recovery-coach/bench-core/index.html" className="tap-target mt-3 flex items-center justify-center rounded-xl border border-border text-sm font-bold">Seated bench core A/B</a><Today /></div>}
     </main>
   );
 }
