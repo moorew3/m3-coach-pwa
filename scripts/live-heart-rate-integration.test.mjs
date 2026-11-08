@@ -74,6 +74,7 @@ const panel = read("src/components/HealthPanel.tsx");
 const v2 = read("src/routes/v2.tsx");
 const badge = read("src/v2/live-heart-rate.tsx");
 const advice = read("src/lib/flex-local-advice.ts");
+const liveWorkoutChat = read("src/lib/coach-talk.ts");
 const chat = read("src/components/FlexConversation.tsx");
 assert.match(panel, /setValues\(\(prev\) => \(\{ \.\.\.prev, heartRate: String\(reading\) \}\)\)/,
   "Real BPM must flow into the user-visible activity form");
@@ -82,6 +83,8 @@ assert.match(badge, /lastHeartRateReading\(\)/);
 assert.match(badge, /Connect HR/);
 assert.match(advice, /lastHeartRateReading\(\)/);
 assert.match(advice, /I will not guess/);
+assert.match(liveWorkoutChat, /lastHeartRateReading\\(\\)/, "V2 workout conversation must read the actual BLE sensor");
+assert.match(liveWorkoutChat, /Tap Connect HR/, "Workout chat must report missing sensor without inventing BPM");
 assert.match(chat, /heart\[ -\]\?rate\|pulse\|bpm/,
   "Conversational questions about current HR should use deterministic sensor facts");
 console.log("M3 FLEX live sensor regression passed: fresh BLE data, stale/disconnect guards, UI, coaching route.");
