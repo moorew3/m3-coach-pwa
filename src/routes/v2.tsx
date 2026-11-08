@@ -865,7 +865,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[56dvh] min-h-[340px] max-h-[740px] sm:h-[68dvh] sm:min-h-[420px] sm:max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
+            : "relative h-[60dvh] min-h-[460px] max-h-[740px] sm:h-[68dvh] sm:min-h-[420px] sm:max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
