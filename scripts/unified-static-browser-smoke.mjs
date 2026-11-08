@@ -62,7 +62,7 @@ try{
  await page.getByLabel("Workout mode").selectOption("hologram");
  assert.equal(await stage.getAttribute("data-scene-id"),"C01-R3");
  assert.match(await page.getByTestId("projection-format-disclosure").textContent(),/2D projection/);
- const archive=await page.goto(origin+"/recovery-coach/",{waitUntil:"domcontentloaded"});
+ const archive=await page.goto(origin+"/recovery-coach/index.html",{waitUntil:"domcontentloaded"});
  assert.equal(archive?.status(),200);
  await page.locator("#workoutChoices").waitFor({state:"attached"});
  const archivedHtml=await page.content();
