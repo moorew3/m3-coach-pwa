@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BasketballRouteImport } from './routes/basketball'
 import { Route as DisplayRouteImport } from './routes/display'
 import { Route as GlassesRouteImport } from './routes/glasses'
 import { Route as NutritionRouteImport } from './routes/nutrition'
@@ -26,10 +27,16 @@ import { Route as CoachDayRouteImport } from './routes/coach.$day'
 import { Route as WorkoutDayRouteImport } from './routes/workout.$day'
 import { Route as ApiPublicCoachSpeechRouteImport } from './routes/api/public/coach-speech'
 import { Route as ApiPublicCoachTalkRouteImport } from './routes/api/public/coach-talk'
+import { Route as ApiPublicMarcusSpeechRouteImport } from './routes/api/public/marcus-speech'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BasketballRoute = BasketballRouteImport.update({
+  id: '/basketball',
+  path: '/basketball',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DisplayRoute = DisplayRouteImport.update({
@@ -112,9 +119,15 @@ const ApiPublicCoachTalkRoute = ApiPublicCoachTalkRouteImport.update({
   path: '/api/public/coach-talk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMarcusSpeechRoute = ApiPublicMarcusSpeechRouteImport.update({
+  id: '/api/public/marcus-speech',
+  path: '/api/public/marcus-speech',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/basketball': typeof BasketballRoute
   '/display': typeof DisplayRoute
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
@@ -131,9 +144,11 @@ export interface FileRoutesByFullPath {
   '/workout/$day': typeof WorkoutDayRoute
   '/api/public/coach-speech': typeof ApiPublicCoachSpeechRoute
   '/api/public/coach-talk': typeof ApiPublicCoachTalkRoute
+  '/api/public/marcus-speech': typeof ApiPublicMarcusSpeechRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/basketball': typeof BasketballRoute
   '/display': typeof DisplayRoute
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
@@ -150,10 +165,12 @@ export interface FileRoutesByTo {
   '/workout/$day': typeof WorkoutDayRoute
   '/api/public/coach-speech': typeof ApiPublicCoachSpeechRoute
   '/api/public/coach-talk': typeof ApiPublicCoachTalkRoute
+  '/api/public/marcus-speech': typeof ApiPublicMarcusSpeechRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/basketball': typeof BasketballRoute
   '/display': typeof DisplayRoute
   '/glasses': typeof GlassesRoute
   '/nutrition': typeof NutritionRoute
@@ -170,11 +187,13 @@ export interface FileRoutesById {
   '/workout/$day': typeof WorkoutDayRoute
   '/api/public/coach-speech': typeof ApiPublicCoachSpeechRoute
   '/api/public/coach-talk': typeof ApiPublicCoachTalkRoute
+  '/api/public/marcus-speech': typeof ApiPublicMarcusSpeechRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/basketball'
     | '/display'
     | '/glasses'
     | '/nutrition'
@@ -191,9 +210,11 @@ export interface FileRouteTypes {
     | '/workout/$day'
     | '/api/public/coach-speech'
     | '/api/public/coach-talk'
+    | '/api/public/marcus-speech'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/basketball'
     | '/display'
     | '/glasses'
     | '/nutrition'
@@ -210,9 +231,11 @@ export interface FileRouteTypes {
     | '/workout/$day'
     | '/api/public/coach-speech'
     | '/api/public/coach-talk'
+    | '/api/public/marcus-speech'
   id:
     | '__root__'
     | '/'
+    | '/basketball'
     | '/display'
     | '/glasses'
     | '/nutrition'
@@ -229,10 +252,12 @@ export interface FileRouteTypes {
     | '/workout/$day'
     | '/api/public/coach-speech'
     | '/api/public/coach-talk'
+    | '/api/public/marcus-speech'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BasketballRoute: typeof BasketballRoute
   DisplayRoute: typeof DisplayRoute
   GlassesRoute: typeof GlassesRoute
   NutritionRoute: typeof NutritionRoute
@@ -249,6 +274,7 @@ export interface RootRouteChildren {
   WorkoutDayRoute: typeof WorkoutDayRoute
   ApiPublicCoachSpeechRoute: typeof ApiPublicCoachSpeechRoute
   ApiPublicCoachTalkRoute: typeof ApiPublicCoachTalkRoute
+  ApiPublicMarcusSpeechRoute: typeof ApiPublicMarcusSpeechRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -258,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/basketball': {
+      id: '/basketball'
+      path: '/basketball'
+      fullPath: '/basketball'
+      preLoaderRoute: typeof BasketballRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/display': {
@@ -372,11 +405,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCoachTalkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/marcus-speech': {
+      id: '/api/public/marcus-speech'
+      path: '/api/public/marcus-speech'
+      fullPath: '/api/public/marcus-speech'
+      preLoaderRoute: typeof ApiPublicMarcusSpeechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BasketballRoute: BasketballRoute,
   DisplayRoute: DisplayRoute,
   GlassesRoute: GlassesRoute,
   NutritionRoute: NutritionRoute,
@@ -393,6 +434,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkoutDayRoute: WorkoutDayRoute,
   ApiPublicCoachSpeechRoute: ApiPublicCoachSpeechRoute,
   ApiPublicCoachTalkRoute: ApiPublicCoachTalkRoute,
+  ApiPublicMarcusSpeechRoute: ApiPublicMarcusSpeechRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

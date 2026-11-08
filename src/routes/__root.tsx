@@ -164,7 +164,7 @@ function RootComponent() {
     pathname.startsWith("/glasses") ||
     pathname.startsWith("/presentation");
   // The coached session keeps the bottom nav but goes full width on desktop.
-  const wide = pathname.startsWith("/coach");
+  const wide = pathname.startsWith("/coach") || pathname.startsWith("/v2");
 
   // App rendered fine — allow a future stale-chunk auto-reload.
   useEffect(() => {
@@ -187,7 +187,7 @@ function RootComponent() {
         <AppEntryGate>
         <div
           className={
-            displayMode
+            (displayMode || pathname.startsWith("/v2"))
               ? "min-h-screen w-full"
               : wide
                 ? "mx-auto min-h-screen w-full max-w-lg pb-28 lg:max-w-none"
@@ -197,7 +197,7 @@ function RootComponent() {
           {/* Required: nested routes render here. */}
           <Outlet />
         </div>
-        {!displayMode && <BottomNav />}
+        {!displayMode && !pathname.startsWith("/v2") && <BottomNav />}
         </AppEntryGate>
       </LegacyRouteGate>
     </QueryClientProvider>

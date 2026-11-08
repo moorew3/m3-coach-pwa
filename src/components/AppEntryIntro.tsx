@@ -21,7 +21,7 @@
  * displays and are never gated.
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useNavigate, useLocation } from "@tanstack/react-router";
+import { useLocation } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { COACH_REFERENCE } from "@/data/coach-identity";
 import { speak } from "@/lib/coach-voice";
@@ -73,7 +73,6 @@ function playFootsteps() {
 
 export function AppEntryGate({ children }: { children: ReactNode }) {
   const { settings } = useApp();
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const secondary = isSecondary(pathname);
   // Closed only once we know this session already answered — so the app
@@ -106,7 +105,7 @@ export function AppEntryGate({ children }: { children: ReactNode }) {
   const enterApp = () => {
     markIntroSeen();
     setOpen(false);
-    if (pathname !== "/") void navigate({ to: "/" });
+    // Preserve the requested workout/display link after the entrance.
   };
 
   const accept = () => {
