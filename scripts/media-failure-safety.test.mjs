@@ -18,8 +18,8 @@ test("direct video failures show original approved still and clear explanation",
 });
 
 test("video stall and autoplay blocked states offer SAME-source retry", () => {
-  assert.match(coachMotion, /onWaiting=\{watchStall\}/);
-  assert.match(coachMotion, /onStalled=\{watchStall\}/);
+  assert.match(coachMotion, /onWaiting=\{\(\) => \{[\s\S]*?playbackStateCallback\.current\?\.\(false\);[\s\S]*?watchStall\(\)/);
+  assert.match(coachMotion, /onStalled=\{\(\) => \{[\s\S]*?playbackStateCallback\.current\?\.\(false\);[\s\S]*?watchStall\(\)/);
   assert.match(coachMotion, /setTimeout\(\(\) => setFailure\("stalled"\), 12_000\)/);
   assert.match(coachMotion, /error\.name === "NotAllowedError"/);
   assert.match(coachMotion, /data-testid="retry-coach-video"/);

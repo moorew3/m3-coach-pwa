@@ -19,6 +19,7 @@ export function CoachMotion({
   muted = true,
   onPlaybackFailure,
   onVideoReady,
+  onPlaybackStateChange,
   onRetry,
   rate = 1,
   preloadUrl,
@@ -38,6 +39,8 @@ export function CoachMotion({
   onPlaybackFailure?: () => void;
   /** Only fires after this exact clip has rendered a decoded video frame. */
   onVideoReady?: () => void;
+  /** Fires whenever actual video playback starts or stops, including buffering. */
+  onPlaybackStateChange?: (isPlaying: boolean) => void;
   /** Retry the same clip and resume the parent session after a media error. */
   onRetry?: () => void;
   /** Playback speed so the coach's cadence matches the movement's target tempo. */
@@ -64,6 +67,8 @@ export function CoachMotion({
   const frameReported = useRef(false);
   const videoReadyCallback = useRef(onVideoReady);
   videoReadyCallback.current = onVideoReady;
+  const playbackStateCallback = useRef(onPlaybackStateChange);
+  playbackStateCallback.current = onPlaybackStateChange;
 
   const firstDecodedFrame = (video: HTMLVideoElement) => {
     if (frameReported.current || video.videoWidth === 0 || video.readyState < 2) return;
@@ -108,6 +113,7 @@ export function CoachMotion({
     setFrameVisible(false);
     setSilentFallback(false);
     frameReported.current = false;
+    playbackStateCallback.current?.(false);
     clearStalledTimer();
   }, [url, attempt, cycleKey]);
 
@@ -126,7 +132,12 @@ export function CoachMotion({
     }
   }, [playing, rate, url, failure, loaded, attempt]);
 
-  useEffect(() => { if (failure) onPlaybackFailure?.(); }, [failure, onPlaybackFailure]);
+  useEffect(() => {
+    if (failure) {
+      playbackStateCallback.current?.(false);
+      onPlaybackFailure?.();
+    }
+  }, [failure, onPlaybackFailure]);
 
   const still = poster || COACH_REFERENCE;
   if (vimeoId)
@@ -187,7 +198,11 @@ export function CoachMotion({
               if (playing) attemptPlayback(event.currentTarget);
             }}
             onPlaying={(event) => {
+              // A recovered stream must cancel the buffering timeout even if
+              // its first decoded frame was already reported earlier.
+              clearStalledTimer();
               setIsPlaying(true);
+              playbackStateCallback.current?.(true);
               const video = event.currentTarget;
               if (typeof video.requestVideoFrameCallback === "function") {
                 video.requestVideoFrameCallback(() => firstDecodedFrame(video));
@@ -199,16 +214,27 @@ export function CoachMotion({
             onTimeUpdate={(event) => {
               if (event.currentTarget.currentTime > 0) firstDecodedFrame(event.currentTarget);
             }}
-            onWaiting={watchStall}
-            onStalled={watchStall}
+            onWaiting={() => {
+              playbackStateCallback.current?.(false);
+              watchStall();
+            }}
+            onStalled={() => {
+              playbackStateCallback.current?.(false);
+              watchStall();
+            }}
             onPause={() => {
               clearStalledTimer();
               setIsPlaying(false);
+              playbackStateCallback.current?.(false);
             }}
-            onEnded={() => setIsPlaying(false)}
+            onEnded={() => {
+              setIsPlaying(false);
+              playbackStateCallback.current?.(false);
+            }}
             onError={() => {
               clearStalledTimer();
               setFailure("source");
+              playbackStateCallback.current?.(false);
               setLoaded(false);
               setIsPlaying(false);
             }}
