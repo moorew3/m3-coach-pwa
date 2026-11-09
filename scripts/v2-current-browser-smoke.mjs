@@ -84,6 +84,23 @@ try{
  assert.equal(await workout.inputValue(),"B");
  assert.equal(await stage.getAttribute("data-scene-id"),"C03");
  console.log("✓ Coach/Hologram share selected workout, and 3D availability is honest");
+ // RayNeo is a screen/output mode, never a replacement workout or avatar.
+ await page.getByLabel("Workout mode").selectOption("glasses");
+ assert.equal(await page.getByTestId("flex-training").getAttribute("data-display-mode"),"glasses");
+ assert.equal(await page.getByTestId("flex-training").getAttribute("data-glasses-mode"),"true");
+ assert.ok(page.url().includes("display=glasses"));
+ assert.equal(await stage.getAttribute("data-scene-id"),"C03");
+ assert.match(await page.getByTestId("projection-format-disclosure").innerText(),/RayNeo GT Max.*2D display.*3D avatar pending/);
+ await page.getByTestId("rayneo-fullscreen-toggle").waitFor();
+ await page.getByTestId("projection-controls-toggle").click();
+ await page.getByTestId("rayneo-connection-guide").waitFor();
+ assert.equal(await page.getByLabel("Workout mode").inputValue(),"glasses");
+ await page.getByTestId("projection-close-settings").click();
+ await page.getByTestId("projection-exit-toggle").click();
+ assert.equal(await page.getByTestId("flex-training").getAttribute("data-display-mode"),"coach");
+ assert.equal(await workout.inputValue(),"B");
+ assert.equal(await stage.getAttribute("data-scene-id"),"C03");
+ console.log("✓ RayNeo mode retains approved exercise, offers fullscreen and never invents a glasses microphone");
  await workout.selectOption("recovery");await exercise.selectOption("1");
  const clearance=page.locator('[data-testid="unified-workout-selectors"] input[type="checkbox"]');
  assert.equal(await clearance.count(),3);
@@ -105,6 +122,31 @@ try{
  assert.match(archivedHtml,/id="workoutChoices"/);
  assert.match(archivedHtml,/C01-R3/);
  assert.match(archivedHtml,/C02/);
+ // A RayNeo GT Max exposes a 1920x1080 video display. Test the same
+ // source at that aspect ratio independently of the user's phone session.
+ const externalContext=await browser.newContext({viewport:{width:1920,height:1080},deviceScaleFactor:1,reducedMotion:"reduce"});
+ const rayneo=await externalContext.newPage();
+ rayneo.setDefaultTimeout(15000);
+ const direct=await rayneo.goto(base+"/v2?workout=recovery&display=glasses",{waitUntil:"domcontentloaded"});
+ assert.equal(direct?.status(),200);
+ await rayneo.locator('[data-testid="flex-training"][data-display-mode="glasses"]').waitFor({timeout:15000});
+ assert.equal(await rayneo.getByTestId("flex-training").getAttribute("data-display-mode"),"glasses");
+ assert.equal(await rayneo.getByTestId("v2-trainer-stage").getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
+ await rayneo.waitForFunction(()=>{
+  const c=document.querySelector('[data-testid="coach-motion"]');
+  const v=c?.querySelector('video[data-active="true"]');
+  return c?.getAttribute("data-frame-ready")==="true" && v?.videoWidth>0 && !v.paused && v.currentTime>0.15;
+ },null,{timeout:25000});
+ const rayneoVideo=rayneo.locator('[data-testid="coach-motion"] video[data-active="true"]');
+ const t0=await rayneoVideo.evaluate(v=>v.currentTime);
+ await rayneo.waitForTimeout(450);
+ const t1=await rayneoVideo.evaluate(v=>v.currentTime);
+ assert.ok(t1>t0+0.05,"RayNeo display must show advancing approved Marcus video frames");
+ const rayneoStage=await rayneo.getByTestId("v2-trainer-stage").boundingBox();
+ assert.ok(rayneoStage && rayneoStage.width>=1700 && rayneoStage.height>=850,"Wide RayNeo workout stage must fill the external display");
+ await rayneo.screenshot({path:"artifacts/m3-flex-rayneo-display-review.png",timeout:8000});
+ await externalContext.close();
+ console.log("✓ 1920x1080 RayNeo direct link: full-height approved moving Marcus and native 2D disclosure");
  assert.deepEqual(errors,[],"No uncaught browser errors");
  assert.equal(requests.some(u=>u.includes("/api/public/coach-talk")||u.includes("/api/public/coach-speech")),false);
  console.log("M3 FLEX V2 mobile smoke PASSED: approved movement, safety, rest, projection and archive; no paid AI");
