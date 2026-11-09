@@ -129,7 +129,7 @@ try{
  rayneo.setDefaultTimeout(15000);
  const direct=await rayneo.goto(base+"/v2?workout=recovery&display=glasses",{waitUntil:"domcontentloaded"});
  assert.equal(direct?.status(),200);
- await rayneo.getByTestId("flex-training").waitFor();
+ await rayneo.locator('[data-testid="flex-training"][data-display-mode="glasses"]').waitFor({timeout:15000});
  assert.equal(await rayneo.getByTestId("flex-training").getAttribute("data-display-mode"),"glasses");
  assert.equal(await rayneo.getByTestId("v2-trainer-stage").getAttribute("data-scene-id"),"C09-PRE-BREATH-R2");
  await rayneo.waitForFunction(()=>{
