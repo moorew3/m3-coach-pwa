@@ -58,7 +58,7 @@ function loadTurns(): Turn[] {
 }
 function preciseQuestion(question: string) {
   // Preserve deterministic recorded facts without hijacking general topics.
-  return /\b(how (much|many)|have i (logged|eaten|drunk|done)|did i (log|eat|drink)|my (calories|protein|carbs|macros|water|reps|sets|weight|workout|plan|progress)|today's (protein|calories|workout|plan)|current (set|reps|weight)|food (preferences|allergy)|chest pain|can't breathe|injured (left )?leg|leg (pain|injury)|is it safe)\b/i.test(question);
+  return /\b(how (much|many)|have i (logged|eaten|drunk|done)|did i (log|eat|drink)|my (calories|protein|carbs|macros|water|reps|sets|weight|workout|plan|progress)|today's (protein|calories|workout|plan)|current (set|reps|weight)|heart[ -]?rate|pulse|bpm|food (preferences|allergy)|chest pain|can't breathe|injured (left )?leg|leg (pain|injury)|is it safe)\b/i.test(question);
 }
 function normalizedFollowup(question: string, turns: Turn[]) {
   if (!/^(why\??|how so\??|explain (?:that|more)|what do you mean\??|can you explain\??|tell me more|what about (?:that|it)\??)$/i.test(question.trim())) return question;

@@ -173,6 +173,9 @@ function Today() {
           <Link to="/v2" data-testid="open-existing-v2" className="tap-target flex items-center justify-center rounded-xl border-2 border-accent bg-accent/15 px-3 text-center text-sm font-bold text-accent">
             Open M3 Coach V2 · Visual workout
           </Link>
+          <Link to="/basketball" data-testid="open-live-basketball" className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-cyan-500/60 bg-cyan-500/10 px-3 text-center text-sm font-bold text-cyan-200">
+            Basketball · Live camera technique
+          </Link>
           <Link to="/recovery" search={{ program: "recovery" }}
             className="tap-target flex items-center justify-center rounded-xl bg-primary px-3 text-center text-sm font-bold text-primary-foreground">
             Recovery · 5 approved moves

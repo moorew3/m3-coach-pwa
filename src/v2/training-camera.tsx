@@ -1,7 +1,7 @@
 import { Camera, CameraOff, RefreshCw, ScanEye } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
-  attachVideo, cameraSupported, setCalibrating, setPattern, startCamera,
+  attachVideo, cameraSupported, setCalibrating, setCameraFraming, setPattern, startCamera,
   stopCamera, useCamera,
 } from "@/lib/vision/camera";
 import { patternFor } from "@/lib/vision/patterns";
@@ -51,6 +51,12 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance, onRound
     kickKind || boxingDrill || nonRepTechnique.has(motionKey)
       ? null
       : patternFor(motionKey) ?? patternFor(exercise?.id);
+  // Full-body checks remain mandatory for kicks and leg patterns. For seated
+  // upper-body drills, ankles need not be visible or weight-bearing.
+  const framing = kickKind || pattern === "squat" || pattern === "lunge"
+    ? "full" : boxingDrill || pattern ? "upper" : "full";
+  useEffect(() => { setCameraFraming(framing); }, [framing]);
+
   const supported = typeof window !== "undefined" && cameraSupported();
   const isOn = cam.status === "live" || cam.status === "loading" || cam.status === "starting";
   const live = cam.status === "live";
@@ -180,14 +186,16 @@ export function V2TrainingCamera({ session, onCue, onRepCapture, stance, onRound
                 <ScanEye className="mx-auto mb-3 size-9 text-cyan-300" />
                 <p className="text-xl font-black">Coach-eye tracking</p>
                 <p className="mt-2 text-sm text-white/60">
-                  Stand where the camera can see your whole body. Your video stays on this device.
+                  {framing === "upper"
+                    ? "Sit with your injured leg supported. Show both shoulders, elbows and wrists; your lower legs do not need to be in frame."
+                    : "Frame your whole body for this movement. Your video stays on this device."}
                 </p>
               </>
             )}
             <button
               type="button"
               disabled={!supported}
-              onClick={() => void startCamera(pattern)}
+              onClick={() => { setCameraFraming(framing); void startCamera(pattern); }}
               className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-black disabled:opacity-50"
             >
               <Camera className="size-4" />

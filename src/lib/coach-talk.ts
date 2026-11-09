@@ -8,6 +8,7 @@
 
 import { paidAiHeaders } from "@/lib/paid-ai-client";
 import { localCoachAnswer } from "@/lib/local-coach-answer";
+import { lastHeartRateReading } from "@/lib/health/hr-monitor";
 
 export interface LiveCoachContext {
   athlete?: string;
@@ -50,6 +51,15 @@ export async function askLiveCoach(
 ): Promise<string | null> {
   const text = message.trim();
   if (!text) return null;
+  // Workout conversation and general chat must use the SAME actual sensor value.
+  // Answer before paid-AI routing; do not invent BPM or treat readings as diagnoses.
+  if (/\b(heart[ -]?rate|pulse|bpm)\b/i.test(text)) {
+    const reading = lastHeartRateReading();
+    if (!reading) return "I do not have a fresh heart-rate reading. Tap Connect HR in the workout, connect a compatible Bluetooth sensor, and ask again.";
+    const secondsAgo = Math.max(0, Math.round((Date.now() - reading.recordedAt) / 1000));
+    return "Your Bluetooth heart-rate monitor reports " + reading.bpm +
+      " beats per minute, measured " + secondsAgo + " seconds ago. That is a sensor reading, not a medical diagnosis.";
+  }
   const local = localCoachAnswer(text, context);
   if (local) return local;
   if (!premiumAiAvailableOnClient()) {

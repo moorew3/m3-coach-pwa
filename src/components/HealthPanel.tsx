@@ -4,6 +4,7 @@ import {
   averageHeartRate,
   connectHeartRate,
   disconnectHeartRate,
+  lastHeartRateReading,
   heartRateSupported,
   onHeartRate,
 } from "@/lib/health/hr-monitor";
@@ -53,7 +54,26 @@ export function HealthPanel({ day: dayProp }: { day?: number }) {
   const [tracking, setTracking] = useState(false);
   const [note, setNote] = useState("");
 
-  useEffect(() => onHeartRate(setBpm), []);
+  const sensorValue = useRef<number | null>(null);
+  useEffect(() => onHeartRate((reading) => {
+    setBpm(reading);
+    sensorValue.current = reading;
+    setValues((prev) => ({ ...prev, heartRate: String(reading) }));
+  }), []);
+  // Do not leave a sensor-populated BPM field on screen when it is no longer fresh.
+  // Preserve a measurement that the user explicitly typed over.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (lastHeartRateReading()) return;
+      setBpm(null);
+      const old = sensorValue.current;
+      if (old === null) return;
+      setValues((prev) => prev.heartRate === String(old)
+        ? { ...prev, heartRate: "" } : prev);
+      sensorValue.current = null;
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
   useEffect(() => onWalkSample(setWalk), []);
 
   const put = (patch: Record<string, string>) => setValues((p) => ({ ...p, ...patch }));
@@ -223,7 +243,7 @@ export function HealthPanel({ day: dayProp }: { day?: number }) {
 
       <button
         type="button"
-        onClick={() => save(bpm || walk ? "sensor" : "manual", hrName ?? undefined)}
+        onClick={() => save(lastHeartRateReading() || walk ? "sensor" : "manual", hrName ?? undefined)}
         className="tap-target w-full rounded-xl bg-primary text-sm font-black uppercase text-primary-foreground"
       >
         Save today’s activity
@@ -235,6 +255,7 @@ export function HealthPanel({ day: dayProp }: { day?: number }) {
           disconnectHeartRate();
           setHrName(null);
           setBpm(null);
+          put({ heartRate: "" });
         }}
         className="text-xs font-bold uppercase text-muted-foreground underline"
       >

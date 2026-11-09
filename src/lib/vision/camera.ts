@@ -15,6 +15,7 @@
 import { MoveAnalyzer, emptyMetrics, type LM, type MoveMetrics } from "./analysis";
 import { GestureReader, type GestureId } from "./gestures";
 import type { PatternId } from "./patterns";
+import { calibratePose, type CameraFraming } from "./calibration";
 
 const WASM_BASE = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm";
 const POSE_MODEL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task";
@@ -60,6 +61,7 @@ export interface CamState {
   pattern: PatternId | null;
   calibration: Calibration;
   calibrating: boolean;
+  framing: CameraFraming;
   gesturesOn: boolean;
   overlayOn: boolean;
   /** Last recognised hand shape, e.g. "thumbs up". */
@@ -91,6 +93,7 @@ const initial: CamState = {
   pattern: null,
   calibration: blankCal,
   calibrating: false,
+  framing: "full",
   gesturesOn: true,
   overlayOn: true,
   gestureSeen: null,
@@ -230,49 +233,6 @@ export async function selectCamera(deviceId: string, pattern: PatternId | null =
 
 /* ------------------------------ calibration ----------------------------- */
 
-const v = (l?: LM) => (l ? (l.visibility ?? 1) : 0);
-
-function calibrate(lm: LM[] | null): Calibration {
-  if (!lm || lm.length < 29)
-    return { ...blankCal, prompt: "Step into frame — I can't see you yet." };
-  const upper = (v(lm[11]) + v(lm[12]) + v(lm[13]) + v(lm[14])) / 4 > 0.6;
-  const lower = (v(lm[25]) + v(lm[26]) + v(lm[27]) + v(lm[28])) / 4 > 0.5;
-  const head = v(lm[0]) > 0.5;
-  const top = Math.min(lm[11].y, lm[12].y);
-  const bottom = Math.max(lm[27]?.y ?? 1, lm[28]?.y ?? 1);
-  const height = bottom - top;
-  const farEnough = height < 0.92 && height > 0.25;
-  const shoulderTilt = Math.abs(lm[11].y - lm[12].y);
-  const upright = shoulderTilt < 0.12;
-  const bright = (v(lm[0]) + v(lm[11]) + v(lm[12])) / 3 > 0.5;
-
-  const prompt = !head
-    ? "Point the camera a little higher — I need your head in frame."
-    : !lower
-      ? "Step back so I can see your knees and ankles."
-      : !farEnough
-        ? height >= 0.92
-          ? "Step back a bit — you're filling the whole frame."
-          : "Come closer, you're too far away."
-        : !upright
-          ? "Keep the camera level and square to you."
-          : !bright
-            ? "It's a bit dark — add some light in front of you."
-            : "Perfect. I can see you.";
-
-  const ready = head && upper && lower && farEnough && upright && bright;
-  return {
-    bodyVisible: head && upper,
-    upperVisible: upper,
-    lowerVisible: lower,
-    farEnough,
-    upright,
-    bright,
-    ready,
-    prompt,
-  };
-}
-
 /* -------------------------------- runtime ------------------------------- */
 
 async function build() {
@@ -396,6 +356,7 @@ export async function startCamera(
 export function stopCamera() {
   cancelAnimationFrame(raf);
   raf = 0;
+  alignmentReadySince = 0;
   stream?.getTracks().forEach((t) => t.stop());
   stream = null;
   if (video) video.srcObject = null;
@@ -433,7 +394,17 @@ export function setOverlayOn(on: boolean) {
   set({ overlayOn: on });
 }
 export function setCalibrating(on: boolean) {
+  if (cam.calibrating && !on) {
+    // Calibration frames were not workout reps. Begin assessment from zero.
+    analyzer = cam.pattern ? new MoveAnalyzer(cam.pattern) : null;
+    set({ calibrating: false, metrics: cam.pattern ? emptyMetrics(cam.pattern) : null });
+    return;
+  }
   set({ calibrating: on });
+}
+/** Upper-body sessions should not force visibility of a supported/unloaded leg. */
+export function setCameraFraming(framing: CameraFraming) {
+  if (framing !== cam.framing) set({ framing });
 }
 
 /** Snapshot of the current set's tracking, for the workout record. */
@@ -447,6 +418,7 @@ let lastPose = 0;
 let lastHand = 0;
 let frames = 0;
 let fpsAt = 0;
+let alignmentReadySince = 0;
 
 function loop() {
   raf = requestAnimationFrame(loop);
@@ -470,8 +442,19 @@ function loop() {
       frames = 0;
       fpsAt = now;
     }
-    const cal = calibrate(lm);
-    const metrics = analyzer ? analyzer.push(lm, wall) : null;
+    const cal = calibratePose(lm, cam.framing);
+    // After one explicit user consent, avoid a second start button:
+    // a steady 1.2-second valid camera frame completes framing automatically.
+    if (cam.calibrating && cal.ready) {
+      if (!alignmentReadySince) alignmentReadySince = wall;
+      if (wall - alignmentReadySince >= 1200) {
+        alignmentReadySince = 0;
+        setCalibrating(false);
+      }
+    } else {
+      alignmentReadySince = 0;
+    }
+    const metrics = analyzer && !cam.calibrating ? analyzer.push(lm, wall) : null;
     set({ landmarks: lm, calibration: cal, metrics });
     if (metrics?.cue && !cam.calibrating) onCue?.(metrics.cue, metrics);
   }

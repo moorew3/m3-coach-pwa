@@ -32,6 +32,7 @@ import { playFridayPremiumCue, preloadFridayPremiumCue, stopFridayPremiumCue, ha
 import { playMarcusTrainer, stopMarcusTrainer } from "@/v2/marcus-trainer-audio";
 import { canSpeakCoachReply, coachReplySpeaking, speakCoachReply, stopCoachReply, subscribeCoachReplySpeech } from "@/v2/coach-reply-speech";
 import { V2TrainingCamera } from "@/v2/training-camera";
+import { V2LiveHeartRate } from "@/v2/live-heart-rate";
 import { M3GymRenderer } from "@/v2/renderer";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
 import { FLEX_PRESENCE_LABEL, resolveFlexPresence } from "@/v2/flex-presence";
@@ -899,6 +900,7 @@ function V2Coach() {
               </div>
             </div>
 
+            <V2LiveHeartRate />
             <V2TrainingCamera
               session={session}
               onCue={giveFeedback}

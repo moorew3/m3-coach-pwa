@@ -5,6 +5,7 @@
 import { currentDayNumber, getNutrition, nutritionTotals, todayKey, type AppState, type FlexFoodPreferences } from "@/lib/store";
 import { nutritionCoachSnapshot } from "@/lib/nutrition-coach";
 import { planForDay } from "@/data/program";
+import { lastHeartRateReading } from "@/lib/health/hr-monitor";
 
 export const foodPreferencesFor = (s: AppState): FlexFoodPreferences => ({
   avoidCheese: true, preferLactoseFree: true, flavor: "chocolate",
@@ -45,6 +46,13 @@ export function answerFlexLocal(
     return reply("safety", "Stop exercising. Chest pain, fainting or trouble breathing may be an emergency. Seek urgent medical help.");
   if (/\b(pain|hurt|numb|tingling|dizzy|dizziness|left leg|boot|injury|injured)\b/.test(q))
     return reply("safety", "Do not load your injured LEFT leg or train through pain. Keep it supported and unloaded and follow your treating clinician's restrictions. Stop for new pain, swelling, dizziness or numbness.");
+  if (/\b(heart[ -]?rate|pulse|bpm)\b/.test(q)) {
+    const reading = lastHeartRateReading();
+    if (!reading) return reply("training", "I do not have a fresh heart-rate reading. Connect a compatible Bluetooth heart-rate monitor from the workout screen, then ask again. I will not guess.");
+    const secondsAgo = Math.max(0, Math.round((Date.now() - reading.recordedAt) / 1000));
+    return reply("training", "Your connected Bluetooth sensor reports " + reading.bpm +
+      " beats per minute, measured " + secondsAgo + " seconds ago. This is a device reading, not a medical diagnosis.");
+  }
   if (/\b(cheese|lactose|dairy|allerg|food preference|preferences)\b/.test(q))
     return reply("nutrition", "Current preferences: " + (prefs.avoidCheese ? "no cheese" : "cheese permitted") +
       ", " + (prefs.preferLactoseFree ? "lactose-free options preferred" : "no lactose-free preference") +
@@ -66,6 +74,16 @@ export function answerFlexLocal(
   if (/\b(water|hydration|drink|thirst)\b/.test(q))
     return reply("nutrition", "Water logged today: " + water +
       ". Tap +1 cup only when you actually drink an eight-ounce cup. This isn't a medical hydration prescription.");
+  if (/\b(what(?:'s| is) my (?:current )?weight|how much do i weigh|last weigh[- ]?in|latest scale reading)\b/.test(q)) {
+    const entries = Object.entries(state.nutrition)
+      .filter(([, value]) => Number(value.bodyweight) > 0)
+      .sort(([x], [y]) => y.localeCompare(x));
+    if (!entries.length) return reply("nutrition", "I don't have a recorded body weight. Enter a real measurement or connect a supported scale on Nutrition.");
+    const [loggedDate, logged] = entries[0];
+    return reply("nutrition", "Your most recent recorded weight is " + logged.bodyweight + " " + state.settings.units +
+      " from " + loggedDate + (logged.bodyweightSource === "bluetooth-scale" ? " (confirmed Bluetooth scale)" : " (nutrition log)") +
+      ". This is a logged measurement, not an estimate.");
+  }
   if (/\b(weight loss|lose weight|body fat|bodyweight|weigh|progress)\b/.test(q))
     return reply("nutrition", snap.headline + ". " + snap.detail +
       " Use trends across logged days rather than changing calories from one weigh-in.");
