@@ -32,6 +32,24 @@ try{
  await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).click();
  await page.getByTestId("flex-training").waitFor();
  const stage=page.getByTestId("v2-trainer-stage"),workout=page.getByLabel("Workout",{exact:true}),exercise=page.getByLabel("Exercise",{exact:true});
+ // Everyday controls should be few, large, and visibly separate from extra options.
+ const primary=page.getByTestId("m3-primary-workout-controls");
+ await primary.waitFor();
+ assert.equal(await primary.locator("button").count(),3,"Only Start/Pause, Done Set, Ask Marcus appear as primary controls");
+ assert.equal(await primary.getByRole("button",{name:"Ask Marcus"}).count(),1);
+ assert.equal(await page.getByTestId("flex-session-toolbar").count(),1);
+ await page.getByRole("button",{name:"More coach tools"}).click();
+ await page.getByTestId("m3-secondary-workout-actions").waitFor();
+ assert.equal(await page.getByTestId("m3-secondary-workout-actions").getByRole("button",{name:"Stop workout"}).count(),1);
+ assert.equal(await page.getByTestId("m3-secondary-workout-actions").getByRole("button",{name:"Reset workout"}).count(),1);
+ await page.getByRole("button",{name:"More coach tools"}).click();
+ const setupToggle=page.getByTestId("workout-setup-toggle");
+ assert.equal(await setupToggle.getAttribute("aria-expanded"),"true","Recovery clinical checklist stays accessible on entry");
+ await setupToggle.click();
+ await page.getByTestId("m3-setup-expanded").waitFor({state:"detached"});
+ await setupToggle.click();
+ await page.getByTestId("m3-setup-expanded").waitFor();
+ console.log("✓ Clean UI: three primary buttons, settings tucked away, safety checklist readily available");
  const verifyMovingVideo=async(label)=>{
   // This rejects the previous false green: a matching URL can still be black.
   await page.waitForFunction(()=>{
