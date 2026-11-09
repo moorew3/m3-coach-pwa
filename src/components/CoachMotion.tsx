@@ -198,6 +198,9 @@ export function CoachMotion({
               if (playing) attemptPlayback(event.currentTarget);
             }}
             onPlaying={(event) => {
+              // A recovered stream must cancel the buffering timeout even if
+              // its first decoded frame was already reported earlier.
+              clearStalledTimer();
               setIsPlaying(true);
               playbackStateCallback.current?.(true);
               const video = event.currentTarget;
