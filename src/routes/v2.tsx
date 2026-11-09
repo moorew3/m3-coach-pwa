@@ -148,24 +148,35 @@ function V2Coach() {
   const [voiceError, setVoiceError] = useState<string | null>(null);
   // Hide secondary settings without losing workout/session state or the exact approved media.
   const [projectionFocus, setProjectionFocus] = useState(false);
+  // RayNeo uses USB-C DisplayPort as a wearable screen, not a glasses-owned AI rig.
+  // Glasses and Coach share the same live workout, scene and safety state.
+  const [glassesMode, setGlassesMode] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [projectionSettingsOpen, setProjectionSettingsOpen] = useState(false);
   useEffect(() => {
-    const requested = (new URLSearchParams(window.location.search).get("focus") === "1" || new URLSearchParams(window.location.search).get("display") === "1");
+    const params = new URLSearchParams(window.location.search);
+    const requestedGlasses = params.get("display") === "glasses";
+    const requested = (params.get("focus") === "1" || params.get("display") === "1" || requestedGlasses);
+    if (requestedGlasses) setGlassesMode(true);
     let remembered = false;
     try { remembered = window.localStorage.getItem("m3-flex-projection-focus-v1") === "1"; }
     catch { /* preferences are optional */ }
     if (requested || remembered) setProjectionFocus(true);
   }, []);
-  const changeProjectionFocus = (enabled: boolean) => {
+  const changeProjectionFocus = (enabled: boolean, glassesDisplay = false) => {
     setProjectionFocus(enabled);
+    setGlassesMode(enabled && glassesDisplay);
     setProjectionSettingsOpen(false);
-    if (enabled) dispatch({ type: "set-mode", mode: "coach" });
+    // Do not replace the chosen workout or exercise when switching displays.
+    if (enabled) dispatch({ type: "set-mode", mode: glassesDisplay ? "glasses" : "coach" });
+    else dispatch({ type: "set-mode", mode: "coach" });
     try { window.localStorage.setItem("m3-flex-projection-focus-v1", enabled ? "1" : "0"); }
     catch { /* preview still works */ }
     const address = new URL(window.location.href);
-    if (enabled) address.searchParams.set("focus", "1");
-    else { address.searchParams.delete("focus"); address.searchParams.delete("display"); }
+    address.searchParams.delete("focus");
+    address.searchParams.delete("display");
+    if (enabled && glassesDisplay) address.searchParams.set("display", "glasses");
+    else if (enabled) address.searchParams.set("focus", "1");
     window.history.replaceState(window.history.state, "", address.pathname + address.search + address.hash);
   };
   const [boxingStance, setBoxingStance] = useState<BoxingStance>("orthodox");
@@ -770,8 +781,8 @@ function V2Coach() {
         </select>
       </label>
       <label className="min-w-0 text-xs font-semibold text-white/60">Mode
-        <select aria-label="Workout mode" value={projectionFocus?"hologram":"coach"} onChange={e=>changeProjectionFocus(e.target.value==="hologram")} className="mt-1 min-h-11 w-full rounded-xl border border-white/15 bg-[#080b0f] px-2 text-sm text-white">
-          <option value="coach">Coach</option><option value="hologram">Hologram</option>
+        <select aria-label="Workout mode" value={projectionFocus ? (glassesMode ? "glasses" : "hologram") : "coach"} onChange={e=>changeProjectionFocus(e.target.value !== "coach", e.target.value === "glasses")} className="mt-1 min-h-11 w-full rounded-xl border border-white/15 bg-[#080b0f] px-2 text-sm text-white">
+          <option value="coach">Coach</option><option value="hologram">Hologram</option><option value="glasses">Glasses · RayNeo</option>
         </select>
       </label>
       {session.workout.requiresClearance && <details className="col-span-2 rounded-xl bg-black/30 p-3" open={!cleared}>
@@ -782,7 +793,7 @@ function V2Coach() {
   );
 
   return (
-    <main className={projectionFocus ? "h-dvh min-h-0 overflow-hidden bg-black text-white" : "min-h-dvh bg-[#080b0f] text-white"} data-projection-focus={projectionFocus ? "true" : "false"} data-testid="flex-training" data-display-mode={projectionFocus}>
+    <main className={projectionFocus ? "h-dvh min-h-0 overflow-hidden bg-black text-white" : "min-h-dvh bg-[#080b0f] text-white"} data-projection-focus={projectionFocus ? "true" : "false"} data-testid="flex-training" data-display-mode={glassesMode ? "glasses" : projectionFocus ? "hologram" : "coach"} data-glasses-mode={glassesMode ? "true" : "false"}>
       <div className={projectionFocus ? "relative mx-auto h-full w-full max-w-none overflow-hidden" : "mx-auto max-w-7xl px-3 py-3 sm:px-5"}>
         <input
           ref={athletePicker}
@@ -817,6 +828,19 @@ function V2Coach() {
             >
               {voiceControl.listening ? "Mic on" : "Talk"}
             </button>
+            {glassesMode && (
+              <button type="button"
+                onClick={() => {
+                  if (document.fullscreenElement) {
+                    void document.exitFullscreen().catch(() => setVoiceError("Could not exit fullscreen."));
+                  } else {
+                    void document.documentElement.requestFullscreen().catch(() => setVoiceError("If fullscreen is blocked, use Chrome's fullscreen or DeX display controls."));
+                  }
+                }}
+                className="min-h-11 rounded-xl border border-white/25 bg-black/80 px-3 text-xs font-black text-white"
+                data-testid="rayneo-fullscreen-toggle"
+                aria-label="Toggle glasses fullscreen">Full screen</button>
+            )}
             <button type="button" onClick={() => setProjectionSettingsOpen(true)}
               className="min-h-11 rounded-xl border border-white/25 bg-black/80 px-3 text-xs font-black text-white"
               data-testid="projection-controls-toggle">Controls</button>
@@ -938,7 +962,7 @@ function V2Coach() {
             {projectionFocus && (
               <div className="pointer-events-none absolute left-3 top-3 z-[7] max-w-[44%] text-[10px] font-semibold text-cyan-200/70"
                 data-testid="projection-format-disclosure">
-                {realTimeRigReady ? "Approved 3D renderer" : "2D projection · 3D avatar pending"}
+                {realTimeRigReady ? "Approved 3D renderer" : glassesMode ? "RayNeo GT Max · 2D display · 3D avatar pending" : "2D projection · 3D avatar pending"}
               </div>
             )}
             <div className={projectionFocus
@@ -948,7 +972,7 @@ function V2Coach() {
                 ? "max-w-[min(58%,320px)] rounded-xl bg-black/25 p-2"
                 : "max-w-[min(80%,450px)] rounded-xl bg-black/60 p-3 backdrop-blur-sm"}>
                 <p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-300">
-                  {viewpoint.label} · {session.phase}
+                  {glassesMode ? "Glasses" : viewpoint.label} · {session.phase}
                 </p>
                 <h2 className={projectionFocus ? "mt-1 text-base font-black uppercase leading-tight" : "mt-1 text-xl font-black uppercase leading-tight sm:text-2xl"}>
                   {stageTitle}
@@ -1043,6 +1067,14 @@ function V2Coach() {
               </div>
             )}
             {projectionFocus && selectorPanel}
+            {glassesMode && (
+              <details data-testid="rayneo-connection-guide" className="rounded-2xl border border-cyan-300/25 bg-cyan-300/5 p-3">
+                <summary className="cursor-pointer text-sm font-bold text-cyan-100">RayNeo GT Max setup</summary>
+                <p className="mt-2 text-xs leading-relaxed text-white/75">Connect the included USB-C video cable to your Samsung Fold. Use screen mirroring, or start Samsung DeX and open this same workout in Chrome on the glasses display.</p>
+                <p className="mt-2 text-xs leading-relaxed text-white/75">The glasses display Marcus and can play audio through their speakers. Voice commands still depend on the connected phone/browser microphone and its permissions. Direct glasses microphone or spatial input is not verified.</p>
+                <p className="mt-2 text-xs leading-relaxed text-amber-100">Use seated workouts while your injured left leg stays supported. This is a wearable 2D screen, not a physical hologram.</p>
+              </details>
+            )}
             <section className="rounded-3xl border border-white/10 bg-white/[.035] p-3">
               <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 p-2">
                 <div className="flex items-center gap-2">
