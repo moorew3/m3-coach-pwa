@@ -126,6 +126,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <script src="/backup-delivery.js" />
       </head>
       <body>
         {children}

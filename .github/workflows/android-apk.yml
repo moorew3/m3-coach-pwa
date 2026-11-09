@@ -2,7 +2,7 @@ name: Android APK — M3 FLEX Unified
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fix/restore-v2-in-existing-android-20261030]
     paths:
       - ".github/workflows/android-apk.yml"
       - "capacitor.config.json"
@@ -12,6 +12,10 @@ on:
       - "public/recovery-coach/**"
       - "src/**"
       - "scripts/stage-unified-static.mjs"
+      - "scripts/install-android-backup-save.mjs"
+      - "native/**"
+      - "public/backup-delivery.js"
+      - "scripts/backup-delivery.test.mjs"
       - "package.json"
       - "vite.config.ts"
   push:
@@ -66,6 +70,7 @@ jobs:
 
       - name: Build original React M3 FLEX and same-origin approved Recovery assets
         run: |
+          node --test scripts/backup-delivery.test.mjs
           node scripts/stage-pose-runtime.mjs
           npm run build
           node scripts/stage-unified-static.mjs
@@ -88,6 +93,7 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+          node scripts/install-android-backup-save.mjs
 
       - name: Add permission declarations for consent-only camera and microphone tests
         run: |
