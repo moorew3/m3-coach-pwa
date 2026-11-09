@@ -3,10 +3,11 @@ import recovery from '../data/recovery-scenes.json';
 import audioRuntime from '../../approved-recovery-audio-runtime.json';
 const localAudio = (source:string|undefined) => source ? audioRuntime.items.find(x=>x.sourceURL===source)?.path : undefined;
 import { approvedCoachMedia } from './approved-coach-media';
+import { exerciseMotionFor, type ExerciseMotion } from '../data/coach-identity';
 import { v2SessionReducer, type V2Action } from './session';
 import { hasApprovedRealTimeCoach } from './rig-release';
 import type { V2Exercise, V2Session } from './types';
-export type TrainingScene = {url:string;sceneId:string;label:string;audioUrl?:string;embeddedAudio?:boolean};
+export type TrainingScene = {url:string;sceneId:string;label:string;audioUrl?:string;embeddedAudio?:boolean;motion?:ExerciseMotion};
 const trusted = new Map<string,TrainingScene>();
 recovery.forEach((stage,phase)=>stage.items.forEach((item,index)=>{
   const id=item.id ?? `recovery-${phase}-${index}`;
@@ -20,7 +21,16 @@ export function exerciseScene(exercise?:V2Exercise):TrainingScene|undefined {
   if (!exercise) return;
   if (exercise.sceneId) return trusted.get(exercise.sceneId);
   const media=approvedCoachMedia(exercise);
-  return media?{url:media.url,sceneId:`canonical:${exercise.motionKey}`,label:exercise.name}:undefined;
+  if (media) return {url:media.url,sceneId:`canonical:${exercise.motionKey}`,label:exercise.name};
+  // This exact Shoulder Press demonstration is already approved as a separately
+  // credited workout partner, NOT as Marcus. Never promote the quarantined
+  // historical shoulderPress actor or a mismatched chest-press clip.
+  if (exercise.motionKey === 'shoulderPress') {
+    const motion=exerciseMotionFor('shoulderPress');
+    if (motion?.actor === 'demonstrator' && motion.credit)
+      return {url:motion.url,sceneId:'demonstrator:shoulderPress',label:exercise.name,motion};
+  }
+  return undefined;
 }
 export function sceneForSession(session:V2Session) {
   const resting=session.phase==='rest'||session.phase==='transition';
