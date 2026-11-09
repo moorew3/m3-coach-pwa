@@ -73,8 +73,11 @@ function playFootsteps() {
 
 export function AppEntryGate({ children }: { children: ReactNode }) {
   const { settings } = useApp();
-  const { pathname } = useLocation();
-  const secondary = isSecondary(pathname);
+  const { pathname, searchStr } = useLocation();
+  // A direct /v2?display=glasses link is an external secondary display.
+  // Do not put the interactive, phone-sized gym entrance in front of RayNeo.
+  const secondary = isSecondary(pathname) ||
+    (pathname.startsWith("/v2") && new URLSearchParams(searchStr).get("display") === "glasses");
   // Closed only once we know this session already answered — so the app
   // never flashes behind the gate on a cold open.
   const [open, setOpen] = useState(!secondary);
