@@ -5,6 +5,7 @@ import {
   RotateCcw, SkipForward, UserRound, Volume2, VolumeX,
 } from "lucide-react";
 import { CoachMotion } from "@/components/CoachMotion";
+import { MotionCredit } from "@/components/MotionCredit";
 import { coachMotionFor, COACH_REFERENCE } from "@/data/coach-identity";
 import type { BoxingSnapshot, BoxingStance } from "@/v2/boxing-form";
 import { askLiveCoach } from "@/lib/coach-talk";
@@ -909,7 +910,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[66dvh] min-h-[510px] max-h-[830px] sm:h-[72dvh] sm:min-h-[520px] sm:max-h-[920px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
+            : "relative h-[66dvh] min-h-[510px] max-h-[830px] sm:h-[72dvh] sm:min-h-[520px] sm:max-h-[920px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"} data-motion-actor={stageMedia?.motion?.actor ?? (stageMedia ? "coach" : "")}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -919,6 +920,8 @@ function V2Coach() {
               <CoachMotion
                 key={stageMedia.url}
                 url={stageMedia.url}
+                poster={stageMedia.motion?.poster}
+                vimeoId={stageMedia.motion?.vimeoId}
                 playing={showCoach && videoPlaying}
                 muted={session.phase === "ready" || !voiceOn || !stageMedia.embeddedAudio || flexThinking || liveProviderSpeaking}
                 onPlaybackFailure={mediaFailed}
@@ -938,7 +941,13 @@ function V2Coach() {
                 className={projectionFocus
                   ? "absolute inset-0 h-full w-full"
                   : "absolute inset-x-0 top-[69px] bottom-[158px] w-full sm:top-[75px] sm:bottom-[156px] lg:top-[70px] lg:bottom-[154px]"}
-                label={`Marcus · ${resolvedScene.role} · ${stageMedia.label}`}
+                label={`${stageMedia.motion?.actor === "demonstrator" ? "Approved workout partner" : "Marcus"} · ${resolvedScene.role} · ${stageMedia.label}`}
+              />
+            )}
+            {stageMedia?.motion?.actor === "demonstrator" && (
+              <MotionCredit
+                motion={stageMedia.motion}
+                className="absolute right-3 top-[76px] z-[12] max-w-[min(17rem,66%)] rounded-xl border border-cyan-300/25 bg-black/90 px-3 py-2 text-xs text-white shadow-lg"
               />
             )}
             {showCoach && !realTimeRigReady && !stageMedia && (
