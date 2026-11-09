@@ -129,7 +129,7 @@ function V2Coach() {
     let restored:V2Session|null=null;
     try {restored=restoreSavedSession(window.localStorage.getItem(V2_LOCAL_SAVE+":"+id),next,mountainDayKey());} catch { /* optional local history */ }
     setVisualStopped(false);
-    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setLiveCue(null); setVoiceError(null);
+    setWorkoutId(id); if(restored)dispatch({type:"restore",session:restored});else dispatch({type:"reset", workout:next}); setClearance([false,false,false]); setSetupOpen(Boolean(next.requiresClearance)); setLiveCue(null); setVoiceError(null);
     const address=new URL(window.location.href); address.searchParams.set("workout",id);
     window.history.replaceState(window.history.state,"",address.pathname+address.search+address.hash);
   };
@@ -164,6 +164,9 @@ function V2Coach() {
   // Glasses and Coach share the same live workout, scene and safety state.
   const [glassesMode, setGlassesMode] = useState(directGlasses);
   const [toolsOpen, setToolsOpen] = useState(false);
+  // The selectors and clinical safety checklist remain available, not mounted
+  // over the actual exercise video. Recovery opens the checklist by default.
+  const [setupOpen, setSetupOpen] = useState(() => Boolean(session.workout.requiresClearance));
   const [projectionSettingsOpen, setProjectionSettingsOpen] = useState(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -765,6 +768,11 @@ function V2Coach() {
     dispatch({ type: "start" });
   };
 
+  const totalExercises = session.workout.exercises.length;
+  const currentExerciseNumber = Math.min(session.exerciseIndex + 1, Math.max(1, totalExercises));
+  const exerciseProgress = session.phase === "complete"
+    ? 100 : Math.round(100 * session.exerciseIndex / Math.max(totalExercises, 1));
+  const nextExerciseName = session.workout.exercises[session.exerciseIndex + 1]?.name;
   const stageTitle = session.phase === "complete" ? "Cooldown breathing"
     : session.phase === "rest" || session.phase === "transition" ? "Rest · breathe" : exercise?.name ?? "";
   const showCoach = true;
@@ -832,19 +840,6 @@ function V2Coach() {
         />
         {projectionFocus && (
           <nav aria-label="Projection workout controls" className="absolute right-3 top-3 z-[35] flex max-w-[76%] flex-wrap justify-end gap-2">
-            <button type="button"
-              onClick={() => {
-                if (voiceControlAvailable()) {
-                  if (voiceControl.listening) stopListening();
-                  else startListening();
-                } else setVoiceError("This browser does not support live voice listening.");
-              }}
-              className="min-h-11 rounded-xl border border-cyan-300/40 bg-black/80 px-3 text-xs font-black text-cyan-100"
-              aria-label={voiceControl.listening ? "Stop listening to voice" : "Start voice listening"}
-              data-testid="projection-voice-toggle"
-            >
-              {voiceControl.listening ? "Mic on" : "Talk"}
-            </button>
             {glassesMode && (
               <button type="button"
                 onClick={() => {
@@ -867,36 +862,44 @@ function V2Coach() {
           </nav>
         )}
         {!projectionFocus && (
-        <header className="flex flex-wrap items-center justify-between gap-3 px-1 py-2">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[.32em] text-cyan-300">
-              M3 FLEX COACH
-            </p>
-            <h1 className="mt-1 text-lg font-black">Train with Marcus</h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <a
-              href="/"
-              data-testid="v2-exit-to-workouts"
-              onClick={() => { if (session.running) dispatch({ type: "pause" }); }}
-              className="flex min-h-11 items-center rounded-xl border border-cyan-300/40 bg-cyan-300/15 px-3 text-xs font-black text-cyan-100"
-              aria-label="Back to M3 FLEX workouts"
-            >
-              ← Workouts
-            </a>
-            <button type="button" aria-expanded={toolsOpen} onClick={() => setToolsOpen(!toolsOpen)} className="min-h-11 rounded-xl border border-white/20 px-3 text-xs font-bold">Coach controls</button>
-          </div>
-        </header>
+          <>
+            <header className="flex items-center justify-between gap-3 px-1 py-1" data-testid="m3-clean-coach-header">
+              <div className="min-w-0">
+                <p className="text-xs font-extrabold uppercase tracking-[.15em] text-cyan-300">M3 FLEX COACH</p>
+                <h1 className="mt-0.5 truncate text-xl font-extrabold leading-tight sm:text-2xl">Train with Marcus</h1>
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <a href="/" data-testid="v2-exit-to-workouts"
+                  onClick={() => { if (session.running) dispatch({ type: "pause" }); }}
+                  className="flex min-h-11 items-center rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white/85"
+                  aria-label="Back to M3 FLEX workouts">Workouts</a>
+                <button type="button" aria-expanded={toolsOpen} aria-label="More coach tools"
+                  onClick={() => setToolsOpen(!toolsOpen)}
+                  className="min-h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white">
+                  {toolsOpen ? "Close" : "More"}
+                </button>
+              </div>
+            </header>
+            <div data-testid="flex-session-toolbar"
+              className="mt-2 flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#111920] px-3 py-2">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-white">{session.workout.title}</p>
+                <p className="mt-0.5 text-xs text-white/65">
+                  Exercise {currentExerciseNumber} of {Math.max(1, totalExercises)} ·{" "}
+                  <span data-flex-presence={flexPresence} role="status" aria-live="polite" className="text-cyan-200">
+                    {FLEX_PRESENCE_LABEL[flexPresence]}
+                  </span>
+                </p>
+              </div>
+              <button type="button" data-testid="workout-setup-toggle" aria-expanded={setupOpen}
+                aria-controls="m3-workout-setup"
+                onClick={() => setSetupOpen(value => !value)}
+                className="min-h-11 shrink-0 rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-3 text-sm font-bold text-cyan-100">
+                {setupOpen ? "Close" : !cleared ? "Safety setup" : "Change"}
+              </button>
+            </div>
+          </>
         )}
-        {!projectionFocus && <div
-          role="status"
-          aria-live="polite"
-          data-flex-presence={flexPresence}
-          className="mt-2 flex min-h-10 items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/35 px-3 text-xs"
-        >
-          <span className="font-black text-cyan-200">{FLEX_PRESENCE_LABEL[flexPresence]}</span>
-          <span className="text-white/50">Voice · {FLEX_VOICE_NAME}</span>
-        </div>}
         {athleteError && (!projectionFocus || projectionSettingsOpen) && (
           <p role="alert" className="mt-2 rounded-xl border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs text-amber-100">
             {athleteError}
@@ -906,7 +909,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[60dvh] min-h-[460px] max-h-[740px] sm:h-[68dvh] sm:min-h-[420px] sm:max-h-[900px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
+            : "relative h-[66dvh] min-h-[510px] max-h-[830px] sm:h-[72dvh] sm:min-h-[520px] sm:max-h-[920px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -934,7 +937,7 @@ function V2Coach() {
                 preloadUrl={stagePreloadUrl}
                 className={projectionFocus
                   ? "absolute inset-0 h-full w-full"
-                  : "absolute inset-x-0 top-[76px] bottom-[104px] w-full sm:top-[90px] sm:bottom-[124px] lg:top-[72px] lg:bottom-[118px]"}
+                  : "absolute inset-x-0 top-[69px] bottom-[158px] w-full sm:top-[75px] sm:bottom-[156px] lg:top-[70px] lg:bottom-[154px]"}
                 label={`Marcus · ${resolvedScene.role} · ${stageMedia.label}`}
               />
             )}
@@ -977,7 +980,7 @@ function V2Coach() {
                   : exercise?.reps}
               </div>
             )}
-            <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/70 via-transparent to-black/75" />
+            <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-black/45 via-transparent to-black/65" />
 
             {projectionFocus && (
               <div className="pointer-events-none absolute left-3 top-3 z-[7] max-w-[44%] text-[10px] font-semibold text-cyan-200/70"
@@ -990,11 +993,11 @@ function V2Coach() {
               : "pointer-events-none absolute inset-x-0 top-0 z-[4] p-3"}>
               <div className={projectionFocus
                 ? "max-w-[min(58%,320px)] rounded-xl bg-black/25 p-2"
-                : "max-w-[min(80%,450px)] rounded-xl bg-black/60 p-3 backdrop-blur-sm"}>
-                <p className="text-[10px] font-black uppercase tracking-[.22em] text-cyan-300">
+                : "max-w-[min(78%,420px)] rounded-xl bg-black/45 p-3 backdrop-blur-sm"}>
+                <p className="text-xs font-extrabold uppercase tracking-[.10em] text-cyan-300">
                   {glassesMode ? "Glasses" : viewpoint.label} · {session.phase}
                 </p>
-                <h2 className={projectionFocus ? "mt-1 text-base font-black uppercase leading-tight" : "mt-1 text-xl font-black uppercase leading-tight sm:text-2xl"}>
+                <h2 className={projectionFocus ? "mt-1 text-base font-extrabold leading-tight" : "mt-1 text-xl font-extrabold leading-tight sm:text-2xl"}>
                   {stageTitle}
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-white/70">
@@ -1024,50 +1027,70 @@ function V2Coach() {
             )}
             <div className={projectionFocus
               ? "absolute inset-x-0 bottom-0 z-[9] p-2"
-              : "absolute inset-x-0 bottom-0 z-[9] p-3"}>
-              <div className="rounded-2xl border border-white/10 bg-black/80 p-3 backdrop-blur-xl">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+              : "absolute inset-x-0 bottom-0 z-[9] p-2 sm:p-3"}>
+              <div data-testid="m3-primary-workout-controls"
+                className="rounded-2xl border border-white/15 bg-[#080e14]/95 px-3 py-3 shadow-2xl backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-black">{session.phase === "complete" ? "Workout complete" : projectionFocus ? (exercise?.name ?? session.workout.title) : session.workout.title}</p>
-                    <p className="mt-1 text-[11px] text-white/50">
-                      {mmss(session.elapsedSeconds)} elapsed
-                      {session.phaseSecondsLeft !== null
-                        ? ` · ${session.phaseSecondsLeft}s left`
-                        : ""}
+                    <p className="truncate text-sm font-extrabold text-white">{stageTitle}</p>
+                    <p className="mt-0.5 text-xs font-medium text-white/70">
+                      {session.phase === "complete" ? "Workout complete" :
+                        session.phase === "rest" || session.phase === "transition" ? "Recovery · breathe" :
+                        `Set ${Math.min(session.setIndex + 1, exercise?.sets ?? 1)} of ${exercise?.sets ?? 1} · ${exercise?.reps ?? "Follow along"}`}
                     </p>
                   </div>
-                  <div className="flex shrink-0 gap-2">
-                    <button
-                      type="button"
-                      onClick={toggleWorkout}
-                      disabled={session.phase === "complete" || !cleared}
-                      className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-4 text-xs font-black uppercase text-black disabled:opacity-35"
-                      aria-label={session.running ? "Pause workout" : "Start workout"}
-                    >
-                      {session.running ? <Pause className="size-5" /> : <Play className="size-5" />}
-                      <span>{session.running ? "Pause" : "Start"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => dispatch({ type: "complete-set" })}
-                      disabled={session.phase !== "work" || !session.running || !cleared}
-                      className="grid size-11 place-items-center rounded-xl bg-white/15 disabled:opacity-35"
-                      aria-label="Complete set and advance"
-                    >
-                      <Check className="size-5" />
-                    </button>
-                    <button type="button" aria-label="Stop workout" onClick={() => {setVisualStopped(true);dispatch({type:"pause"}); stopMarcusCue(); stopFridayPremiumCue(); stopDetailedExerciseSpeech();
-    stopRecordedCoachAudio("trainer-scene");stopListening();stopCamera();setClearance([false,false,false]);setLiveCue("Workout stopped. Your progress is saved.");}} className="min-h-11 rounded-xl bg-red-500/20 px-3 text-xs font-bold text-red-200">Stop</button>
-                    {!projectionFocus && <button
-                      type="button"
-                      onClick={() => dispatch({ type: "reset", workout })}
-                      className="grid size-11 place-items-center rounded-xl bg-white/15"
-                      aria-label="Reset workout"
-                    >
-                      <RotateCcw className="size-5" />
-                    </button>}
+                  <div className="shrink-0 text-right">
+                    <p className="font-mono text-2xl font-bold tabular-nums text-white"
+                      aria-label="Workout time">{mmss(session.phaseSecondsLeft ?? session.elapsedSeconds)}</p>
+                    <p className="text-[11px] text-white/60">{session.phaseSecondsLeft === null ? "elapsed" : "remaining"}</p>
                   </div>
                 </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15"
+                  role="progressbar" aria-label="Workout exercise progress" aria-valuemin={0}
+                  aria-valuemax={100} aria-valuenow={exerciseProgress}>
+                  <div className="h-full rounded-full bg-cyan-300 transition-[width]"
+                    style={{ width: `${exerciseProgress}%` }} />
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <button type="button" onClick={toggleWorkout}
+                    disabled={session.phase === "complete" || !cleared}
+                    className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/20 bg-white/10 px-1 py-2 text-sm font-bold text-white disabled:opacity-40"
+                    aria-label={session.running ? "Pause workout" : "Start workout"}>
+                    {session.running ? <Pause className="size-5" /> : <Play className="size-5" />}
+                    <span>{session.running ? "Pause" : session.elapsedSeconds > 0 ? "Resume" : "Start"}</span>
+                  </button>
+                  <button type="button"
+                    onClick={() => dispatch({ type: "complete-set" })}
+                    disabled={session.phase !== "work" || !session.running || !cleared}
+                    className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl bg-cyan-300 px-1 py-2 text-sm font-extrabold text-black disabled:opacity-40"
+                    aria-label="Complete set and advance">
+                    <Check className="size-5" /><span>Done Set</span>
+                  </button>
+                  <button type="button"
+                    data-testid={projectionFocus ? "projection-voice-toggle" : "m3-ask-marcus"}
+                    aria-label="Ask Marcus" aria-pressed={voiceControl.listening}
+                    onClick={() => {
+                      if (voiceControlAvailable()) {
+                        if (voiceControl.listening) stopListening();
+                        else startListening();
+                      } else {
+                        setVoiceError("Voice listening is unavailable in this browser. Use the coach question field in More.");
+                        if (projectionFocus) setProjectionSettingsOpen(true);
+                        else setToolsOpen(true);
+                      }
+                    }}
+                    className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border px-1 py-2 text-sm font-bold ${voiceControl.listening
+                      ? "border-cyan-300 bg-cyan-300/20 text-cyan-100"
+                      : "border-white/20 bg-white/10 text-white"}`}>
+                    {voiceControl.listening ? <Mic className="size-5" /> : <MicOff className="size-5" />}
+                    <span>{voiceControl.listening ? "Listening" : "Ask Marcus"}</span>
+                  </button>
+                </div>
+                {!projectionFocus && nextExerciseName && session.phase !== "complete" && (
+                  <p className="mt-2 truncate text-xs text-white/55" data-testid="m3-up-next">
+                    Up next · {nextExerciseName}
+                  </p>
+                )}
               </div>
             </div>
           </section>
@@ -1087,6 +1110,39 @@ function V2Coach() {
               </div>
             )}
             {projectionFocus && selectorPanel}
+            {!projectionFocus && (
+              <section data-testid="m3-secondary-workout-actions"
+                className="rounded-2xl border border-white/10 bg-white/[.035] p-3">
+                <h2 className="text-base font-bold text-white">Additional controls</h2>
+                <p className="mt-1 text-xs text-white/60">Optional settings stay out of Marcus's demonstration.</p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"}
+                    onClick={() => void toggleVoice()}
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-2 text-sm font-semibold">
+                    {voiceOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+                    {voiceOn ? "Voice on" : "Voice off"}
+                  </button>
+                  <button type="button" aria-label="Reset workout" onClick={() => {
+                    if (window.confirm("Reset this workout session? Your current session progress will be cleared.")) {
+                      dispatch({ type: "reset", workout });
+                    }
+                  }} className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-2 text-sm font-semibold">
+                    <RotateCcw className="size-4" />Reset
+                  </button>
+                  <button type="button" aria-label="Stop workout"
+                    onClick={() => {
+                      setVisualStopped(true);
+                      dispatch({ type: "pause" });
+                      stopMarcusCue(); stopFridayPremiumCue(); stopDetailedExerciseSpeech();
+                      stopRecordedCoachAudio("trainer-scene"); stopListening(); stopCamera();
+                      setClearance([false,false,false]); setSetupOpen(true);
+                      setLiveCue("Workout stopped. Your progress is saved.");
+                    }} className="col-span-2 min-h-11 rounded-xl border border-red-300/20 bg-red-500/10 px-3 text-sm font-semibold text-red-200">
+                    Stop workout
+                  </button>
+                </div>
+              </section>
+            )}
             {glassesMode && (
               <details data-testid="rayneo-connection-guide" className="rounded-2xl border border-cyan-300/25 bg-cyan-300/5 p-3">
                 <summary className="cursor-pointer text-sm font-bold text-cyan-100">RayNeo GT Max setup</summary>
@@ -1423,18 +1479,27 @@ function V2Coach() {
             </p>
           </aside>)}
         </div>
-        {/* On phones, the actual moving Marcus stage comes before configuration.
-            Keep the original selectors, clearance gates and voice controls intact. */}
-        {!projectionFocus && <>
-          {selectorPanel}
-          <div className="flex items-center gap-2">
-            <button type="button" aria-label={voiceOn ? "Mute Marcus" : "Enable Marcus voice"} onClick={() => void toggleVoice()} className="flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceOn ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}Marcus voice {voiceOn?"on":"off"}</button>
-          {voiceControlAvailable() && <button type="button" aria-pressed={voiceControl.listening} onClick={() => voiceControl.listening ? stopListening() : startListening()} className="mt-2 flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-4 text-xs font-bold">{voiceControl.listening ? <Mic className="size-4" /> : <MicOff className="size-4" />}{voiceControl.listening ? "Mic on" : "Talk to Marcus"}</button>}
+        {!projectionFocus && (
+          <div className="mt-3 pb-4" id="m3-workout-setup">
+            {setupOpen && (
+              <section aria-label="Change workout and safety setup" data-testid="m3-setup-expanded">
+                {selectorPanel}
+              </section>
+            )}
+            {!cleared && !setupOpen && (
+              <button type="button" onClick={() => setSetupOpen(true)}
+                className="w-full rounded-xl border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-left text-sm font-semibold text-amber-100">
+                Confirm seated safety setup before starting
+              </button>
+            )}
+            {liveCue && <details className="mt-2 rounded-xl bg-white/5 px-3 py-2">
+              <summary className="cursor-pointer text-sm font-medium text-cyan-100">Marcus's current guidance</summary>
+              <p role="status" data-testid="marcus-current-cue" className="mt-2 text-sm text-cyan-50">{liveCue}</p>
+            </details>}
+            {voiceError && <p role="alert" className="mt-2 text-sm text-amber-200">{voiceError}</p>}
+            {voiceControl.error && <p role="alert" className="mt-2 text-sm text-amber-200">{voiceControl.error}</p>}
           </div>
-          {liveCue && <details className="mt-2"><summary className="cursor-pointer py-2 text-xs text-cyan-200">Marcus’s current guidance</summary><p role="status" data-testid="marcus-current-cue" className="mt-3 rounded-xl bg-cyan-300/10 p-3 text-sm text-cyan-100">{liveCue}</p></details>}
-          {voiceError && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceError}</p>}
-          {voiceControl.error && <p role="alert" className="mt-2 text-xs text-amber-200">{voiceControl.error}</p>}
-        </>}
+        )}
       </div>
       {showOpening && (
         <WorkoutOpeningScene
