@@ -39,6 +39,7 @@ import { coachReplySpeaking, stopCoachReply, subscribeCoachReplySpeech } from "@
 import { V2TrainingCamera } from "@/v2/training-camera";
 import { V2LiveHeartRate } from "@/v2/live-heart-rate";
 import { M3GymRenderer } from "@/v2/renderer";
+import { motionFrameMayAdvance } from "@/v2/playback-gate";
 import { hasApprovedRealTimeCoach } from "@/v2/rig-release";
 import { FLEX_PRESENCE_LABEL, resolveFlexPresence } from "@/v2/flex-presence";
 import { LiveFlexProvider } from "@/v2/live-flex-provider";
@@ -112,6 +113,7 @@ function V2Coach() {
   const [visualStopped, setVisualStopped] = useState(false);
   // A timer must not count an exercise before the exact moving clip renders.
   const [motionReadyKey, setMotionReadyKey] = useState("");
+  const [activeMotionKey, setActiveMotionKey] = useState("");
   const [clearance, setClearance] = useState([false, false, false]);
   const cleared = !session.workout.requiresClearance || clearance.every(Boolean);
   const chooseWorkout = (id: string) => {
@@ -271,7 +273,12 @@ function V2Coach() {
     session.workout.id, session.exerciseIndex, session.setIndex, session.phase,
   ].join(":");
   const motionRequired = Boolean(sceneForSession(session).media);
-  const motionReadyForTick = !motionRequired || motionReadyKey === expectedMotionKey;
+  const motionReadyForTick = motionFrameMayAdvance({
+    mediaRequired: motionRequired,
+    expectedKey: expectedMotionKey,
+    decodedKey: motionReadyKey,
+    playingKey: activeMotionKey,
+  });
 
   useEffect(() => {
     if (!session.running || !motionReadyForTick) return;
@@ -913,6 +920,9 @@ function V2Coach() {
                 muted={session.phase === "ready" || !voiceOn || !stageMedia.embeddedAudio || flexThinking || liveProviderSpeaking}
                 onPlaybackFailure={mediaFailed}
                 onVideoReady={() => setMotionReadyKey(expectedMotionKey)}
+                onPlaybackStateChange={(isPlaying) => {
+                  setActiveMotionKey(isPlaying ? expectedMotionKey : "");
+                }}
                 onRetry={() => {
                   setVisualStopped(false);
                   setVoiceError(null);
