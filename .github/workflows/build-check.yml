@@ -106,7 +106,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: m3-flex-recovery-phone-visual-review
-          path: artifacts/m3-flex-recovery-visual-check.png
+          path: |
+            artifacts/m3-flex-recovery-visual-check.png
+            artifacts/m3-flex-rayneo-display-review.png
           retention-days: 3
           if-no-files-found: error
 
