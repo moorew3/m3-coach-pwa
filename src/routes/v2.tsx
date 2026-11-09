@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLocation } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import {
   Check, Eye, Glasses, Hand, Mic, MicOff, Pause, Play,
@@ -89,6 +89,10 @@ const mountainDayKey = () =>
   }).format(new Date());
 
 function V2Coach() {
+  const { searchStr } = useLocation();
+  const urlSearch = new URLSearchParams(searchStr);
+  const directGlasses = urlSearch.get("display") === "glasses";
+  const directProjection = directGlasses || urlSearch.get("focus") === "1" || urlSearch.get("display") === "1";
   const appState = useApp();
   const ALL_V2_WORKOUTS = useMemo(()=>workoutsForApp(appState),[appState.savedWorkouts,appState.days]);
   const workoutById = (id:string|null|undefined)=>ALL_V2_WORKOUTS.find(w=>w.id===id);
@@ -147,10 +151,12 @@ function V2Coach() {
   const [flexQuestion, setFlexQuestion] = useState("");
   const [voiceError, setVoiceError] = useState<string | null>(null);
   // Hide secondary settings without losing workout/session state or the exact approved media.
-  const [projectionFocus, setProjectionFocus] = useState(false);
+  // Initialize from the routed URL before paint, so direct RayNeo links never
+  // flash the standard phone coach or depend on hydration/effect timing.
+  const [projectionFocus, setProjectionFocus] = useState(directProjection);
   // RayNeo uses USB-C DisplayPort as a wearable screen, not a glasses-owned AI rig.
   // Glasses and Coach share the same live workout, scene and safety state.
-  const [glassesMode, setGlassesMode] = useState(false);
+  const [glassesMode, setGlassesMode] = useState(directGlasses);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [projectionSettingsOpen, setProjectionSettingsOpen] = useState(false);
   useEffect(() => {
