@@ -98,7 +98,11 @@ function V2Coach() {
   const workoutById = (id:string|null|undefined)=>ALL_V2_WORKOUTS.find(w=>w.id===id);
   // New sessions open the ORIGINAL plan for today, not the shortened V2 showcase.
   // Paused older sessions are still restored below and can be resumed safely.
-  const [workoutId, setWorkoutId] = useState(() => originalWorkoutForToday().id);
+  // Use the explicitly requested workout on the FIRST render. Glasses and
+  // phone deep links must never flash today's unrelated default exercise.
+  const [workoutId, setWorkoutId] = useState(() =>
+    ALL_V2_WORKOUTS.find(w => w.id === urlSearch.get("workout"))?.id ?? originalWorkoutForToday().id
+  );
   const workout = useMemo(
     () => ALL_V2_WORKOUTS.find((w) => w.id === workoutId) ?? originalWorkoutForToday(),
     [workoutId],
