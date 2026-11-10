@@ -86,6 +86,11 @@ check("Rep and weight controls follow video", html.indexOf('id="film"') < html.i
 
 el.modeReview.click();
 check("Review mode hides workout controls", !el.approvalControls.hidden && el.exerciseControls.hidden);
+check("Source narration disabled by default in review", el.film.muted && el.reviewMute.checked && el.reviewMute.disabled);
+check("Review never renders independent foreign-language audio", el.reviewAudio.hidden && el.reviewAudio.muted);
+el.film.muted=false;el.film.emit("volumechange");
+check("Cannot unmute a foreign voice in review", el.film.muted);
+
 check("Review shows dedicated watch/pause buttons", html.includes('id="playReviewVideo"') && html.includes('id="pauseReviewVideo"'));
 check("Review watch button available without entering workout", !el.playReviewVideo.disabled && state().phase!=="running");
 el.playReviewVideo.click();
@@ -124,6 +129,12 @@ el.goalReps.change("10");
 el.approvedClipReps.change("2");
 el.start.click();
 check("Coach stage begins and original Marcus audio is set", state().phase === "running" && el.marcusAudio.src.includes("wav"));
+check("Approved Marcus recording mutes original video track", el.film.muted);
+el.marcusAudio.emit("ended");
+check("Finishing Marcus recording never restores wrong-language video track", el.film.muted && el.voiceState.textContent.includes("original clip remains muted"));
+el.marcusAudio.emit("error");
+check("Marcus playback error leaves original audio muted", el.film.muted);
+
 check("Coached video is not native-infinite while counting", !el.film.loop);
 for (let i = 0; i < 5; i++) el.film.emit("ended");
 check("Five 2-rep visual cycles begin rest", state().phase === "rest" && state().completed === 1);
@@ -200,4 +211,7 @@ check("No automatic generation on review selection", !dub.includes("void prepare
 check("Audio change never upgrades coached approval", !dub.includes('decision="approved"'));
 check("Editing retains source and validates audio", dub.includes("voiceURL") && dub.includes("saveDraft()"));
 
+check("No source-unmute fallback anywhere in player code", !html.includes('muted=false') && !html.includes('muted = false'));
+check("Source video initially has muted HTML attribute", html.includes('id="film" playsinline controls muted'));
+check("Only English-approved Marcus narration is indicated", html.includes("Original video voices and languages are muted. Marcus is the only approved narrator."));
 console.log("M3 FLEX game QA passed: " + checks + " checks; " + pending.length + " review videos indexed.");
