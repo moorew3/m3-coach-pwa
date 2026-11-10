@@ -4,7 +4,7 @@
  * Generated hosted URLs can expire. Preserve original model in fal asset library.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Suspense, Component, type ReactNode } from "react";
+import { Suspense, Component, useEffect, useState, type ReactNode } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
@@ -34,7 +34,7 @@ class ModelErrorBoundary extends Component<
   }
 }
 
-function ReviewCharacter() {
+function ReviewCharacter({ onReady }: { onReady: () => void }) {
   const { scene } = useGLTF(CANDIDATE_GLB);
   const clone = useMemo(() => cloneSkeleton(scene), [scene]);
   const bounds = new THREE.Box3().setFromObject(clone);
@@ -43,7 +43,7 @@ function ReviewCharacter() {
   const height = size.y > 0 ? size.y : 1;
   const scale = 2.8 / height;
   const { camera } = useThree();
-  camera.lookAt(0, 1.3, 0);
+  useEffect(() => { camera.lookAt(0, 1.3, 0); onReady(); }, [camera, onReady]);
   return (
     <group position={[-center.x * scale, -bounds.min.y * scale, -center.z * scale]} scale={scale}>
       <primitive object={clone} />
@@ -52,6 +52,7 @@ function ReviewCharacter() {
 }
 
 function MarcusReview() {
+  const [modelLoaded, setModelLoaded] = useState(false);
   return (
     <main className="min-h-dvh bg-[#080b0f] px-3 py-4 text-white">
       <div className="mx-auto max-w-3xl">
@@ -82,6 +83,7 @@ function MarcusReview() {
         </div>
         <section className="relative mt-3 overflow-hidden rounded-2xl border border-white/15 bg-[#0b1118]">
           <h2 className="absolute left-3 top-3 z-10 text-xs font-bold text-cyan-200">Touch and drag to rotate the actual 3D model</h2>
+          {modelLoaded && <p data-testid="marcus-3d-ready" role="status" className="absolute right-3 top-3 z-10 text-xs text-emerald-300">3D loaded</p>}
           <ModelErrorBoundary>
             <div className="h-[52dvh] min-h-[340px] max-h-[580px] w-full" data-testid="marcus-review-3d">
               <Canvas camera={{ position: [0, 1.5, 5], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
@@ -90,7 +92,7 @@ function MarcusReview() {
                 <directionalLight position={[3, 7, 6]} intensity={2.4} />
                 <directionalLight position={[-3, 3, -5]} intensity={1.1} />
                 <Suspense fallback={null}>
-                  <ReviewCharacter />
+                  <ReviewCharacter onReady={() => setModelLoaded(true)} />
                 </Suspense>
                 <OrbitControls target={[0, 1.35, 0]} enablePan={false}
                   minDistance={2.5} maxDistance={9} />
