@@ -8,7 +8,7 @@ const rig = readFileSync(new URL("../src/v2/rig-release.ts", import.meta.url), "
 
 test("Fold workout keeps one large moving stage and its primary coaching actions", () => {
   assert.match(route, /h-\[calc\(100dvh-176px\)\]/);
-  assert.match(route, /aria-label="Coach controls"/);
+  assert.match(route, /aria-label="More coach tools"/);
   assert.match(route, /"Start workout"/);
   assert.match(route, /aria-label="Complete set and advance"/);
   assert.match(route, /aria-label="Ask Marcus"/);
