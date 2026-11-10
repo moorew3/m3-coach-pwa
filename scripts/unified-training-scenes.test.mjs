@@ -53,6 +53,23 @@ test('Recovery and A/B schedule only their original approved animated clips; gui
  assert.equal(REST_SCENE.url,approved.find(x=>x.id==='C09-PRE-BREATH-R2').url);
  assert.equal(COOLDOWN_SCENE.url,approved.find(x=>x.id==='C10-POST-BREATH-R1').url);
 });
+test('Coach and Hologram never substitute an unapproved man for Marcus Shoulder Press',async()=>{
+ const workout=ALL_WORKOUTS.find(w=>w.id==='push-arms');
+ const shoulder=workout.exercises.find(e=>e.motionKey==='shoulderPress');
+ const {coachMotionFor,exerciseMotionFor}=await import('../src/data/coach-identity.ts');
+ assert.equal(coachMotionFor('shoulderPress'),undefined,
+   'Original Marcus shoulder press must remain identity-gated until approved');
+ assert.equal(exerciseMotionFor('shoulderPress')?.actor,'demonstrator',
+   'The historical third-party clip remains separately classified, never promoted to Marcus');
+ assert.equal(exerciseScene(shoulder),undefined,
+   'Coach/Hologram must not play the third-party demonstration under Marcus identity');
+ for(const mode of ['coach','hologram']){
+   let s={...createV2Session(workout),mode};
+   assert.equal(sceneForSession(s).missing,true);
+   assert.equal(guardedStep(s,{type:'start'}).running,false);
+   assert.equal(guardedStep(s,{type:'tick'}).elapsedSeconds,0);
+ }
+});
 test('a missing approved trainer never silently uses a different actor; duplicate completion is ignored',()=>{
  assert.equal(exerciseScene({id:'unknown',motionKey:'not-reviewed'}),undefined);
  let s=createV2Session(ALL_WORKOUTS.find(w=>w.id==='push-arms'));
