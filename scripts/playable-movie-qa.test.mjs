@@ -130,9 +130,9 @@ el.approvedClipReps.change("2");
 el.start.click();
 check("Coach stage begins and original Marcus audio is set", state().phase === "running" && el.marcusAudio.src.includes("wav"));
 check("Approved Marcus recording mutes original video track", el.film.muted);
-el.marcusAudio.emit("ended");
+el.marcusAudio.onended?.call(el.marcusAudio);
 check("Finishing Marcus recording never restores wrong-language video track", el.film.muted && el.voiceState.textContent.includes("original clip remains muted"));
-el.marcusAudio.emit("error");
+el.marcusAudio.onerror?.call(el.marcusAudio);
 check("Marcus playback error leaves original audio muted", el.film.muted);
 
 check("Coached video is not native-infinite while counting", !el.film.loop);
