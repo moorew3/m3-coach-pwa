@@ -26,22 +26,29 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     ],
   },
   {
-    exercise: "shoulderPress",
-    title: "Seated dumbbell shoulder press — two reps",
+    exercise: "inclineBenchPress",
+    title: "Incline dumbbell bench press — two reps",
     provider: "heygen-backup",
-    videoId: "412ffc12265549a39100dcf6ce8219eb",
+    videoId: "ef5471613ed74e2baee69385156ca902",
     status: "pending-owner-visual-approval",
     allowInCoach: false,
     allowInHologram: false,
     checks: [
       "Exact approved Marcus face, braids, beard, tattoos and clothing",
-      "Seated true vertical overhead press, not horizontal chest press",
-      "Two complete controlled reps, stable weights and elbows",
+      "Incline bench angled upward 30–40 degrees with head higher than hips",
+      "Two full controlled upward presses over the upper chest with both dumbbells",
       "Injured LEFT booted leg securely elevated, supported and unloaded",
       "No identity drift, audio, captions, camera cuts or extra people",
     ],
   },
 ] as const;
+
+/**
+ * A mistakenly ordered shoulder-press generation is quarantined separately.
+ * It is NOT part of the two requested incline/decline bench press clips.
+ * Historical HeyGen job: 412ffc12265549a39100dcf6ce8219eb.
+ * Never select it as either bench-press demonstration.
+ */
 
 /** Already identity-audited mapping: never exchange their movements. */
 export const EXISTING_PRESS_ASSETS = [
