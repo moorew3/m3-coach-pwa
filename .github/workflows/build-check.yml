@@ -102,6 +102,11 @@ jobs:
           M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: node scripts/v2-current-browser-smoke.mjs
 
+      - name: Check actual candidate Marcus 3D rendering on Galaxy Fold viewport
+        env:
+          M3_CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: node scripts/marcus-model-review-browser.mjs
+
       - name: Retain real Fold-width Recovery Coach QA screenshot for owner review
         uses: actions/upload-artifact@v4
         with:
