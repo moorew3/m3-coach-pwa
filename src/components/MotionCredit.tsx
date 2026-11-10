@@ -1,10 +1,10 @@
 import type { ExerciseMotion } from "@/data/coach-identity";
 
 /** Credit stays attached to the footage on every exercise viewing surface. */
-export function MotionCredit({ motion, className }: { motion: ExerciseMotion; className?: string }) {
+export function MotionCredit({ motion }: { motion: ExerciseMotion }) {
   if (motion.actor !== "demonstrator") return null;
   return (
-    <details data-testid="v2-motion-credit" className={className ?? "absolute left-3 top-3 z-10 max-w-[min(21rem,85%)] rounded-lg bg-background/90 px-3 py-2 text-xs text-foreground shadow-lg"}>
+    <details className="absolute left-3 top-3 z-10 max-w-[min(21rem,85%)] rounded-lg bg-background/90 px-3 py-2 text-xs text-foreground shadow-lg">
       <summary className="cursor-pointer text-[10px] font-extrabold uppercase tracking-widest text-primary">
         Workout Partner Demo{motion.variant ? ` · ${motion.variant}` : ""}
       </summary>
