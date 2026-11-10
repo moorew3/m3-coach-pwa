@@ -94,17 +94,6 @@ try{
  await verifyMovingVideo("C08 INNSTAR chest press preview");
  await exercise.selectOption("2");assert.equal(await stage.getAttribute("data-scene-id"),"C03");
  console.log("✓ Workouts A/B maintain existing exercise order and identity");
- // Reuse the already-reviewed exact Shoulder Press motion, not the
- // separately quarantined imitation Marcus video. Show credit clearly.
- await workout.selectOption("push-arms");
- assert.equal(await stage.getAttribute("data-scene-id"),"demonstrator:shoulderPress");
- assert.equal(await stage.getAttribute("data-motion-actor"),"demonstrator");
- assert.equal(await page.getByTestId("v2-motion-credit").count(),1);
- await verifyMovingVideo("reviewed Shoulder Press workout partner");
- await page.getByTestId("workout-setup-toggle").click();
- await workout.selectOption("B");await exercise.selectOption("2");
- assert.equal(await stage.getAttribute("data-scene-id"),"C03");
- console.log("✓ Reviewed Shoulder Press demonstrator plays moving frames with visible attribution; Marcus identity unchanged");
  await page.getByLabel("Workout mode").selectOption("hologram");
  assert.equal(await page.getByTestId("flex-training").getAttribute("data-projection-focus"),"true");
  assert.equal(await stage.getAttribute("data-scene-id"),"C03");

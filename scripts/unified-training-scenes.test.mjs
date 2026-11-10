@@ -53,32 +53,22 @@ test('Recovery and A/B schedule only their original approved animated clips; gui
  assert.equal(REST_SCENE.url,approved.find(x=>x.id==='C09-PRE-BREATH-R2').url);
  assert.equal(COOLDOWN_SCENE.url,approved.find(x=>x.id==='C10-POST-BREATH-R1').url);
 });
-test('reviewed shoulder press motion plays as a credited demonstrator, never impersonates Marcus',async()=>{
- const {exerciseMotionFor,coachMotionFor}=await import('../src/data/coach-identity.ts');
+test('Coach and Hologram never substitute an unapproved man for Marcus Shoulder Press',async()=>{
  const workout=ALL_WORKOUTS.find(w=>w.id==='push-arms');
- const shoulder=workout.exercises[0];
- assert.equal(shoulder.name,'Shoulder Press');
- assert.equal(shoulder.motionKey,'shoulderPress');
- assert.equal(coachMotionFor('shoulderPress'),undefined,'Quarantined old Marcus clip must stay blocked');
- const approvedDemo=exerciseMotionFor('shoulderPress');
- assert.equal(approvedDemo?.actor,'demonstrator');
- assert.equal(approvedDemo?.credit?.author,'Goulart');
- const scene=exerciseScene(shoulder);
- assert.equal(scene?.sceneId,'demonstrator:shoulderPress');
- assert.equal(scene?.motion?.actor,'demonstrator');
- assert.equal(scene?.url,approvedDemo.url);
- assert.equal(scene?.motion?.credit?.license,'CC BY-SA 4.0');
- assert.equal(exerciseScene({...shoulder,motionKey:'unapprovedShoulderPress'}),undefined,
-   'No name-based generic shoulder-press substitutions');
- const source=readFileSync(new URL('../src/routes/v2.tsx',import.meta.url),'utf8');
- assert.match(source,/data-motion-actor=\{stageMedia\?\.motion\?\.actor/);
- assert.match(source,/stageMedia\?\.motion\?\.actor === "demonstrator" \&\&/);
- assert.match(source,/Approved workout partner/);
- let s=createV2Session(workout);
- s=guardedStep(s,{type:'start'});
- assert.equal(s.phase,'work','Approved Shoulder Press demo allows the prescribed exercise to start');
- assert.equal(exerciseScene(workout.exercises[1])?.sceneId,'canonical:inclinePress',
-   'Other approved exercise mappings remain unchanged');
+ const shoulder=workout.exercises.find(e=>e.motionKey==='shoulderPress');
+ const {coachMotionFor,exerciseMotionFor}=await import('../src/data/coach-identity.ts');
+ assert.equal(coachMotionFor('shoulderPress'),undefined,
+   'Original Marcus shoulder press must remain identity-gated until approved');
+ assert.equal(exerciseMotionFor('shoulderPress')?.actor,'demonstrator',
+   'The historical third-party clip remains separately classified, never promoted to Marcus');
+ assert.equal(exerciseScene(shoulder),undefined,
+   'Coach/Hologram must not play the third-party demonstration under Marcus identity');
+ for(const mode of ['coach','hologram']){
+   let s={...createV2Session(workout),mode};
+   assert.equal(sceneForSession(s).missing,true);
+   assert.equal(guardedStep(s,{type:'start'}).running,false);
+   assert.equal(guardedStep(s,{type:'tick'}).elapsedSeconds,0);
+ }
 });
 test('a missing approved trainer never silently uses a different actor; duplicate completion is ignored',()=>{
  assert.equal(exerciseScene({id:'unknown',motionKey:'not-reviewed'}),undefined);
