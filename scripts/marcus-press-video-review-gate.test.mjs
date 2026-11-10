@@ -12,15 +12,20 @@ const rig = source("src/v2/rig-release.ts");
 test("New Marcus video candidates are traceable but never approved by creation alone", () => {
   for (const id of [
     "bb5e40c8f31f4c2c9a2bac097fd58bf9",
-    "412ffc12265549a39100dcf6ce8219eb",
+    "ef5471613ed74e2baee69385156ca902",
   ]) {
     assert.ok(queue.includes(id), `Lost video reference: ${id}`);
     assert.ok(!verified.includes(id), `Owner-unapproved video used as coach: ${id}`);
     assert.ok(!scenes.includes(id), `Owner-unapproved video used in exercise stage: ${id}`);
   }
+  assert.match(queue, /exercise: "inclineBenchPress"/);
+  assert.match(queue, /exercise: "declineBenchPress"/);
+  assert.doesNotMatch(queue, /exercise: "shoulderPress"/);
   assert.equal((queue.match(/allowInCoach: false/g) || []).length, 2);
   assert.equal((queue.match(/allowInHologram: false/g) || []).length, 2);
   assert.equal((queue.match(/status: "pending-owner-visual-approval"/g) || []).length, 2);
+  assert.ok(!verified.includes("412ffc12265549a39100dcf6ce8219eb"));
+  assert.ok(!scenes.includes("412ffc12265549a39100dcf6ce8219eb"));
 });
 
 test("Previously verified incline/flat presses remain correctly distinguished", () => {
