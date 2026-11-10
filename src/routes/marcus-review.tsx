@@ -8,6 +8,8 @@ import { Suspense, Component, type ReactNode } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/marcus-review")({ component: MarcusReview });
 
@@ -34,7 +36,7 @@ class ModelErrorBoundary extends Component<
 
 function ReviewCharacter() {
   const { scene } = useGLTF(CANDIDATE_GLB);
-  const clone = scene.clone(true);
+  const clone = useMemo(() => cloneSkeleton(scene), [scene]);
   const bounds = new THREE.Box3().setFromObject(clone);
   const size = bounds.getSize(new THREE.Vector3());
   const center = bounds.getCenter(new THREE.Vector3());
