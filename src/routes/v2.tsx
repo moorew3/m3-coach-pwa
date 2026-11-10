@@ -873,7 +873,7 @@ function V2Coach() {
                   onClick={() => { if (session.running) dispatch({ type: "pause" }); }}
                   className="flex min-h-11 items-center rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white/85"
                   aria-label="Back to M3 FLEX workouts">Workouts</a>
-                <button type="button" aria-expanded={toolsOpen} aria-label="Coach controls"
+                <button type="button" aria-expanded={toolsOpen} aria-label="More coach tools"
                   onClick={() => setToolsOpen(!toolsOpen)}
                   className="min-h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white">
                   {toolsOpen ? "Close" : "More"}
