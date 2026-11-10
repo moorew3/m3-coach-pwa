@@ -131,7 +131,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 </div>
 <div id="kind">DEMO MODE · Original approved coach video</div>
 <div class="videoBox">
-<video id="film" playsinline controls preload="metadata" aria-label="Selected exercise video"></video>
+<video id="film" playsinline controls muted preload="metadata" aria-label="Selected exercise video. Original narrator permanently muted."></video>
 <div id="watermark" class="watermark">✓ APPROVED FLEX</div>
 <div class="cinemaFrame" aria-hidden="true"><span id="sceneTop">M3 FLEX · SESSION</span><span id="sceneBottom">ORIGINAL APPROVED VIDEO</span></div><div id="mediaWarning" hidden>Original video unavailable. No replacement has been added.</div>
 </div>
@@ -156,11 +156,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 <div class="reviewStatus" id="reviewStatus">PENDING OWNER REVIEW</div><p class="voiceFixNotice" id="voiceFixStatus" hidden>Visuals approved. Original narration is muted. Awaiting Marcus – Warm &amp; Friendly audio and final lip-sync review. Not cleared for the coached workout.</p>
 <p class="reviewNote" id="reviewNote">Watch the complete clip and check the avatar, LEFT boot, exercise form, equipment and Marcus voice.</p><a id="reviewSource" class="back" target="_blank" rel="noopener noreferrer" hidden>Open original video in HeyGen</a>
 <label class="check" id="externalReviewCheck" hidden><input id="externalWatched" type="checkbox"> I watched this entire clip on HeyGen and checked its movement, avatar, equipment and LEFT leg. I will judge the voice separately.</label>
-<label class="check muteReviewOption"><input type="checkbox" id="reviewMute"> Mute the original voice while reviewing (visual check only)</label><div class="reviewCalibration"><label for="clipReps">Complete reps shown in THIS clip (0 = unverified)</label><input id="clipReps" type="number" min="0" max="30" value="0" inputmode="numeric" /></div>
+<label class="check muteReviewOption"><input type="checkbox" id="reviewMute" checked disabled> Original video voices and languages are muted. Marcus is the only approved narrator.</label><div class="reviewCalibration"><label for="clipReps">Complete reps shown in THIS clip (0 = unverified)</label><input id="clipReps" type="number" min="0" max="30" value="0" inputmode="numeric" /></div>
 <div class="reviewReason"><label for="rejectWhy">Reason for disapproval (optional)</label>
 <select id="rejectWhy"><option value="">Needs correction — unspecified</option><option value="wrong-avatar">Wrong face / tattoos / avatar</option><option value="wrong-leg">LEFT leg, cast or boot incorrect</option><option value="wrong-motion">Exercise motion or rep count incorrect</option><option value="wrong-equipment">Equipment or band setup incorrect</option><option value="wrong-voice">Marcus voice, narration or lip sync incorrect</option><option value="bad-quality">Blurry, poor video or abrupt loop</option><option value="playback-error">Video won't play</option><option value="other">Other correction</option></select>
 <textarea id="reviewFix" rows="2" maxlength="500" placeholder="Optional correction notes (saved with your decision)"></textarea></div>
-<audio id="reviewAudio" controls preload="none" hidden></audio>
+<audio id="reviewAudio" preload="none" muted hidden aria-hidden="true"></audio>
 
 <div id="reviewReceipt" role="status" aria-live="polite"></div>
 </div>
@@ -225,17 +225,17 @@ if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.onSave(function(id,line){
 function saveApprovals(){try{localStorage.setItem(REVIEW_KEY,JSON.stringify(approvals))}catch(e){}}
 var experience="coach",reviewIndex=0,reviewItems=archive.filter(function(x){return x.status==="owner-review"&&!!x.video}),goalFor={};
 var MARCUS_AUDIO={"C09-PRE-BREATH-R2":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/9226f649-9808-4275-b269-bcc93d3b0342.mp3","C02":"https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=6b027ae2-4ffa-47c0-82a4-ef187fcd7945.wav","C03":"https://resource2.heygen.ai/text_to_speech/2f2323079d3c414087f76bbfd67fb0f5/0fadce1e82af494a93873aa38ea8d106/id=dedc79bf-53bd-4766-a7dd-95e43c3c10af.wav","C10-POST-BREATH-R1":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/37ab7891-1c9c-4bfc-bd84-b582a76a37af.mp3","rest":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/006720cc-2f40-44bd-a44f-4c4937336f8e.mp3","end":"https://d2ol7oe51mr4n9.cloudfront.net/user_3K9xbNmff2bXeIoip4mpHRDh2md/d442be47-6745-4eab-9115-5fda615f5464.mp3"}, mediaFailed=false, sceneEpoch=0;
-function stopMarcus(){try{$("marcusAudio").pause()}catch(e){}if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.stop();try{$("film").muted=view.type==="silent"}catch(e){}}
+function stopMarcus(){try{$("marcusAudio").pause()}catch(e){}if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.stop();try{$("film").muted=true}catch(e){}}
 function playMarcus(key){
 var src=MARCUS_AUDIO[key];if(!src||experience!=="coach")return false;
 var f=$("film"),a=$("marcusAudio");
 try{a.pause();a.src=src;a.currentTime=0;f.muted=true;
 $("voiceState").textContent="MARCUS · Original approved recording";
-a.onended=function(){f.muted=false;$("voiceState").textContent="MARCUS · Approved video audio"};
-a.onerror=function(){f.muted=false;$("voiceState").textContent="Marcus recording unavailable · original video audio kept"};
+a.onended=function(){f.muted=true;$("voiceState").textContent="MARCUS · Audio finished · original clip remains muted"};
+a.onerror=function(){f.muted=true;$("voiceState").textContent="Marcus audio unavailable · original language stays muted"};
 var p=a.play();
-if(p&&p.catch)p.catch(function(){f.muted=false;$("voiceState").textContent="Marcus audio blocked · tap video for sound"});
-return true}catch(e){f.muted=false;return false}
+if(p&&p.catch)p.catch(function(){f.muted=true;$("voiceState").textContent="Marcus audio blocked by browser · tap replay after enabling sound · no substitute voice"});
+return true}catch(e){f.muted=true;return false}
 }
 function mediaFailure(message){mediaFailed=true;stopMarcus();if(experience==="coach"&&(s.phase==="running"||s.phase==="rest"))freeze();$("mediaWarning").hidden=false;$("mediaWarning").textContent=message||"Original video unavailable";setNotice("The workout paused because the approved footage could not play. No timed credit has been recorded.");render()}
 
@@ -286,12 +286,12 @@ $("reviewSource").hidden=!x.videoPage;if(x.videoPage)$("reviewSource").href=x.vi
 $("externalReviewCheck").hidden=!x.videoPage;$("externalWatched").checked=!!watched[x.id]&&!!x.videoPage;
 $("clipReps").value=approvals[x.id]&&Number.isInteger(approvals[x.id].clipReps)?String(approvals[x.id].clipReps):"0";
 $("rejectWhy").value=approvals[x.id]&&approvals[x.id].reason||"";
-$("reviewMute").checked=reviewMuted[x.id]===undefined?decision==="visual-approved":!!reviewMuted[x.id];
+$("reviewMute").checked=true;$("reviewMute").disabled=true;
 $("reviewFix").value=approvals[x.id]&&approvals[x.id].notes||"";
 $("approveVideo").disabled=!watched[x.id];$("visualApproveVideo").disabled=!watched[x.id];
 $("playReviewVideo").disabled=!x.video;
 $("pauseReviewVideo").disabled=$("film").paused;$("reviewReceipt").textContent=approvals[x.id]?"Last decision saved on this device · "+new Date(approvals[x.id].at).toLocaleString():watched[x.id]?"Full video watched. Choose full approval, keep visuals/fix voice, or reject.":"Watch the complete video before approving its visuals";
-$("reviewAudio").hidden=!x.audio;if(x.audio&&$("reviewAudio").src!==x.audio)$("reviewAudio").src=x.audio;
+$("reviewAudio").pause();$("reviewAudio").muted=true;$("reviewAudio").hidden=true;
 renderReviewPicker();
 }
 $("goalReps").value=String(targetReps(stage()));$("approvedClipReps").value=String(approvedCycles[stage().id]||0);$("autoFlow").checked=s.autoFlow;
@@ -322,13 +322,8 @@ $("film").load();$("mediaWarning").hidden=!!media;
 $("mediaWarning").textContent=blocked?"Rejected or held footage is blocked from playback.":x.external?"This scene has an external source, not a verified playable MP4.": "No playable video is available for this entry.";
 $("demo").disabled=!media;
 }
-if(view.type==="silent"||(experience==="review"&&$("reviewMute").checked)){
 $("film").muted=true;
-$("voiceState").textContent="SOURCE AUDIO MUTED · Original footage preserved · Marcus voice replacement pending";
-}else if(experience==="review"){
-$("film").muted=false;
-$("voiceState").textContent="OWNER REVIEW · Original clip audio enabled for inspection only";
-}
+$("voiceState").textContent=experience==="review"?"ORIGINAL LANGUAGE MUTED · Visual review only · Marcus narration required":view.type==="silent"?"ORIGINAL LANGUAGE MUTED · Marcus voice replacement pending":"ORIGINAL VIDEO AUDIO MUTED · Approved Marcus narration only";
 if(window.M3_FLEX_DUB)window.M3_FLEX_DUB.sync(x,{
   visualApproved:(experience==="review"||view.type==="silent")&&reviewDecision(x)==="visual-approved",
   savedScript:approvals[x.id]&&approvals[x.id].dubScript||""
@@ -416,7 +411,7 @@ setNotice(this.checked?"Owner confirmed full external HeyGen review. You can app
 });
 $("approveVideo").addEventListener("click",function(){reviewMark("approved")});
 $("visualApproveVideo").addEventListener("click",function(){reviewMark("visual-approved")});
-$("reviewMute").addEventListener("change",function(){if(experience!=="review")return;var x=reviewItems[reviewIndex];if(!x)return;reviewMuted[x.id]=!!this.checked;$("film").muted=!!this.checked;$("voiceState").textContent=this.checked?"ORIGINAL AUDIO MUTED · Visual review only":"OWNER REVIEW · Original clip audio enabled for inspection only";});
+$("reviewMute").addEventListener("change",function(){this.checked=true;this.disabled=true;$("film").muted=true;$("voiceState").textContent="ORIGINAL VIDEO AUDIO MUTED · Marcus is the only approved narrator";});
 $("rejectVideo").addEventListener("click",function(){reviewMark("disapproved")});
 $("nextReview").addEventListener("click",nextPending);
 function reviewMark(value){
@@ -447,8 +442,8 @@ var onscreen=Math.min(targetReps(stage()),(s.visualReps||0)+local);
 $("gameRep").textContent="VIDEO REP "+onscreen+" / "+targetReps(stage())+" (timed)";
 $("sceneBottom").textContent=onscreen>=targetReps(stage())-2?"FINISH CONTROLLED · LEFT LEG SUPPORTED":"CONTROLLED REPS · LEFT LEG SUPPORTED";
 });
-$("film").addEventListener("play",function(){if(view.type==="silent")this.muted=true;if(experience==="loop")$("pause").disabled=false;if(experience==="review")$("pauseReviewVideo").disabled=false});
-$("film").addEventListener("volumechange",function(){if(view.type==="silent"&&!this.muted)this.muted=true});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true;if(experience==="review")$("pauseReviewVideo").disabled=true});
+$("film").addEventListener("play",function(){this.muted=true;if(experience==="loop")$("pause").disabled=false;if(experience==="review")$("pauseReviewVideo").disabled=false});
+$("film").addEventListener("volumechange",function(){if(!this.muted)this.muted=true});$("film").addEventListener("pause",function(){if(experience==="loop")$("pause").disabled=true;if(experience==="review")$("pauseReviewVideo").disabled=true});
 $("film").addEventListener("ended",function(){
 if(experience==="review"){watched[reviewItems[reviewIndex].id]=true;render();return}
 if(experience!=="coach"||s.phase!=="running")return;
