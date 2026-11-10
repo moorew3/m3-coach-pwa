@@ -873,7 +873,7 @@ function V2Coach() {
                   onClick={() => { if (session.running) dispatch({ type: "pause" }); }}
                   className="flex min-h-11 items-center rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white/85"
                   aria-label="Back to M3 FLEX workouts">Workouts</a>
-                <button type="button" aria-expanded={toolsOpen} aria-label="More coach tools"
+                <button type="button" aria-expanded={toolsOpen} aria-label="Coach controls"
                   onClick={() => setToolsOpen(!toolsOpen)}
                   className="min-h-11 rounded-xl border border-white/15 bg-white/5 px-3 text-sm font-semibold text-white">
                   {toolsOpen ? "Close" : "More"}
@@ -909,7 +909,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[66dvh] min-h-[510px] max-h-[830px] sm:h-[72dvh] sm:min-h-[520px] sm:max-h-[920px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
+            : "relative h-[calc(100dvh-176px)] min-h-[380px] max-h-[880px] sm:h-[calc(100dvh-190px)] sm:min-h-[460px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -947,10 +947,44 @@ function V2Coach() {
                 data-testid="motion-pending-stage"
                 aria-label={`Approved motion pending for ${exercise?.name ?? "movement"}`}
               >
-                <div role="status" className="absolute inset-x-5 top-1/3 rounded-2xl border border-amber-300/40 bg-black/90 p-5 text-center">
-                  <p className="text-lg font-bold">Demonstration unavailable</p>
-                  <p className="mt-3 text-sm text-white/80">Marcus does not yet have a matching moving demonstration for {exercise?.name ?? "this movement"}. This step is paused and will not be counted.</p>
-                  <button type="button" onClick={() => dispatch({type:"next"})} className="mt-4 min-h-11 rounded-xl bg-cyan-300 px-5 font-bold text-black">Skip this step</button>
+                <div role="status" className="absolute inset-x-3 top-[70px] bottom-[166px] overflow-y-auto rounded-2xl border border-amber-300/40 bg-black/95 p-4 text-center">
+                  <p className="text-lg font-bold">Marcus needs this movement</p>
+                  <p className="mt-2 text-sm text-white/80">
+                    The exact moving demonstration for {exercise?.name ?? "this exercise"} is not approved yet.
+                    This movement cannot start or count while the demo is missing.
+                  </p>
+                  {session.workout.exercises.some((candidate, index) =>
+                    index !== session.exerciseIndex && Boolean(exerciseScene(candidate))) && (
+                    <label className="mt-4 block text-left text-xs font-bold text-cyan-100">
+                      Choose an exercise with an approved moving demonstration
+                      <select
+                        aria-label="Play approved exercise"
+                        defaultValue=""
+                        onChange={(event) => {
+                          const index = Number(event.currentTarget.value);
+                          if (Number.isInteger(index) && exerciseScene(session.workout.exercises[index])) {
+                            stopRecordedCoachAudio("trainer-scene");
+                            dispatch({ type: "select-exercise", exerciseIndex: index });
+                          }
+                        }}
+                        className="mt-2 min-h-12 w-full rounded-xl border border-cyan-300/40 bg-[#111820] px-3 text-sm text-white"
+                      >
+                        <option value="" disabled>Choose a moving exercise</option>
+                        {session.workout.exercises.map((candidate, index) =>
+                          index !== session.exerciseIndex && exerciseScene(candidate) ?
+                            <option key={candidate.id} value={index}>{candidate.name}</option> : null)}
+                      </select>
+                    </label>
+                  )}
+                  {session.workout.id !== "recovery" && (
+                    <button type="button" onClick={() => chooseWorkout("recovery")}
+                      className="mt-3 min-h-12 w-full rounded-xl bg-cyan-300 px-3 text-sm font-extrabold text-black">
+                      Open approved seated workout
+                    </button>
+                  )}
+                  <p className="mt-3 text-xs text-white/55">
+                    Your original workout prescription is preserved. No replacement actor or unrelated exercise is shown.
+                  </p>
                 </div>
               </div>
             )}
@@ -1053,7 +1087,7 @@ function V2Coach() {
                 </div>
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   <button type="button" onClick={toggleWorkout}
-                    disabled={session.phase === "complete" || !cleared}
+                    disabled={session.phase === "complete" || !cleared || ((session.phase === "ready" || session.phase === "work") && !stageMedia && !realTimeRigReady)}
                     className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/20 bg-white/10 px-1 py-2 text-sm font-bold text-white disabled:opacity-40"
                     aria-label={session.running ? "Pause workout" : "Start workout"}>
                     {session.running ? <Pause className="size-5" /> : <Play className="size-5" />}
