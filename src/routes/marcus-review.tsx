@@ -15,6 +15,13 @@ export const Route = createFileRoute("/marcus-review")({ component: MarcusReview
 
 const CANDIDATES = [
   {
+    id: "approved-photo-detail", label: "Original photo detail · working 3D rig",
+    glb: "/marcus-candidates/marcus-photo-projected-review.glb",
+    preview: null,
+    rigged: true,
+    note: "Original approved gym-photo facial and chest tattoo details have been projected onto the moving 24-joint GLB. Still a candidate: geometry and likeness require approval.",
+  },
+  {
     id: "texture-rig", label: "Retextured · original moving rig",
     glb: "/marcus-candidates/marcus-retattoo-rigged.glb",
     preview: "https://v3b.fal.media/files/b/0ab204f0/bovokJ965J4CvdAvTHagl_preview.png",
@@ -41,7 +48,7 @@ const CANDIDATES = [
   },
 ] as const;
 type Candidate = (typeof CANDIDATES)[number];
-const APPROVED_FULL_REFERENCE = "https://v3b.fal.media/files/b/0ab20488/gkIQ88RroMbQYLTisBSln_8073.png";
+const APPROVED_FULL_REFERENCE = "/coach-source/coach-primary-standing.png";
 const ORIGINAL_COACH = "/coach-source/coach-primary-standing.png";
 
 class ModelErrorBoundary extends Component<
@@ -77,7 +84,7 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
 }
 
 function MarcusReview() {
-  const [selected, setSelected] = useState<string>("texture-rig");
+  const [selected, setSelected] = useState<string>("approved-photo-detail");
   const [modelLoaded, setModelLoaded] = useState(false);
   const candidate = CANDIDATES.find((m) => m.id === selected) ?? CANDIDATES[0];
   return (
@@ -104,8 +111,12 @@ function MarcusReview() {
           </section>
           <section aria-label="Generated model preview" className="overflow-hidden rounded-2xl border border-white/15 bg-black">
             <p className="px-2 pt-2 text-center text-xs font-bold">Generated draft</p>
-            <img className="h-40 w-full object-contain sm:h-64" src={candidate.preview}
-              alt="Generated draft of Marcus with approximate tattoos, beard and left-leg boot" />
+            {candidate.preview ? <img className="h-40 w-full object-contain sm:h-64" src={candidate.preview}
+              alt="Previous generation's static draft (not the interactive 3D file)" /> : (
+              <div className="flex h-40 items-center justify-center px-3 text-center text-xs text-white/75 sm:h-64">
+                This updated model has no substitute still image. Rotate and inspect the real 3D character below.
+              </div>
+            )}
           </section>
         </div>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label="Select 3D model version">
@@ -148,11 +159,12 @@ function MarcusReview() {
         <div className="mt-3 grid grid-cols-2 gap-2">
           <a className="rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-3 py-3 text-center text-sm font-bold text-cyan-200"
             href={candidate.glb} rel="noopener noreferrer" target="_blank">Original rigged GLB</a>
-          <a className="rounded-xl border border-white/20 px-3 py-3 text-center text-sm font-bold"
+          {candidate.preview ? <a className="rounded-xl border border-white/20 px-3 py-3 text-center text-sm font-bold"
             href={candidate.preview} rel="noopener noreferrer" target="_blank">Open model preview</a>
+            : <div className="rounded-xl border border-white/20 px-3 py-3 text-center text-sm text-white/65">Live 3D review only</div>}
         </div>
         <p className="mt-3 text-xs leading-relaxed text-white/45">
-          Temporary hosted media may expire; original outputs are saved in the connected fal.ai library.
+          The updated original-photo-detail GLB is stored in this owner-controlled repository. Earlier fal.ai previews may expire.
           The face, tattoos, anatomy and boot are not faithful enough for release. The generated files are prototypes only.
           Production workout and injury-release gates remain closed.
         </p>

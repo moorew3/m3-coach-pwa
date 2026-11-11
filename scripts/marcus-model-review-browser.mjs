@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium } from "playwright-core";
+import { mkdir } from "node:fs/promises";
 
 const port=17381, base="http://127.0.0.1:"+port, logs=[];
 const server=spawn(process.execPath,[".output/server/index.mjs"], {
@@ -28,12 +29,20 @@ try {
    await gate.click(); await page.getByTestId("app-entry-yes").click();
  }
  await page.getByRole("heading",{name:"Marcus 3D Candidate"}).waitFor();
- assert.equal(await page.getByRole("img",{name:/Generated draft/}).count(),1);
+ // Do not mistake an old rendered portrait for the new real 3D model.
+ await page.getByText("This updated model has no substitute still image",{exact:false}).waitFor();
+ assert.equal(await page.getByRole("img",{name:/Generated draft/}).count(),0);
+ assert.equal(await page.getByRole("button",{name:/Original photo detail · working 3D rig/}).getAttribute("aria-pressed"),"true");
  assert.equal(await page.getByRole("img",{name:/Original approved coach photo/}).count(),1);
  await page.getByTestId("marcus-review-3d").locator("canvas").waitFor();
  await page.getByTestId("marcus-3d-ready").waitFor({timeout:45000});
  assert.equal(await page.locator("main").getByText("REVIEW ONLY",{exact:false}).count()>0,true);
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),"no sideways Fold overflow");
+ await mkdir("artifacts",{recursive:true});
+ await page.getByTestId("marcus-review-3d").scrollIntoViewIfNeeded();
+ await page.waitForTimeout(750);
+ const frame = await page.getByTestId("marcus-review-3d").screenshot({path:"artifacts/marcus-photo-3d-review-mobile.png",timeout:12000});
+ assert.ok(frame.byteLength > 18000,"Real 3D actor must appear in rendered viewport; reject blank WebGL");
  assert.deepEqual(errors,[],"no uncaught JavaScript page errors");
  console.log("PASS: Samsung Fold review renders actual rigged model, is isolated, correct identity warnings");
  await context.close();
