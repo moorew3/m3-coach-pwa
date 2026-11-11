@@ -14,7 +14,7 @@ export function castCoachScript(exercise:V2Exercise):string|undefined {
  if(!exercise.motionKey.startsWith("cast-"))return;
  const lead="Marcus here. CAST workout: "+exercise.name.replace(/\s*·.*/,"")+". Keep your LEFT cast supported and completely unloaded. ";
  // Exact recorded visuals and instruction text are tied to this SAME stage.
- const lines=[lead,exercise.cues[0]||"",exercise.cues[1]||"",exercise.cues[2]||""];
+ const lines=[lead,exercise.cues[1]||"",exercise.cues[0]||"",exercise.cues[2]||""]; // Movement cue first: no cut-off before the actual exercise instruction.
  let result="";
  for(const line of lines){
   if((result+line+" ").length>350)break;
