@@ -131,7 +131,7 @@ function MarcusReview() {
           </div>
           <ModelErrorBoundary>
             <div data-testid="marcus-review-3d" className="h-[min(64dvh,640px)] min-h-[380px] w-full">
-              <Canvas camera={{ position: [0, 1.5, 5], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
+              <Canvas camera={{ position: [0, 1.5, 4], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
                 <color attach="background" args={["#0b1118"]} />
                 <ambientLight intensity={1.4} />
                 <directionalLight position={[3, 7, 6]} intensity={2.4} />
