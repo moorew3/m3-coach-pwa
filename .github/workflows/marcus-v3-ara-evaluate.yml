@@ -1,0 +1,67 @@
+name: Marcus V3 anatomical baseline evaluation — no AI credits
+on:
+  push:
+    branches:
+      - feature/marcus-v3-ara-base-20261111
+    paths:
+      - .github/workflows/marcus-v3-ara-evaluate.yml
+      - assets/marcus-v3/ara-params.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-human-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      UPSTREAM_SHA: c0abe46261171ad3ec570b39beabe386669cae4d
+    steps:
+      - name: Checkout existing M3-owned workspace (read-only)
+        uses: actions/checkout@v4
+      - name: Get pinned, open source human builder
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/olatunde85/3d-gen.git /tmp/ara3d
+          cd /tmp/ara3d
+          test "$(git rev-parse HEAD)" = "$UPSTREAM_SHA" || (echo 'Pinned upstream revision changed: refusing unreviewed build' && exit 1)
+      - name: Install Ara tools and permitted CC0 MakeHuman data
+        working-directory: /tmp/ara3d
+        run: |
+          npm ci --no-audit --no-fund
+          npm run setup-assets
+      - name: Export proposed human baseline as actual high detail GLB
+        working-directory: /tmp/ara3d
+        run: |
+          npm run export -- --params "$GITHUB_WORKSPACE/assets/marcus-v3/ara-params.json" --detail high --formats glb --out "$GITHUB_WORKSPACE/artifacts/marcus-v3"
+      - name: Verify 3D structure, real skinning, render assets, file size
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import glob,struct,json,hashlib,os
+          paths=glob.glob("artifacts/marcus-v3/*.glb")
+          assert len(paths)==1,("Expected one real 3D output, not a still image",paths)
+          path=paths[0]
+          data=open(path,"rb").read()
+          assert data[:4]==b"glTF" and struct.unpack_from("<I",data,4)[0]==2
+          assert len(data)==struct.unpack_from("<I",data,8)[0]
+          n,t=struct.unpack_from("<I4s",data,12)
+          assert t==b"JSON"
+          j=json.loads(data[20:20+n])
+          joints=sum(len(s.get("joints",[])) for s in j.get("skins",[]))
+          prims=sum(len(m.get("primitives",[])) for m in j.get("meshes",[]))
+          report={"status":"UNAPPROVED_ANATOMICAL_BASELINE","sha256":hashlib.sha256(data).hexdigest(),"size_bytes":len(data),"skins":len(j.get("skins",[])),"joints":joints,"meshes":len(j.get("meshes",[])),"primitives":prims,"materials":len(j.get("materials",[])),"animations":len(j.get("animations",[])),"license":"MIT source / CC0 MakeHuman; see upstream","face_approved":False,"tattoos_approved":False,"boot_approved":False,"motion_approved":False,"source":"Ara 3D Gen pinned at c0abe462..."}
+          assert joints>=20 and prims>=1 and report["materials"]>=1,report
+          assert 100000<len(data)<35000000,report
+          os.makedirs("artifacts/marcus-v3",exist_ok=True)
+          with open("artifacts/marcus-v3/integrity.json","w") as f: json.dump(report,f,indent=2)
+          print("M3_MARCUS_V3_REAL_GLB_OK",json.dumps(report))
+          PY
+      - name: Preserve temporary model for appearance inspection only
+        uses: actions/upload-artifact@v4
+        with:
+          name: marcus-v3-ara-unapproved-anatomical-baseline
+          path: artifacts/marcus-v3/
+          retention-days: 3
+          if-no-files-found: error
