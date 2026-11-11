@@ -86,7 +86,7 @@ function MarcusReview() {
           </Link>
         </div>
         <p className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-xs leading-relaxed text-amber-100">
-          REAL 3D REVIEW — none of these candidates passes the required face, anatomy, tattoo, and orthopedic-boot acceptance checks.
+          REVIEW ONLY — REAL 3D — none of these candidates passes the required face, anatomy, tattoo, and orthopedic-boot acceptance checks.
           This page cannot enable the models in your actual workouts. Your approved videos, trainer voice and workout controls are untouched.
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
