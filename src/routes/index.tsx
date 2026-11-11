@@ -213,6 +213,19 @@ function Today() {
           your original weekly workouts and the full scene library. The same
           original Flex and Marcus media stay protected.
         </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2" data-testid="video-ready-cast-nocast-programs">
+          <a href="/v2?workout=ready-cast-a" className="tap-target flex min-h-16 flex-col items-center justify-center rounded-xl border-2 border-cyan-300 bg-cyan-300/15 px-3 py-3 text-center text-base font-black text-cyan-100">
+            CAST WORKOUTS
+            <span className="mt-1 text-xs font-medium">Seated upper body · left cast supported</span>
+          </a>
+          <a href="/v2?workout=ready-no-cast-push" className="tap-target flex min-h-16 flex-col items-center justify-center rounded-xl border-2 border-amber-300 bg-amber-300/10 px-3 py-3 text-center text-base font-black text-amber-100">
+            NO CAST WORKOUTS
+            <span className="mt-1 text-xs font-medium">Original strength &amp; boxing · clearance required</span>
+          </a>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">Both open one real Coach/Hologram interface, with filmed exercises, sets, rest and approved Marcus English guidance. Empty video stages are excluded.</p>
+        <details className="mt-3 rounded-xl border border-border p-3">
+          <summary className="cursor-pointer text-sm font-bold">More workouts, saved sessions &amp; video review</summary>
         <div className="mt-3 grid gap-2 sm:grid-cols-3">
           <a href="/v2?workout=recovery" data-testid="open-m3-flex-movie"
             className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-lime-400 bg-lime-400/20 px-3 text-center text-sm font-black text-lime-100">
@@ -255,6 +268,7 @@ function Today() {
           className="mt-3 block text-center text-sm font-semibold text-primary">
           Open your complete approved/review scene library
         </Link>
+        </details>
         {recoverySession && (
           <div data-testid="m3-recovery-saved-progress" className="mt-3 rounded-xl border border-primary/50 bg-primary/10 p-3">
             <p className="text-sm font-bold">Resume {recoveryTitle(recoverySession.program)} in this app</p>
