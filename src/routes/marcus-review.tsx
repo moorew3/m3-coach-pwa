@@ -105,6 +105,7 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
 function MarcusReview() {
   const [selected, setSelected] = useState<string>("approved-photo-detail");
   const [modelLoaded, setModelLoaded] = useState(false);
+  const [showRejected, setShowRejected] = useState(false);
   const candidate = CANDIDATES.find((m) => m.id === selected) ?? CANDIDATES[0];
 
   return (
@@ -121,10 +122,36 @@ function MarcusReview() {
         </header>
 
         <p data-testid="marcus-review-warning" className="mt-2 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs leading-snug text-amber-100">
-          REVIEW ONLY — This 3D likeness and its movements are not approved for workouts.
+          QUALITY HOLD — Both generated 3D likenesses failed appearance checks. Approved workouts and Marcus videos remain unchanged.
         </p>
 
-        <section aria-label="Interactive Marcus 3D model" className="relative mt-2 overflow-hidden rounded-2xl border border-white/20 bg-[#0b1118]">
+        <section aria-label="Approved Marcus reference and quality control" className="mt-3 overflow-hidden rounded-2xl border border-white/15 bg-[#0b1118]">
+          <div className="flex items-center justify-between gap-2 px-3 py-2 text-xs font-semibold text-cyan-200">
+            <span>Approved appearance reference</span>
+            <span className="rounded-md bg-amber-400/10 px-2 py-1 text-amber-200">3D identity not approved</span>
+          </div>
+          <img src={APPROVED_FULL_REFERENCE}
+            alt="Original approved Marcus likeness reference — photograph, not 3D"
+            className="mx-auto max-h-[min(58dvh,600px)] w-full bg-black object-contain"
+          />
+          <p className="px-3 py-2 text-xs leading-relaxed text-white/75">
+            We rejected the previous 3D characters. They do not reproduce this face, body definition, or tattoos.
+            They will not replace Marcus in any workout.
+          </p>
+        </section>
+
+        <button
+          type="button"
+          data-testid="marcus-rejected-toggle"
+          aria-expanded={showRejected}
+          onClick={() => setShowRejected((v) => !v)}
+          className="mt-3 w-full rounded-xl border border-white/20 bg-white/[.04] px-3 py-3 text-left text-xs font-semibold text-white/80"
+        >
+          {showRejected ? "Hide rejected 3D diagnostics" : "Show rejected 3D diagnostics (not for workouts)"}
+        </button>
+        {showRejected && (
+          <div data-testid="marcus-rejected-diagnostics" className="mt-2">
+        <section aria-label="Rejected 3D model, technical diagnosis only" className="relative mt-2 overflow-hidden rounded-2xl border border-white/20 bg-[#0b1118]">
           <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-center justify-between gap-2 text-[11px]">
             <span className="rounded-md bg-black/75 px-2 py-1 font-semibold text-cyan-200">Rotate · pinch to zoom</span>
             {modelLoaded && <span data-testid="marcus-3d-ready" role="status" className="rounded-md bg-black/75 px-2 py-1 text-emerald-300">3D loaded</span>}
@@ -186,6 +213,8 @@ function MarcusReview() {
             </p>
           </div>
         </details>
+          </div>
+        )}
       </div>
     </main>
   );
