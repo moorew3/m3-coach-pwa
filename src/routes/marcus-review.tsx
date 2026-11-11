@@ -68,7 +68,26 @@ class ModelErrorBoundary extends Component<
 
 function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady: () => void }) {
   const { scene } = useGLTF(candidate.glb);
-  const clone = useMemo(() => cloneSkeleton(scene), [scene]);
+  // Rig providers can wrap meter-scale vertices in an armature scaled by 0.01.
+  // On this inspection-only screen render the authentic textured mesh in bind pose
+  // without its armature parent, preventing double scale and invisible geometry.
+  // The download remains the untouched, animation-bearing rigged GLB.
+  const clone = useMemo(() => {
+    let originalSkin: THREE.SkinnedMesh | undefined;
+    scene.traverse((part) => {
+      const skin = part as THREE.SkinnedMesh;
+      if (!originalSkin && skin.isSkinnedMesh && skin.geometry?.getAttribute("position")) {
+        originalSkin = skin;
+      }
+    });
+    if (originalSkin && candidate.rigged) {
+      const reviewMesh = new THREE.Mesh(originalSkin.geometry, originalSkin.material);
+      reviewMesh.name = "Marcus original geometry — inspection pose";
+      reviewMesh.frustumCulled = false;
+      return reviewMesh;
+    }
+    return cloneSkeleton(scene);
+  }, [scene, candidate.rigged]);
   const bounds = new THREE.Box3().setFromObject(clone);
   const size = bounds.getSize(new THREE.Vector3());
   const center = bounds.getCenter(new THREE.Vector3());
@@ -131,7 +150,7 @@ function MarcusReview() {
         <div className="mt-2 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p data-testid="marcus-selected-version" className="text-sm font-semibold text-cyan-200">{candidate.label}</p>
-            <p className="mt-0.5 text-xs leading-snug text-white/65">Actual 3D model, not a photograph. Identity, tattoos and boot still need visual approval.</p>
+            <p className="mt-0.5 text-xs leading-snug text-white/65">Actual 3D mesh in inspection pose, not a photograph. The original rigged GLB remains unchanged. Face, tattoos and boot still require approval.</p>
           </div>
           <a href={candidate.glb} target="_blank" rel="noopener noreferrer"
             className="shrink-0 rounded-xl border border-cyan-300/40 px-3 py-2 text-xs font-bold text-cyan-200">
