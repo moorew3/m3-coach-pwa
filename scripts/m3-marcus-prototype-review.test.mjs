@@ -12,8 +12,11 @@ test("review uses actual rigged model but is separated from active training scen
  assert.match(review, /cloneSkeleton\(scene\)/);
  assert.match(review, /OrbitControls/);
  assert.match(review, /REVIEW ONLY/);
- assert.match(review, /Original reference/);
- assert.match(review, /Generated draft/);
+ assert.match(review, /Reference photo & other 3D versions/);
+ assert.match(review, /marcus-review-3d/);
+ assert.match(review, /<details data-testid="marcus-review-compare"/);
+ assert.match(review, /Original approved photo — reference only/);
+ assert.doesNotMatch(review, /Generated draft/);
  assert.doesNotMatch(review, /trainingSessionReducer|dispatch\(\{ type: "start"|<M3GymRenderer/);
 });
 test("review does not unlock unverified production animations or replace approved actor",()=>{
