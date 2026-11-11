@@ -87,55 +87,31 @@ function MarcusReview() {
   const [selected, setSelected] = useState<string>("approved-photo-detail");
   const [modelLoaded, setModelLoaded] = useState(false);
   const candidate = CANDIDATES.find((m) => m.id === selected) ?? CANDIDATES[0];
+
   return (
-    <main className="min-h-dvh bg-[#080b0f] px-3 py-4 text-white">
-      <div className="mx-auto max-w-3xl">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-cyan-300">M3 Flex Coach</p>
-            <h1 className="mt-1 text-xl font-extrabold">Marcus 3D Candidate</h1>
+    <main data-testid="marcus-review-page" className="min-h-dvh bg-[#080b0f] text-white">
+      <div className="mx-auto max-w-3xl px-3 pb-10 pt-3">
+        <header className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[.14em] text-cyan-300">M3 Flex Coach</p>
+            <h1 className="text-lg font-extrabold">Marcus · 3D Review</h1>
           </div>
-          <Link to="/v2" className="rounded-xl border border-white/25 px-3 py-3 text-xs font-bold">
+          <Link to="/v2" className="shrink-0 rounded-xl border border-white/25 px-3 py-2.5 text-xs font-semibold">
             Back to workout
           </Link>
-        </div>
-        <p className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-xs leading-relaxed text-amber-100">
-          REVIEW ONLY — REAL 3D — none of these candidates passes the required face, anatomy, tattoo, and orthopedic-boot acceptance checks.
-          This page cannot enable the models in your actual workouts. Your approved videos, trainer voice and workout controls are untouched.
+        </header>
+
+        <p data-testid="marcus-review-warning" className="mt-2 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs leading-snug text-amber-100">
+          REVIEW ONLY — This 3D likeness and its movements are not approved for workouts.
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <section aria-label="Original approved coach reference" className="overflow-hidden rounded-2xl border border-white/15 bg-black">
-            <p className="px-2 pt-2 text-center text-xs font-bold">Original reference</p>
-            <img className="h-40 w-full object-contain sm:h-64" src={APPROVED_FULL_REFERENCE}
-              alt="Original approved coach photo, not a 3D model" />
-          </section>
-          <section aria-label="Generated model preview" className="overflow-hidden rounded-2xl border border-white/15 bg-black">
-            <p className="px-2 pt-2 text-center text-xs font-bold">Generated draft</p>
-            {candidate.preview ? <img className="h-40 w-full object-contain sm:h-64" src={candidate.preview}
-              alt="Previous generation's static draft (not the interactive 3D file)" /> : (
-              <div className="flex h-40 items-center justify-center px-3 text-center text-xs text-white/75 sm:h-64">
-                This updated model has no substitute still image. Rotate and inspect the real 3D character below.
-              </div>
-            )}
-          </section>
-        </div>
-        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label="Select 3D model version">
-          {CANDIDATES.map((item) => (
-            <button key={item.id} type="button" onClick={() => { setSelected(item.id); setModelLoaded(false); }}
-              aria-pressed={selected === item.id}
-              className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-bold ${selected === item.id ? "border-cyan-300 bg-cyan-300/15 text-cyan-200" : "border-white/25 bg-black/30 text-white"}`}>
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-white/70" data-testid="marcus-model-caveat">
-          {candidate.note} {candidate.rigged ? "Rigged GLB." : "Static 3D GLB; no skeleton."}
-        </p>
-        <section className="relative mt-3 overflow-hidden rounded-2xl border border-white/15 bg-[#0b1118]">
-          <h2 className="absolute left-3 top-3 z-10 text-xs font-bold text-cyan-200">Touch and drag to rotate the actual 3D model</h2>
-          {modelLoaded && <p data-testid="marcus-3d-ready" role="status" className="absolute right-3 top-3 z-10 text-xs text-emerald-300">3D loaded</p>}
+
+        <section aria-label="Interactive Marcus 3D model" className="relative mt-2 overflow-hidden rounded-2xl border border-white/20 bg-[#0b1118]">
+          <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex items-center justify-between gap-2 text-[11px]">
+            <span className="rounded-md bg-black/75 px-2 py-1 font-semibold text-cyan-200">Rotate · pinch to zoom</span>
+            {modelLoaded && <span data-testid="marcus-3d-ready" role="status" className="rounded-md bg-black/75 px-2 py-1 text-emerald-300">3D loaded</span>}
+          </div>
           <ModelErrorBoundary>
-            <div className="h-[52dvh] min-h-[340px] max-h-[580px] w-full" data-testid="marcus-review-3d">
+            <div data-testid="marcus-review-3d" className="h-[min(64dvh,640px)] min-h-[380px] w-full">
               <Canvas camera={{ position: [0, 1.5, 5], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
                 <color attach="background" args={["#0b1118"]} />
                 <ambientLight intensity={1.4} />
@@ -151,23 +127,46 @@ function MarcusReview() {
             </div>
           </ModelErrorBoundary>
         </section>
-        <p className="mt-3 text-xs leading-relaxed text-white/65">
-          This is the actual rigged GLB, not a still image masquerading as an avatar.
-          Choose among the actual generated GLB models above and rotate them by touch.
-          None is approved for motion. The static retextured version is not an animated character.
-        </p>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <a className="rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-3 py-3 text-center text-sm font-bold text-cyan-200"
-            href={candidate.glb} rel="noopener noreferrer" target="_blank">Original rigged GLB</a>
-          {candidate.preview ? <a className="rounded-xl border border-white/20 px-3 py-3 text-center text-sm font-bold"
-            href={candidate.preview} rel="noopener noreferrer" target="_blank">Open model preview</a>
-            : <div className="rounded-xl border border-white/20 px-3 py-3 text-center text-sm text-white/65">Live 3D review only</div>}
+
+        <div className="mt-2 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p data-testid="marcus-selected-version" className="text-sm font-semibold text-cyan-200">{candidate.label}</p>
+            <p className="mt-0.5 text-xs leading-snug text-white/65">Actual 3D model, not a photograph. Identity, tattoos and boot still need visual approval.</p>
+          </div>
+          <a href={candidate.glb} target="_blank" rel="noopener noreferrer"
+            className="shrink-0 rounded-xl border border-cyan-300/40 px-3 py-2 text-xs font-bold text-cyan-200">
+            GLB file
+          </a>
         </div>
-        <p className="mt-3 text-xs leading-relaxed text-white/45">
-          The updated original-photo-detail GLB is stored in this owner-controlled repository. Earlier fal.ai previews may expire.
-          The face, tattoos, anatomy and boot are not faithful enough for release. The generated files are prototypes only.
-          Production workout and injury-release gates remain closed.
-        </p>
+
+        <details data-testid="marcus-review-compare" className="mt-3 overflow-hidden rounded-xl border border-white/20 bg-white/[.035]">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
+            Reference photo & other 3D versions
+          </summary>
+          <div className="space-y-4 border-t border-white/10 px-3 pb-4 pt-3">
+            <section aria-label="Original approved coach reference">
+              <p className="mb-2 text-xs font-semibold text-white/80">Original approved photo — reference only</p>
+              <img src={APPROVED_FULL_REFERENCE} alt="Original approved coach photo, not a 3D model"
+                className="mx-auto h-56 w-full rounded-lg bg-black object-contain" />
+            </section>
+            <div>
+              <label htmlFor="marcus-candidate-select" className="mb-1.5 block text-xs font-semibold text-white/80">Compare a different real 3D file</label>
+              <select id="marcus-candidate-select" data-testid="marcus-model-select"
+                value={selected} onChange={(event) => { setSelected(event.target.value); setModelLoaded(false); }}
+                className="min-h-12 w-full rounded-lg border border-white/30 bg-[#151d27] px-3 text-sm text-white">
+                {CANDIDATES.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+              </select>
+              <p data-testid="marcus-model-caveat" className="mt-2 text-xs leading-relaxed text-white/70">
+                {candidate.note} {candidate.rigged ? "Rigged GLB." : "Static 3D GLB; no skeleton."}
+              </p>
+              {candidate.preview && <a href={candidate.preview} target="_blank" rel="noopener noreferrer"
+                className="mt-2 inline-block text-xs text-cyan-200 underline">Older static preview (not the 3D model)</a>}
+            </div>
+            <p className="text-xs leading-relaxed text-white/60">
+              Approved training videos, trainer voice and release gates are untouched. The owner-controlled 3D candidate is not permitted to replace the coach.
+            </p>
+          </div>
+        </details>
       </div>
     </main>
   );
