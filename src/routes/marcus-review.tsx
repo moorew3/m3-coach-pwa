@@ -13,10 +13,28 @@ import { useMemo } from "react";
 
 export const Route = createFileRoute("/marcus-review")({ component: MarcusReview });
 
-const CANDIDATE_GLB =
-  "https://v3b.fal.media/files/b/0ab1f374/vPQAs4jIWDuIQlXbUMvqb_rigged_character.glb";
-const CANDIDATE_PREVIEW =
-  "https://v3b.fal.media/files/b/0ab1f371/92yDx_4fsFwNXajsl1neI_preview.png";
+const CANDIDATES = [
+  {
+    id: "boot-rig", label: "Rigged · boot retained",
+    glb: "https://v3b.fal.media/files/b/0ab1f374/vPQAs4jIWDuIQlXbUMvqb_rigged_character.glb",
+    preview: "https://v3b.fal.media/files/b/0ab1f371/92yDx_4fsFwNXajsl1neI_preview.png",
+    rigged: true, note: "Original 3D rig, boot retained; facial likeness is approximate.",
+  },
+  {
+    id: "tattoo-pass", label: "4K textures · boot retained",
+    glb: "https://v3b.fal.media/files/b/0ab204d8/AgRw7EN0XgucQDEkntBea_model.glb",
+    preview: "https://v3b.fal.media/files/b/0ab204f0/bovokJ965J4CvdAvTHagl_preview.png",
+    rigged: false, note: "Re-textured 3D mesh; not yet rigged for motion. Tattoos still approximate.",
+  },
+  {
+    id: "detailed-rig", label: "Higher-detail rig · boot missing",
+    glb: "https://v3b.fal.media/files/b/0ab204a8/tRlXImMgp-unvjOBotywY_rigged_character.glb",
+    preview: "https://v3b.fal.media/files/b/0ab204a3/gTJy02e1LDX1bP6fQff4b_preview.png",
+    rigged: true, note: "Higher-resolution shape, but the left medical boot is missing; reject for recovery.",
+  },
+] as const;
+type Candidate = (typeof CANDIDATES)[number];
+const APPROVED_FULL_REFERENCE = "https://v3b.fal.media/files/b/0ab20488/gkIQ88RroMbQYLTisBSln_8073.png";
 const ORIGINAL_COACH = "/coach-source/coach-primary-standing.png";
 
 class ModelErrorBoundary extends Component<
@@ -34,8 +52,8 @@ class ModelErrorBoundary extends Component<
   }
 }
 
-function ReviewCharacter({ onReady }: { onReady: () => void }) {
-  const { scene } = useGLTF(CANDIDATE_GLB);
+function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady: () => void }) {
+  const { scene } = useGLTF(candidate.glb);
   const clone = useMemo(() => cloneSkeleton(scene), [scene]);
   const bounds = new THREE.Box3().setFromObject(clone);
   const size = bounds.getSize(new THREE.Vector3());
@@ -52,7 +70,9 @@ function ReviewCharacter({ onReady }: { onReady: () => void }) {
 }
 
 function MarcusReview() {
+  const [selected, setSelected] = useState<string>("boot-rig");
   const [modelLoaded, setModelLoaded] = useState(false);
+  const candidate = CANDIDATES.find((m) => m.id === selected) ?? CANDIDATES[0];
   return (
     <main className="min-h-dvh bg-[#080b0f] px-3 py-4 text-white">
       <div className="mx-auto max-w-3xl">
@@ -66,21 +86,33 @@ function MarcusReview() {
           </Link>
         </div>
         <p className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-xs leading-relaxed text-amber-100">
-          REVIEW ONLY — this rig is not an approved likeness, workout performer or medical-safe animation.
-          None of the approved videos, voice or live workout controls have been replaced.
+          REAL 3D REVIEW — none of these candidates passes the required face, anatomy, tattoo, and orthopedic-boot acceptance checks.
+          This page cannot enable the models in your actual workouts. Your approved videos, trainer voice and workout controls are untouched.
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <section aria-label="Original approved coach reference" className="overflow-hidden rounded-2xl border border-white/15 bg-black">
             <p className="px-2 pt-2 text-center text-xs font-bold">Original reference</p>
-            <img className="h-40 w-full object-contain sm:h-64" src={ORIGINAL_COACH}
+            <img className="h-40 w-full object-contain sm:h-64" src={APPROVED_FULL_REFERENCE}
               alt="Original approved coach photo, not a 3D model" />
           </section>
           <section aria-label="Generated model preview" className="overflow-hidden rounded-2xl border border-white/15 bg-black">
             <p className="px-2 pt-2 text-center text-xs font-bold">Generated draft</p>
-            <img className="h-40 w-full object-contain sm:h-64" src={CANDIDATE_PREVIEW}
+            <img className="h-40 w-full object-contain sm:h-64" src={candidate.preview}
               alt="Generated draft of Marcus with approximate tattoos, beard and left-leg boot" />
           </section>
         </div>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label="Select 3D model version">
+          {CANDIDATES.map((item) => (
+            <button key={item.id} type="button" onClick={() => { setSelected(item.id); setModelLoaded(false); }}
+              aria-pressed={selected === item.id}
+              className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-bold ${selected === item.id ? "border-cyan-300 bg-cyan-300/15 text-cyan-200" : "border-white/25 bg-black/30 text-white"}`}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-white/70" data-testid="marcus-model-caveat">
+          {candidate.note} {candidate.rigged ? "Rigged GLB." : "Static 3D GLB; no skeleton."}
+        </p>
         <section className="relative mt-3 overflow-hidden rounded-2xl border border-white/15 bg-[#0b1118]">
           <h2 className="absolute left-3 top-3 z-10 text-xs font-bold text-cyan-200">Touch and drag to rotate the actual 3D model</h2>
           {modelLoaded && <p data-testid="marcus-3d-ready" role="status" className="absolute right-3 top-3 z-10 text-xs text-emerald-300">3D loaded</p>}
@@ -92,7 +124,7 @@ function MarcusReview() {
                 <directionalLight position={[3, 7, 6]} intensity={2.4} />
                 <directionalLight position={[-3, 3, -5]} intensity={1.1} />
                 <Suspense fallback={null}>
-                  <ReviewCharacter onReady={() => setModelLoaded(true)} />
+                  <ReviewCharacter key={candidate.id} candidate={candidate} onReady={() => setModelLoaded(true)} />
                 </Suspense>
                 <OrbitControls target={[0, 1.35, 0]} enablePan={false}
                   minDistance={2.5} maxDistance={9} />
@@ -103,18 +135,19 @@ function MarcusReview() {
         </section>
         <p className="mt-3 text-xs leading-relaxed text-white/65">
           This is the actual rigged GLB, not a still image masquerading as an avatar.
-          The generator also returned separate rigged FBX and walking/running tests.
-          Those motions are NOT enabled here or in your workouts.
+          Choose among the actual generated GLB models above and rotate them by touch.
+          None is approved for motion. The static retextured version is not an animated character.
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <a className="rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-3 py-3 text-center text-sm font-bold text-cyan-200"
-            href={CANDIDATE_GLB} rel="noopener noreferrer" target="_blank">Original rigged GLB</a>
+            href={candidate.glb} rel="noopener noreferrer" target="_blank">Original rigged GLB</a>
           <a className="rounded-xl border border-white/20 px-3 py-3 text-center text-sm font-bold"
-            href={CANDIDATE_PREVIEW} rel="noopener noreferrer" target="_blank">Open model preview</a>
+            href={candidate.preview} rel="noopener noreferrer" target="_blank">Open model preview</a>
         </div>
         <p className="mt-3 text-xs leading-relaxed text-white/45">
           Temporary hosted media may expire; original outputs are saved in the connected fal.ai library.
-          3D identity, face, boot and tattoos require acceptance before production release.
+          The face, tattoos, anatomy and boot are not faithful enough for release. The generated files are prototypes only.
+          Production workout and injury-release gates remain closed.
         </p>
       </div>
     </main>
