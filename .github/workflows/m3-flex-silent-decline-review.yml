@@ -13,8 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - name: Ensure FFmpeg tooling is available
+      - name: Install FFmpeg if missing on CI runner
         run: |
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
           ffmpeg -version | head -n 1
           ffprobe -version | head -n 1
       - name: Recover existing clips and remove incorrect embedded speech
