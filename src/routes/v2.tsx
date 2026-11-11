@@ -22,6 +22,9 @@ import { approvedCoachMedia, nextApprovedCoachMedia } from "@/v2/approved-coach-
 import { useApp } from "@/lib/store";
 import { restoreSavedSession } from "@/v2/saved-session";
 import { workoutsForApp } from "@/v2/unified-workouts";
+import { READY_VIDEO_WORKOUTS, footageLaneFor } from "@/v2/ready-workout-programs";
+import { speakCastCoach } from "@/v2/cast-coach-voice";
+import { claimMarcusOwnerPairingLink } from "@/lib/marcus-live-client";
 import { sceneForSession, exerciseScene, sceneAudio, COOLDOWN_SCENE, trainingSessionReducer as v2SessionReducer } from "@/v2/training-scenes";
 import { playMarcusCue, preloadMarcusAudio, stopMarcusCue } from "@/v2/marcus-cue-audio";
 import {
@@ -102,14 +105,15 @@ function V2Coach() {
   // Use the explicitly requested workout on the FIRST render. Glasses and
   // phone deep links must never flash today's unrelated default exercise.
   const [workoutId, setWorkoutId] = useState(() =>
-    ALL_V2_WORKOUTS.find(w => w.id === urlSearch.get("workout"))?.id ?? originalWorkoutForToday().id
+    ALL_V2_WORKOUTS.find(w => w.id === urlSearch.get("workout"))?.id ?? READY_VIDEO_WORKOUTS[0].id
   );
   const workout = useMemo(
-    () => ALL_V2_WORKOUTS.find((w) => w.id === workoutId) ?? originalWorkoutForToday(),
+    () => ALL_V2_WORKOUTS.find((w) => w.id === workoutId) ?? ALL_V2_WORKOUTS[0],
     [workoutId],
   );
   const [session, dispatch] = useReducer(v2SessionReducer, workout, createV2Session);
   const [hydrated, setHydrated] = useState(false);
+  useEffect(()=>{claimMarcusOwnerPairingLink()},[]);
   const [visualStopped, setVisualStopped] = useState(false);
   // A timer must not count an exercise before the exact moving clip renders.
   const [motionReadyKey, setMotionReadyKey] = useState("");
@@ -305,10 +309,26 @@ function V2Coach() {
   const viewpoint = viewpointFor(session.mode);
   const media = exerciseScene(exercise);
   const resolvedScene = sceneForSession(session);
+  const failedVideoUrls=useRef(new Set<string>());
   const mediaFailed = useCallback(() => {
-    dispatch({type:"pause"}); setVisualStopped(true);
-    setVoiceError("The matching approved scene could not play. Workout paused; retry the video before resuming.");
-  }, []);
+    const failed=sceneForSession(session).media?.url;
+    if(failed)failedVideoUrls.current.add(failed);
+    dispatch({type:"pause"});
+    // No missing clip can advance the rep counter or substitute another outfit.
+    // Skip an unplayable stage only in its existing program and remain paused.
+    const next=session.workout.exercises.findIndex((item,index)=>{
+      const media=exerciseScene(item);
+      return index>session.exerciseIndex && !!media?.url && !failedVideoUrls.current.has(media.url);
+    });
+    if(next>=0){
+      dispatch({type:"select-exercise",exerciseIndex:next});
+      setVisualStopped(false);
+      setVoiceError("Unavailable video skipped. No reps counted. The next matching exercise is selected; tap Start when ready.");
+    }else{
+      setVisualStopped(true);
+      setVoiceError("This source video is unavailable. No blank video, wrong outfit or unrelated movement will be substituted.");
+    }
+  },[session]);
   const preload = nextApprovedCoachMedia(session.workout.exercises, session.exerciseIndex);
   useEffect(() => {
     if (!hydrated) return;
@@ -413,12 +433,14 @@ function V2Coach() {
       setLiveCue(message);
       if (voiceOn) {
         let cancelled = false;
+        const controller = new AbortController();
         const announce = async () => {
           const sceneVoice = sceneAudio(exercise);
           const started = session.phase === "complete" && COOLDOWN_SCENE.audioUrl
             ? await playRecordedCoachAudio(COOLDOWN_SCENE.audioUrl, "trainer-scene")
-            : session.phase === "work" && media?.embeddedAudio ? true
             : session.phase === "work" && sceneVoice ? await playRecordedCoachAudio(sceneVoice, "trainer-scene")
+            : session.phase === "work" && exercise.motionKey.startsWith("cast-")
+              ? await speakCastCoach(exercise,controller.signal).catch(()=>false)
             : session.phase === "work"
             ? await playMarcusTrainer(exercise.motionKey)
             : session.phase === "transition"
@@ -430,6 +452,7 @@ function V2Coach() {
         void announce();
         return () => {
           cancelled = true;
+          controller.abort();
           stopFridayPremiumCue();
           stopDetailedExerciseSpeech();
     stopRecordedCoachAudio("trainer-scene");
@@ -797,7 +820,12 @@ function V2Coach() {
     <section data-testid="unified-workout-selectors" className="my-3 grid grid-cols-2 gap-2 rounded-2xl bg-[#111820] p-3">
       <label className="col-span-2 text-xs font-semibold text-white/60">Workout
         <select aria-label="Workout" value={session.workout.id} onChange={e=>chooseWorkout(e.target.value)} className="mt-1 min-h-11 w-full rounded-xl border border-white/15 bg-[#080b0f] px-3 text-sm text-white">
-          {ALL_V2_WORKOUTS.map(w=><option key={w.id} value={w.id}>{w.title}</option>)}
+          <optgroup label="VIDEO READY · CAST AND NO CAST">
+            {ALL_V2_WORKOUTS.filter(w=>!!footageLaneFor(w.id)).map(w=><option key={w.id} value={w.id}>{w.title}</option>)}
+          </optgroup>
+          <optgroup label="OTHER PLANS · MISSING FOOTAGE REMOVED">
+            {ALL_V2_WORKOUTS.filter(w=>!footageLaneFor(w.id)).map(w=><option key={w.id} value={w.id}>{w.title}</option>)}
+          </optgroup>
         </select>
       </label>
       <label className="min-w-0 text-xs font-semibold text-white/60">Exercise
@@ -810,9 +838,17 @@ function V2Coach() {
           <option value="coach">Coach</option><option value="hologram">Hologram</option><option value="glasses">Glasses · RayNeo</option>
         </select>
       </label>
+      {footageLaneFor(session.workout.id) && <p data-testid="footage-lane-warning" className="col-span-2 rounded-lg border border-cyan-300/25 bg-cyan-300/10 px-3 py-2 text-xs text-white/90">
+        {footageLaneFor(session.workout.id)==="cast"
+          ? "CAST ONLY · Seated moving footage with supported LEFT WHITE CAST. No standing footage."
+          : "NO CAST ONLY · Original no-cast coach footage. Not for non-weight-bearing recovery."}
+        {" "}Source voices muted. Approved English Marcus only.
+      </p>}
       {session.workout.requiresClearance && <details className="col-span-2 rounded-xl bg-black/30 p-3" open={!cleared}>
-        <summary className="cursor-pointer text-xs font-bold text-cyan-100">Seated setup {cleared?"confirmed":"· confirm before starting"}</summary>
-        {["My clinician has cleared these seated movements and resistance.","I will keep my left leg supported and follow my actual weight-bearing restrictions.","My clinician cleared this duration and effort; I will stop for new pain, swelling or cast pressure."].map((text,i)=><label key={text} className="mt-3 flex items-start gap-2 text-xs leading-relaxed"><input type="checkbox" aria-label={text} checked={clearance[i]} onChange={e=>setClearance(old=>old.map((v,j)=>j===i?e.target.checked:v))} className="mt-0.5 size-5 shrink-0"/>{text}</label>)}
+        <summary className="cursor-pointer text-xs font-bold text-cyan-100">{footageLaneFor(session.workout.id)==="no-cast"?"Non-cast workout clearance":"Seated setup"} {cleared?"confirmed":"· confirm before starting"}</summary>
+        {(footageLaneFor(session.workout.id)==="no-cast"
+          ? ["My clinician cleared standing and full weight-bearing exercise; my left leg is no longer under non-weight-bearing restrictions.","These no-cast videos match my current abilities and my knee and shoulder restrictions.","I have clearance for this intensity and will stop for pain or swelling."]
+          : ["My clinician has cleared these seated movements and resistance.","I will keep my left leg supported and follow my actual weight-bearing restrictions.","My clinician cleared this duration and effort; I will stop for new pain, swelling or cast pressure."]).map((text,i)=><label key={text} className="mt-3 flex items-start gap-2 text-xs leading-relaxed"><input type="checkbox" aria-label={text} checked={clearance[i]} onChange={e=>setClearance(old=>old.map((v,j)=>j===i?e.target.checked:v))} className="mt-0.5 size-5 shrink-0"/>{text}</label>)}
       </details>}
     </section>
   );
@@ -920,7 +956,7 @@ function V2Coach() {
                 key={stageMedia.url}
                 url={stageMedia.url}
                 playing={showCoach && videoPlaying}
-                muted={session.phase === "ready" || !voiceOn || !stageMedia.embeddedAudio || flexThinking || liveProviderSpeaking}
+                muted={true}
                 onPlaybackFailure={mediaFailed}
                 onVideoReady={() => setMotionReadyKey(expectedMotionKey)}
                 onPlaybackStateChange={(isPlaying) => {
