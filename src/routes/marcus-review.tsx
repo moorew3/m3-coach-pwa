@@ -5,7 +5,7 @@
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Suspense, Component, useEffect, useState, type ReactNode } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -74,7 +74,8 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
   const center = bounds.getCenter(new THREE.Vector3());
   const height = size.y > 0 ? size.y : 1;
   const scale = 2.8 / height;
-  useEffect(() => { onReady(); }, [onReady]);
+  const { camera } = useThree();
+  useEffect(() => { camera.lookAt(0, 1.3, 0); onReady(); }, [camera, onReady]);
   return (
     <group position={[-center.x * scale, -bounds.min.y * scale, -center.z * scale]} scale={scale}>
       <primitive object={clone} />
@@ -82,11 +83,9 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
   );
 }
 
-type ReviewFocus = "full" | "face";
 function MarcusReview() {
   const [selected, setSelected] = useState<string>("approved-photo-detail");
   const [modelLoaded, setModelLoaded] = useState(false);
-  const [view, setView] = useState<ReviewFocus>("full");
   const candidate = CANDIDATES.find((m) => m.id === selected) ?? CANDIDATES[0];
   return (
     <main className="min-h-dvh bg-[#080b0f] px-3 py-4 text-white">
@@ -132,22 +131,12 @@ function MarcusReview() {
         <p className="mt-2 text-xs text-white/70" data-testid="marcus-model-caveat">
           {candidate.note} {candidate.rigged ? "Rigged GLB." : "Static 3D GLB; no skeleton."}
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2" role="group" aria-label="3D camera view">
-          <button type="button" onClick={() => { setView("full"); setModelLoaded(false); }} aria-pressed={view === "full"}
-            className={`min-h-12 rounded-xl border px-2 text-sm font-semibold ${view === "full" ? "border-cyan-300 bg-cyan-300/15 text-cyan-200" : "border-white/25"}`}>
-            Full body · 360°
-          </button>
-          <button type="button" onClick={() => { setView("face"); setModelLoaded(false); }} aria-pressed={view === "face"}
-            className={`min-h-12 rounded-xl border px-2 text-sm font-semibold ${view === "face" ? "border-cyan-300 bg-cyan-300/15 text-cyan-200" : "border-white/25"}`}>
-            Face & tattoos · close-up
-          </button>
-        </div>
         <section className="relative mt-3 overflow-hidden rounded-2xl border border-white/15 bg-[#0b1118]">
           <h2 className="absolute left-3 top-3 z-10 text-xs font-bold text-cyan-200">Touch and drag to rotate the actual 3D model</h2>
           {modelLoaded && <p data-testid="marcus-3d-ready" role="status" className="absolute right-3 top-3 z-10 text-xs text-emerald-300">3D loaded</p>}
           <ModelErrorBoundary>
-            <div className="h-[60dvh] min-h-[420px] max-h-[720px] w-full" data-testid="marcus-review-3d">
-              <Canvas key={view} camera={{ position: view === "face" ? [0, 2.43, 1.12] : [0, 1.5, 4.2], fov: 36, near: 0.01, far: 80 }} gl={{ antialias: true }}>
+            <div className="h-[52dvh] min-h-[340px] max-h-[580px] w-full" data-testid="marcus-review-3d">
+              <Canvas camera={{ position: [0, 1.5, 5], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
                 <color attach="background" args={["#0b1118"]} />
                 <ambientLight intensity={1.4} />
                 <directionalLight position={[3, 7, 6]} intensity={2.4} />
@@ -155,8 +144,8 @@ function MarcusReview() {
                 <Suspense fallback={null}>
                   <ReviewCharacter key={candidate.id} candidate={candidate} onReady={() => setModelLoaded(true)} />
                 </Suspense>
-                <OrbitControls target={[0, view === "face" ? 2.43 : 1.35, 0]} enablePan={false}
-                  minDistance={view === "face" ? 0.8 : 2.8} maxDistance={view === "face" ? 3.2 : 9} />
+                <OrbitControls target={[0, 1.35, 0]} enablePan={false}
+                  minDistance={2.5} maxDistance={9} />
                 <gridHelper args={[8, 12, "#25313d", "#17232d"]} />
               </Canvas>
             </div>
