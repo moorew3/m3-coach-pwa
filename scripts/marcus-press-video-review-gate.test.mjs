@@ -32,7 +32,9 @@ test("New Marcus video candidates are traceable but never approved by creation a
     assert.ok(!verified.includes(rejected), "Rejected render must not enter live media");
     assert.ok(!scenes.includes(rejected), "Rejected render must not enter scene resolver");
   }
-  assert.match(pending, /status: "owner-near-match-requires-wrong-narration-removal"/);
+  assert.match(pending, /status: "owner-near-match-but-technical-reject-wrong-decline-bench-angle"/);
+  assert.match(pending, /audioCorrectionStatus: "completed-silent-source-copy-only-not-released"/);
+  assert.equal((pending.match(/visualGeometryApproved: false/g) || []).length, 2);
   assert.match(pending, /status: "owner-rejected-incorrect-incline-exercise"/);
   assert.match(pending, /ownerFeedback: "Decline close; narration incorrectly says seated chest press"/);
   assert.match(pending, /mustStripExistingAudio: true/);
