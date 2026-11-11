@@ -72,7 +72,8 @@ type NoCastStep={key:string;name:string;reps:string;sets:number;rest:number;cate
 function noCastStep(step:NoCastStep):V2Exercise {
  const media=coachMotionFor(step.key);
  if(!media?.url)throw Error("Non-cast stage missing exact verified coach footage: "+step.key);
- return {id:"ready-no-cast-"+step.key,name:step.name,category:step.category??"strength",sets:step.sets,reps:step.reps,
+ const timed=step.reps.match(/^(\d+)\s*sec\b/i);
+ return {id:"ready-no-cast-"+step.key,name:step.name,category:step.category??"strength",sets:step.sets,reps:timed?undefined:step.reps,seconds:timed?Number(timed[1]):undefined,
    restSeconds:step.rest,transitionSeconds:15,motionKey:step.key,
    cues:[...coachingCuesFor(step.key,step.category??"strength")],warmupStyle:"none",loadClass:"upper"};
 }
