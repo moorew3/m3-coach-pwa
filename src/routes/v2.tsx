@@ -441,7 +441,7 @@ function V2Coach() {
         const controller = new AbortController();
         const announce = async () => {
           const sceneVoice = sceneAudio(exercise);
-          const started = session.phase === "complete" && COOLDOWN_SCENE.audioUrl
+          const started = session.phase === "complete" && footageLaneFor(session.workout.id)!=="no-cast" && COOLDOWN_SCENE.audioUrl
             ? await playRecordedCoachAudio(COOLDOWN_SCENE.audioUrl, "trainer-scene")
             : session.phase === "work" && sceneVoice ? await playRecordedCoachAudio(sceneVoice, "trainer-scene")
             : session.phase === "work" && exercise.motionKey.startsWith("cast-")
@@ -802,13 +802,15 @@ function V2Coach() {
   const exerciseProgress = session.phase === "complete"
     ? 100 : Math.round(100 * session.exerciseIndex / Math.max(totalExercises, 1));
   const nextExerciseName = session.workout.exercises[session.exerciseIndex + 1]?.name;
-  const stageTitle = session.phase === "complete" ? "Cooldown breathing"
+  const noCastLane = footageLaneFor(session.workout.id) === "no-cast";
+  const stageTitle = session.phase === "complete" ? (noCastLane ? "Workout complete" : "Cooldown breathing")
     : session.phase === "rest" || session.phase === "transition" ? "Rest · breathe" : exercise?.name ?? "";
   const showCoach = true;
   const glasses = false;
   const stageMedia = resolvedScene.media;
+  const noCastIdlePhase = noCastLane && (session.phase === "rest" || session.phase === "transition" || session.phase === "complete");
   const stableCoachFraming = true;
-  const stagePreloadUrl = session.phase === "rest" || session.phase === "transition" ? media?.url : COOLDOWN_SCENE.url;
+  const stagePreloadUrl = noCastLane ? media?.url : (session.phase === "rest" || session.phase === "transition" ? media?.url : COOLDOWN_SCENE.url);
   // Preview the exact moving exercise even before Start; do not log timed sets.
   // All videos start muted in preview so phone autoplay policy does not block them.
   const videoPlaying = !visualStopped &&
@@ -951,7 +953,7 @@ function V2Coach() {
         <div className={projectionFocus ? "relative h-full w-full" : `mt-3 grid gap-3 ${toolsOpen ? "lg:grid-cols-[minmax(0,1fr)_320px]" : ""}`}>
           <section className={projectionFocus
             ? "relative h-dvh min-h-0 overflow-hidden bg-black"
-            : "relative h-[calc(100dvh-176px)] min-h-[380px] max-h-[880px] sm:h-[calc(100dvh-190px)] sm:min-h-[460px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? "missing"} data-video-ready={motionReadyForTick ? "true" : "false"}>
+            : "relative h-[calc(100dvh-176px)] min-h-[380px] max-h-[880px] sm:h-[calc(100dvh-190px)] sm:min-h-[460px] self-start overflow-hidden rounded-3xl border border-white/10 bg-[#070c12]"} data-testid="v2-trainer-stage" data-scene-role={resolvedScene.role} data-scene-id={stageMedia?.sceneId ?? (noCastIdlePhase ? "no-cast-idle" : "missing")} data-video-ready={motionReadyForTick ? "true" : "false"}>
             <LiveFlexProvider
               presence={flexPresence}
               visible={showCoach && session.phase !== "complete" && showTalkingFace}
@@ -983,7 +985,25 @@ function V2Coach() {
                 label={`Marcus · ${resolvedScene.role} · ${stageMedia.label}`}
               />
             )}
-            {showCoach && !realTimeRigReady && !stageMedia && (
+            {showCoach && !realTimeRigReady && noCastIdlePhase && !stageMedia && (
+              <div className="absolute inset-0 overflow-hidden bg-[#070c12]" data-testid="noncast-rest-stage" aria-label="Original Marcus full-body rest view">
+                <img
+                  src={COACH_REFERENCE}
+                  alt="Approved original full-body Marcus image; movement paused during rest"
+                  className="absolute inset-0 h-full w-full object-contain opacity-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/45" />
+                <div role="status" className="absolute inset-x-4 bottom-[172px] rounded-2xl border border-cyan-300/30 bg-black/75 p-3 text-center text-white">
+                  <p className="text-lg font-bold">{session.phase === "complete" ? "Workout complete" : "Rest · Marcus is idle"}</p>
+                  <p className="mt-1 text-sm text-white/85">
+                    {session.phase === "complete"
+                      ? "Your session is complete."
+                      : `Next movement begins after your rest. ${session.phaseSecondsLeft ?? 0} seconds remaining.`}
+                  </p>
+                </div>
+              </div>
+            )}
+            {showCoach && !realTimeRigReady && !stageMedia && !noCastIdlePhase && (
               <div
                 className="absolute inset-0 bg-[#070c12]"
                 data-testid="motion-pending-stage"
