@@ -3,6 +3,8 @@ import recovery from '../data/recovery-scenes.json';
 import core from '../data/bench-core-existing.json';
 import { ORIGINAL_WEEK_WORKOUTS } from './original-week-workouts';
 import { V2_WORKOUTS } from './catalog';
+import { READY_VIDEO_WORKOUTS } from "./ready-workout-programs";
+import { exerciseScene } from "./training-scenes";
 import type { V2Exercise, V2Workout } from './types';
 
 const motion: Record<string,string> = {'C01-R3':'shrugs','C02':'hammerCurl','C03':'frontRaise','C04-R2':'dumbbellCurl','C08-PRESS-R3':'chestPress'};
@@ -47,9 +49,14 @@ export function existingExercise(e:SessionExercise):V2Exercise {
   motionKey:e.mirror??'unavailable',repRange:range?[Number(range[1]),Number(range[2])]:undefined,
   cues:[e.notes??'Use the setup prescribed for this exercise.','Keep the movement controlled.','Breathe steadily.'],warmupStyle:'none'};
 }
-/** Existing saved/custom plans join the same engine; their original records stay intact. */
+/** Preserve all source prescriptions and history; trim EMPTY or unmatched footage only
+ * from the interactive workout player. The original workout data itself is untouched.
+ * A missing video must not create a frozen/static/blank playable stage.
+ */
 export function workoutsForApp(state:Pick<AppState,'savedWorkouts'|'days'>):V2Workout[] {
  const saved=state.savedWorkouts.filter(w=>w.exercises.length>0).map(w=>({id:'saved-'+w.id,title:w.name,focus:'Your saved workout',exercises:w.exercises.map(existingExercise)}));
  const selected=Object.entries(state.days).flatMap(([day,log])=>log.sessionPlan?.exercises.length?[{id:'session-'+day,title:log.sessionPlan.title,focus:log.sessionPlan.focus,exercises:log.sessionPlan.exercises.map(existingExercise)}]:[]);
- return [...ALL_WORKOUTS,...saved,...selected];
+ const verified=[...READY_VIDEO_WORKOUTS,...ALL_WORKOUTS,...saved,...selected];
+ return verified.map(w=>({...w,exercises:w.exercises.filter(ex=>Boolean(exerciseScene(ex)?.url))}))
+   .filter(w=>w.exercises.length>0);
 }
