@@ -15,6 +15,13 @@ export const Route = createFileRoute("/marcus-review")({ component: MarcusReview
 
 const CANDIDATES = [
   {
+    id: "texture-rig", label: "Retextured · original moving rig",
+    glb: "/marcus-candidates/marcus-retattoo-rigged.glb",
+    preview: "https://v3b.fal.media/files/b/0ab204f0/bovokJ965J4CvdAvTHagl_preview.png",
+    rigged: true,
+    note: "New 2K tattoo and muscle-surface detail transferred to the original 24-joint skinned rig. The face and tattoos remain approximate — NOT approved.",
+  },
+  {
     id: "boot-rig", label: "Rigged · boot retained",
     glb: "https://v3b.fal.media/files/b/0ab1f374/vPQAs4jIWDuIQlXbUMvqb_rigged_character.glb",
     preview: "https://v3b.fal.media/files/b/0ab1f371/92yDx_4fsFwNXajsl1neI_preview.png",
@@ -70,7 +77,7 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
 }
 
 function MarcusReview() {
-  const [selected, setSelected] = useState<string>("boot-rig");
+  const [selected, setSelected] = useState<string>("texture-rig");
   const [modelLoaded, setModelLoaded] = useState(false);
   const candidate = CANDIDATES.find((m) => m.id === selected) ?? CANDIDATES[0];
   return (
