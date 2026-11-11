@@ -124,3 +124,36 @@ test("The wrong spoken seated chest press cannot pass as decline or incline benc
   assert.ok(!scenes.includes("dc8a74a3feda442ab467616c05c80188"));
   assert.ok(!scenes.includes("434a4dc35d9245d18c62e4e639b3df00"));
 });
+
+test("November 11 approved-budget submissions are incline and decline ONLY, still blocked", () => {
+  const candidateSource = source("src/v2/marcus-press-guided-candidates-20261111.ts");
+  const candidates = [
+    "f907e463dc8a4ffa83640dc60d11a17b",
+    "b407e4220ea9456993060a69e19923c0",
+  ];
+  for (const id of candidates) {
+    assert.ok(candidateSource.includes(id), "Missing new generation reference: " + id);
+    assert.ok(!verified.includes(id), "Unreviewed generated video entered approved media");
+    assert.ok(!scenes.includes(id), "Unreviewed generated video entered live exercise stage");
+  }
+  assert.ok(candidateSource.includes('exerciseId: "inclineBenchPress"'));
+  assert.ok(candidateSource.includes('exerciseId: "declineBenchPress"'));
+  assert.ok(candidateSource.includes("targetAngleDegrees: 30"));
+  assert.ok(candidateSource.includes("targetAngleDegrees: -15"));
+  assert.ok(candidateSource.includes("40 total"));
+  assert.ok(candidateSource.includes("No new subscription"));
+  for (const gate of [
+    "ownerVisualApproval",
+    "preciseBenchAngleChecked",
+    "marcusFaceTattooHairChecked",
+    "motionChecked",
+    "leftLegBootUnloadedChecked",
+    "audioConfirmedSilent",
+    "allowAutomaticRetry",
+    "allowInCoach",
+    "allowInHologram",
+  ]) {
+    assert.equal((candidateSource.match(new RegExp(gate + ": false", "g")) || []).length, 2, gate);
+  }
+  assert.equal((candidateSource.match(/status: "submitted-review-only"/g) || []).length, 2);
+});
