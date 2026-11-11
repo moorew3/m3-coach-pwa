@@ -1,0 +1,53 @@
+name: Marcus real 3D mesh audit (no generation)
+on:
+  push:
+    branches:
+      - feature/marcus-real-mesh-refinement-20261111
+    paths:
+      - scripts/marcus_mesh_audit.py
+      - scripts/marcus_texture_refine.py
+      - .github/workflows/marcus-mesh-refinement.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect-existing-models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect GLB geometry, skeleton and textures without paid AI
+        run: python3 -u scripts/marcus_mesh_audit.py
+      - name: Install local image tooling (no AI calls)
+        run: python3 -m pip install --quiet Pillow
+      - name: Refine real rig appearance while preserving 24-joint skeleton
+        run: python3 -u scripts/marcus_texture_refine.py
+      - name: Save isolated candidate GLB and QA integrity report
+        uses: actions/upload-artifact@v4
+        with:
+          name: marcus-rigged-texture-candidate
+          path: |
+            artifacts/marcus-texture-refined/marcus-rig-texture-candidate.glb
+            artifacts/marcus-texture-refined/refinement-report.json
+          retention-days: 7
+          if-no-files-found: error
+      - name: Save verified 3D candidate only on protected review branch
+        if: github.ref_name == 'feature/marcus-real-mesh-refinement-20261111'
+        run: |
+          mkdir -p public/marcus-candidates
+          cp artifacts/marcus-texture-refined/marcus-rig-texture-candidate.glb public/marcus-candidates/marcus-retattoo-rigged.glb
+          test $(wc -c < public/marcus-candidates/marcus-retattoo-rigged.glb) -lt 12000000
+          git config user.email "m3-flex-ci@users.noreply.github.com"
+          git config user.name "M3 Flex CI"
+          git add public/marcus-candidates/marcus-retattoo-rigged.glb
+          if ! git diff --cached --quiet; then
+            git commit -m "Add isolated owner-review 3D texture-refined Marcus GLB"
+            git push origin HEAD:feature/marcus-real-mesh-refinement-20261111
+          fi
+      - name: Save read-only mesh audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: marcus-existing-glb-audit
+          path: artifacts/marcus-model-audit/audit.json
+          retention-days: 7
+          if-no-files-found: error
