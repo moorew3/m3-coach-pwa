@@ -9,7 +9,10 @@ const {createV2Session,v2SessionReducer}=await import('../src/v2/session.ts');
 
 test('no-cast rest and completion cannot display a left-cast breathing scene',()=>{
  for(const workout of READY_VIDEO_WORKOUTS.filter(w=>w.footageLane==='no-cast')){
-  let s=v2SessionReducer(createV2Session(workout),{type:'start'});
+  const repeated=workout.exercises.findIndex(e=>e.sets>1 && e.restSeconds>0);
+  assert.ok(repeated>=0,workout.id+' must contain a multi-set exercise');
+  let s={...createV2Session(workout),exerciseIndex:repeated};
+  s=v2SessionReducer(s,{type:'start'});
   s=v2SessionReducer(s,{type:'complete-set'});
   assert.equal(s.phase,'rest',workout.id);
   const rest=sceneForSession(s);
