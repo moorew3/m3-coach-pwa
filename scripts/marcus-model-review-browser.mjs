@@ -41,6 +41,11 @@ try {
  await mkdir("artifacts",{recursive:true});
  await page.getByTestId("marcus-review-3d").scrollIntoViewIfNeeded();
  await page.getByTestId("marcus-review-3d").screenshot({path:"artifacts/marcus-photo-3d-review-mobile.png",timeout:12000});
+ await page.getByRole("button",{name:"Face & tattoos · close-up"}).click();
+ assert.equal(await page.getByRole("button",{name:"Face & tattoos · close-up"}).getAttribute("aria-pressed"),"true");
+ await page.waitForTimeout(450);
+ await page.getByTestId("marcus-review-3d").screenshot({path:"artifacts/marcus-photo-3d-face-detail.png",timeout:12000});
+ await page.getByRole("button",{name:"Full body · 360°"}).click();
  assert.deepEqual(errors,[],"no uncaught JavaScript page errors");
  console.log("PASS: Samsung Fold review renders actual rigged model, is isolated, correct identity warnings");
  await context.close();
