@@ -67,6 +67,8 @@ export function CoachMotion({
   const frameReported = useRef(false);
   const videoReadyCallback = useRef(onVideoReady);
   videoReadyCallback.current = onVideoReady;
+  const playbackFailureCallback = useRef(onPlaybackFailure);
+  playbackFailureCallback.current = onPlaybackFailure;
   const playbackStateCallback = useRef(onPlaybackStateChange);
   playbackStateCallback.current = onPlaybackStateChange;
 
@@ -135,9 +137,9 @@ export function CoachMotion({
   useEffect(() => {
     if (failure) {
       playbackStateCallback.current?.(false);
-      onPlaybackFailure?.();
+      playbackFailureCallback.current?.();
     }
-  }, [failure, onPlaybackFailure]);
+  }, [failure]);
 
   const still = poster || COACH_REFERENCE;
   if (vimeoId)
