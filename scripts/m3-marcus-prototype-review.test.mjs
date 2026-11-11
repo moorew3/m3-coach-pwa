@@ -11,7 +11,9 @@ test("review uses actual rigged model but is separated from active training scen
  assert.match(review, /rigged_character\.glb/);
  assert.match(review, /cloneSkeleton\(scene\)/);
  assert.match(review, /OrbitControls/);
- assert.match(review, /REVIEW ONLY/);
+ assert.match(review, /QUALITY HOLD/);
+ assert.match(review, /showRejected &&/);
+ assert.match(review, /Approved appearance reference/);
  assert.match(review, /Reference photo & other 3D versions/);
  assert.match(review, /marcus-review-3d/);
  assert.match(review, /<details data-testid="marcus-review-compare"/);
