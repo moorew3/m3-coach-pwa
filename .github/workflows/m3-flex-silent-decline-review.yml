@@ -1,0 +1,57 @@
+name: M3 Flex - Silent Decline Existing Video Review
+on:
+  push:
+    branches:
+      - feature/m3-flex-decline-audio-incline-reject-20261111
+    paths:
+      - .github/workflows/m3-flex-silent-decline-review.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  existing-video-audio-removal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Install FFmpeg if missing on CI runner
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          ffmpeg -version | head -n 1
+          ffprobe -version | head -n 1
+      - name: Recover existing clips and remove incorrect embedded speech
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p outputs working
+          DECLINE_URL="https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1c9d7-1384-72d0-9c90-193f62111869.mp4"
+          INCLINE_URL="https://resource2.heygen.ai/videos/2f2323079d3c414087f76bbfd67fb0f5/2f2323079d3c414087f76bbfd67fb0f5/01a1c9d6-a9c2-784b-bb2f-076683715242.mp4"
+          curl --fail --location --retry 2 --connect-timeout 20 --max-time 150 --silent --show-error "$DECLINE_URL" -o working/decline.mp4
+          curl --fail --location --retry 2 --connect-timeout 20 --max-time 150 --silent --show-error "$INCLINE_URL" -o working/incline.mp4
+          ffprobe -v error -show_entries format=duration:stream=codec_name,codec_type -of json working/decline.mp4 > outputs/decline-original-streams.json
+          ffprobe -v error -show_entries format=duration:stream=codec_name,codec_type -of json working/incline.mp4 > outputs/incline-original-streams.json
+          # Copy original video frames unchanged; delete entire incorrect audio track.
+          ffmpeg -hide_banner -loglevel error -nostdin -y -i working/decline.mp4 -map 0:v:0 -c:v copy -an -movflags +faststart outputs/decline-video-only-SILENT.mp4
+          if ffprobe -v error -select_streams a -show_entries stream=codec_name -of csv=p=0 outputs/decline-video-only-SILENT.mp4 | grep -q .; then
+            echo "FAILED: unexpected audio in silent file" >&2
+            exit 1
+          fi
+          ffmpeg -hide_banner -loglevel error -nostdin -y -i working/decline.mp4 -vf "fps=1,scale=460:-2,tile=4x2" -frames:v 1 outputs/decline-8-frame-contact-sheet.jpg
+          ffmpeg -hide_banner -loglevel error -nostdin -y -i working/incline.mp4 -vf "fps=1,scale=460:-2,tile=4x2" -frames:v 1 outputs/incline-REJECTED-8-frame-contact-sheet.jpg
+          sha256sum outputs/decline-video-only-SILENT.mp4 > outputs/silent-video-sha256.txt
+          cat > outputs/README.txt <<'END'
+          M3 FLEX COACH — NO NEW GENERATION
+          decline-video-only-SILENT.mp4 contains the original decline video frames, copied without re-encoding, with all embedded audio removed.
+          It must still pass owner visual review and injury-clearance rules. No replacement Marcus narration was synthesized.
+          The owner rejected the incline clip as the wrong exercise; the incline contact sheet is for QA only.
+          No new video/speech generation or credits. GitHub Actions runner time may consume existing CI quota.
+          END
+      - name: Retain silent decline clip and visual QA sheets for owner
+        uses: actions/upload-artifact@v4
+        with:
+          name: m3-flex-press-correction-review-no-video-generation
+          path: outputs/
+          if-no-files-found: error
+          retention-days: 14

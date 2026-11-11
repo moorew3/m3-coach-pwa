@@ -32,7 +32,15 @@ test("New Marcus video candidates are traceable but never approved by creation a
     assert.ok(!verified.includes(rejected), "Rejected render must not enter live media");
     assert.ok(!scenes.includes(rejected), "Rejected render must not enter scene resolver");
   }
-  assert.equal((pending.match(/status: "pending-owner-visual-approval"/g) || []).length, 2);
+  assert.match(pending, /status: "owner-near-match-but-technical-reject-wrong-decline-bench-angle"/);
+  assert.match(pending, /audioCorrectionStatus: "completed-silent-source-copy-only-not-released"/);
+  assert.equal((pending.match(/visualGeometryApproved: false/g) || []).length, 2);
+  assert.match(pending, /status: "owner-rejected-incorrect-incline-exercise"/);
+  assert.match(pending, /ownerFeedback: "Decline close; narration incorrectly says seated chest press"/);
+  assert.match(pending, /mustStripExistingAudio: true/);
+  assert.match(pending, /correctedAudioRequired: "Decline dumbbell bench press"/);
+  assert.match(pending, /embeddedVoiceTrackApproved: false/g);
+  assert.doesNotMatch(pending, /status: "pending-owner-visual-approval"/);
   // Generated media is blocked until human frame-level, technique and voice QA.
   // A completed provider job never counts as approval.
   for (const gate of [
@@ -103,4 +111,16 @@ test("Press preflight documents correct movement, locked avatar, no generation s
   assert.match(doc, /leg brace/);
   assert.match(doc, /decline.*not/i);
   assert.match(doc, /two distinct/i);
+});
+
+test("The wrong spoken seated chest press cannot pass as decline or incline bench press", () => {
+  const queue = source("src/v2/pending-marcus-press-reviews.ts");
+  const approved = source("src/v2/approved-coach-media.ts");
+  const scenes = source("src/v2/training-scenes.ts");
+  assert.match(queue, /mustStripExistingAudio: true/);
+  assert.match(queue, /owner-rejected-incorrect-incline-exercise/);
+  assert.ok(!approved.includes("dc8a74a3feda442ab467616c05c80188"));
+  assert.ok(!approved.includes("434a4dc35d9245d18c62e4e639b3df00"));
+  assert.ok(!scenes.includes("dc8a74a3feda442ab467616c05c80188"));
+  assert.ok(!scenes.includes("434a4dc35d9245d18c62e4e639b3df00"));
 });
