@@ -95,6 +95,8 @@ try {
     "Legacy weekly plan must not appear cleared for seated-only training",
   );
   await page.getByTestId("m3-unified-workout-picker").waitFor();
+  // Recovery/A/B live under a collapsed secondary-workouts <details>.
+  await page.getByTestId("m3-unified-workout-picker").locator("details > summary").click();
   for (const name of [
     "Recovery · 5 approved moves",
     "Workout A · Dumbbells & boxing scenes",

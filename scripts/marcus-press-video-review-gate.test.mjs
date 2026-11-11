@@ -33,6 +33,20 @@ test("New Marcus video candidates are traceable but never approved by creation a
     assert.ok(!scenes.includes(rejected), "Rejected render must not enter scene resolver");
   }
   assert.equal((pending.match(/status: "pending-owner-visual-approval"/g) || []).length, 2);
+  // Generated media is blocked until human frame-level, technique and voice QA.
+  // A completed provider job never counts as approval.
+  for (const gate of [
+    "frameSamplesVerified",
+    "benchAngleVerified",
+    "correctRepPathVerified",
+    "marcusIdentityVerified",
+    "exactAudioApproved",
+    "injuredLegSetupCleared",
+    "allowAutomaticRegeneration",
+  ]) {
+    assert.equal((pending.match(new RegExp(gate + ": false", "g")) || []).length, 2, gate);
+  }
+
   assert.ok(!verified.includes("412ffc12265549a39100dcf6ce8219eb"));
   assert.ok(!scenes.includes("412ffc12265549a39100dcf6ce8219eb"));
 });
@@ -64,4 +78,29 @@ test("Incline and decline coaching are different movements, not generic flat-pre
   assert.doesNotMatch(script, /feet firmly and your upper back against the incline bench/);
   assert.doesNotMatch(detailed, /Kick the dumbbells up into position/);
   assert.doesNotMatch(detailed, /shoulderPress:.*declineDumbbellPress/);
+});
+
+test("Press preflight documents correct movement, locked avatar, no generation spend, and research", () => {
+  const doc = source("docs/m3-flex-incline-decline-video-preflight.md");
+  for (const required of [
+    "Two-Arm Incline Dumbbell Chest Press",
+    "Decline Dumbbell Bench Press",
+    "HEAD",
+    "HIPS",
+    "two full",
+    "Marcus",
+    "No additional video-generation jobs",
+    "owner approve",
+  ]) {
+    assert.ok(doc.toLowerCase().includes(required.toLowerCase()), `Missing preflight requirement: ${required}`);
+  }
+  for (const rejected of [
+    "bb5e40c8f31f4c2c9a2bac097fd58bf9",
+    "ef5471613ed74e2baee69385156ca902",
+  ]) {
+    assert.ok(doc.includes(rejected));
+  }
+  assert.match(doc, /leg brace/);
+  assert.match(doc, /decline.*not/i);
+  assert.match(doc, /two distinct/i);
 });

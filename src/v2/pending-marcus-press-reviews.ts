@@ -7,6 +7,8 @@
  * signed HeyGen links expire, and no candidate URL belongs in live playback.
  *
  * Created from already included HeyGen Creator-plan credits, not a new plan.
+ * No additional credits may be used until research, geometry, voice and safety
+ * preflight in docs/m3-flex-incline-decline-video-preflight.md is satisfied.
  */
 export const PENDING_MARCUS_PRESS_REVIEWS = [
   {
@@ -15,6 +17,15 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     provider: "heygen-backup",
     videoId: "dc8a74a3feda442ab467616c05c80188",
     status: "pending-owner-visual-approval",
+    // Rendering succeeded, but no trusted frame-by-frame or voice check succeeded.
+    // Never silently promote "completed" to approved or spend more credits.
+    frameSamplesVerified: false,
+    benchAngleVerified: false,
+    correctRepPathVerified: false,
+    marcusIdentityVerified: false,
+    exactAudioApproved: false,
+    injuredLegSetupCleared: false,
+    allowAutomaticRegeneration: false,
     allowInCoach: false,
     allowInHologram: false,
     checks: [
@@ -31,6 +42,15 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     provider: "heygen-backup",
     videoId: "434a4dc35d9245d18c62e4e639b3df00",
     status: "pending-owner-visual-approval",
+    // Rendering succeeded, but no trusted frame-by-frame or voice check succeeded.
+    // Never silently promote "completed" to approved or spend more credits.
+    frameSamplesVerified: false,
+    benchAngleVerified: false,
+    correctRepPathVerified: false,
+    marcusIdentityVerified: false,
+    exactAudioApproved: false,
+    injuredLegSetupCleared: false,
+    allowAutomaticRegeneration: false,
     allowInCoach: false,
     allowInHologram: false,
     checks: [

@@ -50,7 +50,10 @@ try{
  }
  await page.getByRole("button",{name:"Workout library and tools"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
- assert.equal(await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).count(),1);
+ const picker=page.getByTestId("m3-unified-workout-picker");
+ // Recovery is intentionally behind the collapsed secondary-workouts menu.
+ await picker.locator("details > summary").click();
+ assert.equal(await picker.getByRole("link",{name:"Recovery · 5 approved moves"}).count(),1);
  const v2=await page.goto(origin+"/v2?workout=recovery",{waitUntil:"domcontentloaded"});
  assert.equal(v2?.status(),200,"Static host must serve V2");
  await page.getByTestId("flex-training").waitFor();
