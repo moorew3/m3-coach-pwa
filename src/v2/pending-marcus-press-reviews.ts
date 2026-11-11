@@ -13,13 +13,13 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     exercise: "declineBenchPress",
     title: "Decline dumbbell bench press — two reps",
     provider: "heygen-backup",
-    videoId: "bb5e40c8f31f4c2c9a2bac097fd58bf9",
+    videoId: "dc8a74a3feda442ab467616c05c80188",
     status: "pending-owner-visual-approval",
     allowInCoach: false,
     allowInHologram: false,
     checks: [
       "Exact approved Marcus face, braids, beard, tattoos and clothing",
-      "Decline bench angle rather than flat, incline or overhead press",
+      "Head lower than hips, downward-sloping decline bench visible in every frame",
       "Two complete controlled reps, real dumbbells and proper range",
       "Injured LEFT booted leg securely elevated, supported and unloaded",
       "No video freezing, avatar morphing, substitutions or extra people",
@@ -29,17 +29,39 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     exercise: "inclineBenchPress",
     title: "Incline dumbbell bench press — two reps",
     provider: "heygen-backup",
-    videoId: "ef5471613ed74e2baee69385156ca902",
+    videoId: "434a4dc35d9245d18c62e4e639b3df00",
     status: "pending-owner-visual-approval",
     allowInCoach: false,
     allowInHologram: false,
     checks: [
       "Exact approved Marcus face, braids, beard, tattoos and clothing",
-      "Incline bench angled upward 30–40 degrees with head higher than hips",
+      "Head higher than hips, upward-sloping incline bench visible in every frame",
       "Two full controlled upward presses over the upper chest with both dumbbells",
       "Injured LEFT booted leg securely elevated, supported and unloaded",
       "No identity drift, audio, captions, camera cuts or extra people",
     ],
+  },
+] as const;
+
+/**
+ * Rejected/failed historical generations MUST NEVER be selected by runtime.
+ * Owner rejected the former "decline" clip: its bench was flat and coaching
+ * did not match the exercise. The old incline generation failed with 500.
+ */
+export const REJECTED_MARCUS_PRESS_GENERATIONS = [
+  {
+    exercise: "declineBenchPress",
+    videoId: "bb5e40c8f31f4c2c9a2bac097fd58bf9",
+    disposition: "rejected-wrong-flat-bench-movement-and-script",
+    allowInCoach: false,
+    allowInHologram: false,
+  },
+  {
+    exercise: "inclineBenchPress",
+    videoId: "ef5471613ed74e2baee69385156ca902",
+    disposition: "failed-render-500",
+    allowInCoach: false,
+    allowInHologram: false,
   },
 ] as const;
 

@@ -437,26 +437,56 @@ export const MOVEMENT_COACHING: Record<string, MovementCoaching> = {
     safety: "Use safeties or a spotter. Never train this one to failure alone.",
   },
   inclineDumbbellPress: {
-    label: "the incline dumbbell press",
+    label: "the incline dumbbell bench press",
     muscles: "upper chest and front delts",
     setup:
-      "Bench at about thirty degrees, dumbbells at the outside of the chest, shoulder blades pinned into the pad, feet flat.",
+      "INCLINE BENCH: head higher than hips, back pad tilted UP around thirty-five degrees. Keep the injured LEFT leg in its strapped medical boot, supported on a padded rest and completely unloaded. Have the dumbbells brought into position without kicking up or driving through the injured leg.",
     start:
-      "Kick the dumbbells up into position first, then set the shoulders back before the first rep.",
-    path: "Press up and slightly together until the dumbbells are over the upper chest, stopping just short of lockout, then lower until the elbows are just below the shoulders.",
+      "Upper back and shoulder blades stay against the raised back pad. Both dumbbells start beside the UPPER chest, elbows bent and wrists above elbows.",
+    path:
+      "Press the dumbbells diagonally upward above the UPPER chest, not directly overhead, then slowly lower back to the upper chest. Repeat the exact incline path.",
     form: [
-      "Wrists stacked over the elbows the whole way.",
-      "Shoulder blades stay set — the chest works, not the front delt alone.",
-      "Same path every rep.",
+      "The raised head end of the incline bench must remain clearly higher than the hips.",
+      "Wrists stay above elbows and shoulder blades remain against the pad.",
+      "Keep the left booted leg fully supported and unloaded through every repetition.",
     ],
-    breathing: "Inhale lowering, exhale pressing.",
-    tempo: "Two seconds down, drive up.",
+    breathing: "Exhale on the press, inhale while lowering.",
+    tempo: "Two seconds down, then a controlled press.",
     errors: [
-      "Don't set the incline too steep — that turns it into a shoulder press.",
-      "Don't clash the dumbbells at the top.",
+      "No horizontal flat bench: incline must visibly rise toward the head.",
+      "No upright overhead shoulder press; keep the path above the upper chest.",
+      "Do not kick the dumbbells upward or push with the injured left leg.",
     ],
-    finalReps: "Two more with the same path. Control the lowering.",
-    prep: "Set the bench to about thirty degrees and pick your dumbbells.",
+    finalReps: "Two more incline presses over the UPPER chest; maintain the bench angle and a smooth return.",
+    prep: "Set the bench to about thirty-five degrees UP, stabilize the weights, and support the injured left leg.",
+    stop: "Stop if the leg support shifts, the bench is unstable, or the press causes pain.",
+    safety: "Only perform the movement when the position is medically cleared; the left leg must remain supported and unloaded.",
+  },
+  declineDumbbellPress: {
+    label: "the decline dumbbell bench press",
+    muscles: "lower chest with triceps assisting",
+    setup:
+      "DECLINE BENCH: the back pad slopes DOWN toward the head at roughly fifteen to twenty degrees. The HEAD is visibly LOWER than the HIPS. Verify the bench and torso are stable and the injured LEFT booted leg can remain padded, supported and unloaded without using the usual leg restraints.",
+    start:
+      "With both hands controlling a dumbbell at either side of the LOWER chest, set the shoulder blades firmly against the downward-sloping pad.",
+    path:
+      "Press both dumbbells upward over the LOWER chest until the elbows are nearly extended; lower them steadily to each side of the lower chest. Repeat without changing the decline angle.",
+    form: [
+      "Your head stays clearly below the hips for the entire decline press.",
+      "Dumbbells stay controlled over the lower chest; elbows angle comfortably toward the torso.",
+      "Do not drive through, hook, brace, or load the injured left leg.",
+    ],
+    breathing: "Exhale as the dumbbells rise and inhale as they lower.",
+    tempo: "Two seconds down, controlled press up.",
+    errors: [
+      "Do not perform this movement on a flat bench or an upward-sloping incline bench.",
+      "Do not turn it into an overhead shoulder press or switch to a standing press.",
+      "Never continue if the booted leg support or decline position becomes unstable.",
+    ],
+    finalReps: "Two more decline presses over the LOWER chest, then lower the dumbbells safely.",
+    prep: "Check the downward bench angle, stable torso positioning, two dumbbells, and unloaded LEFT booted leg.",
+    stop: "Stop immediately if you slide, strain the injured leg, or cannot hold the declining bench position.",
+    safety: "Decline pressing is not suitable without clinician clearance and a secure way to stabilize the torso without loading the injured left leg; do not improvise a leg hook.",
   },
   chestPress: {
     label: "the chest press",

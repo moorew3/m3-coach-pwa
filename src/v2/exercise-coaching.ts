@@ -109,9 +109,14 @@ const COACHING: Record<string, CoachingTriple> = {
     "Exhale on the pull, inhale on the return, and avoid lifting your chest off the support.",
   ],
   inclineDumbbellPress: [
-    "Set your upper back against the incline bench with the dumbbells over your chest and feet planted.",
-    "Lower the weights with control, then press up without letting your shoulders roll forward.",
-    "Inhale as you lower, exhale as you press, and keep the motion smooth and pain-free.",
+    "INCLINE dumbbell bench press. Raise the head end of the bench to about thirty-five degrees. Keep your injured left booted leg supported and completely unloaded.",
+    "With dumbbells beside your upper chest, press diagonally upward over the upper chest, then lower under control. Your upper back stays on the angled pad. This is NOT a flat or overhead press.",
+    "Exhale as the weights rise and inhale as they lower. Keep both wrists steady, do not kick the weights up with your injured leg, and stop if support or control is lost.",
+  ],
+  declineDumbbellPress: [
+    "DECLINE dumbbell bench press. The bench slopes downward toward your head: your head is below your hips. Do not begin without secure bench stability and clearance to keep your injured left leg supported and unloaded.",
+    "With both dumbbells at the sides of your lower chest, press upward over the lower chest, then lower slowly. Keep your upper back supported on the descending pad; never switch to a flat bench.",
+    "Exhale on the upward press and inhale on the return. Keep the leg completely unloaded and end the set if the supported position becomes unstable.",
   ],
   latPulldown: [
     "Sit tall with your thighs secured and take a comfortable grip on the bar.",
@@ -253,9 +258,14 @@ const COACHING: Record<string, CoachingTriple> = {
 
 const ADDITIONAL_COACHING: Record<string, CoachingTriple> = {
   "inclinePress": [
-    "Set your feet firmly and your upper back against the incline bench, with dumbbells beside your upper chest.",
-    "Press smoothly upward without rolling your shoulders forward, then lower the weights under control.",
-    "Breathe in as you lower and out as you press. Keep your ribs down and avoid bouncing."
+    "Incline dumbbell bench press. Set the back pad around thirty-five degrees UP, with your head clearly higher than your hips. Keep your injured left booted leg elevated and unloaded.",
+    "From beside the UPPER chest, press both dumbbells diagonally upward over the upper chest, then return under control. Keep your upper back against the inclined pad.",
+    "Breathe out on the press and in on the lowering. Do not kick the weights into place or drive through the injured leg."
+  ],
+  "declineBenchPress": [
+    "Decline dumbbell bench press. Set a stable bench with the head end BELOW the hips and support the injured left booted leg without loading it.",
+    "Start with both dumbbells beside the LOWER chest. Press upward above the lower chest and lower smoothly, keeping your upper back securely against the downward-sloping bench.",
+    "Breathe out to press and in to lower. Stop rather than risk slipping or pushing through the injured leg."
   ],
   "bentOverRow": [
     "Hinge at your hips with soft knees, a long spine, and the weight hanging close to your legs.",
