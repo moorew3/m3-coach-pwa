@@ -1,0 +1,46 @@
+name: Marcus Railway live 3D route smoke
+on:
+  push:
+    branches:
+      - feature/marcus-real-mesh-refinement-20261111
+    paths:
+      - .github/workflows/marcus-live-preview-smoke.yml
+permissions:
+  contents: read
+jobs:
+  validate-live-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect published original service (GET only, zero paid API calls)
+        run: |
+          python3 - <<'PY'
+          import urllib.request, json, struct, hashlib
+          root="https://m3-coach-v2-preview-production.up.railway.app"
+          request=lambda path: urllib.request.Request(root+path,headers={"User-Agent":"M3-Flex-Live-Preview-Smoke/1.0"})
+          with urllib.request.urlopen(request("/marcus-review"),timeout=45) as page:
+              status=page.status
+              mime=page.headers.get("Content-Type","")
+              html=page.read(2_000_000)
+          assert status==200 and "html" in mime.lower(),(status,mime)
+          print("LIVE_ROUTE_OK",status,mime,"html_bytes",len(html))
+          with urllib.request.urlopen(request("/marcus-candidates/marcus-retattoo-rigged.glb"),timeout=50) as response:
+              mime=response.headers.get("Content-Type","")
+              model=response.read(13_000_000)
+              status=response.status
+          assert status==200 and 5_000_000<len(model)<12_000_000,(status,len(model))
+          assert model[:4]==b"glTF" and struct.unpack_from("<I",model,8)[0]==len(model)
+          json_len,chunk=struct.unpack_from("<I4s",model,12)
+          assert chunk==b"JSON"
+          metadata=json.loads(model[20:20+json_len])
+          joints=len(metadata["skins"][0]["joints"])
+          animations=len(metadata.get("animations",[]))
+          extras=metadata["asset"].get("extras",{})
+          assert joints==24 and animations>=1,(joints,animations)
+          assert extras.get("asset_code")=="WM3-20261111-M3FLEX-003",extras
+          assert extras.get("status")=="UNAPPROVED_REVIEW_CANDIDATE"
+          print("LIVE_GLB_OK",status,"bytes",len(model),"sha256",hashlib.sha256(model).hexdigest(),
+                "joints",joints,"animations",animations,"owner_code",extras["asset_code"],
+                "mime",mime)
+          print("LIVE_REVIEW_READY_TO_INSPECT_NOT_PRODUCTION_APPROVED")
+          PY
