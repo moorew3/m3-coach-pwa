@@ -115,6 +115,7 @@ jobs:
             artifacts/m3-flex-recovery-visual-check.png
             artifacts/m3-flex-rayneo-display-review.png
             artifacts/marcus-photo-3d-review-mobile.png
+            artifacts/marcus-photo-3d-face-detail.png
           retention-days: 3
           if-no-files-found: error
 
