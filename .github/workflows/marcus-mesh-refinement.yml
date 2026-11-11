@@ -18,6 +18,19 @@ jobs:
       - uses: actions/checkout@v4
       - name: Inspect GLB geometry, skeleton and textures without paid AI
         run: python3 -u scripts/marcus_mesh_audit.py
+      - name: Install local image tooling (no AI calls)
+        run: python3 -m pip install --quiet Pillow
+      - name: Refine real rig appearance while preserving 24-joint skeleton
+        run: python3 -u scripts/marcus_texture_refine.py
+      - name: Save isolated candidate GLB and QA integrity report
+        uses: actions/upload-artifact@v4
+        with:
+          name: marcus-rigged-texture-candidate
+          path: |
+            artifacts/marcus-texture-refined/marcus-rig-texture-candidate.glb
+            artifacts/marcus-texture-refined/refinement-report.json
+          retention-days: 7
+          if-no-files-found: error
       - name: Save read-only mesh audit results
         uses: actions/upload-artifact@v4
         with:
