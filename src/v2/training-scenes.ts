@@ -26,7 +26,12 @@ export function sceneForSession(session:V2Session) {
   const resting=session.phase==='rest'||session.phase==='transition';
   const complete=session.phase==='complete';
   const exercise=session.workout.exercises[session.exerciseIndex];
-  const media=complete?COOLDOWN_SCENE:resting?REST_SCENE:exerciseScene(exercise);
+  // A standing/no-cast workout must never suddenly display the LEFT-CAST
+  // recovery video during its rest or completion phase. No approved no-cast
+  // breathing film exists; the UI presents the original full-body coach
+  // reference at rest without pretending it is an animated demonstration.
+  const noCastIdle = session.workout.id.startsWith('ready-no-cast-') && (resting || complete);
+  const media=noCastIdle?undefined:complete?COOLDOWN_SCENE:resting?REST_SCENE:exerciseScene(exercise);
   return {media,role:complete?'cooldown':resting?'rest':exercise?.stageRole??'exercise',
     playing:Boolean(media&&(complete||session.running&&session.phase==='work'||session.running&&resting)),
     missing:!media&&!resting&&!complete};
