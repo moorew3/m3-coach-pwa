@@ -36,7 +36,7 @@
   "rig": "full",
   "faceBones": true,
   "restPose": "A",
-  "animations": true,
+  "animations": false,
   "expression": "neutral",
   "faceShapes": true,
   "speechShapes": true,
