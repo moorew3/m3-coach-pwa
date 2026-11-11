@@ -1,0 +1,27 @@
+name: Marcus real 3D mesh audit (no generation)
+on:
+  push:
+    branches:
+      - feature/marcus-real-mesh-refinement-20261111
+    paths:
+      - scripts/marcus_mesh_audit.py
+      - scripts/marcus_texture_refine.py
+      - .github/workflows/marcus-mesh-refinement.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-existing-models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect GLB geometry, skeleton and textures without paid AI
+        run: python3 -u scripts/marcus_mesh_audit.py
+      - name: Save read-only mesh audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: marcus-existing-glb-audit
+          path: artifacts/marcus-model-audit/audit.json
+          retention-days: 7
+          if-no-files-found: error
