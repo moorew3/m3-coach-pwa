@@ -28,8 +28,12 @@ try{
  await page.getByTestId("app-entry-gate").waitFor({state:"detached"});
  await page.getByRole("button",{name:"Workout library and tools"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
- console.log("✓ Fold entrance, accessible tools, one workout picker");
- await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).click();
+ const picker=page.getByTestId("m3-unified-workout-picker");
+ // The old Recovery/A/B links are intentionally inside a collapsed
+ // "More workouts" section; expand it as a real phone user must.
+ await picker.locator("details > summary").click();
+ await picker.getByRole("link",{name:"Recovery · 5 approved moves"}).click();
+ console.log("✓ Fold entrance, expanded secondary workouts, selected Recovery");
  await page.getByTestId("flex-training").waitFor();
  const stage=page.getByTestId("v2-trainer-stage"),workout=page.getByLabel("Workout",{exact:true}),exercise=page.getByLabel("Exercise",{exact:true});
  // Everyday controls should be few, large, and visibly separate from extra options.
