@@ -2,6 +2,18 @@
 
 **Status:** Separate, nonproduction test. No automated replacement of Coach Session, Hologram, Recovery or prior approved Marcus videos/voice. Preserve existing production models and original references.
 
+## V3 baseline acceptance result — REJECTED (2026-11-11)
+
+GitHub Actions run **43089254830** exported a valid 19,536,476-byte GLB with 164 rig joints, 181,176 triangles, 12 materials, no embedded animations. The technical GLB checks **passed**, but visual QA of the front and side renders **failed**:
+- Face is a generic unapproved person, with inaccurate facial proportions and expression.
+- Narrow, poorly defined upper body and limbs compared with approved muscular Marcus.
+- Procedural beard and braids have visually broken white/color rendering in the offline preview; requires verification under the actual web renderer, not a pass.
+- All exact chest/arm/back tattoos are absent.
+- The left medical boot is missing; generic orange shoes and white socks are unacceptable.
+- Imported baseline has static A-pose only; no workout motion or lip sync is demonstrated.
+
+**Decision: NO-GO. Do not promote Ara V3 baseline to owner-review or production as Marcus. No further blind procedural builds/retextures.** Keep the proven approved workout videos and voice; use human-led precision sculpting from the canonical front, two sides, back and tattoo closeups. Rigging and facial animation testing only after likeness and injury requirements match.
+
 ## Why V2 failed
 - V2 Meshy single-view and multi-view shape did not reproduce Marcus' facial anatomy, eyes, beard, hairline, deltoids, pectorals, or abdominal geometry.
 - Retexturing and photo projection into the distorted UV atlas introduced warped and misplaced tattoos, not exact artwork.
