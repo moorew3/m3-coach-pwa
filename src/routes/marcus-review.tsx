@@ -94,7 +94,7 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
   const height = size.y > 0 ? size.y : 1;
   const scale = 2.8 / height;
   const { camera } = useThree();
-  useEffect(() => { camera.lookAt(0, 1.3, 0); onReady(); }, [camera, onReady]);
+  useEffect(() => { camera.lookAt(0, 0.98, 0); onReady(); }, [camera, onReady]);
   return (
     <group position={[-center.x * scale, -bounds.min.y * scale, -center.z * scale]} scale={scale}>
       <primitive object={clone} />
@@ -131,7 +131,7 @@ function MarcusReview() {
           </div>
           <ModelErrorBoundary>
             <div data-testid="marcus-review-3d" className="h-[min(64dvh,640px)] min-h-[380px] w-full">
-              <Canvas camera={{ position: [0, 1.5, 4], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
+              <Canvas camera={{ position: [0, 1.12, 4], fov: 39, near: 0.01, far: 80 }} gl={{ antialias: true }}>
                 <color attach="background" args={["#0b1118"]} />
                 <ambientLight intensity={1.4} />
                 <directionalLight position={[3, 7, 6]} intensity={2.4} />
@@ -139,7 +139,7 @@ function MarcusReview() {
                 <Suspense fallback={null}>
                   <ReviewCharacter key={candidate.id} candidate={candidate} onReady={() => setModelLoaded(true)} />
                 </Suspense>
-                <OrbitControls target={[0, 1.35, 0]} enablePan={false}
+                <OrbitControls target={[0, 0.98, 0]} enablePan={false}
                   minDistance={2.5} maxDistance={9} />
                 <gridHelper args={[8, 12, "#25313d", "#17232d"]} />
               </Canvas>
