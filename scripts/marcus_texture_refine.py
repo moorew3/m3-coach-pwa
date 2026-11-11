@@ -77,6 +77,11 @@ def main():
     assert len(texture.get("skins",[]))==0,"Unexpected shape of source texture"
     uv=uv_check(rig,jbin,texture,tbin)
     modified=json.loads(json.dumps(rig))
+    modified.setdefault("asset",{}).setdefault("extras",{}).update({
+        "owner":"Created for and owned by Willie Moore III",
+        "asset_code":"WM3-20261111-M3FLEX-003",
+        "status":"UNAPPROVED_REVIEW_CANDIDATE"
+    })
     # Preserve original render bones, animations, 3D vertices, winding & identity gate.
     newbin=bytearray(jbin)
     data=[]
