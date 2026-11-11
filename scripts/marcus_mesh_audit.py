@@ -24,6 +24,40 @@ def parse_glb(b):
  assert chunks[0][0]==b"JSON", "GLB must start with JSON"
  data=json.loads(chunks[0][1]);payloads=[v for typ,v in chunks if typ==b"BIN\x00"]
  return data,payloads
+def accessor_data(gltf,bin_chunks,ix):
+ acc=gltf["accessors"][ix];view=gltf["bufferViews"][acc["bufferView"]]
+ n=acc["count"];component=acc["componentType"];shape=acc["type"]
+ assert component in (5126,5123,5125,5121), "unsupported component"
+ typ={5126:"f",5123:"H",5125:"I",5121:"B"}[component]
+ width={"SCALAR":1,"VEC2":2,"VEC3":3,"VEC4":4,"MAT4":16}[shape]
+ fmt="<"+typ*width
+ size=struct.calcsize(fmt);stride=view.get("byteStride",size)
+ raw=bin_chunks[view.get("buffer",0)]
+ start=view.get("byteOffset",0)+acc.get("byteOffset",0)
+ assert start+(n-1)*stride+size <= len(raw),"Accessor outside BIN"
+ return [struct.unpack_from(fmt,raw,start+i*stride) for i in range(n)]
+def attribute_stats(gltf,bins,attr):
+ result={}
+ for idx,p in [(i,p) for i,m in enumerate(gltf.get("meshes",[])) for p in m.get("primitives",[])]:
+  if attr not in p["attributes"]:continue
+  accidx=p["attributes"][attr]
+  values=accessor_data(gltf,bins,accidx)
+  d=len(values[0])
+  extent=[(round(min(v[j] for v in values),5),round(max(v[j] for v in values),5)) for j in range(d)]
+  # Hash direct floats and normalized quantization to discover UV mapping reuse
+  chunks=[struct.pack("<"+"f"*d,*v) for v in values]
+  result[str(idx)]={"count":len(values),"componentType":gltf["accessors"][accidx]["componentType"],
+    "range":extent,"exact_sha256":hashlib.sha256(b"".join(chunks)).hexdigest(),
+    "first":values[:4]}
+ return result
+def uv_overlap(a,b):
+ aa=a[0]; bb=b[0]
+ def uvset(v):return set((round(x,4),round(y,4)) for x,y,*_ in v)
+ A=uvset(aa);B=uvset(bb)
+ return {"a_unique":len(A),"b_unique":len(B),"intersection":len(A&B),
+ "a_match_fraction":round(len(A&B)/max(1,len(A)),5),
+ "b_match_fraction":round(len(A&B)/max(1,len(B)),5)}
+
 def summaries():
  out={}
  for key,url in ASSETS.items():
@@ -50,6 +84,8 @@ def summaries():
    "image_info":[{"name":im.get("name"),"mimeType":im.get("mimeType"),"bufferView":im.get("bufferView"),"uri":im.get("uri","")[:100]} for im in j.get("images",[])],
    "material_info":[{"name":m.get("name"),"pbr":m.get("pbrMetallicRoughness"),"normal":m.get("normalTexture")} for m in j.get("materials",[])],
    "animation_names":[a.get("name") for a in j.get("animations",[])],
+   "positions":attribute_stats(j,chunks,"POSITION"),
+   "uvs":attribute_stats(j,chunks,"TEXCOORD_0"),
    "node_mesh_skins":[{"node":i,"name":n.get("name"),"mesh":n.get("mesh"),"skin":n.get("skin"),"children":len(n.get("children",[]))} for i,n in enumerate(j.get("nodes",[])) if "mesh" in n]}
   out[key]=report
   print("SUMMARY",key,json.dumps({k:v for k,v in report.items() if k not in ("meshes","skin_info","material_info","node_mesh_skins")},default=str))
@@ -57,6 +93,14 @@ def summaries():
   print("SKINS",key,json.dumps(report["skin_info"][:2]))
   print("MESH-NODES",key,json.dumps(report["node_mesh_skins"][:20]))
   print("MATERIALS",key,json.dumps(report["material_info"][:10]))
+  print("GEOMETRY",key,json.dumps({"positions":report["positions"],"uvs":report["uvs"]})[:1700])
+ # Quantify whether original rig UVs match the re-textured source geometry.
+ original=out["base-rig"]; clean=out["base-unrigged"]; retextured=out["tattoo-retexture"]
+ print("UV-DIRECT",json.dumps({
+  "rig_vs_unrigged":original["uvs"]["0"]["exact_sha256"]==clean["uvs"]["0"]["exact_sha256"],
+  "unrigged_vs_retextured":clean["uvs"]["0"]["exact_sha256"]==retextured["uvs"]["0"]["exact_sha256"],
+  "original_vertex_count":original["positions"]["0"]["count"],
+  "retexture_vertex_count":retextured["positions"]["0"]["count"]}))
  (ROOT/"audit.json").write_text(json.dumps(out,indent=2,default=list))
  # Safety invariant: don't conflate transformed unrigged textures with rigged geometry
  assert out["base-rig"]["skins"] > 0,"Original rig not present"
