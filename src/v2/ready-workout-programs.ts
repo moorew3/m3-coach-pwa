@@ -17,8 +17,18 @@ import recovery from "@/data/recovery-scenes.json";
 export type FootageLane="cast"|"no-cast";
 export type ReadyVideoWorkout=V2Workout & {footageLane:FootageLane;verifiedVideoProgram:true};
 const castIds=new Set(["C09-PRE-BREATH-R2","C01-R3","C02","C03","C04-R2","C08-PRESS-R3","C10-POST-BREATH-R1"]);
-const castOriginals=new Map(recovery.flatMap(g=>g.items).filter(x=>"video" in x&&!!x.video&&"id" in x&&castIds.has(x.id))
-  .map(x=>[x.id,x])); // Exact seven locked approved moving originals; no review candidates.
+// Each recovery phase has a distinct JSON item type. Collect only the IDs we
+// actually need instead of flattening incompatible typed phase arrays.
+// This is intentionally a lookup of the SAME seven immutable approved originals.
+const castOriginalIds = new Set<string>();
+for (const phase of recovery) {
+  for (const item of phase.items) {
+    if (
+      "video" in item && typeof item.video === "string" && item.video.length > 0 &&
+      "id" in item && typeof item.id === "string" && castIds.has(item.id)
+    ) castOriginalIds.add(item.id);
+  }
+}
 
 type VideoStep={id:string;name:string;motionKey:string;sets:number;reps?:string;seconds?:number;rest:number;instructions:readonly [string,string,string];role?:V2Exercise["stageRole"]};
 const castPrep:VideoStep={id:"C09-PRE-BREATH-R2",name:"Seated breathing · left cast supported",motionKey:"cast-seated-breathing",sets:1,seconds:30,rest:0,role:"preparation",instructions:[
@@ -59,7 +69,7 @@ const castMoves:Record<string,VideoStep>={
   ]},
 };
 function castStep(s:VideoStep):V2Exercise {
-  if(!castIds.has(s.id)||!castOriginals.has(s.id))throw Error("Unapproved cast video "+s.id);
+  if(!castIds.has(s.id)||!castOriginalIds.has(s.id))throw Error("Unapproved cast video "+s.id);
   return {id:"ready-cast-"+s.id,name:s.name,category:s.role?"mobility":"strength",sets:s.sets,reps:s.reps,seconds:s.seconds,
     restSeconds:s.rest,transitionSeconds:s.role?0:20,sceneId:s.id,motionKey:s.motionKey,stageRole:s.role,
     cues:[...s.instructions],warmupStyle:"none",loadClass:"upper"};
