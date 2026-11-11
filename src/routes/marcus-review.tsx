@@ -4,8 +4,8 @@
  * Generated hosted URLs can expire. Preserve original model in fal asset library.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Suspense, Component, useEffect, useState, useRef, type ReactNode } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Suspense, Component, useEffect, useState, type ReactNode } from "react";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -83,21 +83,6 @@ function ReviewCharacter({ candidate, onReady }: { candidate: Candidate; onReady
 }
 
 type ReviewFocus = "full" | "face";
-function ReviewCamera({ focus }: { focus: ReviewFocus }) {
-  const { camera } = useThree();
-  const controller = useRef<any>(null);
-  useEffect(() => {
-    const targetY = focus === "face" ? 2.43 : 1.40;
-    camera.position.set(0, targetY, focus === "face" ? 0.92 : 3.4);
-    camera.lookAt(0, targetY, 0);
-    camera.updateProjectionMatrix();
-    controller.current?.target?.set(0, targetY, 0);
-    controller.current?.update?.();
-  }, [camera, focus]);
-  return <OrbitControls ref={controller} target={[0, focus === "face" ? 2.43 : 1.40, 0]}
-    enablePan={false} minDistance={focus === "face" ? 0.7 : 2.4} maxDistance={focus === "face" ? 3.2 : 8} />;
-}
-
 function MarcusReview() {
   const [selected, setSelected] = useState<string>("approved-photo-detail");
   const [modelLoaded, setModelLoaded] = useState(false);
@@ -148,11 +133,11 @@ function MarcusReview() {
           {candidate.note} {candidate.rigged ? "Rigged GLB." : "Static 3D GLB; no skeleton."}
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2" role="group" aria-label="3D camera view">
-          <button type="button" onClick={() => setView("full")} aria-pressed={view === "full"}
+          <button type="button" onClick={() => { setView("full"); setModelLoaded(false); }} aria-pressed={view === "full"}
             className={`min-h-12 rounded-xl border px-2 text-sm font-semibold ${view === "full" ? "border-cyan-300 bg-cyan-300/15 text-cyan-200" : "border-white/25"}`}>
             Full body · 360°
           </button>
-          <button type="button" onClick={() => setView("face")} aria-pressed={view === "face"}
+          <button type="button" onClick={() => { setView("face"); setModelLoaded(false); }} aria-pressed={view === "face"}
             className={`min-h-12 rounded-xl border px-2 text-sm font-semibold ${view === "face" ? "border-cyan-300 bg-cyan-300/15 text-cyan-200" : "border-white/25"}`}>
             Face & tattoos · close-up
           </button>
@@ -162,7 +147,7 @@ function MarcusReview() {
           {modelLoaded && <p data-testid="marcus-3d-ready" role="status" className="absolute right-3 top-3 z-10 text-xs text-emerald-300">3D loaded</p>}
           <ModelErrorBoundary>
             <div className="h-[60dvh] min-h-[420px] max-h-[720px] w-full" data-testid="marcus-review-3d">
-              <Canvas camera={{ position: [0, 1.4, 3.4], fov: 36, near: 0.01, far: 80 }} gl={{ antialias: true }}>
+              <Canvas key={view} camera={{ position: view === "face" ? [0, 2.43, 1.12] : [0, 1.5, 4.2], fov: 36, near: 0.01, far: 80 }} gl={{ antialias: true }}>
                 <color attach="background" args={["#0b1118"]} />
                 <ambientLight intensity={1.4} />
                 <directionalLight position={[3, 7, 6]} intensity={2.4} />
@@ -170,7 +155,8 @@ function MarcusReview() {
                 <Suspense fallback={null}>
                   <ReviewCharacter key={candidate.id} candidate={candidate} onReady={() => setModelLoaded(true)} />
                 </Suspense>
-                <ReviewCamera focus={view} />
+                <OrbitControls target={[0, view === "face" ? 2.43 : 1.35, 0]} enablePan={false}
+                  minDistance={view === "face" ? 0.8 : 2.8} maxDistance={view === "face" ? 3.2 : 9} />
                 <gridHelper args={[8, 12, "#25313d", "#17232d"]} />
               </Canvas>
             </div>
