@@ -314,6 +314,11 @@ function V2Coach() {
     const failed=sceneForSession(session).media?.url;
     if(failed)failedVideoUrls.current.add(failed);
     dispatch({type:"pause"});
+    if(session.phase==="rest"||session.phase==="transition"||session.phase==="complete"){
+      setVisualStopped(true);
+      setVoiceError("The approved rest or cooldown film is unavailable; session paused. No unrelated film was used.");
+      return;
+    }
     // No missing clip can advance the rep counter or substitute another outfit.
     // Skip an unplayable stage only in its existing program and remain paused.
     const next=session.workout.exercises.findIndex((item,index)=>{
@@ -775,6 +780,7 @@ function V2Coach() {
 
   const startFromOpening = async () => {
     if (openingStarting) return;
+    if (!cleared) {dismissOpening();setSetupOpen(true);setVoiceError("Confirm this workout\u2019s exercise-specific medical clearance before starting.");return;}
     setOpeningStarting(true);
     setVoiceError(null);
     // Start Workout is the only opening-scene exit and also unlocks audio.
