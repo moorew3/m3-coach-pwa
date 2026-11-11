@@ -29,6 +29,8 @@ try{
  await page.getByRole("button",{name:"Workout library and tools"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
  console.log("✓ Fold entrance, accessible tools, one workout picker");
+ // Recovery lives in the intentionally collapsed More workouts panel.
+ await page.getByTestId("m3-unified-workout-picker").locator("details > summary").click();
  await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).click();
  await page.getByTestId("flex-training").waitFor();
  const stage=page.getByTestId("v2-trainer-stage"),workout=page.getByLabel("Workout",{exact:true}),exercise=page.getByLabel("Exercise",{exact:true});
