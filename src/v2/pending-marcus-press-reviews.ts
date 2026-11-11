@@ -16,7 +16,13 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     title: "Decline dumbbell bench press — two reps",
     provider: "heygen-backup",
     videoId: "dc8a74a3feda442ab467616c05c80188",
-    status: "pending-owner-visual-approval",
+    status: "owner-near-match-requires-wrong-narration-removal",
+    ownerFeedback: "Decline close; narration incorrectly says seated chest press",
+    embeddedVoiceTrackApproved: false,
+    mustStripExistingAudio: true,
+    correctedAudioRequired: "Decline dumbbell bench press",
+    correctedSpokenCue: "Decline dumbbell bench press. Keep the head end of the bench lower than your hips. With both dumbbells beside your chest, press up and lower under control.",
+    // The owner has NOT approved the entire motion or injured-leg setup.
     // Rendering succeeded, but no trusted frame-by-frame or voice check succeeded.
     // Never silently promote "completed" to approved or spend more credits.
     frameSamplesVerified: false,
@@ -41,7 +47,10 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
     title: "Incline dumbbell bench press — two reps",
     provider: "heygen-backup",
     videoId: "434a4dc35d9245d18c62e4e639b3df00",
-    status: "pending-owner-visual-approval",
+    status: "owner-rejected-incorrect-incline-exercise",
+    ownerFeedback: "Incline workout incorrect; do not publish, relabel or automatically regenerate",
+    embeddedVoiceTrackApproved: false,
+    mustStripExistingAudio: false,
     // Rendering succeeded, but no trusted frame-by-frame or voice check succeeded.
     // Never silently promote "completed" to approved or spend more credits.
     frameSamplesVerified: false,
@@ -65,6 +74,8 @@ export const PENDING_MARCUS_PRESS_REVIEWS = [
 
 /**
  * Rejected/failed historical generations MUST NEVER be selected by runtime.
+ * Owner also rejected the newer incline render 434a4dc35d9245d18c62e4e639b3df00;
+ * it is retained in the audit queue above only for traceability. 
  * Owner rejected the former "decline" clip: its bench was flat and coaching
  * did not match the exercise. The old incline generation failed with 500.
  */
