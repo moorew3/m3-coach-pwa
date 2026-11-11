@@ -50,6 +50,8 @@ try{
  }
  await page.getByRole("button",{name:"Workout library and tools"}).click();
  await page.getByTestId("m3-unified-workout-picker").waitFor();
+ // Original recovery scenes are intentionally behind a collapsed 'More workouts' panel.
+ await page.getByTestId("m3-unified-workout-picker").locator("details > summary").click();
  assert.equal(await page.getByTestId("m3-unified-workout-picker").getByRole("link",{name:"Recovery · 5 approved moves"}).count(),1);
  const v2=await page.goto(origin+"/v2?workout=recovery",{waitUntil:"domcontentloaded"});
  assert.equal(v2?.status(),200,"Static host must serve V2");
