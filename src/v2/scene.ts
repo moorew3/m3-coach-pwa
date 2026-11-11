@@ -44,6 +44,6 @@ export function sceneContractFor(session: V2Session): SceneContract {
     equipmentAnchor: [0, 0, 0],
     showCoach: scene.viewpoint.showCoach,
     showAthleteCamera: scene.viewpoint.showAthleteCamera,
-    motionKey: scene.currentExercise?.motionKey ?? "idle",
+    motionKey: scene.phase === "work" && scene.running ? (scene.currentExercise?.motionKey ?? "idle") : "idle",
   };
 }
