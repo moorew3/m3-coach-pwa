@@ -16,9 +16,9 @@ import recovery from "@/data/recovery-scenes.json";
 
 export type FootageLane="cast"|"no-cast";
 export type ReadyVideoWorkout=V2Workout & {footageLane:FootageLane;verifiedVideoProgram:true};
-const castOriginals=new Map(recovery.flatMap(g=>g.items).filter(x=>"video" in x&&!!x.video&&"approved" in x&&x.approved)
-  .map(x=>[x.id,x])); // Only seven explicitly owner-approved cast originals.
 const castIds=new Set(["C09-PRE-BREATH-R2","C01-R3","C02","C03","C04-R2","C08-PRESS-R3","C10-POST-BREATH-R1"]);
+const castOriginals=new Map(recovery.flatMap(g=>g.items).filter(x=>"video" in x&&!!x.video&&"id" in x&&castIds.has(x.id))
+  .map(x=>[x.id,x])); // Exact seven locked approved moving originals; no review candidates.
 
 type VideoStep={id:string;name:string;motionKey:string;sets:number;reps?:string;seconds?:number;rest:number;instructions:readonly [string,string,string];role?:V2Exercise["stageRole"]};
 const castPrep:VideoStep={id:"C09-PRE-BREATH-R2",name:"Seated breathing · left cast supported",motionKey:"cast-seated-breathing",sets:1,seconds:30,rest:0,role:"preparation",instructions:[
