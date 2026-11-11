@@ -92,7 +92,7 @@ test("Press preflight documents correct movement, locked avatar, no generation s
     "No additional video-generation jobs",
     "owner approve",
   ]) {
-    assert.match(doc.toLowerCase(), new RegExp(required.toLowerCase().replace(/[.*+?^$\u007b\u007d()|[\]\\]/g, "\\$&"), "i"));
+    assert.ok(doc.toLowerCase().includes(required.toLowerCase()), `Missing preflight requirement: ${required}`);
   }
   for (const rejected of [
     "bb5e40c8f31f4c2c9a2bac097fd58bf9",
